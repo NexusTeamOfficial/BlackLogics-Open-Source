@@ -1,85 +1,63 @@
+# BlackLogics – Visual Android App Builder
 
-# BlackLogics
-
-**BlackLogics** is a powerful open-source alternative to Sketchware. It allows developers to build Android applications visually using drag-and-drop components while integrating advanced features like Firebase, Material Design 1.9, multimedia support, and custom Nexus-style UI.
-
-BlackLogics is built with a focus on performance, professional UI, and full customization — perfect for both beginners and advanced Android developers.
-
----
-
-## 📸 **Screenshots & Demo**
-
-### **🚀 Interactive Main UI**  
-![Main Screen](screenshots/s.png.png)  
-
-### **🔹 Create Project Ui**  
-![Create Project Interface](screenshots/s1.png.png)  
-
-### **🚀 Design Activity UI**  
-![Design activity](screenshots/s3.png.png)  
-
-### **🔹 Logic Editor**  
-![Built in project](screenshots/s4.png.png)  
-
-### **🚀 Design Drawer**  
-![Design Drawer](screenshots/s5.png.png)  
-
-### **🔹 Build Apk**  
-![Export project](screenshots/s6.png.png)  
-
-
-
+**BlackLogics** is a powerful open-source Android app builder with full **AndroidX support**. It allows anyone to build modern apps visually — without writing traditional code — using a logic-based system, drag-and-drop UI editor, and full resource management.
 
 ## ✨ Features
 
-- **Visual Drag & Drop App Builder**  
-  Build apps without writing traditional code.
+- **AndroidX Support**  
+  Build apps using the latest Android libraries and SDKs.
 
-- **Material 1.9 Components**  
-  Use professional-looking Material buttons, dialogs, toolbars, bottom navigation, and more.
+- **No Code Required**  
+  Create app logic using the built-in visual **Logic Editor** — no Java needed.
+
+- **Material Design 1.9 Components**  
+  Includes buttons, dialogs, toolbars, bottom navigation, and more.
 
 - **Dark & Light Theme Support**  
-  Seamless switching between dark and light UI modes.
+  One-tap switch between light and dark mode.
 
-- **Language Support**  
-  Multi-language support including English and Hindi.
+- **Multi-Language Support**  
+  Build apps in English, Hindi, and more with easy language switching.
 
-- **Nexus UI Components**  
-  Custom-designed buttons, toolbars, bottom navigation, player UI, dialogs, etc.
+- **Advanced Resource Managers**
+  - **Assets Manager** – Manage fonts, audio, raw files
+  - **Image Manager** – Handle app icons and UI graphics
+  - **Java Manager** – Add custom Java code blocks
+  - **Native Manager** – Add native libraries (JNI)
+  - **Permission Manager** – Manage app permissions
+  - **Sound Manager** – Add and manage audio files
 
-- **Music & Video Player Integration**  
-  Built-in audio and video players with advanced controls.
+- **Drag & Drop UI Builder**  
+  Design your app interface visually without XML.
 
-- **Video Editing Tools**  
-  Convert video to audio, extract thumbnails, trim, and merge clips.
+---
 
-- **Firebase Integration**  
-  Includes Firebase Auth, Realtime Database, and Storage support.
+## 📸 Screenshots
 
-- **Authentication Modules**  
-  OTP verification, QR Code Login, Fingerprint Login, and Two-Factor Authentication (2FA).
+### **Main UI**
+![Main Screen](screenshots/s.png.png)
 
-- **WhatsApp-style Chat System**  
-  Real-time messaging with "seen" status, last message, and time.
+### **Create Project**
+![Create Project](screenshots/s1.png.png)
 
-- **Status Feature**  
-  Post story/status that auto-deletes after 24 hours.
+### **Design Activity**
+![Design Activity](screenshots/s3.png.png)
 
-- **Custom Event Listeners**  
-  Handle next/previous buttons, full-screen mode, and playback events easily.
+### **Logic Editor**
+![Logic Editor](screenshots/s4.png.png)
 
 ---
 
 ## ⚙️ Installation Guide
 
-> This project is **open-source** and ready to be built on Android Studio or Sketchware Pro.
+> This project is open-source and compatible with Android Studio & Sketchware Pro.
 
 ### Requirements
 
 - Android Studio / Sketchware Pro
-- Android SDK 21 or higher
-- Java 1.8+
-- Internet Connection (for Firebase)
+- Android SDK 21+
+- Java 8+
+- Internet (for Firebase features)
 
 ### Steps
 
@@ -87,41 +65,43 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
    ```bash
    git clone https://github.com/NexusTeamOfficial/BlackLogics-Open-Source.git
 
-
-2. **Open in Android Studio** or import in **Sketchware Pro**
+2. **Open in Android Studio** or import into Sketchware Pro
 
 3. **Sync Gradle** and resolve dependencies
 
-4. **Run on your Android device or emulator**
-
+4. **Build and run the app** on your device or emulator
 
 ## 👨‍💻 Contributing
 
 We welcome all contributions to make BlackLogics even better!
 
-### Steps to Contribute
+### How to Contribute
 
-* Fork this repository
-* Create your feature branch: `git checkout -b feature/YourFeature`
-* Commit your changes: `git commit -m 'Add feature'`
-* Push to your branch: `git push origin feature/YourFeature`
-* Submit a Pull Request
+1. **Fork the repository**
 
-All contributors will be credited in the CONTRIBUTORS.md file.
+2. **Create a new branch**
 
+   ```bash
+   git checkout -b feature/YourFeatureName
+   ```
 
-## 🙌 Credits
+3. **Make your changes**
 
-**Developer:**
+4. **Commit your changes**
 
-* `BlackLogics`
+   ```bash
+   git commit -m "Add: YourFeatureName"
+   ```
 
-**Special Thanks:**
+5. **Push your branch**
 
-* `NexusTeam`
-* `SmartIndiaGaming`
+   ```bash
+   git push origin feature/YourFeatureName
+   ```
 
-*Full credit goes to NexusTeam & SmartIndiaGaming for their major contributions and support.*
+6. **Submit a Pull Request**
+
+All contributors will be listed in the `CONTRIBUTORS.md` file.
 
 
 ## 📄 License
@@ -143,19 +123,14 @@ in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL  
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING  
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER  
-DEALINGS IN THE SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 ```
 
 ---
 
-## 🔗 Connect with Us
+## 🔗 Stay Connected
 
 * **Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
-* **GitHub:** [github.com/NexusTeamOfficial/BlackLogics-Open-Source](github.com/NexusTeamOfficial/BlackLogics-Open-Source)
----
+* **GitHub:** [NexusTeamOfficial/BlackLogics-Open-Source](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 
-> Made with dedication by **NexusTeam** & **SmartIndiaGaming**
+> Made with passion by **NexusTeam** & **SmartIndiaGaming**
