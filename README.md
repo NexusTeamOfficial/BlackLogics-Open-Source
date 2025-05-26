@@ -15,6 +15,12 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
 ### **🔹 Create Project Ui**  
 ![Create Project Interface](screenshots/s1.png.png)  
 
+### **🚀 Design Activity UI**  
+![Design activity](screenshots/s3.png.png)  
+
+### **🔹 Logic Editor**  
+![Built in project](screenshots/s4.png.png)  
+
 
 
 ## ✨ Features
