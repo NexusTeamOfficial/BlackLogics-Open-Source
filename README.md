@@ -176,7 +176,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 ## 🔗 Stay Connected
 
 * **Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
-* * **YouTube:** [@BlackLogics](https://t.me/blacklogics)
+* * **YouTube:** [@BlackLogics](https://youtube.com/@blacklogics?si=D2CFbND9d2ivbA_7)
 * **GitHub:** [NexusTeamOfficial/BlackLogics-Open-Source](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 
 > Made with passion by **NexusTeam** & **SmartIndiaGaming**
