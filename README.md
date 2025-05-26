@@ -21,6 +21,13 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
 ### **🔹 Logic Editor**  
 ![Built in project](screenshots/s4.png.png)  
 
+### **🚀 Design Drawer**  
+![Design Drawer](screenshots/s5.png.png)  
+
+### **🔹 Build Apk**  
+![Export project](screenshots/s6.png.png)  
+
+
 
 
 ## ✨ Features
