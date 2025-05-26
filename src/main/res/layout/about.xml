@@ -1,0 +1,186 @@
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear16"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#FFFFFF"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<ImageView
+				android:id="@+id/img_back"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:padding="12dp"
+				android:src="@drawable/arrow_back_white_48dp"
+				android:scaleType="fitCenter"
+				android:focusable="false"
+				app:tint="#424242" />
+			<TextView
+				android:id="@+id/tv_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="About BlackLogics"
+				android:textSize="20sp"
+				android:textStyle="bold"
+				android:textColor="#424242"
+				android:focusable="false" />
+		</LinearLayout>
+		<com.google.android.material.tabs.TabLayout
+			android:id="@+id/tab_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#FFFFFF"
+			style="@style/AboutPageTabLayout"
+			app:tabGravity="fill"
+			app:tabIndicator="@drawable/about_tab_indicator"
+			app:tabIndicatorFullWidth="false"
+			app:tabInlineLabel="true"
+			app:tabMode="fixed"
+			app:tabSelectedTextColor="@color/color_primary"
+			app:tabTextColor="#424242"
+			app:tabUnboundedRipple="true" />
+		<View
+			android:id="@+id/view17"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="#E0E0E0" />
+		<LinearLayout
+			android:id="@+id/linear18"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<LinearLayout
+				android:id="@+id/rootq"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal" />
+			<LinearLayout
+				android:id="@+id/trash"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear20"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="horizontal">
+			<LinearLayout
+				android:id="@+id/layout1"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="#FFFFFF"
+				android:orientation="vertical">
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/recyclerview1"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent" />
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/layout2"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="#FFFFFF"
+				android:orientation="vertical">
+				<androidx.recyclerview.widget.RecyclerView
+					android:id="@+id/recyclerview2"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent" />
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/loading_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="8dp"
+		android:background="#FFFFFF"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="vertical"
+		android:visibility="visible">
+		<ImageView
+			android:id="@+id/imageview7"
+			android:layout_width="match_parent"
+			android:layout_height="200dp"
+			android:src="@drawable/girl_swimming_flat"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/tv_loading"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp"
+			android:paddingBottom="3dp"
+			android:text="Getting data"
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/tv_loading_desc"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:paddingLeft="8dp"
+			android:paddingTop="3dp"
+			android:paddingRight="8dp"
+			android:paddingBottom="8dp"
+			android:text="Don't worry, it won't take more than a second..."
+			android:textSize="12sp"
+			android:textColor="#424242"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/fab"
+		android:layout_width="wrap_content"
+		android:layout_height="50dp"
+		android:layout_marginBottom="16dp"
+		android:paddingTop="8dp"
+		android:paddingBottom="8dp"
+		android:background="#7289DA"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="horizontal"
+		android:translationY="200.0dp"
+		android:layout_gravity="bottom|end"
+		android:layout_marginEnd="16dp"
+		android:animateLayoutChanges="true"
+		android:elevation="7dp"
+		app:rippleColor="#FFFFFF"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentEnd="true">
+		<ImageView
+			android:id="@+id/imageview8"
+			android:layout_width="30dp"
+			android:layout_height="45dp"
+			android:src="@drawable/ic_discord"
+			android:scaleType="center"
+			android:focusable="false"
+			android:layout_marginStart="10dp"
+			android:layout_marginEnd="10dp"
+			app:srcCompat="@drawable/ic_discord" />
+		<TextView
+			android:id="@+id/fab_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Join our Discord server"
+			android:textSize="12sp"
+			android:textColor="#FFFFFF"
+			android:focusable="false"
+			android:layout_marginEnd="16dp"
+			android:visibility="visible" />
+	</LinearLayout>
+</RelativeLayout>

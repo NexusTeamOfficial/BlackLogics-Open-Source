@@ -1,0 +1,69 @@
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@android:color/transparent">
+	<LinearLayout
+		android:id="@+id/dialogContainer"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="16dp"
+		android:orientation="vertical"
+		android:layout_centerInParent="true">
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			<TextView
+				android:id="@+id/tabView"
+				android:layout_width="0dp"
+				android:layout_height="40dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="View"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:layout_weight="1"
+				android:textColor="@android:color/white"
+				android:focusable="false" />
+			<TextView
+				android:id="@+id/tabCustomView"
+				android:layout_width="0dp"
+				android:layout_height="40dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="Custom View"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:layout_weight="1"
+				android:focusable="false" />
+		</LinearLayout>
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/recyclerView"
+			android:layout_width="match_parent"
+			android:layout_height="400dp"
+			android:layout_marginTop="12dp"
+			android:layout_marginBottom="60dp" />
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/fabAddView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal|center_vertical"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true" />
+		<TextView
+			android:id="@+id/textview3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:gravity="center_horizontal"
+			android:text="Create new view"
+			android:textSize="14sp"
+			android:textColor="#FFF333"
+			android:layout_gravity="center_horizontal|center_vertical"
+			android:focusable="false"
+			android:layout_below="@id/fabAddView"
+			android:layout_centerHorizontal="true" />
+	</LinearLayout>
+</RelativeLayout>

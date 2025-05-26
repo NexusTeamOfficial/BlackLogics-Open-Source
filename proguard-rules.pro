@@ -1,0 +1,9 @@
+-repackageclasses
+-ignorewarnings
+-dontwarn
+-dontnote
+-keep class kotlin.** { *; }
+-keep class kotlin.jvm.internal.** { *; }
+-dontwarn kotlin.**
+-keep class androidx.multidex.** { *; }
+-dontwarn androidx.multidex.**

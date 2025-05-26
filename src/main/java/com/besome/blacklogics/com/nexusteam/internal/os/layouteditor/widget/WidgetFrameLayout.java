@@ -1,0 +1,243 @@
+package com.nexusteam.internal.os.layouteditor.widget;
+
+import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import com.besome.blacklogics.R;
+import com.nexusteam.internal.os.layouteditor.util.WidgetUtil;
+
+public class WidgetFrameLayout extends FrameLayout implements WidgetContract {
+    private String mWidgetId;
+    private String mWidgetName;
+    private boolean isSelected = false;
+    private Paint widgetPaint = new Paint();
+    private Paint borderPaint;
+    private float dragStartX, dragStartY;
+    private Drawable mForeground;
+    private int mForegroundGravity = Gravity.FILL;
+    private boolean mMeasureAllChildren = false;
+    private final Rect mForegroundBounds = new Rect();
+    private final Rect mOverlayBounds = new Rect();
+    private boolean mForegroundBoundsChanged = false;
+
+    public WidgetFrameLayout(Context context) {
+        this(context, null);
+    }
+
+    public WidgetFrameLayout(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public WidgetFrameLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(attrs);
+    }
+
+    //@Override
+    private void init() {
+      ///  super.init();
+        setMinimumHeight(100);
+        setMinimumWidth(100);
+        setPadding(8, 8, 8, 8);
+        borderPaint = new Paint();
+        borderPaint.setColor(Color.LTGRAY);
+        borderPaint.setStyle(Paint.Style.STROKE);
+        borderPaint.setStrokeWidth(2);
+        setBackgroundColor(Color.TRANSPARENT);
+       // setOnTouchListener(new DragTouchListener());
+    }
+
+    private void init(AttributeSet attrs) {
+        init();
+        if (attrs != null) {
+            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.WidgetFrameLayout);
+            mForeground = a.getDrawable(R.styleable.WidgetFrameLayout_foreground);
+            if (mForeground != null) {
+                mForeground.setCallback(this);
+            }
+            int foregroundGravity = a.getInt(R.styleable.WidgetFrameLayout_foregroundGravity, -1);
+            if (foregroundGravity != -1) {
+                mForegroundGravity = foregroundGravity;
+            }
+            mMeasureAllChildren = a.getBoolean(R.styleable.WidgetFrameLayout_measureAllChildren, false);
+            a.recycle();
+        }
+    }
+
+    @Override
+    public void setWidgetId(String id) {
+        this.mWidgetId = id;
+    }
+
+    @Override
+    public String getWidgetId() {
+        return mWidgetId;
+    }
+
+    @Override
+    public void setWidgetName(String name) {
+        this.mWidgetName = name;
+    }
+
+    @Override
+    public String getWidgetName() {
+        return mWidgetName;
+    }
+
+    @Override
+    public Paint getWidgetPaint() {
+        return widgetPaint;
+    }
+
+    @Override
+    public void select() {
+        isSelected = true;
+        widgetPaint.setColor(getResources().getColor(R.color.widget_selection_color));
+        invalidate();
+    }
+
+    @Override
+    public void unselect() {
+        isSelected = false;
+        widgetPaint.setColor(0);
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(android.graphics.Canvas canvas) {
+        super.onDraw(canvas);
+        canvas.drawRect(0, 0, getWidth(), getHeight(), borderPaint);
+        if (isSelected) {
+            canvas.drawRect(0, 0, getWidth(), getHeight(), widgetPaint);
+        }
+    }
+
+    @Override
+    protected boolean verifyDrawable(Drawable who) {
+        return super.verifyDrawable(who) || (who == mForeground);
+    }
+
+    @Override
+    public void jumpDrawablesToCurrentState() {
+        super.jumpDrawablesToCurrentState();
+        if (mForeground != null) {
+            mForeground.jumpToCurrentState();
+        }
+    }
+
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (mForeground != null && mForeground.isStateful()) {
+            mForeground.setState(getDrawableState());
+        }
+    }
+
+    public void setForeground(Drawable drawable) {
+        if (mForeground != drawable) {
+            if (mForeground != null) {
+                mForeground.setCallback(null);
+                unscheduleDrawable(mForeground);
+            }
+            mForeground = drawable;
+            if (drawable != null) {
+                setWillNotDraw(false);
+                drawable.setCallback(this);
+                if (drawable.isStateful()) {
+                    drawable.setState(getDrawableState());
+                }
+            } else {
+                setWillNotDraw(getChildCount() == 0);
+            }
+            requestLayout();
+            invalidate();
+        }
+    }
+
+    public Drawable getForeground() {
+        return mForeground;
+    }
+
+    public void setForegroundGravity(int foregroundGravity) {
+        if (mForegroundGravity != foregroundGravity) {
+            if ((foregroundGravity & Gravity.FILL) == 0) {
+                foregroundGravity |= Gravity.FILL;
+            }
+            mForegroundGravity = foregroundGravity;
+            requestLayout();
+            invalidate();
+        }
+    }
+
+    public int getForegroundGravity() {
+        return mForegroundGravity;
+    }
+
+    public void setMeasureAllChildren(boolean measureAll) {
+        mMeasureAllChildren = measureAll;
+        requestLayout();
+    }
+
+    public boolean getMeasureAllChildren() {
+        return mMeasureAllChildren;
+    }
+
+    public void adjustChildLayout(View child, int width, int height, int marginLeft, int marginTop) {
+        if (child != null) {
+            MarginLayoutParams params = (MarginLayoutParams) child.getLayoutParams();
+            if (params == null) {
+                params = new MarginLayoutParams(width, height);
+            } else {
+                params.width = width;
+                params.height = height;
+            }
+            params.setMargins(marginLeft, marginTop, params.rightMargin, params.bottomMargin);
+            child.setLayoutParams(params);
+            requestLayout();
+        }
+    }
+
+    public void setPosition(float x, float y) {
+        setX(x);
+        setY(y);
+        requestLayout();
+    }
+
+    @Override
+    public String newWidgetId() {
+        int i = 1;
+        while (WidgetUtil.isWidgetIdExist("framelayout" + i)) {
+            i++;
+        }
+        return "framelayout" + i;
+    }
+
+    private class DragTouchListener implements OnTouchListener {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    dragStartX = event.getRawX() - getX();
+                    dragStartY = event.getRawY() - getY();
+                    select();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    setPosition(event.getRawX() - dragStartX, event.getRawY() - dragStartY);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    return true;
+            }
+            return false;
+        }
+    }
+}

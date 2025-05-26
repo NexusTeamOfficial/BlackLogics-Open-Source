@@ -1,0 +1,58 @@
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/lin_toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:padding="3dp"
+		android:background="#FFFFFF"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/img_views"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_view_headline_black"
+			android:scaleType="fitXY" />
+		<LinearLayout
+			android:id="@+id/linear9"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:orientation="horizontal"
+			android:layout_weight="1" />
+		<ImageView
+			android:id="@+id/img_import"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_get_app_black"
+			android:scaleType="center" />
+		<ImageView
+			android:id="@+id/img_copy"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_content_copy_black"
+			android:scaleType="fitCenter" />
+		<ImageView
+			android:id="@+id/img_add_image"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_image_black"
+			android:scaleType="fitCenter"
+			android:layout_gravity="right" />
+	</LinearLayout>
+	<com.shapun.layouteditor.ViewEditor
+		android:id="@+id/viewEditor"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="8dp"
+		android:orientation="vertical" />
+</RelativeLayout>

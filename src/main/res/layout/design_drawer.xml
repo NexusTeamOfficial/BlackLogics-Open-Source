@@ -1,0 +1,65 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:id="@+id/layout_drawer"
+	android:background="#ffffffff"
+	android:layout_width="250.0dip"
+	android:layout_height="fill_parent">
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="0.0dip"
+		android:layout_weight="1.0"
+		android:fillViewport="true">
+		<LinearLayout
+			android:id="@+id/linear5"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/tv_title_configuration"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal|center_vertical"
+				android:textColor="@color/textColor"
+				android:padding="8.0dip"
+				android:textSize="14.0sp"
+				android:focusable="false" />
+			<View
+				android:id="@+id/view6"
+				android:layout_width="match_parent"
+				android:layout_height="1.1999817dip" />
+			<LinearLayout
+				android:id="@+id/layout_menus"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical" />
+		</LinearLayout>
+	</ScrollView>
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<TextView
+			android:id="@+id/tv_title_global"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="left"
+			android:textColor="@color/textColor"
+			android:padding="8.0dip"
+			android:textSize="14.0sp"
+			android:focusable="false" />
+		<View
+			android:id="@+id/view8"
+			android:layout_width="match_parent"
+			android:layout_height="1.1999817dip" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/layout_bottom_menus"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical" />
+</LinearLayout>

@@ -1,0 +1,59 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface"
+	android:padding="0dp">
+	<LinearLayout
+		android:id="@+id/lin_header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/img_edit_id"
+			android:layout_width="0dp"
+			android:layout_height="24dp"
+			android:src="@drawable/ic_edit_black"
+			android:scaleType="center"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/img_common_attributes"
+			android:layout_width="0dp"
+			android:layout_height="30dp"
+			android:src="@drawable/dimention"
+			android:scaleType="centerInside"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/tv_view_id"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="TextView"
+			android:textSize="16sp"
+			android:textColor="@color/textColor"
+			android:layout_weight="1"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/img_custom"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
+			android:src="@drawable/ic_add_black"
+			android:scaleType="center"
+			android:focusable="false" />
+	</LinearLayout>
+	<View
+		android:id="@+id/lin_divider"
+		android:layout_width="match_parent"
+		android:layout_height="2dp"
+		android:background="#CFD8DC" />
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/rv_attributes"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:overScrollMode="never" />
+</LinearLayout>

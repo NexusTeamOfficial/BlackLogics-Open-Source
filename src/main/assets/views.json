@@ -1,0 +1,243 @@
+[
+  // ========== LAYOUTS ==========
+  {
+    "name": "LinearLayout",
+    "class_path": "android.widget.LinearLayout"
+  },
+  {
+    "name": "RelativeLayout", 
+    "class_path": "android.widget.RelativeLayout"
+  },
+  {
+    "name": "FrameLayout",
+    "class_path": "android.widget.FrameLayout"
+  },
+  {
+    "name": "GridLayout",
+    "class_path": "android.widget.GridLayout"
+  },
+  {
+    "name": "TableLayout",
+    "class_path": "android.widget.TableLayout"
+  },
+  {
+    "name": "ConstraintLayout",
+    "class_path": "androidx.constraintlayout.widget.ConstraintLayout"
+  },
+  {
+    "name": "MotionLayout",
+    "class_path": "androidx.constraintlayout.motion.widget.MotionLayout"
+  },
+  {
+    "name": "CoordinatorLayout",
+    "class_path": "androidx.coordinatorlayout.widget.CoordinatorLayout"
+  },
+  {
+    "name": "DrawerLayout",
+    "class_path": "androidx.drawerlayout.widget.DrawerLayout"
+  },
+  {
+    "name": "SlidingPaneLayout",
+    "class_path": "androidx.slidingpanelayout.widget.SlidingPaneLayout"
+  },
+
+  // ========== BASIC WIDGETS ==========
+  {
+    "name": "TextView",
+    "class_path": "android.widget.TextView",
+    "initial_attributes": {
+      "android:text": "TextView"
+    }
+  },
+  {
+    "name": "Button",
+    "class_path": "android.widget.Button",
+    "initial_attributes": {
+      "android:text": "Button" 
+    }
+  },
+  {
+    "name": "EditText",
+    "class_path": "android.widget.EditText",
+    "initial_attributes": {
+      "android:hint": "Enter text"
+    }
+  },
+  {
+    "name": "ImageView",
+    "class_path": "android.widget.ImageView",
+    "initial_attributes": {
+      "android:src": "@drawable/default"
+    }
+  },
+  {
+    "name": "ImageButton",
+    "class_path": "android.widget.ImageButton"
+  },
+  {
+    "name": "CheckBox",
+    "class_path": "android.widget.CheckBox",
+    "initial_attributes": {
+      "android:text": "CheckBox"
+    }
+  },
+  {
+    "name": "RadioButton",
+    "class_path": "android.widget.RadioButton",
+    "initial_attributes": {
+      "android:text": "RadioButton"
+    }
+  },
+  {
+    "name": "ToggleButton",
+    "class_path": "android.widget.ToggleButton"
+  },
+  {
+    "name": "Switch",
+    "class_path": "android.widget.Switch",
+    "initial_attributes": {
+      "android:text": "Switch"
+    }
+  },
+  {
+    "name": "SeekBar",
+    "class_path": "android.widget.SeekBar"
+  },
+  {
+    "name": "ProgressBar",
+    "class_path": "android.widget.ProgressBar"
+  },
+  {
+    "name": "RatingBar",
+    "class_path": "android.widget.RatingBar"
+  },
+  {
+    "name": "Spinner",
+    "class_path": "android.widget.Spinner"
+  },
+  {
+    "name": "WebView",
+    "class_path": "android.webkit.WebView"
+  },
+  {
+    "name": "VideoView",
+    "class_path": "android.widget.VideoView"
+  },
+
+  // ========== SCROLLING VIEWS ==========
+  {
+    "name": "ScrollView",
+    "class_path": "android.widget.ScrollView"
+  },
+  {
+    "name": "HorizontalScrollView",
+    "class_path": "android.widget.HorizontalScrollView"
+  },
+  {
+    "name": "NestedScrollView",
+    "class_path": "androidx.core.widget.NestedScrollView"
+  },
+
+  // ========== ANDROIDX COMPONENTS ==========
+  {
+    "name": "RecyclerView",
+    "class_path": "androidx.recyclerview.widget.RecyclerView"
+  },
+  {
+    "name": "ViewPager",
+    "class_path": "androidx.viewpager.widget.ViewPager"
+  },
+  {
+    "name": "ViewPager2",
+    "class_path": "androidx.viewpager2.widget.ViewPager2"
+  },
+  {
+    "name": "CardView",
+    "class_path": "androidx.cardview.widget.CardView"
+  },
+  {
+    "name": "AppBarLayout",
+    "class_path": "com.google.android.material.appbar.AppBarLayout"
+  },
+  {
+    "name": "CollapsingToolbarLayout",
+    "class_path": "com.google.android.material.appbar.CollapsingToolbarLayout"
+  },
+  {
+    "name": "Toolbar",
+    "class_path": "androidx.appcompat.widget.Toolbar"
+  },
+
+  // ========== MATERIAL COMPONENTS ==========
+  {
+    "name": "MaterialButton",
+    "class_path": "com.google.android.material.button.MaterialButton",
+    "initial_attributes": {
+      "android:text": "Material Button"
+    }
+  },
+  {
+    "name": "TextInputLayout",
+    "class_path": "com.google.android.material.textfield.TextInputLayout",
+    "initial_attributes": {
+      "hint": "TextInputLayout"
+    }
+  },
+  {
+    "name": "FloatingActionButton",
+    "class_path": "com.google.android.material.floatingactionbutton.FloatingActionButton"
+  },
+  {
+    "name": "BottomNavigationView",
+    "class_path": "com.google.android.material.bottomnavigation.BottomNavigationView"
+  },
+  {
+    "name": "NavigationView",
+    "class_path": "com.google.android.material.navigation.NavigationView"
+  },
+  {
+    "name": "TabLayout",
+    "class_path": "com.google.android.material.tabs.TabLayout"
+  },
+  {
+    "name": "Chip",
+    "class_path": "com.google.android.material.chip.Chip",
+    "initial_attributes": {
+      "android:text": "Chip"
+    }
+  },
+  {
+    "name": "ChipGroup",
+    "class_path": "com.google.android.material.chip.ChipGroup"
+  },
+  {
+    "name": "MaterialCardView",
+    "class_path": "com.google.android.material.card.MaterialCardView"
+  },
+  {
+    "name": "BottomAppBar",
+    "class_path": "com.google.android.material.bottomappbar.BottomAppBar"
+  },
+  {
+    "name": "MaterialSwitch",
+    "class_path": "com.google.android.material.switchmaterial.SwitchMaterial"
+  },
+
+  // ========== CUSTOM VIEWS ==========
+  {
+    "name": "BlockView",
+    "class_path": "com.shapun.layouteditor.BaseBlock"
+  },
+  {
+    "name": "MyView",
+    "class_path": "com.shapun.layouteditor.MyView"
+  },
+  {
+    "name": "LottieAnimationView",
+    "class_path": "com.airbnb.lottie.LottieAnimationView"
+  },
+  {
+    "name": "CircleImageView",
+    "class_path": "de.hdodenhof.circleimageview.CircleImageView"
+  }
+]

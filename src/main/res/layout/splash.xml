@@ -1,0 +1,66 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
+	<LinearLayout
+		android:id="@+id/baseLayout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="8dp"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="vertical"
+		android:layout_gravity="center_horizontal|center_vertical"
+		android:background="?attr/colorSurface">
+		<View
+			android:id="@+id/baseSpace1"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1" />
+		<FrameLayout
+			android:id="@+id/frame_layout2"
+			android:layout_width="300dp"
+			android:layout_height="75dp"
+			android:layout_gravity="center_horizontal|center_vertical">
+			<View
+				android:id="@+id/circleEffect"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@drawable/circle_pulse"
+				android:visibility="invisible" />
+			<ImageView
+				android:id="@+id/baseIcon"
+				android:layout_width="match_parent"
+				android:layout_height="75dp"
+				android:src="@drawable/ic_blacklogic"
+				android:scaleType="centerInside"
+				android:layout_gravity="center_horizontal|center_vertical" />
+		</FrameLayout>
+		<TextView
+			android:id="@+id/baseTag"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Imagine, Create, Share"
+			android:textSize="14sp"
+			android:textColor="@color/textGrey"
+			android:background="?attr/colorSurface" />
+		<View
+			android:id="@+id/baseSpace2"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1" />
+		<TextView
+			android:id="@+id/baseGodTag"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Shree Ganeshay Namaha"
+			android:textSize="14sp"
+			android:textColor="@color/textBlueGrey"
+			android:background="?attr/colorSurface" />
+	</LinearLayout>
+</LinearLayout>

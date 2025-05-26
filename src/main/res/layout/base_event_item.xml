@@ -1,0 +1,113 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/base_event_ui"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/base_event_icon"
+			android:focusable="false"
+			android:layout_width="38dp"
+			android:layout_height="35dp"
+			android:src="@drawable/widget_source"
+			android:scaleType="fitCenter" />
+		<LinearLayout
+			android:id="@+id/base_event_info"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:orientation="vertical"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/base_event_title"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:text="onCreate"
+				android:textSize="14sp"
+				android:textColor="@color/textColor" />
+			<TextView
+				android:id="@+id/base_event_description"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:text="On activity create"
+				android:textSize="12sp"
+				android:textColor="@color/textColor" />
+		</LinearLayout>
+		<ImageView
+			android:id="@+id/base_more_options"
+			android:focusable="false"
+			android:layout_width="25dp"
+			android:layout_height="24dp"
+			android:src="@drawable/icon_arrow_drop_down_sharp"
+			android:scaleType="fitCenter" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/base_event_options_layout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:visibility="gone">
+		<LinearLayout
+			android:id="@+id/base_reset_option"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:padding="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<ImageView
+				android:id="@+id/base_reset_icon"
+				android:focusable="false"
+				android:layout_width="20dp"
+				android:layout_height="23dp"
+				android:src="@drawable/icon_restart_alt_sharp"
+				android:scaleType="fitCenter" />
+			<TextView
+				android:id="@+id/base_event_reset_text"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Reset"
+				android:textSize="14sp"
+				android:textColor="@color/textColor" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/base_delete_option"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:padding="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<ImageView
+				android:id="@+id/base_event_delete_icon"
+				android:focusable="false"
+				android:layout_width="20dp"
+				android:layout_height="23dp"
+				android:src="@drawable/icon_delete_sharp"
+				android:scaleType="fitCenter" />
+			<TextView
+				android:id="@+id/base_event_delete_text"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Delete"
+				android:textSize="14sp"
+				android:textColor="#F44336" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,60 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp"
+	android:background="@drawable/dialog_background_base">
+	<TextView
+		android:id="@+id/dialog_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="8dp"
+		android:textSize="18sp"
+		android:textStyle="bold"
+		android:textColor="#000000"
+		android:focusable="false" />
+	<TextView
+		android:id="@+id/dialog_description"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:textSize="14sp"
+		android:textColor="#000000"
+		android:focusable="false" />
+	<EditText
+		android:id="@+id/field_name_input"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:textSize="12sp"
+		android:textColor="@color/textColor"
+		android:hint="Enter field name (e.g., myIntent)"
+		android:textColorHint="#607D8B"
+		android:focusable="false" />
+	<LinearLayout
+		android:id="@+id/linear2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="16dp"
+		android:orientation="horizontal">
+		<Button
+			android:id="@+id/doc_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Documentation"
+			android:textSize="12sp"
+			android:textColor="#FFFFFF"
+			android:layout_weight="1" />
+		<Button
+			android:id="@+id/add_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Add Component"
+			android:textSize="12sp"
+			android:textColor="#FFFFFF"
+			android:layout_weight="1" />
+	</LinearLayout>
+</LinearLayout>

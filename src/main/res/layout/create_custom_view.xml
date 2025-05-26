@@ -1,0 +1,84 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="300dp"
+	android:layout_height="wrap_content"
+	android:background="#EDEDED"
+	android:orientation="vertical"
+	android:padding="20dp"
+	android:layout_gravity="center">
+	<LinearLayout
+		android:id="@+id/linear6"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<TextView
+			android:id="@+id/textview7"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="+"
+			android:textSize="18sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/textview8"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="3dp"
+			android:text="New custom view"
+			android:textSize="18sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:focusable="false"
+			android:layout_marginStart="5dp" />
+	</LinearLayout>
+	<TextView
+		android:id="@+id/textview9"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="15dp"
+		android:text="Custom View can be used to change the way items are displayed inside the ListView or the Spinner"
+		android:textSize="14sp"
+		android:textColor="#FFF333"
+		android:focusable="false" />
+	<EditText
+		android:id="@+id/edittext3"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
+		android:padding="10dp"
+		android:textSize="14sp"
+		android:textColor="#000000"
+		android:hint="Enter view name"
+		android:textColorHint="#607D8B"
+		android:focusable="false" />
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="end">
+		<Button
+			android:id="@+id/button5"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:background="#EDEDED"
+			android:text="Cancel"
+			android:textSize="14sp"
+			android:textColor="#007BFF" />
+		<Button
+			android:id="@+id/button6"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:background="#EDEDED"
+			android:text="Add"
+			android:textSize="14sp"
+			android:textColor="#007BFF"
+			android:layout_marginStart="10dp" />
+	</LinearLayout>
+</LinearLayout>

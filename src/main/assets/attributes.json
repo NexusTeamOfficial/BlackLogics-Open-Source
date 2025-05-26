@@ -1,0 +1,251 @@
+{
+  "android.widget.LinearLayout": [
+    {
+      "member_type": "method",
+      "name": "Gravity",
+      "attribute_name": "android:gravity",
+      "member_name": "setGravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Orientation",
+      "attribute_name": "android:orientation",
+      "member_name": "setOrientation",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.LinearLayout$HORIZONTAL",
+        "android.widget.LinearLayout$VERTICAL"
+      ],
+      "xml_arguments": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Weight Sum",
+      "attribute_name": "android: weightSum",
+      "member_name": "setWeightSum",
+      "argument_type": "float"
+    }
+  ],
+  "android.widget.TextView": [
+    {
+      "member_type": "method",
+      "name": "Text",
+      "attribute_name": "android:text",
+      "member_name": "setText",
+      "argument_type": "String"
+    },
+    {
+      "member_type": "method",
+      "name": "Text Size",
+      "attribute_name": "android:textSize",
+      "member_name": "setTextSize",
+      "argument_type": "float",
+      "dimension": "sp"
+    },
+    {
+      "member_type": "method",
+      "name": "Text Color",
+      "attribute_name": "android:textColor",
+      "member_name": "setTextColor",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "name": "Gravity",
+      "attribute_name": "android:gravity",
+      "member_name": "setGravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    }
+  ],
+  "android.widget.CompoundButton": [
+    {
+      "member_type": "method",
+      "name": "Set Checked",
+      "attribute_name": "android:checked",
+      "member_name": "setChecked",
+      "argument_type": "boolean"
+    }
+  ],
+  "android.widget.ImageView": [
+    {
+      "member_type": "method",
+      "name": "Image",
+      "attribute_name": "android:src",
+      "member_name": "setImageDrawable",
+      "argument_type": "Drawable"
+    },
+    {
+      "member_type": "method",
+      "name": "Set Tint",
+      "attribute_name": "android:tint",
+      "member_name": "setColorFilter",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "java_arguments": [
+        "android.widget.ImageView$ScaleType$MATRIX",
+        "android.widget.ImageView$ScaleType$FIT_XY",
+        "android.widget.ImageView$ScaleType$FIT_START",
+        "android.widget.ImageView$ScaleType$FIT_CENTER",
+        "android.widget.ImageView$ScaleType$FIT_END",
+        "android.widget.ImageView$ScaleType$CENTER",
+        "android.widget.ImageView$ScaleType$CENTER_CROP",
+        "android.widget.ImageView$ScaleType$CENTER_INSIDE"
+      ],
+      "xml_arguments": [
+        "matrix",
+        "fitXY",
+        "fitStart",
+        "fitCenter",
+        "fitEnd",
+        "center",
+        "centerCrop",
+        "centerInside"
+      ],
+      "name": "Scale Type",
+      "attribute_name": "android:scaleType",
+      "argument_class": "android.widget.ImageView$ScaleType$",
+      "member_name": "setScaleType",
+      "argument_type": "enum"
+    }
+  ],
+  "android.view.View": [
+    {
+      "member_type": "field",
+      "name": "Height",
+      "attribute_name": "android:layout_height",
+      "layout_params": true,
+      "member_name": "height",
+      "argument_type": "Size"
+    },
+    {
+      "member_type": "field",
+      "name": "Width",
+      "attribute_name": "android:layout_width",
+      "layout_params": true,
+      "member_name": "width",
+      "argument_type": "Size"
+    },
+    {
+      "member_type": "method",
+      "name": "Background Color",
+      "attribute_name": "android:background",
+      "member_name": "setBackgroundColor",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "name": "Elevation",
+      "attribute_name": "android:elevation",
+      "member_name": "setElevation",
+      "argument_type": "float",
+      "dp": true,
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Alpha",
+      "attribute_name": "android:alpha",
+      "member_name": "setAlpha",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Translation Y",
+      "attribute_name": "android:transitionY",
+      "member_name": "setTranslationY",
+      "argument_type": "float",
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Translation X",
+      "attribute_name": "android:transitionX",
+      "member_name": "setTranslationX",
+      "argument_type": "float",
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Scale X",
+      "attribute_name": "android:scaleX",
+      "member_name": "setScaleX",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Scale Y",
+      "attribute_name": "android:scaleY",
+      "member_name": "setScaleY",
+      "argument_type": "float"
+    }
+  ],
+  "android.widget.EditText": [
+    {
+      "member_type": "method",
+      "name": "Hint",
+      "attribute_name": "android:hint",
+      "member_name": "setHint",
+      "argument_type": "String"
+    }
+  ],
+  "com.google.android.material.appbar.CollapsingToolbarLayout": [
+    {
+      "member_type": "method",
+      "name": "app:title",
+      "attribute_name": "app:title",
+      "member_name": "setTitle",
+      "argument_type": "String"
+    }
+	],
+  "android.widget.ScrollView": [
+    {
+      "member_type": "method",
+      "name": "FillViewport",
+      "attribute_name": "android:fillViewport",
+      "member_name": "setFillViewport",
+      "argument_type": "boolean"
+    }
+  ]
+}

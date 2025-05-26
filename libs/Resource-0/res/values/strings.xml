@@ -1,0 +1,1022 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="abc_action_bar_home_description">Navigate home</string>
+<string name="abc_action_bar_home_description_format">%1$s, %2$s</string>
+<string name="abc_action_bar_home_subtitle_description_format">%1$s, %2$s, %3$s</string>
+<string name="abc_action_bar_up_description">Navigate up</string>
+<string name="abc_action_menu_overflow_description">More options</string>
+<string name="abc_action_mode_done">Done</string>
+<string name="abc_activity_chooser_view_see_all">See all</string>
+<string name="abc_activitychooserview_choose_application">Choose an app</string>
+<string name="abc_capital_off">OFF</string>
+<string name="abc_capital_on">ON</string>
+<string name="abc_search_hint">Search…</string>
+<string name="abc_searchview_description_clear">Clear query</string>
+<string name="abc_searchview_description_query">Search query</string>
+<string name="abc_searchview_description_search">Search</string>
+<string name="abc_searchview_description_submit">Submit query</string>
+<string name="abc_searchview_description_voice">Voice search</string>
+<string name="abc_shareactionprovider_share_with">Share with</string>
+<string name="abc_shareactionprovider_share_with_application">Share with %s</string>
+<string name="abc_toolbar_collapse_description">Collapse</string>
+<string name="common_google_play_services_enable_button">Enable</string>
+<string name="common_google_play_services_enable_text">"%1$s won't work unless you enable Google Play services."</string>
+<string name="common_google_play_services_enable_title">Enable Google Play services</string>
+<string name="common_google_play_services_install_button">Install</string>
+<string name="common_google_play_services_install_text_phone">"%1$s won't run without Google Play services, which are missing from your phone."</string>
+<string name="common_google_play_services_install_text_tablet">"%1$s won't run without Google Play services, which are missing from your tablet."</string>
+<string name="common_google_play_services_install_title">Get Google Play services</string>
+<string name="common_google_play_services_notification_ticker">Google Play services error</string>
+<string name="common_google_play_services_unknown_issue">%1$s is having trouble with Google Play services. If the problem persists, please contact the developer for assistance.</string>
+<string name="common_google_play_services_unsupported_text">%1$s relies on Google Play services, which is not supported by your device. Contact the manufacturer for assistance.</string>
+<string name="common_google_play_services_unsupported_title">Google Play services</string>
+<string name="common_google_play_services_update_button">Update</string>
+<string name="common_google_play_services_update_text">"%1$s won't run unless you update Google Play services."</string>
+<string name="common_google_play_services_update_title">Update Google Play services</string>
+<string name="common_google_play_services_updating_text">"%1$s won't run without Google Play services, which are currently updating."</string>
+<string name="common_google_play_services_updating_title">Google Play services are updating</string>
+<string name="common_google_play_services_wear_update_text">New version of Google Play services needed. It will update itself shortly.</string>
+<string name="common_open_on_phone">Open on phone</string>
+<string name="common_signin_button_text">Sign in</string>
+<string name="common_signin_button_text_long">Sign in with Google</string>
+<string name="messenger_send_button_text">Send</string>
+<string name="search_menu_title">Search</string>
+<string name="status_bar_notification_info_overflow">999+</string>
+<string name="com_facebook_image_download_unknown_error">Unexpected error while downloading an image.</string>
+<string name="com_facebook_internet_permission_error_message">WebView login requires INTERNET permission</string>
+<string name="com_facebook_internet_permission_error_title">AndroidManifest Error</string>
+<string name="com_facebook_loading">Loading...</string>
+<string name="com_facebook_loginview_cancel_action">Cancel</string>
+<string name="com_facebook_loginview_log_in_button">Log in</string>
+<string name="com_facebook_loginview_log_out_action">Log out</string>
+<string name="com_facebook_loginview_log_out_button">Log out</string>
+<string name="com_facebook_loginview_logged_in_as">Logged in as: %1$s</string>
+<string name="com_facebook_loginview_logged_in_using_facebook">Logged in using Facebook</string>
+<string name="besome_blog_url">http://medium.com/sketchware/all</string>
+<string name="block_add_list_int" formatted="false">add %d to %m.listInt</string>
+<string name="block_add_list_str" formatted="false">add %s to %m.listStr</string>
+<string name="block_and" formatted="false">%b and %b</string>
+<string name="block_bigger" formatted="false">%d > %d</string>
+<string name="block_break">stop</string>
+<string name="block_calendar_add" formatted="false">Calendar %m.calendar add %m.calendarField value %d</string>
+<string name="block_calendar_diff" formatted="false">Calendar Difference %m.calendar - %m.calendar</string>
+<string name="block_calendar_format" formatted="false">Calendar %m.calendar Format %s</string>
+<string name="block_calendar_get_now">Calendar %m.calendar getNow</string>
+<string name="block_calendar_set" formatted="false">Calendar %m.calendar set %m.calendarField value %d</string>
+<string name="block_clear_list">clear %m.list</string>
+<string name="block_contain_list_int" formatted="false">%m.listInt contains %d</string>
+<string name="block_contain_list_str" formatted="false">%m.listStr contains %s</string>
+<string name="block_decrease_int">%m.varInt decrease 1</string>
+<string name="block_delete_list" formatted="false">delete at %d of %m.list</string>
+<string name="block_divide" formatted="false">%d / %d</string>
+<string name="block_do_toast">showMessage %s</string>
+<string name="block_else">else</string>
+<string name="block_equal" formatted="false">%d = %d</string>
+<string name="block_false">false</string>
+<string name="block_file_get_data" formatted="false">File %m.file getData key %s</string>
+<string name="block_file_remove_data" formatted="false">File %m.file removeData key %s</string>
+<string name="block_file_set_data" formatted="false">File %m.file setData key %s value %s</string>
+<string name="block_finish_activity">Finish Activity</string>
+<string name="block_forever">forever</string>
+<string name="block_get_at_list_int" formatted="false">get at %d of %m.listInt</string>
+<string name="block_get_at_list_str" formatted="false">get at %d of %m.listStr</string>
+<string name="block_get_checked">CheckBox %m.checkbox getChecked</string>
+<string name="block_get_enable">%m.view getEnable</string>
+<string name="block_get_rotate">ImageView %m.imageview getRotation</string>
+<string name="block_get_text">%m.textview getText</string>
+<string name="block_if">if %b then</string>
+<string name="block_if_else">if %b then</string>
+<string name="block_increase_int">%m.varInt increase 1</string>
+<string name="block_indexof_list_int" formatted="false">index %d in %m.listInt</string>
+<string name="block_indexof_list_str" formatted="false">index %s in %m.listStr</string>
+<string name="block_insert_list_int" formatted="false">insert %d at %d to %m.listInt</string>
+<string name="block_insert_list_str" formatted="false">insert %s at %d to %m.listStr</string>
+<string name="block_intent_get_string">Activity getExtra key %s</string>
+<string name="block_intent_put_extra" formatted="false">Intent %m.intent putExtra key %s value %s</string>
+<string name="block_intent_set_action" formatted="false">Intent %m.intent setAction %m.intentAction</string>
+<string name="block_intent_set_data" formatted="false">Intent %m.intent setData %s.intentData</string>
+<string name="block_intent_set_screen" formatted="false">Intent %m.intent setScreen %m.activity</string>
+<string name="block_length_list">length of %m.list</string>
+<string name="block_list_get_checked_count">ListView %m.listview getCheckedCount</string>
+<string name="block_list_get_checked_position">ListView %m.listview getCheckedPosition</string>
+<string name="block_list_get_checked_positions" formatted="false">ListView %m.listview getCheckedPositions to %m.listInt</string>
+<string name="block_list_refresh">ListView %m.listview refreshData</string>
+<string name="block_list_set_data" formatted="false">ListView %m.listview setListViewData %m.listStr</string>
+<string name="block_list_set_item_checked" formatted="false">ListView %m.listview setItemChecked pos %d value %b</string>
+<string name="block_minus" formatted="false">%d - %d</string>
+<string name="block_not">not %b</string>
+<string name="block_or" formatted="false">%b or %b</string>
+<string name="block_plus" formatted="false">%d + %d</string>
+<string name="block_random" formatted="false">pick random %d to %d</string>
+<string name="block_repeat">repeat %d</string>
+<string name="block_rest" formatted="false">%d % %d</string>
+<string name="block_set_bg_color" formatted="false">%m.view setBackgroundColor %m.color</string>
+<string name="block_set_checked" formatted="false">CheckBox %m.checkbox setChecked %b</string>
+<string name="block_set_clickable" formatted="false">%m.view setClickable %b</string>
+<string name="block_set_enable" formatted="false">%m.view setEnable %b</string>
+<string name="block_set_image" formatted="false">ImageView %m.imageview setImage %m.resource</string>
+<string name="block_set_rotate" formatted="false">ImageView %m.imageview setRotation %d</string>
+<string name="block_set_text" formatted="false">%m.textview setText %s</string>
+<string name="block_set_text_color" formatted="false">%m.textview setTextColor %m.color</string>
+<string name="block_set_var_bool" formatted="false">set %m.varBool to %b</string>
+<string name="block_set_var_int" formatted="false">set %m.varInt to %d</string>
+<string name="block_set_var_str" formatted="false">set %m.varStr to %s</string>
+<string name="block_set_visible" formatted="false">%m.view setVisible %m.visible</string>
+<string name="block_smaller" formatted="false">%d &lt; %d</string>
+<string name="block_spn_get_selection">Spinner %m.spinner getSelection</string>
+<string name="block_spn_refresh">Spinner %m.spinner refreshData</string>
+<string name="block_spn_set_data" formatted="false">Spinner %m.spinner setSpinnerData %m.listStr</string>
+<string name="block_spn_set_selection" formatted="false">Spinner %m.spinner setSelection %d</string>
+<string name="block_start_activity">StartActivity %m.intent</string>
+<string name="block_string_equals" formatted="false">%s equals %s</string>
+<string name="block_string_index" formatted="false">index %s of %s</string>
+<string name="block_string_join" formatted="false">join %s and %s</string>
+<string name="block_string_length">length of %s</string>
+<string name="block_string_sub" formatted="false">%s substring %d to %d</string>
+<string name="block_times" formatted="false">%d * %d</string>
+<string name="block_to_lower_case">toLowerCase %s</string>
+<string name="block_to_number">toNumber %s</string>
+<string name="block_to_string">toString %d</string>
+<string name="block_to_upper_case">toUpperCase %s</string>
+<string name="block_trim">trim %s</string>
+<string name="block_true">true</string>
+<string name="block_vibrator_action" formatted="false">Vibrator %m.vibrator vibrate %d milliseconds</string>
+<string name="btn_accept">Save</string>
+<string name="btn_app_init">Reset system</string>
+<string name="btn_app_upgrade">Check Update</string>
+<string name="btn_cancel">Cancel</string>
+<string name="btn_change">Change</string>
+<string name="btn_delete">Delete</string>
+<string name="btn_delete_project">Delete Project</string>
+<string name="btn_download_apk">Install APK</string>
+<string name="btn_edit_alias">Change name</string>
+<string name="btn_edit_properties">Edit Properties</string>
+<string name="btn_edit_pwd">Change password</string>
+<string name="btn_execute">Run</string>
+<string name="btn_exit">Exit</string>
+<string name="btn_find_pwd">Find password</string>
+<string name="btn_init">Reset</string>
+<string name="btn_join">Register</string>
+<string name="btn_login_id">Log in</string>
+<string name="btn_logout">Log out</string>
+<string name="btn_open_project">Open Project</string>
+<string name="btn_opt_request">Request One Time Password</string>
+<string name="btn_otp_get">Request One Time Password</string>
+<string name="btn_register_pwd">Register Password</string>
+<string name="btn_save_as_new_project">Save as new project</string>
+<string name="btn_save_n_exit">Save &amp; Exit</string>
+<string name="btn_save_setting">Save</string>
+<string name="btn_service_out">Deactivate account</string>
+<string name="btn_term_oss">Open Source License</string>
+<string name="btn_term_view">Service terms</string>
+<string name="btn_update_project">Edit Project</string>
+<string name="btn_ws_save_server">Save project in server</string>
+<string name="common_cancel">Cancel</string>
+<string name="common_close">Close</string>
+<string name="common_copy">Copy</string>
+<string name="common_delete">Delete</string>
+<string name="common_export">Export</string>
+<string name="common_free">Free</string>
+<string name="common_loading">Now loading...</string>
+<string name="common_no">No</string>
+<string name="common_overwrite">Overwrite</string>
+<string name="common_save">Save</string>
+<string name="common_see_all">See More</string>
+<string name="common_see_close">Collapse</string>
+<string name="common_share">Share</string>
+<string name="common_start">Start</string>
+<string name="common_yes">Yes</string>
+<string name="company_email">help@besome.co.kr</string>
+<string name="company_name">BESOME</string>
+<string name="company_tel">+82.70.8780.5456</string>
+<string name="company_url">http://www.besome.co.kr</string>
+<string name="complete_app_init">All of data was initialized</string>
+<string name="complete_copy">Copy complete</string>
+<string name="complete_copy_to_clipboard">Copied to clipboard</string>
+<string name="complete_delete_component">Delete complete</string>
+<string name="complete_delete_moreblock">Delete complete</string>
+<string name="complete_edit">Updated</string>
+<string name="complete_init_logic">Reset complete</string>
+<string name="complete_opt_send">One Time Password was sent</string>
+<string name="complete_purchase_ok">%s purchase was completed</string>
+<string name="complete_pwd_init_ok">Password was changed</string>
+<string name="complete_save">Save complete</string>
+<string name="complete_save_server">"Current data has been uploaded successfully
+Visit our homepage if you want to download"</string>
+<string name="complete_share">Share complete</string>
+<string name="complete_share_cancel_thumbup">Unliked</string>
+<string name="complete_share_comment">Commented</string>
+<string name="complete_share_delete_comment">Deleted Comment</string>
+<string name="complete_share_delete_project">Deleted Project</string>
+<string name="complete_share_thumbup">Liked</string>
+<string name="complete_widget_pty_init_ok">Widget settings was reset</string>
+<string name="confirm_app_exit">Are you sure you want to exit?</string>
+<string name="confirm_app_icon_default">Are you sure you want to reset the icon?</string>
+<string name="confirm_app_init">"All projects will be resetted.
+Do you want to continue?"</string>
+<string name="confirm_delete">Are you sure you want to delete?</string>
+<string name="confirm_delete_component">Are you sure you want to delete the selected component?</string>
+<string name="confirm_delete_event">"All logic data of the selected event will be lost
+Do you want to continue?"</string>
+<string name="confirm_delete_moreblock">Are you sure you want to delete this moreBlock?</string>
+<string name="confirm_err_send">"An error occurred while running application.
+Do you want to send this error log?"</string>
+<string name="confirm_import_hint_view">"You will lose all current data.
+Are you sure you want to import?"</string>
+<string name="confirm_init_logic">Are you sure you want to reset this logic?</string>
+<string name="confirm_logout">Are you sure you want to log out?</string>
+<string name="confirm_mysc_exit">Do you want to save your changes before quitting?</string>
+<string name="confirm_mysc_ws_export">Are you sure you want to export?</string>
+<string name="confirm_mysc_ws_save">"If you have saved data, it will be overwritten.
+Do you want to continue?"</string>
+<string name="confirm_pre_step_sc">These projects are recommended before you start this project</string>
+<string name="confirm_sc_app_exist">The package name already exists in your phone. Delete and restart.</string>
+<string name="confirm_sc_reinstall">The application is already installed. Do you want to reinstall?</string>
+<string name="confirm_service_out">"All information will be lost.
+Do you want to continue?"</string>
+<string name="confirm_share_delete_comment">Are you sure?</string>
+<string name="confirm_share_delete_shared_project">"Are you sure? You can't undo this action"</string>
+<string name="confirm_share_overwirte_project">A project with the same name already exists; overwrite?</string>
+<string name="confirm_video_tutorial">Would you like to watch the tutorial?(about 6 minutes)</string>
+<string name="confirm_widget_pty_all">Are you sure you want to reset all widget properties?</string>
+<string name="desc_activity_name">Activity Name :</string>
+<string name="desc_apk_name_guide">This name will be the name of the APK file</string>
+<string name="desc_app">This is Beta Version!!</string>
+<string name="desc_app_exit">Press back key one more time to exit</string>
+<string name="desc_arrived_notice">New notice</string>
+<string name="desc_ask_show">"Don't show again"</string>
+<string name="desc_auto_check_notice">Automatically check new noticec from the server</string>
+<string name="desc_auto_login_disable">Automatic login disabled</string>
+<string name="desc_auto_login_enable">Automatic login enabled</string>
+<string name="desc_bl_activity_getextra_s">"&lt;h5>Get the data from Intent&lt;/h5>
+*Only the value saved by Intent PutExtra block can be retrieved&lt;br/>
+*Get the empty string() when the key does not exist&lt;br/>
+*You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_and">&lt;H5>Joins two conditions&lt;/h5></string>
+<string name="desc_bl_bool_var">&lt;H5>Sets the specified variable to the condition&lt;/h5></string>
+<string name="desc_bl_cal_addvalue">"&lt;h5>Adds the given amount of time to the Calendar field&lt;/h5>
+*Positive Value : adds time&lt;br/>
+*Negative Value : subtracts time&lt;br/>
+*You need to add 'Calendar' from [Component] to use this"</string>
+<string name="desc_bl_cal_difference">"&lt;h5>Get the differences between the given calendars (time)&lt;/h5>
+Unit : Seconds&lt;br/>
+*You need to add 'Calendar' from [Component] to use this
+"</string>
+<string name="desc_bl_cal_format">"&lt;h5>Formats the Calendar as a string using the pattern &lt;/h5>
+Year(y) | Month(m) | Day(d)&lt;br/>
+Hour(h) 1~12 | Hour(H) 0~23 | Minute(M) | Second(s)&lt;br/>
+Ex : yyyy-MM-dd hh:mm:ss ( 2106-01-01 03:01:02 )&lt;br/>
+Ex : yyyy-MM-dd HH:mm:ss ( 2106-01-01 15:01:02 )&lt;br/>
+Ex : yyyy-MM-dd ( 2106-01-01 )&lt;br/>
+Ex : hh:mm:ss ( 12:01:02 )&lt;br/>
+*A run-time error if the given string format is invalid&lt;br/>
+*You need to add 'Calendar' from [Component] to use this
+"</string>
+<string name="desc_bl_cal_getnow">"&lt;h5>Get the current date and time&lt;/h5>
+*You need to add 'Calendar' from [Component] to use this
+"</string>
+<string name="desc_bl_cal_setvalue">"&lt;h5>Sets the Calendar field to a specific value&lt;/h5>
+*You need to add 'Calendar' from [Component] to use this
+"</string>
+<string name="desc_bl_chk_get_checked">"&lt;h5>Get the status of a checkbox&lt;/h5>
+True if checked, else false"</string>
+<string name="desc_bl_chk_set_checked">"&lt;h5>Set the status of a checkbox&lt;/h5>
+Checked if set true, else unchecked"</string>
+<string name="desc_bl_delete_memo">&lt;H5>&lt;/h5></string>
+<string name="desc_bl_equals">&lt;H5>The condition for checking if two strings are equal&lt;/h5></string>
+<string name="desc_bl_false">&lt;H5>False condition&lt;/h5></string>
+<string name="desc_bl_file_get_data">"&lt;h5>Retrieve a value from the preference file&lt;/h5>
+The value saved by File SetData block can be retrieved&lt;br/>
+*You need to add 'File(Shared Preference)' from [Component] to use this
+"</string>
+<string name="desc_bl_file_remove_data">&lt;h5>remove file data with the following key&lt;/h5></string>
+<string name="desc_bl_file_set_data">"&lt;h5>Set a value in the preference file&lt;/h5>
+*Application can have multiple files and a file can have multiple values&lt;br/>
+*the keys in the file must be unique. If same key is used several times, only the latest saved value is accessible &lt;br/>
+*format - key : value&lt;br/>
+Ex) key : new_memo , value : hello&lt;br/>
+*You need to add 'File(Shared Preference)' from [Component] to use this
+"</string>
+<string name="desc_bl_finish_activity">&lt;h5>Finish the current Activity&lt;/h5></string>
+<string name="desc_bl_finish_memo">&lt;H5>&lt;/h5></string>
+<string name="desc_bl_forever">&lt;H5>A loop that will never end&lt;br/>* this must be used with stop block&lt;/h5></string>
+<string name="desc_bl_get_cur_time">"&lt;H5>Gets current time value
+* milliseconds since 1.1.1970&lt;/h5>"</string>
+<string name="desc_bl_get_enable">&lt;H5>the enabled status for the widget&lt;/h5></string>
+<string name="desc_bl_get_memo_title">&lt;H5>&lt;/h5></string>
+<string name="desc_bl_get_rotation">&lt;h5>Get the rotation of an ImageView&lt;/h5></string>
+<string name="desc_bl_get_text">&lt;H5>Get the text the widget is displaying&lt;/h5></string>
+<string name="desc_bl_if_else">"&lt;H5>Checks the condition - if the condition is true, the blocks inside the first C will activate,
+and if the condition is false, the blocks inside the second C will activate&lt;/h5>"</string>
+<string name="desc_bl_if_then">&lt;H5>Checks the condition - if the condition is true, the blocks inside it will activate&lt;/h5></string>
+<string name="desc_bl_init_logic">&lt;H5>When application is executed, the block activates&lt;/h5></string>
+<string name="desc_bl_int_decrease">&lt;h5>Decrement Value by 1&lt;/h5></string>
+<string name="desc_bl_int_increase">&lt;h5>Increment Value by 1&lt;/h5></string>
+<string name="desc_bl_int_set_to">&lt;H5>Sets the specified variable to the number&lt;/h5></string>
+<string name="desc_bl_int_var">&lt;H5>Number variable&lt;/h5></string>
+<string name="desc_bl_intent_putextra">"&lt;h5>Bind the data to Intent&lt;/h5>
+&lt;p>*Send to Activity with key : value format&lt;/p>&lt;br/>
+*Intent can have multiple keys and values&lt;br/>
+*You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_intent_set_action">"&lt;h5>Set the Intent action to be performed&lt;/h5>&lt;br/>
+Intent : a component for load a Activity(view)&lt;br/>
+-ACTION_CALL : Perform a call to someone specified by the data(permission:CALL_PHONE)&lt;br/>
+-ACTION_DIAL : Dial a number as specified by the data(no permission)&lt;br/>
+-ACTION_VIEW : Display the data to the user&lt;br/>
+*You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_intent_set_data">"&lt;h5>Set the data this Intent is operating on&lt;/h5>&lt;br/>
+-ACTION_CALL : must start with tel:&lt;br/>
+ (EX:tel:021111111)&lt;br/> -ACTION_DIAL : must start with tel:&lt;br/> (EX:tel:021111111)&lt;br/>
+-ACTION_VIEW : must follow URL form starting with http: or https:&lt;br/>
+ (EX: http://google.com)&lt;br/>
+
+ *A run-time error may occur if you don't follow the recommendation&lt;br/>
+ *You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_intent_set_screen">"&lt;h5>Set the Activity(View) to be performed&lt;/h5>
+*You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_invalid_1">&lt;h5>An index is either negative or greater than or equal to the size of the list&lt;/h5></string>
+<string name="desc_bl_invalid_2">&lt;h5>An integer cannot be divided by zero&lt;/h5></string>
+<string name="desc_bl_invalid_3">&lt;h5>An index is either negative or greater than the size of the string&lt;/h5></string>
+<string name="desc_bl_invalid_4">&lt;h5>Thrown to indicate that the application has attempted to convert a string to one of the numeric types&lt;/h5></string>
+<string name="desc_bl_invalid_5">&lt;h5>Unreachable statement or stop block outside repeat block or forever block&lt;/h5></string>
+<string name="desc_bl_invalid_6">&lt;h4>Occurred when parameters of Intent is invalid&lt;/h4</string>
+<string name="desc_bl_join">&lt;H5>The two values put right next to each other&lt;/h5></string>
+<string name="desc_bl_list_addto">&lt;H5>Adds an item to the list (the item goes at the bottom of the list of items) with the specified content in it&lt;/h5></string>
+<string name="desc_bl_list_clear">&lt;H5>Clears the list&lt;/h5></string>
+<string name="desc_bl_list_contains">"&lt;H5>The condition for checking if an item's content is the specified text&lt;/h5>"</string>
+<string name="desc_bl_list_delete_at_of">&lt;H5>Deletes the item off the list&lt;/h5></string>
+<string name="desc_bl_list_get_at_of">"&lt;H5>Gets the item's value&lt;/h5>"</string>
+<string name="desc_bl_list_index_in">&lt;H5>The position value of the item&lt;/h5></string>
+<string name="desc_bl_list_insert_at_to">&lt;H5>Adds an item to the list (the item goes where you specify in the list of items) with the specified content in it. &lt;/h5></string>
+<string name="desc_bl_list_lengthof">&lt;H5>How many items there are in the specified list&lt;/h5></string>
+<string name="desc_bl_lv_getchk_count">"&lt;h5>Get the number of selected ListView items&lt;/h5>
+Only Works when the ChoiceMode for the ListView is either single or multi
+"</string>
+<string name="desc_bl_lv_getchk_pos">"&lt;h5>Get the index of selected ListView item&lt;/h5>
+Only Works when the ChoiceMode for the ListView is either single or multi
+"</string>
+<string name="desc_bl_lv_getchk_pos_arr">"&lt;h5>Get an array of indices for the selected ListView items&lt;/h5>
+Only Works when the ChoiceMode for the ListView is either single or multi
+"</string>
+<string name="desc_bl_lv_refresh">"&lt;h5>Refresh ListView&lt;/h5>
+Refresh the ListView data
+"</string>
+<string name="desc_bl_lv_setitem_chk_pos">"&lt;h5>Select a ListView item at a given index&lt;/h5>
+Only Works when the ChoiceMode for the ListView is either single or multi&lt;br/>
+Setting an index greater than the number of items in the ListView will result in runtime error
+"</string>
+<string name="desc_bl_math_device_rest">&lt;H5>The remainder of the division&lt;/h5></string>
+<string name="desc_bl_math_divide">&lt;H5>The value of the division&lt;/h5></string>
+<string name="desc_bl_math_great">&lt;H5>The condition for checking if a value is greater than the other&lt;/h5></string>
+<string name="desc_bl_math_less">&lt;H5>The condition for checking if a value is less than the other&lt;/h5></string>
+<string name="desc_bl_math_math_equals">&lt;H5>The condition for checking if two values are equal&lt;/h5></string>
+<string name="desc_bl_math_minus">&lt;H5>The value of the subtraction&lt;/h5></string>
+<string name="desc_bl_math_multi">&lt;H5>The value of the multiplication&lt;/h5></string>
+<string name="desc_bl_math_plus">&lt;H5>The value of the addition&lt;/h5></string>
+<string name="desc_bl_not">&lt;H5>Makes the condition checked if it is false, not true&lt;/h5></string>
+<string name="desc_bl_open_memo">&lt;H5>&lt;/h5></string>
+<string name="desc_bl_or">&lt;H5>Joins two conditions, but they function separately&lt;/h5></string>
+<string name="desc_bl_pic_num">&lt;H5>Picks a random number between the two limits&lt;/h5></string>
+<string name="desc_bl_read_memo">&lt;H5>&lt;/h5></string>
+<string name="desc_bl_repeat">&lt;H5>A loop that repeats for the specified amount&lt;/h5></string>
+<string name="desc_bl_set_bg_color">&lt;H5>Sets the background color for the widget&lt;/h5></string>
+<string name="desc_bl_set_enable">&lt;H5>Sets the enabled state of the widget&lt;/h5></string>
+<string name="desc_bl_set_image">&lt;H5>Sets selected image as the content of the ImageView&lt;/h5></string>
+<string name="desc_bl_set_listview_data">"&lt;h5>Set ListView Data&lt;/h5>
+Setting the data for a ListView&lt;br/>
+Data Format: String"</string>
+<string name="desc_bl_set_rotation">&lt;h5>Set the rotation on an ImageView&lt;/h5></string>
+<string name="desc_bl_set_spn_data">"&lt;h5>Set Spinner Data&lt;/h5>&lt;br/>
+Set Spinner Data&lt;br/>
+Data Format: String"</string>
+<string name="desc_bl_set_text">&lt;H5>Sets the text of the widget&lt;/h5></string>
+<string name="desc_bl_set_text_color">&lt;H5>Sets the text color of the widget&lt;/h5></string>
+<string name="desc_bl_set_visible">"&lt;h5>Set the visibility of a widget&lt;/h5>
+Visibility Properties&lt;br/>
+- VISIBLE : This view is visible&lt;br/>
+- INVISIBLE : This view is invisible, but it still takes up space for layout purposes&lt;br/>
+- GONE : This view is invisible, and it doesn't take any space for layout purposes"</string>
+<string name="desc_bl_show_message">&lt;H5>Displays the text in notification popup&lt;/h5></string>
+<string name="desc_bl_spn_get_selection">"&lt;h5>Get the index of selected spinner item/h5>&lt;br/>
+Index starts from 0"</string>
+<string name="desc_bl_spn_refresh">"&lt;h5>Refresh Spinner&lt;/h5>
+Refresh List Item using Spinner
+"</string>
+<string name="desc_bl_spn_set_selection">"&lt;h5>Select a spinner item at a given index&lt;/h5>
+Setting an index greater than the number of items in the spinner will result in runtime error
+"</string>
+<string name="desc_bl_start_activity">"&lt;h5>Launch a new Activity by Intent&lt;/h5>
+*A run-time error may occur if the Intent parameters is invalid&lt;br/>
+*You need to add 'Intent' in [Component] to use this
+"</string>
+<string name="desc_bl_stop">&lt;H5>Stop the wrapped loop&lt;/h5></string>
+<string name="desc_bl_str_indexof">&lt;H5>The first index of the given string, or -1&lt;/h5></string>
+<string name="desc_bl_str_lengthof">&lt;H5>The length of the string&lt;/h5></string>
+<string name="desc_bl_str_set_to">&lt;H5>Sets the specified variable to the string&lt;/h5></string>
+<string name="desc_bl_str_var">&lt;H5>String variable&lt;/h5></string>
+<string name="desc_bl_substring">&lt;H5>A string containing the given subsequence of the string&lt;/h5></string>
+<string name="desc_bl_to_number">&lt;H5>Converts to number&lt;/h5></string>
+<string name="desc_bl_to_string">&lt;H5>Converts to string&lt;/h5></string>
+<string name="desc_bl_trim">&lt;h5>Returns a string with no spaces at the beginning or end&lt;/h5></string>
+<string name="desc_bl_true">&lt;H5>True condition&lt;/h5></string>
+<string name="desc_bl_vibrator">"&lt;h5>Vibrate for the set amount of time&lt;/h5>
+- Time Unit: millisecond&lt;br/>
+* You need to add 'Vibrator' from [Component] to use this
+"</string>
+<string name="desc_bl_write_memo">&lt;H5>&lt;/h5></string>
+<string name="desc_copy_block">Select a block you want to copy</string>
+<string name="desc_deprecated">*deprecated</string>
+<string name="desc_expired">"Service expired.
+%s"</string>
+<string name="desc_expired_date">Paid service : Until %s</string>
+<string name="desc_fail_find_pwd">"Password change failed
+Try again"</string>
+<string name="desc_fail_init_pwd">"Password registration failed
+Try again"</string>
+<string name="desc_fcm_comment_body">%s commented on your project</string>
+<string name="desc_fcm_like_body">%s liked your project</string>
+<string name="desc_free_during_beta">Available during beta</string>
+<string name="desc_google_connecting">Try connecting with %s</string>
+<string name="desc_google_login_auto_agree">(*)When you log in with sns account, you will automatically agree to the following terms</string>
+<string name="desc_ime_option">"It does not work when single_line is 'false' and input_type is 'text'"</string>
+<string name="desc_img_manage_guide">"If you add an image here
+ You can use it as an Icon or ImageView"</string>
+<string name="desc_initialize_complete">Reset complete</string>
+<string name="desc_initialize_current_project">Are you sure you want to reset current project?</string>
+<string name="desc_input_intent_data">"Please follow this examples.
+It makes runtime error if you don't.
+
+ACTION_CALL, ACTION_DIAL
+ tel:number (tel:12345678)
+
+ACTION_VIEW
+ url type (http://besome.co.kr)"</string>
+<string name="desc_invalid_block">Examples of invalid block</string>
+<string name="desc_kakao_intro">A new way to learn android programming</string>
+<string name="desc_keep_login">Remember me</string>
+<string name="desc_lang_set_en">Set language to English</string>
+<string name="desc_main_badge_update">"Show count of your's chapter on the launcher icon"</string>
+<string name="desc_mysc_auto_delete">Automatically delete and will be installed when you execute chapter</string>
+<string name="desc_mysc_auto_save">Automatically save when you exit from project</string>
+<string name="desc_need_login">You need to be logged in to use this feature</string>
+<string name="desc_need_user_alias">You need to create a username to use this feature</string>
+<string name="desc_no_share_project">No shared projects to display</string>
+<string name="desc_only_once_edit">* If you set a name, you can not change it until you restart</string>
+<string name="desc_purchase">Purchase</string>
+<string name="desc_purchase_empty">No purchased items</string>
+<string name="desc_push_guide">*You need to enable automatic login to use this feature</string>
+<string name="desc_ready_build">Getting ready to build</string>
+<string name="desc_rest_day">%d days</string>
+<string name="desc_sc_sort">Your projects will be moved to the bottom of the list</string>
+<string name="desc_screen_manage_guide">To create a new Activity, add it here</string>
+<string name="desc_screen_name">View Name :</string>
+<string name="desc_screen_rotation">Change screen orientation</string>
+<string name="desc_select_google_acc">Choose an account</string>
+<string name="desc_share_apk_name">APK Name</string>
+<string name="desc_share_app_name">App Name</string>
+<string name="desc_share_author_alias">Author</string>
+<string name="desc_share_desc">Description</string>
+<string name="desc_share_no_comment">No comments to display</string>
+<string name="desc_share_no_edit_project_file">Currently shared project</string>
+<string name="desc_share_pkg_name">Package Name</string>
+<string name="desc_share_proj_yn">Make this public</string>
+<string name="desc_share_project_info">Project Information</string>
+<string name="desc_share_reg_dt">Registered Date</string>
+<string name="desc_share_screen_shot">Screenshot</string>
+<string name="desc_share_select_my_project">Select my Projects</string>
+<string name="desc_share_select_shared_project">Select Shared Project</string>
+<string name="desc_share_title">Title</string>
+<string name="desc_share_update_dt">Last Updated</string>
+<string name="desc_show_more">See More</string>
+<string name="desc_sketchware_examples">Sketchware Examples</string>
+<string name="desc_src_text_size">Change font size</string>
+<string name="desc_status_logined">You are logged in</string>
+<string name="desc_sys_vibration">Vibrate when widget or block is long-pressed</string>
+<string name="desc_term_aggree">Agree to following terms</string>
+<string name="desc_term_agree">Service terms agreement</string>
+<string name="desc_unlimited_expired_date">Paid service : Unlimited</string>
+<string name="desc_unlimited_rest_day">Unlimited</string>
+<string name="desc_until_expire">Until expired date</string>
+<string name="desc_user_alias">Enter your name or nickname</string>
+<string name="desc_user_alias_guide">*This name will be shown to public</string>
+<string name="editarea">"Drop layouts, widgets
+on this area"</string>
+<string name="err_app_init_fail">Failed to initialize</string>
+<string name="err_auto_login_fail">Automatic login failed</string>
+<string name="err_break_outside">Break block can only be used inside the repeat or forever blocks</string>
+<string name="err_cannot_use_name">Username unavailable</string>
+<string name="err_choose_file">Choose music file</string>
+<string name="err_connect_to_server">Failed to connect to the server</string>
+<string name="err_currently_used_list">"Selected list is currently used
+Please try again after removing the blocks with this list"</string>
+<string name="err_currently_used_moreblock">"Selected block is currently used
+Please try again after removing the block(s)"</string>
+<string name="err_currently_used_variable">"Selected variable is currently used
+Please try again after removing the blocks with this variable"</string>
+<string name="err_failure_loading_data">Failed to load data</string>
+<string name="err_failure_save_picture">"Failed to save!
+Check your disk space"</string>
+<string name="err_incorrect_pwd">Incorrect password</string>
+<string name="err_invalid_mail_format">Invalid e-mail address</string>
+<string name="err_join_exist">Already registered</string>
+<string name="err_join_fail">Failed to register</string>
+<string name="err_login_fail">Failed to login</string>
+<string name="err_mysc_empty">Please select a project first</string>
+<string name="err_no_event_add">"No widgets are available for events.
+Add a widget in the VIEW tab"</string>
+<string name="err_no_exist_apk">"APK file was not created.
+Try again after running the project"</string>
+<string name="err_no_save_file">Files to save do not exist</string>
+<string name="err_no_user">User not found</string>
+<string name="err_noname_yet">No nickname created</string>
+<string name="err_not_available_network">Check your network status</string>
+<string name="err_occured">An error occurred!</string>
+<string name="err_opt_length">One Time Password is %d digits</string>
+<string name="err_pkg_name_contain_dot">Package name must contain at least one or more Dot(.) character</string>
+<string name="err_pkg_name_invalid">Invalid package name</string>
+<string name="err_project_name_invalid">Invalid project name</string>
+<string name="err_purchase_cancel">Purchase cancelled</string>
+<string name="err_purchase_fail">Purchase failed</string>
+<string name="err_pwd_init_fail">Failed to reset password</string>
+<string name="err_save_fail">Failed to save</string>
+<string name="err_save_fail_server">Failed to save in the server</string>
+<string name="err_save_file_not_exist">Files to save do not exist</string>
+<string name="err_sc_start_fail">Failed to start the project</string>
+<string name="err_sc_view_init_fail">Failed to initialize screen editing</string>
+<string name="err_sc_view_save_fail">Failed to initialize screen saving</string>
+<string name="err_send_fail_otp">Failed to send One Time Password</string>
+<string name="err_share_add_screenshot">Add Screenshots</string>
+<string name="err_share_already_delete_comment">This comment was already deleted</string>
+<string name="err_share_alreay_thumbup">You already liked this project</string>
+<string name="err_share_delete_comment">"Deleting comment failed
+Please try again later"</string>
+<string name="err_share_delete_project">"Deleting project failed
+Please try again later"</string>
+<string name="err_share_download_project">"Download failed
+Please try again later"</string>
+<string name="err_share_fail_cancel_thumbup">"Unlike failed 
+ Please try again later"</string>
+<string name="err_share_fail_comment">"Failed to comment 
+ Please try again later"</string>
+<string name="err_share_fail_load_comment">"Failed to load ocomments 
+ Please try again later"</string>
+<string name="err_share_fail_thumbup">"Like failed 
+ Please try again later"</string>
+<string name="err_share_no_thumbup">Like was not registered</string>
+<string name="err_start_number">The variable name must start with a letter</string>
+<string name="err_unknown_occured">Unknown error! Please contact the administrator</string>
+<string name="err_unreachable">Stop block does not exist in forever block</string>
+<string name="err_use_rev_name">"Can't use reserved keywords"</string>
+<string name="err_valid_already_used">Current name is unavailable</string>
+<string name="err_valid_app_name">"Special letters(&amp;, &lt;, >, \", ') are not allowed"</string>
+<string name="err_valid_max_len">You can use maximum %d letters</string>
+<string name="err_valid_min_len">Use at least %d letters</string>
+<string name="err_valid_only_eng_1">Only use letters(a-z), numbers and Special characters(.),(@)</string>
+<string name="err_valid_only_eng_2">Only use letters(a-z), numbers and Special characters(.)</string>
+<string name="err_valid_only_eng_3">Only use letters(a-z), numbers and Special characters(_)</string>
+<string name="err_valid_screen_name">Only use small letters(a-z), numbers and special character(_)</string>
+<string name="err_widget_pty_init_fail">Failed to initialize widgets</string>
+<string name="err_wrong_access">Unauthorized access</string>
+<string name="err_ws_name_min_length">Project name must be at least %d characters</string>
+<string name="facebook_app_id">1486507718310013</string>
+<string name="facebook_url">https://m.facebook.com/sketchware</string>
+<string name="googleplus_url">https://plus.google.com</string>
+<string name="hint_current_pwd">Enter current password</string>
+<string name="hint_enter_app_name">Enter application name</string>
+<string name="hint_enter_comment">Enter your comment</string>
+<string name="hint_enter_filename">Enter file name</string>
+<string name="hint_enter_icon_name">Enter icon name</string>
+<string name="hint_enter_image_name">Enter image name</string>
+<string name="hint_enter_pkg_name">Enter package name</string>
+<string name="hint_enter_screen_name">Enter View name</string>
+<string name="hint_enter_user_alias">Enter your name or nickname</string>
+<string name="hint_enter_value">Enter value</string>
+<string name="hint_enter_var_name">Enter variable name(Case-sensitive)</string>
+<string name="hint_enter_ws_name">Enter project name</string>
+<string name="hint_init_pwd">Enter your password</string>
+<string name="hint_login_id">Enter your ID</string>
+<string name="hint_login_pwd">Enter your password</string>
+<string name="hint_new_pwd">Enter new password</string>
+<string name="hint_onemore_pwd">Enter password one more</string>
+<string name="hint_opt_received">Enter the One Time Password number you received</string>
+<string name="hint_otp_receive_mail">E-mail address to receive One Time Password</string>
+<string name="hint_select_image">"Touch this area
+And select an image you want to add"</string>
+<string name="hint_share_desc">Explain about your application in a few sentences</string>
+<string name="hint_share_title">This will be the title for the post</string>
+<string name="img_divider">Divider</string>
+<string name="layouts">Layouts</string>
+<string name="logic_btn_add_list">Add list</string>
+<string name="logic_btn_add_variable">Add variable</string>
+<string name="logic_btn_make_block">Make block</string>
+<string name="logic_btn_remove_list">Remove list</string>
+<string name="logic_btn_remove_variable">Remove variable</string>
+<string name="logic_category_controls">Controls</string>
+<string name="logic_category_functions">Functions</string>
+<string name="logic_category_lists">Lists</string>
+<string name="logic_category_more_blocks">More Blocks</string>
+<string name="logic_category_operators">Operators</string>
+<string name="logic_category_variables">Variables</string>
+<string name="logic_event_definefunc">defineFunction</string>
+<string name="logic_event_initialize">initializeLogic</string>
+<string name="logic_event_oncheckchanged">onCheckChanged</string>
+<string name="logic_event_onclick">onClick</string>
+<string name="logic_event_onitemclicked">onItemClicked</string>
+<string name="logic_event_onitemselected">onItemSelected</string>
+<string name="logic_event_ontextchanged">onTextChanged</string>
+<string name="logic_popup_btn_boolean">ADD BOOLEAN</string>
+<string name="logic_popup_btn_label">ADD LABEL</string>
+<string name="logic_popup_btn_number">ADD NUMBER</string>
+<string name="logic_popup_btn_string">ADD STRING</string>
+<string name="logic_popup_desc_list_name">List name</string>
+<string name="logic_popup_desc_list_type">List type</string>
+<string name="logic_popup_desc_variable_name">Variable name</string>
+<string name="logic_popup_desc_variable_type">Variable type</string>
+<string name="logic_popup_hint_block_name">Enter new block name</string>
+<string name="logic_popup_hint_boolean">Enter a boolean name</string>
+<string name="logic_popup_hint_label">Enter a label text</string>
+<string name="logic_popup_hint_number">Enter a number name</string>
+<string name="logic_popup_hint_string">Enter a string name</string>
+<string name="logic_popup_title_add_list">Add new list</string>
+<string name="logic_popup_title_add_variable">Add new variable</string>
+<string name="logic_popup_title_make_block">Make new block</string>
+<string name="logic_popup_title_remove_list">Remove a list</string>
+<string name="logic_popup_title_remove_variable">Remove a variable</string>
+<string name="menu_account">Account Settings</string>
+<string name="menu_export_ws">Export(E-mail,etc)</string>
+<string name="menu_import_hint_all">Import from Hint</string>
+<string name="menu_import_hint_view">Import View from Hint</string>
+<string name="menu_kakao">KAKAO TALK</string>
+<string name="menu_main_feature">Main Feature</string>
+<string name="menu_order_list">Purchase List</string>
+<string name="menu_program_info">Program information</string>
+<string name="menu_save_ws">Export to website</string>
+<string name="menu_sc_widget_help">Widget Helper</string>
+<string name="menu_setting">Settings</string>
+<string name="menu_show_hint">Hint</string>
+<string name="menu_show_source">Show Source code</string>
+<string name="menu_study_setting">Project Detail</string>
+<string name="menu_system_info">System Information</string>
+<string name="menu_system_setting">System Settings</string>
+<string name="menu_tutorials">Tutorials</string>
+<string name="properties">Properties</string>
+<string name="property_alpha">alpha</string>
+<string name="property_background_color">background_color</string>
+<string name="property_checked">checked</string>
+<string name="property_choice_mode">choiceMode</string>
+<string name="property_clickable">clickable</string>
+<string name="property_divider_height">dividerHeight</string>
+<string name="property_enabled">enabled</string>
+<string name="property_gravity">gravity</string>
+<string name="property_header_image">Image Properties</string>
+<string name="property_header_layout">Layout Properties</string>
+<string name="property_header_text">Text Properties</string>
+<string name="property_header_view">View Properties</string>
+<string name="property_hint">hint</string>
+<string name="property_hint_color">hint_color</string>
+<string name="property_id">ID</string>
+<string name="property_image">image</string>
+<string name="property_ime_option">ime_option</string>
+<string name="property_input_type">input_type</string>
+<string name="property_layout_gravity">layout_gravity</string>
+<string name="property_layout_height">layout_height</string>
+<string name="property_layout_width">layout_width</string>
+<string name="property_margin">margin</string>
+<string name="property_orientation">orientation</string>
+<string name="property_padding">padding</string>
+<string name="property_resource">resource</string>
+<string name="property_rotate">rotate</string>
+<string name="property_scale_type">scale_type</string>
+<string name="property_single_line">single_line</string>
+<string name="property_spinner_mode">spinnerMode</string>
+<string name="property_text">text</string>
+<string name="property_text_color">text_color</string>
+<string name="property_text_size">text_size</string>
+<string name="property_text_style">text_style</string>
+<string name="property_weight">weight</string>
+<string name="property_weight_sum">weightSum</string>
+<string name="root_spec_define">Define</string>
+<string name="root_spec_initialize">When initializeLogic</string>
+<string name="root_spec_oncheckchanged">checkChanged %b.isChecked</string>
+<string name="root_spec_onclicked">clicked</string>
+<string name="root_spec_onitemclicked">itemClicked %d.position</string>
+<string name="root_spec_onitemselected">itemSelected %d.position</string>
+<string name="root_spec_ontextchanged">textChanged %s.text</string>
+<string name="root_spec_when">When</string>
+<string name="sc_desc_101">Create an application that outputs an input string</string>
+<string name="sc_desc_102">Create a rock.paper.scissors game</string>
+<string name="sc_desc_103">Create a Baseball - Bulls and Cows game</string>
+<string name="sc_desc_104">Create a simple calculator</string>
+<string name="sc_desc_105">Create a memo application</string>
+<string name="sc_desc_106">You can make a source code to be linked specific URL</string>
+<string name="sc_desc_107">Create a clicking speed test application</string>
+<string name="sc_desc_108">Create a match pairs memory game</string>
+<string name="sc_desc_109">Create an application that gets current time</string>
+<string name="sc_desc_110">Create a phone call application</string>
+<string name="sc_desc_111">Create a web browser application</string>
+<string name="sc_desc_112">Create a guessing game</string>
+<string name="sc_desc_113">Create a simple dice application</string>
+<string name="sc_desc_114">Create a Lotto simulator</string>
+<string name="sc_feature_101">"Use a widget that takes a user input
+Add a function to a button
+Show a message box (Toast)"</string>
+<string name="sc_feature_102">"Select rock, paper, or scissors
+A.I. also chooses rock, paper, or scissors
+Compare and decide who won"</string>
+<string name="sc_feature_103">"Select a random 3-digit number
+Digits must be all different
+You can delete one digit at a time
+Decide strike(Bulls) or ball(Cows)
+    * strike(Bulls) if you guess the right digit in right position
+    * ball(Cows) if the digit you guessed in different positions
+    * example : Random Number - 123, Your Guess: 132
+    * output : 1 strike, 2 ball
+Record your attempts
+Continue until you guess the correct number"</string>
+<string name="sc_feature_104">"Arithmetic operations (+, -, x, /)
+Don't allow divisions by zero
+"</string>
+<string name="sc_feature_105">"Save title and message
+Show the saved list of memos
+Edit the saved memo
+Delete the saved memo
+Start a new activity for Memo Editor
+"</string>
+<string name="sc_feature_106">"Set specific URL
+Implement slide menu
+You can use a Calling function
+Implement back to the top"</string>
+<string name="sc_feature_107">"Place random numbers
+Check the clicking sequence
+Disable clicked numbers
+Show the time taken"</string>
+<string name="sc_feature_108">"Place pictures in random positions
+Display hidden images on start
+If two selected pictures are the same, then display them; otherwise, hide them
+Stop when all pictures are displayed
+"</string>
+<string name="sc_feature_109">"Add a calendar component
+Set date format
+"</string>
+<string name="sc_feature_110">"Implement calling function
+Only allow integers
+"</string>
+<string name="sc_feature_111">"Take an input URL string
+Open the browser using Intent
+"</string>
+<string name="sc_feature_112">"Generate a random number between 0 to 9
+Compare the input number to the random number
+Notify the input number is bigger or less than the random number
+"</string>
+<string name="sc_feature_113">"Generate a random number between 1 and 6
+"</string>
+<string name="sc_feature_114">"Generate a random number between 1 and 45 each time a button is clicked
+Duplicate numbers are not allowed
+"</string>
+<string name="sc_name_101">Message box</string>
+<string name="sc_name_102">Rock.Paper.Scissors</string>
+<string name="sc_name_103">BaseBall - BullsAndCows</string>
+<string name="sc_name_104">Calculator</string>
+<string name="sc_name_105">Memo</string>
+<string name="sc_name_106">HybridWeb</string>
+<string name="sc_name_107">Clicking speed test</string>
+<string name="sc_name_108">Match pairs</string>
+<string name="sc_name_109">GetTime</string>
+<string name="sc_name_110">Family call</string>
+<string name="sc_name_111">Web broswer</string>
+<string name="sc_name_112">Who am I ?</string>
+<string name="sc_name_113">Dice</string>
+<string name="sc_name_114">Lotto</string>
+<string name="sc_tag_101">\# Widget | Event</string>
+<string name="sc_tag_102">\# Comparison | Random</string>
+<string name="sc_tag_103">\# Character | Duplicate</string>
+<string name="sc_tag_104">\# Arithmetic operation | Data types</string>
+<string name="sc_tag_105">\# File | Activity</string>
+<string name="sc_tag_106">\# Widget | Web</string>
+<string name="sc_tag_107">\# Random | Duplicate | Sequence</string>
+<string name="sc_tag_108">\# Random | Duplicate | Image</string>
+<string name="sc_tag_109">\# Widget | Time</string>
+<string name="sc_tag_110">\# Intent | Calling</string>
+<string name="sc_tag_111">\# Intent | URL</string>
+<string name="sc_tag_112">\# Random | Comparison</string>
+<string name="sc_tag_113">\# Random | Image</string>
+<string name="sc_tag_114">\# Random | Duplicate</string>
+<string name="title_account_manage">Account Settings</string>
+<string name="title_add_component">Add new component</string>
+<string name="title_add_event">Add new event</string>
+<string name="title_add_image">Add Image</string>
+<string name="title_add_review">Write a Review</string>
+<string name="title_add_screen">Add View</string>
+<string name="title_android_ver">Android version</string>
+<string name="title_apk_send_email">Send Install file(APK)</string>
+<string name="title_apk_send_email_subject">%s APK file for installation</string>
+<string name="title_apk_send_email_text">attached file : %s</string>
+<string name="title_app_exit">Exit from this application</string>
+<string name="title_app_icon_default">Reset Icon</string>
+<string name="title_app_init">Reset</string>
+<string name="title_app_init_all">Reset all settings and data</string>
+<string name="title_app_init_only_config">Reset all settings</string>
+<string name="title_app_name">App Name</string>
+<string name="title_besome_blog">Blog</string>
+<string name="title_bl_activity">ACTIVITY</string>
+<string name="title_bl_arith">ARITHMETIC</string>
+<string name="title_bl_bool">BOOLEAN</string>
+<string name="title_bl_cate_all">All</string>
+<string name="title_bl_cate_control">Control</string>
+<string name="title_bl_cate_function">Function</string>
+<string name="title_bl_cate_list">List</string>
+<string name="title_bl_cate_moreblock">More Block</string>
+<string name="title_bl_cate_operator">Operator</string>
+<string name="title_bl_cate_var">Variable</string>
+<string name="title_bl_check">CHECK</string>
+<string name="title_bl_color">COLOR</string>
+<string name="title_bl_compare">COMPARE</string>
+<string name="title_bl_condition">CONDITION CHECK</string>
+<string name="title_bl_cut">CUT</string>
+<string name="title_bl_data_exchange">EXCHAGE DATA</string>
+<string name="title_bl_delete">DELETE</string>
+<string name="title_bl_escape">ESCAPE</string>
+<string name="title_bl_index">INDEX</string>
+<string name="title_bl_init">START</string>
+<string name="title_bl_join">JOIN</string>
+<string name="title_bl_length">LENGTH</string>
+<string name="title_bl_loop">LOOP</string>
+<string name="title_bl_property">PROPERTY</string>
+<string name="title_bl_provide">PROVIDED</string>
+<string name="title_bl_random">RANDOM</string>
+<string name="title_bl_rotate">ROTATION</string>
+<string name="title_bl_set_read">READ SETTING</string>
+<string name="title_bl_set_write">WRITE SETTING</string>
+<string name="title_bl_storage">STORAGE</string>
+<string name="title_bl_time">TIME</string>
+<string name="title_bl_type_cast">TYPE CAST</string>
+<string name="title_bl_update">UPDATE</string>
+<string name="title_bl_var">VARIABLE</string>
+<string name="title_block_copy">Copy blocks</string>
+<string name="title_block_err">Block Error</string>
+<string name="title_block_helper">Block Helper</string>
+<string name="title_block_paste">Paste copied blocks</string>
+<string name="title_block_search_option">Search option</string>
+<string name="title_cancel">Cancel</string>
+<string name="title_choose_email">Choose email</string>
+<string name="title_community">Social Network</string>
+<string name="title_company_addr">Address</string>
+<string name="title_company_email">E-mail</string>
+<string name="title_company_intro">Company Description</string>
+<string name="title_company_name">Company Name</string>
+<string name="title_company_tel">Telephone</string>
+<string name="title_company_url">Website</string>
+<string name="title_component_menu">Component menu</string>
+<string name="title_component_name">Component name</string>
+<string name="title_component_type">Component type</string>
+<string name="title_components">Components</string>
+<string name="title_custom_mode">New Project</string>
+<string name="title_delete_component">Delete Component</string>
+<string name="title_delete_event">Delete Event</string>
+<string name="title_delete_moreblock">Delete moreBlock</string>
+<string name="title_dev_options">Developer options</string>
+<string name="title_edit_profile">Edit Profile</string>
+<string name="title_events">Events</string>
+<string name="title_execute_view">Result</string>
+<string name="title_expired">Paid service expired</string>
+<string name="title_facebook_community">Facebook</string>
+<string name="title_favorite_share_project">Popular Projects</string>
+<string name="title_fcm_title_comment">Comment</string>
+<string name="title_fcm_title_like">Like</string>
+<string name="title_file_name">File name</string>
+<string name="title_fullscreen">Fullscreen mode</string>
+<string name="title_google_community">Google Plus</string>
+<string name="title_import_hint_view">Import from hint</string>
+<string name="title_import_icon">Import Icon</string>
+<string name="title_init_logic">Initialize logic</string>
+<string name="title_initialize_current_project">Reset current project</string>
+<string name="title_logic_anwser">Hint</string>
+<string name="title_logic_menu">Logic Menu</string>
+<string name="title_made_tech">Implementation Features</string>
+<string name="title_main_badge_update">Show count of current project</string>
+<string name="title_manage_image">Image Manager</string>
+<string name="title_manage_screen">View Manager</string>
+<string name="title_member_join">Register</string>
+<string name="title_model_name">Model name</string>
+<string name="title_my_page">My Page</string>
+<string name="title_my_share_project">My Shared Projects</string>
+<string name="title_mysc_auto_delete">Automatically delete and execute</string>
+<string name="title_mysc_auto_save">Automatically save</string>
+<string name="title_mysc_block">Useful blocks in this project</string>
+<string name="title_mysc_delete">Delete Project</string>
+<string name="title_mysc_exit">Exit from this project</string>
+<string name="title_mysc_lang_set">Language Settings</string>
+<string name="title_mysc_menu">Project Options</string>
+<string name="title_notice_list">Notices</string>
+<string name="title_notice_options">Setting of notice check</string>
+<string name="title_order_name">Item name</string>
+<string name="title_order_no">Order No.</string>
+<string name="title_order_time">Order time</string>
+<string name="title_package_name">Package</string>
+<string name="title_popup_input_data_value">Enter data value</string>
+<string name="title_popup_input_int_value">Enter integer value</string>
+<string name="title_popup_input_str_value">Enter string value</string>
+<string name="title_popup_select_activity">Select activity</string>
+<string name="title_popup_select_bool_list">Select boolean list</string>
+<string name="title_popup_select_bool_var">Select boolean variable</string>
+<string name="title_popup_select_calendar_component">Select calendar component</string>
+<string name="title_popup_select_calendar_field">Select calendar field</string>
+<string name="title_popup_select_checkbox">Select Checkbox</string>
+<string name="title_popup_select_file_component">Select file component</string>
+<string name="title_popup_select_image">Select image</string>
+<string name="title_popup_select_imageview">Select ImageView</string>
+<string name="title_popup_select_int_list">Select integer list</string>
+<string name="title_popup_select_int_var">Select integer variable</string>
+<string name="title_popup_select_intent_action">Select intent action</string>
+<string name="title_popup_select_intent_component">Select intent component</string>
+<string name="title_popup_select_list">Select list</string>
+<string name="title_popup_select_listview">Select ListView</string>
+<string name="title_popup_select_spinner">Select Spinner</string>
+<string name="title_popup_select_str_list">Select string list</string>
+<string name="title_popup_select_str_var">Select string variable</string>
+<string name="title_popup_select_textview">Select TextView</string>
+<string name="title_popup_select_vibrator_component">Select vibrator component</string>
+<string name="title_popup_select_view">Select widget</string>
+<string name="title_popup_select_visibility">Select visibility</string>
+<string name="title_purchase">Purchase</string>
+<string name="title_purchase_complete">Purchased:</string>
+<string name="title_push_enable">Use Push Notification</string>
+<string name="title_push_sound">Enable Alerts</string>
+<string name="title_pwd_init">Reset Password</string>
+<string name="title_recent_share_project">New Projects</string>
+<string name="title_sample_download">Download</string>
+<string name="title_sc_app_delete">Delete Application</string>
+<string name="title_sc_before_start">Recommended Pre-requesite</string>
+<string name="title_sc_desc">Project Details</string>
+<string name="title_sc_export">Export to E-mail</string>
+<string name="title_sc_level">Level</string>
+<string name="title_sc_major">Description</string>
+<string name="title_sc_name">Project name</string>
+<string name="title_sc_pre_like">Recommended Pre-requesite</string>
+<string name="title_sc_price">Price</string>
+<string name="title_sc_reinstall">Re-install app</string>
+<string name="title_sc_send_email_subject">%s send</string>
+<string name="title_sc_send_email_text">attached file : %s</string>
+<string name="title_sc_sort">Sort list</string>
+<string name="title_sc_upload">Export to www.besome.co.kr</string>
+<string name="title_select_order_type">Purchase Options</string>
+<string name="title_service_out">Deactivate Account</string>
+<string name="title_service_range">Service Period</string>
+<string name="title_setting_project">Project Settings</string>
+<string name="title_share_delete_comment">Delete Comment</string>
+<string name="title_share_delete_shared_project">Delete Shared Project</string>
+<string name="title_share_project">Share Project</string>
+<string name="title_share_project_detail">Project Detail</string>
+<string name="title_shared_app">Share with Friends</string>
+<string name="title_shared_subject">SKETCHWARE - android development made simple</string>
+<string name="title_sketchware">SKETCHWARE</string>
+<string name="title_slogan">Imagine. Create</string>
+<string name="title_start">Start</string>
+<string name="title_sys_vibration">Setting vibration</string>
+<string name="title_system_dpi">DPI</string>
+<string name="title_system_resolution">System resolution</string>
+<string name="title_type_boolean">Boolean</string>
+<string name="title_type_integer">Integer</string>
+<string name="title_type_string">String</string>
+<string name="title_video_tutorial">Video Tutorial</string>
+<string name="title_view_tutorial">VIEW Editor Tutorial</string>
+<string name="title_widget_major">Widgets</string>
+<string name="title_widget_pty_init">Reset widget settings</string>
+<string name="title_widget_select">Select widget</string>
+<string name="title_workspace_name">Project</string>
+<string name="tv_menu">Menu</string>
+<string name="widgets">Widgets</string>
+<string name="abc_font_family_body_1_material">sans-serif</string>
+<string name="abc_font_family_body_2_material">sans-serif-medium</string>
+<string name="abc_font_family_button_material">sans-serif-medium</string>
+<string name="abc_font_family_caption_material">sans-serif</string>
+<string name="abc_font_family_display_1_material">sans-serif</string>
+<string name="abc_font_family_display_2_material">sans-serif</string>
+<string name="abc_font_family_display_3_material">sans-serif</string>
+<string name="abc_font_family_display_4_material">sans-serif-light</string>
+<string name="abc_font_family_headline_material">sans-serif</string>
+<string name="abc_font_family_menu_material">sans-serif</string>
+<string name="abc_font_family_subhead_material">sans-serif</string>
+<string name="abc_font_family_title_material">sans-serif-medium</string>
+<string name="bottom_sheet_behavior">android.support.design.widget.BottomSheetBehavior</string>
+<string name="character_counter_pattern">%1$d / %2$d</string>
+<string name="com_facebook_like_button_liked">Liked</string>
+<string name="com_facebook_like_button_not_liked">Like</string>
+<string name="com_facebook_loginview_log_in_button_long">Log in with Facebook</string>
+<string name="com_facebook_send_button_text">Send</string>
+<string name="com_facebook_share_button_text">Share</string>
+<string name="com_facebook_tooltip_default">"New! You're in control - choose what info you want to share with apps."</string>
+<string name="default_web_client_id">539401594864-chmbirvfd4hlokmkmjt1k5g24vspe10m.apps.googleusercontent.com</string>
+<string name="firebase_database_url">https://dependable-flag-825.firebaseio.com</string>
+<string name="ga_trackingId">UA-80718117-1</string>
+<string name="gcm_defaultSenderId">539401594864</string>
+<string name="google_api_key">AIzaSyBv696FDTPStkyYTGrW26Hb209wM2d6h_Q</string>
+<string name="google_app_id">1:539401594864:android:19f04706c42794de</string>
+<string name="google_crash_reporting_api_key">AIzaSyBv696FDTPStkyYTGrW26Hb209wM2d6h_Q</string>
+<string name="google_storage_bucket">dependable-flag-825.appspot.com</string>
+</resources>

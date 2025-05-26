@@ -1,0 +1,59 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/custom_dialog_bg"
+	android:orientation="horizontal"
+	android:layout_margin="5dp"
+	android:padding="16dp">
+	<RelativeLayout
+		android:id="@+id/relativelayout4"
+		android:layout_width="40dp"
+		android:layout_height="60dp"
+		android:layout_marginEnd="12dp">
+		<ImageView
+			android:id="@+id/preview"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:src="@drawable/activity_0001"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/edit_icon"
+			android:layout_width="16dp"
+			android:layout_height="16dp"
+			android:padding="2dp"
+			android:src="@drawable/default_image"
+			android:scaleType="fitCenter"
+			android:focusable="false"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentEnd="true" />
+	</RelativeLayout>
+	<LinearLayout
+		android:id="@+id/linear10"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_gravity="center_vertical"
+		android:layout_weight="1">
+		<TextView
+			android:id="@+id/layout_name"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="main.xml"
+			android:textSize="18sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/layout_class"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="MainActivity.java"
+			android:textSize="14sp"
+			android:textColor="#666666"
+			android:focusable="false" />
+	</LinearLayout>
+</LinearLayout>

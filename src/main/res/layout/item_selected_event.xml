@@ -1,0 +1,26 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:padding="8dp">
+	<TextView
+		android:id="@+id/tv_selected_widget"
+		android:focusable="false"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:textSize="14sp"
+		android:textStyle="bold"
+		android:textColor="@color/textColor"
+		android:layout_weight="1" />
+	<TextView
+		android:id="@+id/tv_selected_event"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="14sp"
+		android:textColor="#6200EA"
+		android:layout_marginStart="8dp" />
+</LinearLayout>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Prevent this file from being deleted -->
+    <style name="pleaseDontDeleteThisFile" parent="Theme.Material3.DayNight.NoActionBar" />
+
+    <!-- Base application theme -->
+      <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Light Theme Color Definitions -->
+        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+        <item name="colorOnError">@color/md_theme_light_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+        <item name="colorError">@color/md_theme_light_error</item>
+        <item name="colorOutline">@color/md_theme_light_outline</item>
+        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_light_secondary</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+
+        <!-- Light Theme Specific Status Bar -->
+        <item name="android:statusBarColor">@color/md_theme_light_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/md_theme_light_background</item>
+    </style>
+
+    <!-- Dark Theme -->
+    <style name="AppTheme_Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Dark Theme Color Definitions -->
+        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
+        <item name="colorOnError">@color/md_theme_dark_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
+        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
+        <item name="colorError">@color/md_theme_dark_error</item>
+        <item name="colorOutline">@color/md_theme_dark_outline</item>
+        <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
+        <item name="android:colorBackground">@color/md_theme_dark_background</item>
+        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
+        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
+        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
+        <item name="colorSurface">@color/md_theme_dark_surface</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
+        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
+        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
+        <item name="colorPrimary">@color/md_theme_dark_primary</item>
+        <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+
+        <!-- Dark Theme Specific Status Bar -->
+        <item name="android:statusBarColor">@color/md_theme_dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/md_theme_dark_background</item>
+    </style>
+
+    <!-- Button Style -->
+    <style name="ButtonStyle">
+        <item name="android:background">@color/buttonColor</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- TextView Style -->
+    <style name="TextViewStyle">
+        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Divider Style -->
+    <style name="DividerStyle">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">@color/divider</item>
+    </style>
+
+    <!-- Status Bar Color -->
+    <style name="StatusBarStyle">
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+    </style>
+
+    <!-- TabLayout Text Style -->
+    <style name="TabLayoutTextStyle">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <!-- Custom Action Bar Style -->
+    <style name="CustomActionBarStyle">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:titleTextColor">@android:color/white</item>
+    </style>
+
+    <!-- Custom Dialog Style -->
+    <style name="CustomDialog" parent="@style/Base.Theme.AppCompat.Light.Dialog.FixedSize">
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowClipToOutline">false</item>
+        <item name="android:statusBarColor">@android:color/black</item>
+    </style>
+
+    <!-- Custom Dialog Theme -->
+    <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:layout_width">match_parent</item> <!-- Use match_parent or wrap_content -->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <!-- Collapsing Toolbar Style -->
+    <style name="CustomCollapsingCollapsed">
+        <item name="android:textColor">@color/tool_bar_text_color</item>
+    </style>
+    
+     <style name="AppTheme.Et" parent="@style/AppTheme">
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="colorControlNormal">@android:color/transparent</item>
+        <item name="colorPrimary">#ff212121</item>
+        <item name="colorPrimaryDark">#ff000000</item>
+    </style>
+
+    <style name="AppTheme.Button.LightBlue" parent="@style/Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/color_btn_ltblue_normal</item>
+        <item name="colorControlHighlight">@color/color_btn_ltblue_highlight</item>
+        <item name="textAllCaps">false</item>
+    </style>
+    
+    <style name="AppTheme.Button.CoolGreen" parent="@style/Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">#ff34bc7e</item>
+        <item name="colorControlHighlight">@color/scolor_green_normal</item>
+    </style>
+
+    <!-- Toolbar Style -->
+    <style name="ToolbarTextAppearance">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+    
+      <style name="progress">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowSoftInputMode">adjustPan</item>
+    </style>
+    
+    <style name="MyTabTextAppearance" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">true</item>
+    </style>
+    
+    <style name="AboutPageTabLayout" parent="Base.Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MyTabTextAppearance</item>
+    </style>
+    
+      <style name="Base.TextAppearance.AppCompat.Button" parent="@android:style/TextAppearance.Material.Button" />
+      <style name="TextAppearance.AppCompat.Button" parent="@style/Base.TextAppearance.AppCompat.Button" />
+    
+    <!-- Light theme -->
+<style name="BlackDialogThemeLight" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+    <item name="colorPrimary">@android:color/black</item>
+    <item name="android:textColorPrimary">@android:color/white</item>
+</style>
+
+<!-- Dark theme -->
+<style name="BlackDialogThemeDark" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+    <item name="colorPrimary">@android:color/white</item>
+    <item name="android:textColorPrimary">@android:color/black</item>
+</style>
+
+<style name="CustomHeadline6" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">22sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">#212121</item>
+    </style>
+
+
+</resources>

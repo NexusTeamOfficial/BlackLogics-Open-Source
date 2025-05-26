@@ -1,0 +1,83 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp"
+	android:background="@android:color/white"
+	android:gravity="center_horizontal">
+	<LinearLayout
+		android:id="@+id/linear3"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/reset_icon"
+			android:focusable="false"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
+			android:src="@drawable/default_image"
+			android:scaleType="center" />
+		<TextView
+			android:id="@+id/textview2"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Reset"
+			android:textSize="18sp"
+			android:textStyle="bold"
+			android:textColor="@android:color/black"
+			android:layout_marginStart="8dp" />
+	</LinearLayout>
+	<RadioGroup
+		android:id="@+id/reset_radio_group"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:orientation="vertical">
+		<RadioButton
+			android:id="@+id/radio_reset_all_data"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Reset all settings and data"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+		<RadioButton
+			android:id="@+id/radio_reset_settings"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Reset all settings"
+			android:textSize="12sp"
+			android:checked="true"
+			android:textColor="@android:color/black" />
+	</RadioGroup>
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal"
+		android:gravity="end">
+		<Button
+			android:id="@+id/cancel_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textColor="@android:color/holo_blue_dark" />
+		<Button
+			android:id="@+id/yes_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:text="Yes"
+			android:textSize="12sp"
+			android:textColor="@android:color/holo_blue_dark"
+			android:layout_marginStart="16dp" />
+	</LinearLayout>
+</LinearLayout>

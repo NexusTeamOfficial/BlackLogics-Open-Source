@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+    <declare-styleable name="CustomTabLayout">
+        <attr name="tabMinWidth" format="dimension"/>
+        <attr name="tabPaddingStart" format="dimension"/>
+        <attr name="tabPaddingEnd" format="dimension"/>
+    </declare-styleable>
+    <declare-styleable name="WidgetFrameLayout">
+        <attr name="foreground" format="reference"/>
+        <attr name="foregroundGravity" format="integer"/>
+        <attr name="measureAllChildren" format="boolean"/>
+    </declare-styleable>
+</resources>

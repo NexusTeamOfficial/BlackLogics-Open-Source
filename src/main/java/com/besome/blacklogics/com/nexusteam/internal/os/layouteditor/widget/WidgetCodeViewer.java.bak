@@ -1,0 +1,150 @@
+package com.nexusteam.internal.os.layouteditor.widget;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
+import android.widget.TextView;
+import com.besome.blacklogics.R;
+import com.nexusteam.internal.os.layouteditor.util.WidgetUtil;
+
+import android.view.MotionEvent;
+import android.view.View;
+
+public class WidgetCodeViewer extends TextView implements WidgetContract {
+    private String mWidgetId;
+    private String mWidgetName;
+    private boolean isSelected = false;
+    private Paint widgetPaint = new Paint();
+    private float dragStartX, dragStartY;
+
+    public WidgetCodeViewer(Context context) {
+        this(context, null);
+    }
+
+    public WidgetCodeViewer(Context context, AttributeSet attrs) {
+        this(context, attrs, android.R.attr.textViewStyle);
+    }
+
+    public WidgetCodeViewer(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    //@Override
+    public void init() {
+      //  super.init();
+        setPadding(8, 8, 8, 8);
+        setTypeface(Typeface.MONOSPACE);
+        setTextSize(14);
+        setBackgroundColor(Color.DKGRAY);
+        setEnabled(false);
+        setOnTouchListener(new DragTouchListener());
+        setDummyCode();
+    }
+
+    private void setDummyCode() {
+        String[] lines = {
+            "class MyWidget {",
+            "    void render() {",
+            "        draw(text: \"Hello World\");",
+            "    }",
+            "}"
+        };
+        int[] colors = {Color.CYAN, Color.GREEN, Color.YELLOW, Color.GREEN, Color.CYAN};
+
+        SpannableStringBuilder builder = new SpannableStringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            int start = builder.length();
+            builder.append(line).append("\n");
+            builder.setSpan(new ForegroundColorSpan(colors[i]), start, start + line.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        setText(builder);
+    }
+
+    @Override
+    public void setWidgetId(String id) {
+        this.mWidgetId = id;
+    }
+
+    @Override
+    public String getWidgetId() {
+        return mWidgetId;
+    }
+
+    @Override
+    public void setWidgetName(String name) {
+        this.mWidgetName = name;
+    }
+
+    @Override
+    public String getWidgetName() {
+        return mWidgetName;
+    }
+
+    @Override
+    public Paint getWidgetPaint() {
+        return widgetPaint;
+    }
+
+    @Override
+    public void select() {
+        isSelected = true;
+        widgetPaint.setColor(getResources().getColor(R.color.widget_selection_color));
+        invalidate();
+    }
+
+    @Override
+    public void unselect() {
+        isSelected = false;
+        widgetPaint.setColor(0);
+        invalidate();
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (isSelected) {
+            canvas.drawRect(0, 0, getWidth(), getHeight(), widgetPaint);
+        }
+    }
+
+    public void setPosition(float x, float y) {
+        setX(x);
+        setY(y);
+        requestLayout();
+    }
+
+    @Override
+    public String newWidgetId() {
+        int i = 1;
+        while (WidgetUtil.isWidgetIdExist("codeviewer" + i)) {
+            i++;
+        }
+        return "codeviewer" + i;
+    }
+
+    private class DragTouchListener implements OnTouchListener {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    dragStartX = event.getRawX() - getX();
+                    dragStartY = event.getRawY() - getY();
+                    select();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    setPosition(event.getRawX() - dragStartX, event.getRawY() - dragStartY);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    return true;
+            }
+            return false;
+        }
+    }
+}

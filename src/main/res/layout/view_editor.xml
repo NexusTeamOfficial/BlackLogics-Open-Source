@@ -1,0 +1,187 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/lin_toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:background="#FFFFFF"
+		android:orientation="horizontal"
+		android:layout_gravity="center_vertical">
+		<ImageView
+			android:id="@+id/img_views"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_view_headline_black"
+			android:scaleType="fitXY"
+			android:focusable="false" />
+		<LinearLayout
+			android:id="@+id/linear9"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:orientation="horizontal"
+			android:layout_weight="1" />
+		<ImageView
+			android:id="@+id/img_import"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_get_app_black"
+			android:scaleType="center"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/img_copy"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_content_copy_black"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/img_add_image"
+			android:layout_width="35dp"
+			android:layout_height="35dp"
+			android:padding="5dp"
+			android:src="@drawable/ic_image_black"
+			android:scaleType="fitCenter"
+			android:layout_gravity="right"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/linear8"
+			android:layout_width="80dp"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+			<ImageView
+				android:id="@+id/img_add_view"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:layout_margin="3dp"
+				android:src="@drawable/ic_add_black"
+				android:scaleType="centerInside"
+				android:layout_gravity="center_horizontal"
+				android:focusable="false" />
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/listview_widgets"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:clipToPadding="true"
+				tools:listitem="@layout/views_item" />
+		</LinearLayout>
+		<View
+			android:id="@+id/view9"
+			android:layout_height="match_parent"
+			android:background="#DDDDDD"
+			android:layout_width="1.0dip" />
+		<LinearLayout
+			android:id="@+id/linear10"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+			<LinearLayout
+				android:id="@+id/linear13"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_vertical"
+				android:orientation="horizontal"
+				android:padding="2.0dip"
+				android:background="?colorPrimaryDark">
+				<TextView
+					android:id="@+id/tv_view_name"
+					android:layout_height="wrap_content"
+					android:textColor="@color/toolText"
+					android:singleLine="true"
+					android:layout_width="0.0dip"
+					android:layout_weight="1.0"
+					android:padding="2.0dip"
+					android:textSize="8.0sp"
+					android:focusable="false"
+					android:background="?colorPrimaryDark" />
+				<LinearLayout
+					android:id="@+id/linear14"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="center_vertical"
+					android:orientation="horizontal"
+					android:padding="1.0dip"
+					android:background="?colorPrimaryDark">
+					<ImageView
+						android:id="@+id/imageview4"
+						android:src="@drawable/ic_signal_wifi_statusbar_4_bar_white"
+						android:scaleType="fitCenter"
+						android:layout_width="16.0dip"
+						android:layout_height="16.0dip"
+						android:padding="1.0dip"
+						android:focusable="false"
+						android:background="?colorPrimaryDark" />
+					<ImageView
+						android:id="@+id/imageview5"
+						android:src="@drawable/ic_signal_cellular_4_bar_white"
+						android:scaleType="fitCenter"
+						android:layout_width="16.0dip"
+						android:layout_height="16.0dip"
+						android:padding="1.0dip"
+						android:focusable="false"
+						android:background="?colorPrimaryDark" />
+					<ImageView
+						android:id="@+id/imageview6"
+						android:src="@drawable/ic_battery_full_white"
+						android:scaleType="fitCenter"
+						android:layout_width="16.0dip"
+						android:layout_height="16.0dip"
+						android:padding="1.0dip"
+						android:focusable="false"
+						android:background="?colorPrimaryDark" />
+					<TextView
+						android:id="@+id/textview5"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="10:44"
+						android:textStyle="bold"
+						android:textColor="#FFFFFF"
+						android:padding="1.0dip"
+						android:textSize="10.0sp"
+						android:focusable="false"
+						android:background="?colorPrimaryDark" />
+				</LinearLayout>
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/phone_action_bar"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:padding="4.0dip"
+				android:background="?colorPrimary"
+				android:elevation="3dp">
+				<TextView
+					android:id="@+id/textview6"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="Toolbar"
+					android:textStyle="bold"
+					android:textColor="@color/toolText"
+					android:singleLine="true"
+					android:padding="4.0dip"
+					android:textSize="10.0sp"
+					android:focusable="false"
+					android:background="?colorPrimary" />
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/editorLayout"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="vertical" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

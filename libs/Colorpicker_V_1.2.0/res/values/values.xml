@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="default_colors">
+        <item>@color/color1</item>
+        <item>@color/color2</item>
+        <item>@color/color3</item>
+        <item>@color/color4</item>
+        <item>@color/color5</item>
+        <item>@color/color6</item>
+        <item>@color/color7</item>
+        <item>@color/color8</item>
+        <item>@color/color9</item>
+        <item>@color/color10</item>
+        <item>@color/color11</item>
+        <item>@color/color12</item>
+        <item>@color/color13</item>
+        <item>@color/color14</item>
+        <item>@color/color15</item>
+    </array>
+    <color name="arrow_color">#181717</color>
+    <color name="border_color">#181717</color>
+    <color name="color1">#f44236</color>
+    <color name="color10">#4cb050</color>
+    <color name="color11">#ff9700</color>
+    <color name="color12">#FFC000</color>
+    <color name="color13">#D2E41D</color>
+    <color name="color14">#fe5722</color>
+    <color name="color15">#795547</color>
+    <color name="color2">#ea1e63</color>
+    <color name="color3">#9a28b1</color>
+    <color name="color4">#683ab7</color>
+    <color name="color5">#2F4FE3</color>
+    <color name="color6">#2295f0</color>
+    <color name="color7">#04a8f5</color>
+    <color name="color8">#00bed2</color>
+    <color name="color9">#009788</color>
+    <color name="cursor_color">#A09F9F</color>
+    <color name="dividerColor">#B5A9A9</color>
+    <dimen name="alpha_view_height">220dp</dimen>
+    <dimen name="alpha_view_width">30dp</dimen>
+    <dimen name="arrow_padding">8dp</dimen>
+    <dimen name="colorpicker_margin_linearlayout">14dp</dimen>
+    <dimen name="colorpicker_padding_right_left">20dp</dimen>
+    <dimen name="colorpicker_padding_top_bottom">10dp</dimen>
+    <dimen name="colorpicker_spacing">10dp</dimen>
+    <dimen name="colorpicker_view_height">220dp</dimen>
+    <dimen name="colorpicker_view_width">220dp</dimen>
+    <dimen name="hue_view_height">220dp</dimen>
+    <dimen name="hue_view_width">30dp</dimen>
+    <dimen name="padding_color_palette">8dp</dimen>
+    <dimen name="palette_item_height">45dp</dimen>
+    <dimen name="palette_item_margin">6dp</dimen>
+    <dimen name="palette_item_radius">22.5dp</dimen>
+    <dimen name="palette_item_width">45dp</dimen>
+    <string name="dialog_negative_button_text">@android:string/cancel</string>
+    <string name="dialog_positive_button_text">@android:string/ok</string>
+    <string name="dialog_title">Choose Color</string>
+</resources>

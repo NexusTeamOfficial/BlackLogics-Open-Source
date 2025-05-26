@@ -1,0 +1,177 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@id/linear1"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginLeft="10dp"
+	android:layout_marginRight="10dp"
+	android:background="#ffffffff"
+	android:gravity="center"
+	android:orientation="vertical"
+	android:paddingTop="4dp"
+	android:paddingBottom="8dp">
+	<LinearLayout
+		android:id="@+id/linear6"
+		android:layout_width="match_parent"
+		android:layout_height="40dp"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<TextView
+			android:id="@+id/textview7"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Write lib dependency"
+			android:textSize="16sp"
+			android:textColor="#296CF7"
+			android:singleLine="true"
+			android:layout_weight="1"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear3"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="horizontal">
+		<ProgressBar
+			android:id="@+id/progressbar1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="4dp"
+			android:layout_marginBottom="4dp"
+			android:indeterminate="false"
+			style="?android:progressBarStyleHorizontal"
+			android:layout_weight="1"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="50dp"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="horizontal">
+		<EditText
+			android:id="@+id/edittext1"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:textSize="14sp"
+			android:textColor="#000000"
+			android:hint="Example: com.anjlab.android.iab.v3:library:1.0.44"
+			android:textColorHint="#607D8B"
+			android:singleLine="true" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp"
+		android:gravity="top"
+		android:orientation="horizontal">
+		<TextView
+			android:id="@+id/textview3"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:paddingTop="2dp"
+			android:paddingBottom="10dp"
+			android:gravity="left|top"
+			android:text="You can find the dependency of a library in Github, typically in the Readme file. However, please note that this is not Gradle system, so it won't download inner dependencies of a library. If the library you download has inner dependencies, you will need to download them seperately."
+			android:textSize="14sp"
+			android:textColor="#757575"
+			android:layout_weight="1"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear8"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/linear9"
+			android:layout_width="wrap_content"
+			android:layout_height="35dp"
+			android:layout_marginRight="2dp"
+			android:background="#296CF7"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/textview8"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="    Start    "
+				android:textSize="14sp"
+				android:textColor="#FFFFFF"
+				android:singleLine="true"
+				android:focusable="false" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear10"
+			android:layout_width="wrap_content"
+			android:layout_height="35dp"
+			android:layout_marginLeft="2dp"
+			android:layout_marginRight="2dp"
+			android:background="#296CF7"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/textview9"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="  Pause  "
+				android:textSize="14sp"
+				android:textColor="#FFFFFF"
+				android:singleLine="true"
+				android:focusable="false" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear11"
+			android:layout_width="wrap_content"
+			android:layout_height="35dp"
+			android:layout_marginLeft="2dp"
+			android:layout_marginRight="2dp"
+			android:background="#296CF7"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/textview10"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Resume"
+				android:textSize="14sp"
+				android:textColor="#FFFFFF"
+				android:singleLine="true"
+				android:focusable="false" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear12"
+			android:layout_width="wrap_content"
+			android:layout_height="35dp"
+			android:layout_marginLeft="2dp"
+			android:background="#296CF7"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/textview11"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="  Cancel  "
+				android:textSize="14sp"
+				android:textColor="#FFFFFF"
+				android:singleLine="true"
+				android:focusable="false" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

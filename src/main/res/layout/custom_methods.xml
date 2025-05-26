@@ -1,0 +1,80 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:background="#FFFFFF"
+		android:orientation="vertical">
+		<EditText
+			android:id="@+id/et_function_name"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:textSize="12sp"
+			android:textColor="#000000"
+			android:hint="Function name eg : setText"
+			android:textColorHint="#607D8B" />
+		<EditText
+			android:id="@+id/et_function_value"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:textSize="12sp"
+			android:textColor="#000000"
+			android:hint="Attribute value eg : 1 , 0.5 ,abc , #ffffff"
+			android:textColorHint="#607D8B" />
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:orientation="horizontal">
+			<CheckBox
+				android:id="@+id/cb_field"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="Field"
+				android:textSize="12sp"
+				android:textColor="#000000"
+				android:layout_weight="1" />
+			<CheckBox
+				android:id="@+id/cb_layout_params"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="LayoutParams"
+				android:textSize="12sp"
+				android:textColor="#000000"
+				android:layout_weight="1" />
+		</LinearLayout>
+		<Spinner
+			android:id="@+id/spinner"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:spinnerMode="dropdown" />
+		<Button
+			android:id="@+id/apply"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Apply"
+			android:textSize="12sp"
+			android:textColor="#000000"
+			android:layout_gravity="center_horizontal" />
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,59 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/rootLayout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".LibraryManagerActivity"
+	android:orientation="vertical"
+	android:background="@color/white">
+	<include layout="@layout/toolbar_improved" />
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/cardContainer"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="16dp"
+		app:cardBackgroundColor="@android:color/white"
+		app:cardElevation="2dp"
+		app:cardCornerRadius="8dp">
+		<LinearLayout
+			android:id="@+id/androidxEnable"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<com.google.android.material.imageview.ShapeableImageView
+				android:id="@+id/imageview1"
+				android:layout_width="35dp"
+				android:layout_height="35dp"
+				android:src="@drawable/icon_androidx"
+				app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent" />
+			<LinearLayout
+				android:id="@+id/linear4"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:orientation="vertical"
+				android:layout_weight="1">
+				<com.google.android.material.textview.MaterialTextView
+					android:id="@+id/textview2"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="4dp"
+					android:text="AppCompat and Design"
+					android:textSize="14sp"
+					android:textColor="@color/text_color" />
+				<com.google.android.material.textview.MaterialTextView
+					android:id="@+id/textview1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="2dp"
+					android:text="DrawerLayout, FloatingActionButton"
+					android:textSize="12sp"
+					android:textColor="@color/text_color" />
+			</LinearLayout>
+		</LinearLayout>
+	</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

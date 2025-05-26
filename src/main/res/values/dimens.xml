@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padding and Margins -->
+    <dimen name="control_panel_padding">4dp</dimen>
+    <dimen name="spinner_margin_start">8dp</dimen>
+    <dimen name="button_margin_end">8dp</dimen>
+    
+    <!-- Text Sizes -->
+    <dimen name="button_text_size">12sp</dimen>
+    <dimen name="tab_text_size">14sp</dimen>
+    
+    <!-- Component Sizes -->
+    <dimen name="tab_indicator_height">3dp</dimen>
+    <dimen name="tab_min_width">72dp</dimen>
+    
+    <dimen name="design_tab_text_size">14.0sp</dimen>
+    
+    <dimen name="action_bar_height">48.0dip</dimen>
+</resources>

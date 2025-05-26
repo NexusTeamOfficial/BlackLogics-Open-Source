@@ -1,0 +1,33 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<include layout="@layout/toolbar_improved" />
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fillViewport="true"
+		android:tag="err_vScroll">
+		<HorizontalScrollView
+			android:id="@+id/hscroll2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:tag="err_hScroll">
+			<TextView
+				android:id="@+id/tv_compile_log"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingLeft="8dp"
+				android:paddingRight="8dp"
+				android:paddingBottom="48dp"
+				android:textSize="11sp"
+				android:textColor="@color/textColor"
+				android:typeface="monospace" />
+		</HorizontalScrollView>
+	</ScrollView>
+</LinearLayout>
