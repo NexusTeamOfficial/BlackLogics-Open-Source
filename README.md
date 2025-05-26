@@ -1,8 +1,4 @@
-Sure bro! Yahaan poora `README.md` file hai **pure Markdown format** me — jisme **intro**, **full features**, **installation guide**, **open source license**, **credits**, aur **contribution section** bhi properly likha gaya hai.
 
----
-
-````markdown
 # BlackLogics
 
 **BlackLogics** is a powerful open-source alternative to Sketchware. It allows developers to build Android applications visually using drag-and-drop components while integrating advanced features like Firebase, Material Design 1.9, multimedia support, and custom Nexus-style UI.
@@ -145,5 +141,3 @@ DEALINGS IN THE SOFTWARE.
 ---
 
 > Made with dedication by **NexusTeam** & **SmartIndiaGaming**
-
-```
