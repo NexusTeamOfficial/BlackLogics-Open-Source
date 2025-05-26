@@ -101,7 +101,11 @@ We welcome all contributions to make BlackLogics even better!
 
 6. **Submit a Pull Request**
 
-All contributors will be listed in the `CONTRIBUTORS.md` file.
+## 🙌 Contributors
+
+See the full list of contributors here:  
+[View CONTRIBUTORS.md](CONTRIBUTORS.md)
+
 
 
 ## 📄 License
