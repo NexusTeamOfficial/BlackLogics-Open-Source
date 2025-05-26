@@ -7,6 +7,15 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
 
 ---
 
+## 📸 **Screenshots & Demo**  
+
+### **🚀 Interactive Block UI**  
+![Block UI](./s.png)  
+
+### **🔹 Custom Block Creation**  
+![Custom Block UI](./s1.png)  
+
+
 ## ✨ Features
 
 - **Visual Drag & Drop App Builder**  
