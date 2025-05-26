@@ -133,8 +133,6 @@ DEALINGS IN THE SOFTWARE.
 
 * **Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
 * **GitHub:** [github.com/NexusTeamOfficial/BlackLogics-Open-Source](github.com/NexusTeamOfficial/BlackLogics-Open-Source)
-* **Email:** [contact@blacklogics.dev](mailto:contact@blacklogics.dev) *(optional)*
-
 ---
 
 > Made with dedication by **NexusTeam** & **SmartIndiaGaming**
