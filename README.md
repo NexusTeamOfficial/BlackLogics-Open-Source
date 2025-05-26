@@ -62,8 +62,8 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/YourUsername/BlackLogics.git
-````
+   git clone https://github.com/NexusTeamOfficial/BlackLogics-Open-Source.git
+
 
 2. **Open in Android Studio** or import in **Sketchware Pro**
 
@@ -71,7 +71,6 @@ BlackLogics is built with a focus on performance, professional UI, and full cust
 
 4. **Run on your Android device or emulator**
 
----
 
 ## 👨‍💻 Contributing
 
@@ -87,7 +86,6 @@ We welcome all contributions to make BlackLogics even better!
 
 All contributors will be credited in the CONTRIBUTORS.md file.
 
----
 
 ## 🙌 Credits
 
@@ -102,7 +100,6 @@ All contributors will be credited in the CONTRIBUTORS.md file.
 
 *Full credit goes to NexusTeam & SmartIndiaGaming for their major contributions and support.*
 
----
 
 ## 📄 License
 
@@ -134,8 +131,8 @@ DEALINGS IN THE SOFTWARE.
 
 ## 🔗 Connect with Us
 
-* **Telegram:** [@BlackLogicsOfficial](https://t.me/BlackLogicsOfficial)
-* **GitHub:** [github.com/YourUsername/BlackLogics](https://github.com/YourUsername/BlackLogics)
+* **Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
+* **GitHub:** [github.com/NexusTeamOfficial/BlackLogics-Open-Source](github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 * **Email:** [contact@blacklogics.dev](mailto:contact@blacklogics.dev) *(optional)*
 
 ---
