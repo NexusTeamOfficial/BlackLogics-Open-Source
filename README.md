@@ -34,15 +34,23 @@
 
 ## 📸 Screenshots
 
-### **Main UI**
-![Main Screen](screenshots/s.png.png)
-
-### **Create Project**
-![Create Project](screenshots/s1.png.png)
-
-### **Design Activity**
-![Design Activity](screenshots/s3.png.png)
-
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/s.png.png" width="100%" height="auto"/><br/>
+      <sub>Main UI</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/s1.png.png" width="100%" height="auto"/><br/>
+      <sub>Create Project</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/s3.png.png" width="100%" height="auto"/><br/>
+      <sub>Design Activity</sub>
+    </td>
+  </tr>
+</table>
+  
 ### **Logic Editor**
 ![Logic Editor](screenshots/s4.png.png)
 
@@ -102,8 +110,6 @@ We welcome all contributions to make BlackLogics even better!
 6. **Submit a Pull Request**
 
 ## 🙌 Contributors
-
-# Contributors
 
 We thank all contributors who made BlackLogics possible.
 
