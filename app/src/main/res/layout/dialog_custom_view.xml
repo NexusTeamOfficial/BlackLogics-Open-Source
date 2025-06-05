@@ -12,33 +12,34 @@
 		android:padding="16dp"
 		android:orientation="vertical"
 		android:layout_centerInParent="true">
-		<LinearLayout
-			android:id="@+id/linear3"
+		<com.google.android.material.button.MaterialButtonToggleGroup
+			android:id="@+id/toggleGroup"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="horizontal">
-			<TextView
+			android:layout_height="40dp"
+			app:singleSelection="true"
+			app:selectionRequired="true">
+			<com.google.android.material.button.MaterialButton
 				android:id="@+id/tabView"
 				android:layout_width="0dp"
-				android:layout_height="40dp"
+				android:layout_height="match_parent"
 				android:gravity="center_horizontal|center_vertical"
 				android:text="View"
 				android:textSize="12sp"
 				android:textStyle="bold"
+				android:textColor="#000000"
 				android:layout_weight="1"
-				android:textColor="@android:color/white"
-				android:focusable="false" />
-			<TextView
+				style="?attr/materialButtonOutlinedStyle" />
+			<com.google.android.material.button.MaterialButton
 				android:id="@+id/tabCustomView"
 				android:layout_width="0dp"
-				android:layout_height="40dp"
+				android:layout_height="match_parent"
 				android:gravity="center_horizontal|center_vertical"
 				android:text="Custom View"
 				android:textSize="12sp"
-				android:textColor="@color/textColor"
+				android:textColor="#000000"
 				android:layout_weight="1"
-				android:focusable="false" />
-		</LinearLayout>
+				style="?attr/materialButtonOutlinedStyle" />
+		</com.google.android.material.button.MaterialButtonToggleGroup>
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/recyclerView"
 			android:layout_width="match_parent"

@@ -112,23 +112,26 @@ public class AndroidxBuiltInActivity extends AppCompatActivity {
 				@Override
 				public void onCheckedChanged(CompoundButton _param1, boolean _param2) {
 						final boolean _isChecked = _param2;
-						if (complex.getAndroidXEnable() && DesignActivity.complex.getAndroidXEnable()) {
+						if (complex.getAndroidXEnable()) {
 								new com.google.android.material.dialog.MaterialAlertDialogBuilder(AndroidxBuiltInActivity.this)
 								.setTitle("Warning")
 								.setMessage("The existing Drawer Layout and FAB will be deleted. Would you like to continue?")
 								.setIcon(R.drawable.ic_warning_red)
 								.setNegativeButton("Cancel", (dialog, which) -> {
 										dialog.dismiss();
-										DesignActivity.complex.enableAndroidX(true);
+										complex.enableAndroidX(true);
+						                complex.refreshData();
 										switch1.setChecked(true);
 								})
 								.setPositiveButton("Delete", (dialog, which) -> {
 										// Deletion logic
+						                complex.enableAndroidX(false);
+						                complex.refreshData();
 								})
 								.show();
 						} else {
 								complex.enableAndroidX(_isChecked);
-					            DesignActivity.complex.enableAndroidX(_isChecked);
+					            complex.refreshData();
 						}
 				}
 		});

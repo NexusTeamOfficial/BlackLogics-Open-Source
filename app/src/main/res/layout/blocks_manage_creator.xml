@@ -44,7 +44,7 @@
 						android:paddingBottom="8dp"
 						android:text="Properties"
 						android:textSize="16sp"
-						android:textColor="@color/textColor" />
+						android:textColor="#000000" />
 					<com.google.android.material.textfield.TextInputLayout
 						android:id="@+id/name_lay"
 						android:layout_width="match_parent"
@@ -58,7 +58,7 @@
 							android:padding="8dp"
 							android:gravity="left|center_vertical"
 							android:textSize="14sp"
-							android:textColor="@color/textColor"
+							android:textColor="#000000"
 							android:hint="Name"
 							android:textColorHint="#607D8B" />
 					</com.google.android.material.textfield.TextInputLayout>
@@ -83,7 +83,7 @@
 								android:padding="8dp"
 								android:gravity="left|center_vertical"
 								android:textSize="14sp"
-								android:textColor="@color/textColor"
+								android:textColor="#000000"
 								android:hint="Type"
 								android:textColorHint="#607D8B" />
 						</com.google.android.material.textfield.TextInputLayout>
@@ -114,7 +114,7 @@
 							android:padding="8dp"
 							android:gravity="left|center_vertical"
 							android:textSize="14sp"
-							android:textColor="@color/textColor"
+							android:textColor="#000000"
 							android:hint="Type name"
 							android:textColorHint="#607D8B" />
 					</com.google.android.material.textfield.TextInputLayout>
@@ -147,7 +147,7 @@
 						android:paddingBottom="8dp"
 						android:text="Design"
 						android:textSize="16sp"
-						android:textColor="@color/textColor" />
+						android:textColor="#000000" />
 					<LinearLayout
 						android:id="@+id/linear14"
 						android:layout_width="match_parent"
@@ -182,7 +182,7 @@
 								android:padding="8dp"
 								android:gravity="left|center_vertical"
 								android:textSize="14sp"
-								android:textColor="@color/textColor"
+								android:textColor="#000000"
 								android:hint="color"
 								android:textColorHint="#607D8B" />
 						</com.google.android.material.textfield.TextInputLayout>
@@ -250,7 +250,7 @@
 							android:padding="8dp"
 							android:gravity="left|center_vertical"
 							android:textSize="14sp"
-							android:textColor="@color/textColor"
+							android:textColor="#000000"
 							android:hint="Spec2"
 							android:textColorHint="#607D8B" />
 					</com.google.android.material.textfield.TextInputLayout>
@@ -306,7 +306,7 @@
 						android:background="#F5F5F5"
 						android:gravity="left|top"
 						android:textSize="14sp"
-						android:textColor="@color/textColor"
+						android:textColor="#000000"
 						android:hint="Code"
 						android:textColorHint="#607D8B" />
 				</LinearLayout>

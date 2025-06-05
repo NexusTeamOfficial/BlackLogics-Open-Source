@@ -31,7 +31,7 @@
 					android:padding="8dp"
 					android:text="Enabled"
 					android:textSize="16sp"
-					android:textColor="@color/text_color" />
+					android:textColor="#000000" />
 			</LinearLayout>
 			<Switch
 				android:id="@+id/switch1"
@@ -60,7 +60,7 @@
 				android:padding="8dp"
 				android:text="Activating App Compat library will let you add Drawer Layout and Floating Action Button to the Activities."
 				android:textSize="14sp"
-				android:textColor="@color/text_color" />
+				android:textColor="#000000" />
 		</LinearLayout>
 		<TextView
 			android:id="@+id/textview3"

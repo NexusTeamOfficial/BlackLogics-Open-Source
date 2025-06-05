@@ -1,6 +1,7 @@
 package com.besome.blacklogics;
 
 import android.animation.*;
+import android.animation.ObjectAnimator;
 import android.app.*;
 import android.content.*;
 import android.content.Intent;
@@ -18,6 +19,11 @@ import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.webkit.*;
 import android.widget.*;
 import android.widget.ImageView;
@@ -76,6 +82,7 @@ public class SplashActivity extends AppCompatActivity {
 	
 	private Intent bI = new Intent();
 	private TimerTask bT;
+	private ObjectAnimator anim = new ObjectAnimator();
 	
 	@Override
 	protected void onCreate(Bundle _savedInstanceState) {
@@ -130,8 +137,8 @@ public class SplashActivity extends AppCompatActivity {
 		    Animation.RELATIVE_TO_SELF, 0.5f
 		);
 		scale.setDuration(700);
-		scale.setRepeatCount(Animation.INFINITE);
-		scale.setRepeatMode(Animation.REVERSE);
+		//scale.setRepeatCount(Animation.INFINITE);
+		//scale.setRepeatMode(Animation.REVERSE);
 		baseIcon.startAnimation(scale);
 		
 		// Color Filter Animation (icon color change)

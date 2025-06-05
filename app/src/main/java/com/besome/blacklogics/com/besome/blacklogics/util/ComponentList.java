@@ -10,6 +10,7 @@ public class ComponentList {
 		components.add(new ComponentData("Dialog", "Displays a dialog with customizable content.", "https://developer.android.com/guide/topics/ui/dialogs"));
 		components.add(new ComponentData("ObjectAnimator", "Animates object properties over time.", "https://developer.android.com/reference/android/animation/ObjectAnimator"));
         components.add(new ComponentData("Calendar", "Calendar is used to calculate time and date", "https://developer.android.com/reference/java/util/Calendar"));
+        components.add(new ComponentData("Timer", "Timer is used to delay certain actions", "https://developer.android.com/reference/java/util/Calendar"));
 		// components.add(new ComponentData("Toast", "Shows a quick, temporary message.", "https://developer.android.com/guide/topics/ui/notifiers/toasts"));
 		components.add(new ComponentData("Notification", "Displays a notification in the status bar.", "https://developer.android.com/guide/topics/ui/notifiers/notifications"));
 		components.add(new ComponentData("SharedPreferences", "Stores key-value pairs persistently.", "https://developer.android.com/reference/android/content/SharedPreferences"));

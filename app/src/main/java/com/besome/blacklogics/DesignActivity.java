@@ -332,6 +332,9 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 	public static DesignActivity abc;
 	public Context context;
 	public static String projectPath;
+	public static String defaultAcName = "MainActivity";
+	public static String defaultLayName = "main";
+	private String xmlOutput = "";
 	
 	private ArrayList<String> s = new ArrayList<>();
 	
@@ -479,27 +482,36 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 		img_icon.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
-				if (ViewBuilderFragmentActivity.instance.viewEditor.isHiddenProperties())
-				{ 
-						int n = tab_layout.getSelectedTabPosition();
-						if (n != 0)
-						{
-								tab_layout.getTabAt(n - 1).select();
-								
+				FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+				if (activity != null && activity.viewEditor != null) {
+						if (activity.viewEditor.isHiddenProperties())
+						{ 
+								int n = tab_layout.getSelectedTabPosition();
+								if (n != 0)
+								{
+										tab_layout.getTabAt(n - 1).select();
+										
+										return;
+								}
+								exibirMensagemEdt("Exit from this project", "Do you want to save your before quitting?");
 								return;
 						}
-						exibirMensagemEdt("Exit from this project", "Do you want to save your before quitting?");
-						return;
 				}
-				ViewBuilderFragmentActivity.instance.viewEditor.hideProperties();
+				activity.viewEditor.hideProperties();
+				
 			}
 		});
 		
 		undoIcon.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
-				if (ViewBuilderFragmentActivity.instance != null) {
-						ViewBuilderFragmentActivity.instance.viewEditor.undo();
+				FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+				if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					    ViewBuilderFragmentActivity.instance.viewEditor.undo();
 				}
 			}
 		});
@@ -507,8 +519,11 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 		redoIcon.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
-				if (ViewBuilderFragmentActivity.instance != null) {
-						ViewBuilderFragmentActivity.instance.viewEditor.redo();
+				FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+				if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					    ViewBuilderFragmentActivity.instance.viewEditor.redo();
 				}
 			}
 		});
@@ -517,8 +532,8 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 			@Override
 			public void onClick(View _view) {
 				try{
-					if (ViewBuilderFragmentActivity.instance != null) {
-							ViewBuilderFragmentActivity.instance.saveLayout();
+					if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+						    ViewBuilderFragmentActivity.instance.saveLayout();
 					}
 					generateXmlLayout();
 					generateJavaCode();
@@ -693,14 +708,14 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 		
 		tab_layout.setInlineLabel(true);
 		currentActivityBean = new ProjectActivityBean(
-		ViewEditorFragmentActivity.activityName,
-		ViewEditorFragmentActivity.layoutName,
+		defaultAcName,
+		defaultLayName,
 		pkgName,
 		ViewEditorFragmentActivity.isMainActivity,
 		sc_id,
 		scName
 		);
-		currentActivityBean.setUseAndroidX(ViewEditorFragmentActivity.useAndroidX);
+		currentActivityBean.setUseAndroidX(complex.getAndroidXEnable());
 		complex.setSpinnerAdapter(file_spinner);
 		File logicFile = new File(basePath, ".blacklogics/data/" + sc_id + "/root_logic");
 		if (logicFile.isFile() && logicFile.length() > 0) {
@@ -737,6 +752,13 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 				        return true; // consume event so default spinner dialog doesn't show
 				    }
 		});
+		if (customViewPager.getCurrentItem() == 0) {
+			undoIcon.setVisibility(View.VISIBLE);
+			redoIcon.setVisibility(View.VISIBLE);
+		} else {
+			undoIcon.setVisibility(View.GONE);
+			redoIcon.setVisibility(View.GONE);
+		}
 	}
 	
 	public class TabAdapterFragmentAdapter extends FragmentStatePagerAdapter {
@@ -834,8 +856,8 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putString("currentActivity", ViewEditorFragmentActivity.activityName);
-		outState.putString("currentLayout", ViewEditorFragmentActivity.layoutName);
+		outState.putString("currentActivity", defaultAcName);
+		outState.putString("currentLayout", defaultLayName);
 		outState.putString("sc_id", sc_id);
 		outState.putInt("currentTab", tab_layout.getSelectedTabPosition());
 		super.onSaveInstanceState(outState);
@@ -843,9 +865,9 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 	
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		ViewEditorFragmentActivity.activityName = savedInstanceState.getString("currentActivity");
+		defaultAcName = savedInstanceState.getString("currentActivity");
 		sc_id = savedInstanceState.getString("sc_id");
-		ViewEditorFragmentActivity.layoutName = savedInstanceState.getString("currentLayout");
+		defaultLayName = savedInstanceState.getString("currentLayout");
 		int tabPos = savedInstanceState.getInt("currentTab", 0);
 		tab_layout.getTabAt(tabPos).select();
 		
@@ -901,173 +923,13 @@ public class DesignActivity extends AppCompatActivity implements CompilerLogList
 		        popup.show();
 	}
 	public boolean saveView() {
-		    /*
-	
-	if (!hasUnsavedChanges()) {
-		return true; // Nothing to save
-	}
-	
-	if (ViewEditorFragmentActivity.ll == null) {
-		//	TheBlockLogicsUtil.showToast(getApplicationContext(), "Layout not initialized yet");
-		return false;
-	}
-	
-	if (ViewEditorFragmentActivity.ll.getChildCount() == 0) {
-		return false;
-	}
-	
-	generateJavaCode();
-	generateXmlLayout();
-    
-	currentActivityBean.setJavaCode(getJavaCode());
-	currentActivityBean.setXmlCode(getXmlCode());
-	
-	// Populate widgets
-	List<ProjectActivityBean.ViewBean> viewBeans = new ArrayList<>();
-	for (int i = 0; i < ViewEditorFragmentActivity.ll.getChildCount(); i++) {
-		View childAt = ((ViewGroup) ViewEditorFragmentActivity.ll.getChildAt(i)).getChildAt(0);
-		ProjectActivityBean.ViewBean viewBean = createViewBean(childAt);
-		viewBeans.add(viewBean);
-	}
-	currentActivityBean.setWidgets(viewBeans);
-	
-	// Save to JSON using Gson
-	Gson gson = new Gson();
-	String json = gson.toJson(currentActivityBean);
-	String savePathjh = ViewEditorFragmentActivity.projectPath + "/saved_activity_" + currentActivityBean.getActivityName() + ".json";
-//	TheBlockLogicsUtil.writeFile(savePathjh, TheBlockLogicsUtil.encodeToBase64(json));
-	try {
-		JSONObject projectObject = new JSONObject();
-		projectObject.put("project_name", ViewEditorFragmentActivity.projectName);
-		projectObject.put("package_name", ViewEditorFragmentActivity.pkgName);
-		projectObject.put("use_androidx", ViewEditorFragmentActivity.useAndroidX);
-		
-		// Array to store all activities
-		JSONArray activitiesArray = new JSONArray();
-		
-		// Current activity data
-		JSONObject currentActivity = new JSONObject();
-		currentActivity.put("activity_name", currentActivityBean.getActivityName());
-		currentActivity.put("layout_name", currentActivityBean.getLayoutName());
-		currentActivity.put("is_main_activity", currentActivityBean.isMainActivity());
-        
-        JSONArray idks = new JSONArray();
-        for (ProjectActivityBean.ViewBean viewBean : currentLayoutWidgets) {
-            idks.put(createWidgetJsonFromViewBean(viewBean));
-        }
-		
-		// Get all widgets from current layout
-		JSONArray widgetsArray = new JSONArray();
-		for (int i = 0; i < ViewEditorFragmentActivity.ll.getChildCount(); i++) {
-			View childAt = ((ViewGroup) ViewEditorFragmentActivity.ll.getChildAt(i)).getChildAt(0);
-			widgetsArray.put(createWidgetJson(childAt));
-		}
-		
-		currentActivity.put("widgets", widgetsArray);
-		activitiesArray.put(currentActivity);
-		
-		// Add other activities if they exist
-		if (ViewEditorFragmentActivity.otherActivities != null) {
-			for (ActivityData activity : ViewEditorFragmentActivity.otherActivities) {
-				JSONObject activityJson = new JSONObject();
-				activityJson.put("activity_name", currentActivityBean.getActivityName());
-				activityJson.put("layout_name", currentActivityBean.getLayoutName());
-				activityJson.put("is_main_activity", currentActivityBean.isMainActivity());
-				
-				JSONArray activityWidgets = new JSONArray();
-				for (View widget : activity.getWidgets()) {
-					activityWidgets.put(createWidgetJson(widget));
-				}
-				
-				activityJson.put("widgets", activityWidgets);
-				activitiesArray.put(activityJson);
+			FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					ViewBuilderFragmentActivity.instance.saveLayout();
 			}
-		}
-		
-		projectObject.put("activities", activitiesArray);
-		
-		String savePath = ViewEditorFragmentActivity.projectPath + "/saved_project.json";
-		TheBlockLogicsUtil.writeFile(savePath, TheBlockLogicsUtil.encodeToBase64(projectObject.toString()));
-	//	TheBlockLogicsUtil.showToast(getApplicationContext(), "All Activities Saved!");
-		return true;
-	} catch (Exception e) {
-		TheBlockLogicsUtil.showToast(getApplicationContext(), "Save Error: " + e.toString());
-		return false;
-	}
-}
-
-// Helper method to create widget JSON
-private JSONObject createWidgetJson(View childAt) throws JSONException {
-	ViewGroup.LayoutParams params = childAt.getLayoutParams();
-	JSONObject widgetObject = new JSONObject();
-	
-	widgetObject.put("name_s", childAt.getClass().getSimpleName());
-	widgetObject.put("id", WidgetUtil.getWidgetId(childAt));
-	widgetObject.put("width", params.width);
-	widgetObject.put("height", params.height);
-	
-	// Basic view properties
-	widgetObject.put("visibility", childAt.getVisibility());
-	widgetObject.put("alpha", childAt.getAlpha());
-	widgetObject.put("rotation", childAt.getRotation());
-	widgetObject.put("scaleX", childAt.getScaleX());
-	widgetObject.put("scaleY", childAt.getScaleY());
-	widgetObject.put("translationX", childAt.getTranslationX());
-	widgetObject.put("translationY", childAt.getTranslationY());
-	
-	// Background color
-	if (childAt.getBackground() instanceof ColorDrawable) {
-		int color = ((ColorDrawable) childAt.getBackground()).getColor();
-		widgetObject.put("background_color", color);
-	}
-	
-	// Margins if available
-	if (params instanceof ViewGroup.MarginLayoutParams) {
-		ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-		widgetObject.put("margin_left", marginParams.leftMargin);
-		widgetObject.put("margin_top", marginParams.topMargin);
-		widgetObject.put("margin_right", marginParams.rightMargin);
-		widgetObject.put("margin_bottom", marginParams.bottomMargin);
-	}
-	
-	// Padding
-	widgetObject.put("padding_left", childAt.getPaddingLeft());
-	widgetObject.put("padding_top", childAt.getPaddingTop());
-	widgetObject.put("padding_right", childAt.getPaddingRight());
-	widgetObject.put("padding_bottom", childAt.getPaddingBottom());
-	
-	// Text related widgets
-	if (WidgetUtil.getTextViewOfWidget(childAt) != null) {
-		TextView textView = WidgetUtil.getTextViewOfWidget(childAt);
-		widgetObject.put("text", textView.getText().toString());
-		widgetObject.put("text_size", textView.getTextSize());
-		widgetObject.put("text_color", textView.getCurrentTextColor());
-		widgetObject.put("gravity", textView.getGravity());
-		
-		if (textView.getTypeface() != null) {
-			widgetObject.put("typeface", textView.getTypeface().toString());
-		}
-	}
-    
-	// ImageView specific properties
-	if (childAt instanceof WidgetImageView) {
-		WidgetImageView imageView = (WidgetImageView) childAt;
-		if (imageView.getDrawable() != null) {
-			String imagePath = WidgetUtil.getImagePath(childAt);
-			if (imagePath != null) {
-				widgetObject.put("image_path", imagePath);
-			}
-		}
-		widgetObject.put("scale_type", imageView.getScaleType().toString());
-	}
-	
-	// WebView specific properties
-	if (childAt instanceof WidgetWebView) {
-		widgetObject.put("is_webview", true);
-	}
-	
-	return widgetObject;*/
-		    return true;
+			return true;
 	}
 	
 	public void exibirMensagemEdt(String titulo, String texto) {
@@ -1107,8 +969,11 @@ private JSONObject createWidgetJson(View childAt) throws JSONException {
 					@Override
 					public void onClick(View v) {  
 							alert.cancel();
-							if (ViewBuilderFragmentActivity.instance != null) {
-									ViewBuilderFragmentActivity.instance.saveLayout();
+							FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+							if (activity != null && activity.viewEditor != null) {
+									activity.saveLayout();
 							}
 							TheBlockLogicsUtil.showToast(getApplicationContext(),"Projeto Saved!");
 							finish();
@@ -1116,7 +981,6 @@ private JSONObject createWidgetJson(View childAt) throws JSONException {
 			});
 	}
 	
-	// In DesignActivity.java
 	public static LinearLayout getPropertiesPanel() {
 		    return linear18;
 	}
@@ -1263,510 +1127,680 @@ TUDO : selectWidget
 	}
 	
 	public void generateJavaCode() {
-		    StringBuilder javaCode = new StringBuilder();
-		    javaCode.append("package ").append(pkgName).append(";\n\n");
-		    
-		    if (complex.getAndroidXEnable()) {
-			        javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
-			        javaCode.append("import androidx.fragment.app.Fragment;\n");
-			        javaCode.append("import androidx.fragment.app.FragmentManager;\n");
-			        javaCode.append("import androidx.fragment.app.DialogFragment;\n");
-			        javaCode.append("import com.google.android.material.*;\n");
-			    } else {
-			        javaCode.append("import android.app.Activity;\n");
-			    }
-		    
-		    javaCode.append("import android.app.*;\n");
-		    javaCode.append("import android.os.Bundle;\n");
-		    javaCode.append("import android.widget.*;\n");
-		    javaCode.append("import android.text.*;\n");
-		    javaCode.append("import android.net.*;\n");
-		    javaCode.append("import android.util.*;\n");
-		    javaCode.append("import android.view.*;\n");
-		    javaCode.append("import android.graphics.*;\n");
-		    javaCode.append("import android.content.*;\n");
-		    javaCode.append("import android.widget.Toast;\n");
-		    javaCode.append("import android.webkit.*;\n");
-		    javaCode.append("import android.view.animation.*;\n");
-		    
-		    // Add imports for components
-		    List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
-		    List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        switch (componentName) {
-				            case "Intent":
-				                javaCode.append("import android.content.Intent;\n");
-				                break;
-				            case "Dialog":
-				                javaCode.append("import android.app.Dialog;\n");
-				                break;
-				            case "ObjectAnimator":
-				                javaCode.append("import android.animation.ObjectAnimator;\n");
-				                break;
-				            case "SharedPreferences":
-				                javaCode.append("import android.content.SharedPreferences;\n");
-				                break;
-				            case "AsyncTask":
-				                javaCode.append("import android.os.AsyncTask;\n");
-				                break;
-				            case "Handler":
-				                javaCode.append("import android.os.Handler;\n");
-				                break;
-				            case "Service":
-				                javaCode.append("import android.app.Service;\n");
-				                break;
-				            case "BroadcastReceiver":
-				                javaCode.append("import android.content.BroadcastReceiver;\n");
-				                break;
-				            case "ContentProvider":
-				                javaCode.append("import android.content.ContentProvider;\n");
-				                break;
-				            case "Fragment":
-				                javaCode.append("import androidx.fragment.app.Fragment;\n");
-				                break;
-				            case "ViewModel":
-				                javaCode.append("import androidx.lifecycle.ViewModel;\n");
-				                break;
-				            case "LiveData":
-				                javaCode.append("import androidx.lifecycle.LiveData;\n");
-				                break;
-				            case "Room":
-				                javaCode.append("import androidx.room.*;\n");
-				                break;
-				            case "WorkManager":
-				                javaCode.append("import androidx.work.*;\n");
-				                break;
-				            case "RecyclerView":
-				                javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
-				                break;
-				            case "ViewPager":
-				                javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
-				                break;
-				            case "MediaPlayer":
-				                javaCode.append("import android.media.MediaPlayer;\n");
-				                break;
-				            case "Camera":
-				                javaCode.append("import android.hardware.Camera;\n");
-				                break;
-				            case "LocationManager":
-				                javaCode.append("import android.location.LocationManager;\n");
-				                break;
-				            case "SensorManager":
-				                javaCode.append("import android.hardware.SensorManager;\n");
-				                break;
-				            case "BluetoothAdapter":
-				                javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
-				                break;
-				        }
-			    }
-		    
-		    for (HashMap<String, String> componentA : variables) {
-			        String componentName = componentA.get("varTypeName");
-			        switch (componentName) {
-				            case "ArrayList<String>":
-				            case "ArrayList<Double>": 
-				                javaCode.append("import java.util.ArrayList;\n");
-				                break;
-				        }
-			    }
-		    
-		    javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
-		    javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
-		    
-		    // Add widget fields
-		    for (int i = 0; i < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); i++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(i);
-			        declareWidgetFields(view, javaCode);
-			    }
-		    
-		    // Add component fields
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        String fieldName = component.get("fieldName");
-			        javaCode.append("    private ").append(componentName).append(" ").append(fieldName).append(";\n");
-			    }
-		    
-		    for (HashMap<String, String> variable : variables) {
-			        String varType = variable.get("varTypeName");
-			        String varName = variable.get("varName");
-			        javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
-			    }
-		    
-		    javaCode.append("\n    @Override\n");
-		    javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
-		    javaCode.append("        super.onCreate(savedInstanceState);\n");
-		    javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
-		    javaCode.append("        initialize(savedInstanceState);\n");
-		    javaCode.append("        initializeLogic();\n");
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
-		    for (int i = 0; i < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); i++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(i);
-			        initializeWidgetFields(view, javaCode);
-			    }
-		    
-		    // Initialize components
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        String fieldName = component.get("fieldName");
-			        switch (componentName) {
-				            case "Intent":
-				                javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
-				                break;
-				            case "Dialog":
-				                javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
-				                break;
-				            case "ObjectAnimator":
-				                javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
-				                break;
-				        }
-			    }
-		    
-		    for (int y = 0; y < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); y++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(y);
-			        if (view instanceof ViewGroup) {
-				            ViewGroup parent = (ViewGroup) view;
-				            if (parent.getChildCount() > 0) {
-					                View child = parent.getChildAt(0);
-					                if (child != null) {
-						                    String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
-						                    String logic = getBlockLogic(widgetIdChild);
-						                    String widgetType = child.getClass().getSimpleName();
-						                    
-						                    if ((widgetType.equals("CheckBox") || widgetType.equals("Switch")) && widgetIdChild != null && !widgetIdChild.isEmpty()) {
-							                        javaCode.append("\n        ")
-							                            .append(widgetIdChild)
-							                            .append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
-							                            .append("            @Override\n")
-							                            .append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
-							                            .append("                ")
-							                            .append(logic)
-							                            .append("\n")
-							                            .append("            }\n")
-							                            .append("        });\n");
-							                    } else if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
-							                        javaCode.append("\n        ")
-							                            .append(widgetIdChild)
-							                            .append(".setOnClickListener(new View.OnClickListener() {\n")
-							                            .append("            @Override\n")
-							                            .append("            public void onClick(View v) {\n")
-							                            .append("                ")
-							                            .append(logic)
-							                            .append("\n")
-							                            .append("            }\n")
-							                            .append("        });\n");
-							                    }
-						                }
-					            }
-				        }
-			    }
-		    
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("    private void initializeLogic() {\n")
-		        .append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
-		        .append("    }\n");
-		    
-		    List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
-		    if (functions != null) {
-			        for (HashMap<String, Object> func : functions) {
-				            String functionName = (String) func.get("functionName");
-				            String returnType = (String) func.get("returnType");
-				            List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
-				            
-				            javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
-				            for (int i = 0; i < parameters.size(); i++) {
-					                HashMap<String, String> param = parameters.get(i);
-					                javaCode.append(param.get("type")).append(" ").append(param.get("name"));
-					                if (i < parameters.size() - 1) {
-						                    javaCode.append(", ");
-						                }
-					            }
-				            javaCode.append(") {\n");
-				            javaCode.append("   \n");
-				            javaCode.append("}\n\n");
-				        }
-			    }
-		    
-		    javaCode.append("    public void showMessage(String message) {\n");
-		    javaCode.append("        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();\n");
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("}\n");
-		    
-		    // Save the generated Java code
-		    complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
+			FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					StringBuilder javaCode = new StringBuilder();
+					javaCode.append("package ").append(pkgName).append(";\n\n");
+					
+					if (complex.getAndroidXEnable()) {
+							javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
+							javaCode.append("import androidx.fragment.app.Fragment;\n");
+							javaCode.append("import androidx.fragment.app.FragmentManager;\n");
+							javaCode.append("import androidx.fragment.app.DialogFragment;\n");
+							javaCode.append("import com.google.android.material.*;\n");
+					} else {
+							javaCode.append("import android.app.Activity;\n");
+					}
+					
+					javaCode.append("import android.app.*;\n");
+					javaCode.append("import android.os.*;\n");
+					javaCode.append("import android.os.Bundle;\n");
+					javaCode.append("import android.widget.*;\n");
+					javaCode.append("import android.text.*;\n");
+					javaCode.append("import android.net.*;\n");
+					javaCode.append("import android.util.*;\n");
+					javaCode.append("import android.view.*;\n");
+					javaCode.append("import android.graphics.*;\n");
+					javaCode.append("import android.content.*;\n");
+					javaCode.append("import android.widget.Toast;\n");
+					javaCode.append("import android.webkit.*;\n");
+					javaCode.append("import android.view.animation.*;\n");
+					
+					// Add imports for components
+					List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
+					List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							switch (componentName) {
+									case "Intent":
+									javaCode.append("import android.content.Intent;\n");
+									break;
+									case "Dialog":
+									javaCode.append("import android.app.Dialog;\n");
+									break;
+									case "ObjectAnimator":
+									javaCode.append("import android.animation.ObjectAnimator;\n");
+									break;
+									case "SharedPreferences":
+									javaCode.append("import android.content.SharedPreferences;\n");
+									break;
+									case "AsyncTask":
+									javaCode.append("import android.os.AsyncTask;\n");
+									break;
+									case "Handler":
+									javaCode.append("import android.os.Handler;\n");
+									break;
+									case "Service":
+									javaCode.append("import android.app.Service;\n");
+									break;
+									case "BroadcastReceiver":
+									javaCode.append("import android.content.BroadcastReceiver;\n");
+									break;
+									case "ContentProvider":
+									javaCode.append("import android.content.ContentProvider;\n");
+									break;
+									case "Fragment":
+									javaCode.append("import androidx.fragment.app.Fragment;\n");
+									break;
+									case "ViewModel":
+									javaCode.append("import androidx.lifecycle.ViewModel;\n");
+									break;
+									case "LiveData":
+									javaCode.append("import androidx.lifecycle.LiveData;\n");
+									break;
+									case "Room":
+									javaCode.append("import androidx.room.*;\n");
+									break;
+									case "WorkManager":
+									javaCode.append("import androidx.work.*;\n");
+									break;
+									case "RecyclerView":
+									javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
+									break;
+									case "ViewPager":
+									javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
+									break;
+									case "MediaPlayer":
+									javaCode.append("import android.media.MediaPlayer;\n");
+									break;
+									case "Camera":
+									javaCode.append("import android.hardware.Camera;\n");
+									break;
+									case "LocationManager":
+									javaCode.append("import android.location.LocationManager;\n");
+									break;
+									case "SensorManager":
+									javaCode.append("import android.hardware.SensorManager;\n");
+									break;
+									case "BluetoothAdapter":
+									javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
+									break;
+									case "Timer":
+									javaCode.append("import java.util.Timer;\n");
+									javaCode.append("import java.util.TimerTask;\n");
+									break;    
+							}
+					}
+					
+					for (HashMap<String, String> componentA : variables) {
+							String componentName = componentA.get("varTypeName");
+							switch (componentName) {
+									case "ArrayList<String>":
+									case "ArrayList<Double>": 
+									javaCode.append("import java.util.ArrayList;\n");
+									break;
+							}
+					}
+					
+					javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
+					javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
+					
+					// Add widget fields
+					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+							declareWidgetFields(view, javaCode);
+					}
+					
+					// Add component fields
+					boolean timerDeclared = false;
+					
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							String fieldName = component.get("fieldName");
+							
+							if ("Timer".equals(componentName)) {
+									if (!timerDeclared) {
+											javaCode.append("private Timer _timer = new Timer();\n");
+											timerDeclared = true;
+									}
+									javaCode.append("private TimerTask ").append(fieldName).append(";\n");
+							} else {
+									javaCode.append("private ").append(componentName).append(" ").append(fieldName).append(";\n");
+							}
+					}
+					
+					
+					for (HashMap<String, String> variable : variables) {
+							String varType = variable.get("varTypeName");
+							String varName = variable.get("varName");
+							javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
+					}
+					
+					javaCode.append("\n    @Override\n");
+					javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
+					javaCode.append("        super.onCreate(savedInstanceState);\n");
+					javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
+					javaCode.append("        initialize(savedInstanceState);\n");
+					javaCode.append("        initializeLogic();\n");
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
+					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+							initializeWidgetFields(view, javaCode);
+					}
+					
+					// Initialize components
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							String fieldName = component.get("fieldName");
+							switch (componentName) {
+									case "Intent":
+									javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
+									break;
+									case "Dialog":
+									javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
+									break;
+									case "ObjectAnimator":
+									javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
+									break;
+							}
+					}
+					
+					for (int y = 0; y < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); y++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(y);
+							if (view instanceof ViewGroup) {
+									ViewGroup parent = (ViewGroup) view;
+									if (parent.getChildCount() > 0) {
+											View child = parent.getChildAt(0);
+											if (child != null) {
+													String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
+													String logic = getBlockLogic(widgetIdChild);
+													String widgetType = child.getClass().getSimpleName();
+													
+													if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
+															switch (widgetType) {
+																	case "CheckBox":
+																	case "Switch":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "EditText":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".addTextChangedListener(new TextWatcher() {\n")
+																	.append("            @Override\n")
+																	.append("            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}\n")
+																	.append("            @Override\n")
+																	.append("            public void onTextChanged(CharSequence s, int start, int before, int count) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void afterTextChanged(Editable s) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "SeekBar":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void onStartTrackingTouch(SeekBar seekBar) {}\n")
+																	.append("            @Override\n")
+																	.append("            public void onStopTrackingTouch(SeekBar seekBar) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "Spinner":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void onNothingSelected(AdapterView<?> parent) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	default:
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnClickListener(new View.OnClickListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onClick(View v) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("        });\n");
+																	break;
+															}
+													}
+											}
+									}
+							}
+					}
+					
+					
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("    private void initializeLogic() {\n")
+					.append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
+					.append("    }\n");
+					
+					List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
+					if (functions != null) {
+							for (HashMap<String, Object> func : functions) {
+									String functionName = (String) func.get("functionName");
+									String returnType = (String) func.get("returnType");
+									List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
+									
+									javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
+									for (int i = 0; i < parameters.size(); i++) {
+											HashMap<String, String> param = parameters.get(i);
+											javaCode.append(param.get("type")).append(" ").append(param.get("name"));
+											if (i < parameters.size() - 1) {
+													javaCode.append(", ");
+											}
+									}
+									javaCode.append(") {\n");
+									javaCode.append("   \n");
+									javaCode.append("}\n\n");
+							}
+					}
+					
+					javaCode.append("    public void showMessage(String message) {\n");
+					javaCode.append("        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();\n");
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("}\n");
+					
+					// Save the generated Java code
+					complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
+			} else {
+					
+			}
 	}
 	
 	// Helper methods for widget declaration and initialization
 	private void declareWidgetFields(View view, StringBuilder javaCode) {
-		    String widgetType = view.getClass().getSimpleName();
-		    String widgetId = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(view);
-		    if (widgetId != null && !widgetId.isEmpty()) {
-			        javaCode.append("    private ").append(widgetType).append(" ").append(widgetId).append(";\n");
-			    }
-		    
-		    if (view instanceof ViewGroup) {
-			        ViewGroup viewGroup = (ViewGroup) view;
-			        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-				            declareWidgetFields(viewGroup.getChildAt(i), javaCode);
-				        }
-			    }
+			FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			String widgetType = view.getClass().getSimpleName();
+			String widgetId = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(view);
+			if (widgetId != null && !widgetId.isEmpty()) {
+					javaCode.append("    private ").append(widgetType).append(" ").append(widgetId).append(";\n");
+			}
+			
+			if (view instanceof ViewGroup) {
+					ViewGroup viewGroup = (ViewGroup) view;
+					for (int i = 0; i < viewGroup.getChildCount(); i++) {
+							declareWidgetFields(viewGroup.getChildAt(i), javaCode);
+					}
+			}
 	}
 	
 	private void initializeWidgetFields(View view, StringBuilder javaCode) {
-		    String widgetId = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(view);
-		    if (widgetId != null && !widgetId.isEmpty()) {
-			        javaCode.append("        ").append(widgetId).append(" = findViewById(R.id.").append(widgetId).append(");\n");
-			    }
-		    
-		    if (view instanceof ViewGroup) {
-			        ViewGroup viewGroup = (ViewGroup) view;
-			        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-				            initializeWidgetFields(viewGroup.getChildAt(i), javaCode);
-				        }
-			    }
+			FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			String widgetId = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(view);
+			if (widgetId != null && !widgetId.isEmpty()) {
+					javaCode.append("        ").append(widgetId).append(" = findViewById(R.id.").append(widgetId).append(");\n");
+			}
+			
+			if (view instanceof ViewGroup) {
+					ViewGroup viewGroup = (ViewGroup) view;
+					for (int i = 0; i < viewGroup.getChildCount(); i++) {
+							initializeWidgetFields(viewGroup.getChildAt(i), javaCode);
+					}
+			}
 	}
+	
 	public String getJavaCode() {
-		   StringBuilder javaCode = new StringBuilder();
-		    javaCode.append("package ").append(pkgName).append(";\n\n");
-		    
-		    if (complex.getAndroidXEnable()) {
-			        javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
-			        javaCode.append("import androidx.fragment.app.Fragment;\n");
-			        javaCode.append("import androidx.fragment.app.FragmentManager;\n");
-			        javaCode.append("import androidx.fragment.app.DialogFragment;\n");
-			        javaCode.append("import com.google.android.material.*;\n");
-			    } else {
-			        javaCode.append("import android.app.Activity;\n");
-			    }
-		    
-		    javaCode.append("import android.app.*;\n");
-		    javaCode.append("import android.os.Bundle;\n");
-		    javaCode.append("import android.widget.*;\n");
-		    javaCode.append("import android.text.*;\n");
-		    javaCode.append("import android.net.*;\n");
-		    javaCode.append("import android.util.*;\n");
-		    javaCode.append("import android.view.*;\n");
-		    javaCode.append("import android.graphics.*;\n");
-		    javaCode.append("import android.content.*;\n");
-		    javaCode.append("import android.widget.Toast;\n");
-		    javaCode.append("import android.webkit.*;\n");
-		    javaCode.append("import android.view.animation.*;\n");
-		    
-		    // Add imports for components
-		    List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
-		    List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        switch (componentName) {
-				            case "Intent":
-				                javaCode.append("import android.content.Intent;\n");
-				                break;
-				            case "Dialog":
-				                javaCode.append("import android.app.Dialog;\n");
-				                break;
-				            case "ObjectAnimator":
-				                javaCode.append("import android.animation.ObjectAnimator;\n");
-				                break;
-				            case "SharedPreferences":
-				                javaCode.append("import android.content.SharedPreferences;\n");
-				                break;
-				            case "AsyncTask":
-				                javaCode.append("import android.os.AsyncTask;\n");
-				                break;
-				            case "Handler":
-				                javaCode.append("import android.os.Handler;\n");
-				                break;
-				            case "Service":
-				                javaCode.append("import android.app.Service;\n");
-				                break;
-				            case "BroadcastReceiver":
-				                javaCode.append("import android.content.BroadcastReceiver;\n");
-				                break;
-				            case "ContentProvider":
-				                javaCode.append("import android.content.ContentProvider;\n");
-				                break;
-				            case "Fragment":
-				                javaCode.append("import androidx.fragment.app.Fragment;\n");
-				                break;
-				            case "ViewModel":
-				                javaCode.append("import androidx.lifecycle.ViewModel;\n");
-				                break;
-				            case "LiveData":
-				                javaCode.append("import androidx.lifecycle.LiveData;\n");
-				                break;
-				            case "Room":
-				                javaCode.append("import androidx.room.*;\n");
-				                break;
-				            case "WorkManager":
-				                javaCode.append("import androidx.work.*;\n");
-				                break;
-				            case "RecyclerView":
-				                javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
-				                break;
-				            case "ViewPager":
-				                javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
-				                break;
-				            case "MediaPlayer":
-				                javaCode.append("import android.media.MediaPlayer;\n");
-				                break;
-				            case "Camera":
-				                javaCode.append("import android.hardware.Camera;\n");
-				                break;
-				            case "LocationManager":
-				                javaCode.append("import android.location.LocationManager;\n");
-				                break;
-				            case "SensorManager":
-				                javaCode.append("import android.hardware.SensorManager;\n");
-				                break;
-				            case "BluetoothAdapter":
-				                javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
-				                break;
-				        }
-			    }
-		    
-		    for (HashMap<String, String> componentA : variables) {
-			        String componentName = componentA.get("varTypeName");
-			        switch (componentName) {
-				            case "ArrayList<String>":
-				            case "ArrayList<Double>": 
-				                javaCode.append("import java.util.ArrayList;\n");
-				                break;
-				        }
-			    }
-		    
-		    javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
-		    javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
-		    
-		    // Add widget fields
-		    for (int i = 0; i < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); i++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(i);
-			        declareWidgetFields(view, javaCode);
-			    }
-		    
-		    // Add component fields
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        String fieldName = component.get("fieldName");
-			        javaCode.append("    private ").append(componentName).append(" ").append(fieldName).append(";\n");
-			    }
-		    
-		    for (HashMap<String, String> variable : variables) {
-			        String varType = variable.get("varTypeName");
-			        String varName = variable.get("varName");
-			        javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
-			    }
-		    
-		    javaCode.append("\n    @Override\n");
-		    javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
-		    javaCode.append("        super.onCreate(savedInstanceState);\n");
-		    javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
-		    javaCode.append("        initialize(savedInstanceState);\n");
-		    javaCode.append("        initializeLogic();\n");
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
-		    for (int i = 0; i < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); i++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(i);
-			        initializeWidgetFields(view, javaCode);
-			    }
-		    
-		    // Initialize components
-		    for (HashMap<String, String> component : components) {
-			        String componentName = component.get("componentName");
-			        String fieldName = component.get("fieldName");
-			        switch (componentName) {
-				            case "Intent":
-				                javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
-				                break;
-				            case "Dialog":
-				                javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
-				                break;
-				            case "ObjectAnimator":
-				                javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
-				                break;
-				        }
-			    }
-		    
-		    for (int y = 0; y < com.shapun.layouteditor.ViewEditor.editorLayout.getChildCount(); y++) {
-			        View view = com.shapun.layouteditor.ViewEditor.editorLayout.getChildAt(y);
-			        if (view instanceof ViewGroup) {
-				            ViewGroup parent = (ViewGroup) view;
-				            if (parent.getChildCount() > 0) {
-					                View child = parent.getChildAt(0);
-					                if (child != null) {
-						                    String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
-						                    String logic = getBlockLogic(widgetIdChild);
-						                    String widgetType = child.getClass().getSimpleName();
-						                    
-						                    if ((widgetType.equals("CheckBox") || widgetType.equals("Switch")) && widgetIdChild != null && !widgetIdChild.isEmpty()) {
-							                        javaCode.append("\n        ")
-							                            .append(widgetIdChild)
-							                            .append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
-							                            .append("            @Override\n")
-							                            .append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
-							                            .append("                ")
-							                            .append(logic)
-							                            .append("\n")
-							                            .append("            }\n")
-							                            .append("        });\n");
-							                    } else if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
-							                        javaCode.append("\n        ")
-							                            .append(widgetIdChild)
-							                            .append(".setOnClickListener(new View.OnClickListener() {\n")
-							                            .append("            @Override\n")
-							                            .append("            public void onClick(View v) {\n")
-							                            .append("                ")
-							                            .append(logic)
-							                            .append("\n")
-							                            .append("            }\n")
-							                            .append("        });\n");
-							                    }
-						                }
-					            }
-				        }
-			    }
-		    
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("    private void initializeLogic() {\n")
-		        .append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
-		        .append("    }\n");
-		    
-		    List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
-		    if (functions != null) {
-			        for (HashMap<String, Object> func : functions) {
-				            String functionName = (String) func.get("functionName");
-				            String returnType = (String) func.get("returnType");
-				            List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
-				            
-				            javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
-				            for (int i = 0; i < parameters.size(); i++) {
-					                HashMap<String, String> param = parameters.get(i);
-					                javaCode.append(param.get("type")).append(" ").append(param.get("name"));
-					                if (i < parameters.size() - 1) {
-						                    javaCode.append(", ");
-						                }
-					            }
-				            javaCode.append(") {\n");
-				            javaCode.append("   \n");
-				            javaCode.append("}\n\n");
-				        }
-			    }
-		    
-		    javaCode.append("    public void showMessage(String message) {\n");
-		    javaCode.append("        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();\n");
-		    javaCode.append("\n    }\n");
-		    
-		    javaCode.append("}\n");
-		    
-		    // Save the generated Java code
-		    complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
-			return javaCode.toString();
+			FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					StringBuilder javaCode = new StringBuilder();
+					javaCode.append("package ").append(pkgName).append(";\n\n");
+					
+					if (complex.getAndroidXEnable()) {
+							javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
+							javaCode.append("import androidx.fragment.app.Fragment;\n");
+							javaCode.append("import androidx.fragment.app.FragmentManager;\n");
+							javaCode.append("import androidx.fragment.app.DialogFragment;\n");
+							javaCode.append("import com.google.android.material.*;\n");
+					} else {
+							javaCode.append("import android.app.Activity;\n");
+					}
+					
+					javaCode.append("import android.app.*;\n");
+					javaCode.append("import android.os.*;\n");
+					javaCode.append("import android.os.Bundle;\n");
+					javaCode.append("import android.widget.*;\n");
+					javaCode.append("import android.text.*;\n");
+					javaCode.append("import android.net.*;\n");
+					javaCode.append("import android.util.*;\n");
+					javaCode.append("import android.view.*;\n");
+					javaCode.append("import android.graphics.*;\n");
+					javaCode.append("import android.content.*;\n");
+					javaCode.append("import android.widget.Toast;\n");
+					javaCode.append("import android.webkit.*;\n");
+					javaCode.append("import android.view.animation.*;\n");
+					
+					// Add imports for components
+					List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
+					List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							switch (componentName) {
+									case "Intent":
+									javaCode.append("import android.content.Intent;\n");
+									break;
+									case "Dialog":
+									javaCode.append("import android.app.Dialog;\n");
+									break;
+									case "ObjectAnimator":
+									javaCode.append("import android.animation.ObjectAnimator;\n");
+									break;
+									case "SharedPreferences":
+									javaCode.append("import android.content.SharedPreferences;\n");
+									break;
+									case "AsyncTask":
+									javaCode.append("import android.os.AsyncTask;\n");
+									break;
+									case "Handler":
+									javaCode.append("import android.os.Handler;\n");
+									break;
+									case "Service":
+									javaCode.append("import android.app.Service;\n");
+									break;
+									case "BroadcastReceiver":
+									javaCode.append("import android.content.BroadcastReceiver;\n");
+									break;
+									case "ContentProvider":
+									javaCode.append("import android.content.ContentProvider;\n");
+									break;
+									case "Fragment":
+									javaCode.append("import androidx.fragment.app.Fragment;\n");
+									break;
+									case "ViewModel":
+									javaCode.append("import androidx.lifecycle.ViewModel;\n");
+									break;
+									case "LiveData":
+									javaCode.append("import androidx.lifecycle.LiveData;\n");
+									break;
+									case "Room":
+									javaCode.append("import androidx.room.*;\n");
+									break;
+									case "WorkManager":
+									javaCode.append("import androidx.work.*;\n");
+									break;
+									case "RecyclerView":
+									javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
+									break;
+									case "ViewPager":
+									javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
+									break;
+									case "MediaPlayer":
+									javaCode.append("import android.media.MediaPlayer;\n");
+									break;
+									case "Camera":
+									javaCode.append("import android.hardware.Camera;\n");
+									break;
+									case "LocationManager":
+									javaCode.append("import android.location.LocationManager;\n");
+									break;
+									case "SensorManager":
+									javaCode.append("import android.hardware.SensorManager;\n");
+									break;
+									case "BluetoothAdapter":
+									javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
+									break;
+									case "Timer":
+									javaCode.append("import java.util.Timer;\n");
+									javaCode.append("import java.util.TimerTask;\n");
+									break;    
+							}
+					}
+					
+					for (HashMap<String, String> componentA : variables) {
+							String componentName = componentA.get("varTypeName");
+							switch (componentName) {
+									case "ArrayList<String>":
+									case "ArrayList<Double>": 
+									javaCode.append("import java.util.ArrayList;\n");
+									break;
+							}
+					}
+					
+					javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
+					javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
+					
+					// Add widget fields
+					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+							declareWidgetFields(view, javaCode);
+					}
+					
+					// Add component fields
+					boolean timerDeclared = false;
+					
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							String fieldName = component.get("fieldName");
+							
+							if ("Timer".equals(componentName)) {
+									if (!timerDeclared) {
+											javaCode.append("private Timer _timer = new Timer();\n");
+											timerDeclared = true;
+									}
+									javaCode.append("private TimerTask ").append(fieldName).append(";\n");
+							} else {
+									javaCode.append("private ").append(componentName).append(" ").append(fieldName).append(";\n");
+							}
+					}
+					
+					
+					for (HashMap<String, String> variable : variables) {
+							String varType = variable.get("varTypeName");
+							String varName = variable.get("varName");
+							javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
+					}
+					
+					javaCode.append("\n    @Override\n");
+					javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
+					javaCode.append("        super.onCreate(savedInstanceState);\n");
+					javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
+					javaCode.append("        initialize(savedInstanceState);\n");
+					javaCode.append("        initializeLogic();\n");
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
+					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+							initializeWidgetFields(view, javaCode);
+					}
+					
+					// Initialize components
+					for (HashMap<String, String> component : components) {
+							String componentName = component.get("componentName");
+							String fieldName = component.get("fieldName");
+							switch (componentName) {
+									case "Intent":
+									javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
+									break;
+									case "Dialog":
+									javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
+									break;
+									case "ObjectAnimator":
+									javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
+									break;
+							}
+					}
+					
+					for (int y = 0; y < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); y++) {
+							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(y);
+							if (view instanceof ViewGroup) {
+									ViewGroup parent = (ViewGroup) view;
+									if (parent.getChildCount() > 0) {
+											View child = parent.getChildAt(0);
+											if (child != null) {
+													String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
+													String logic = getBlockLogic(widgetIdChild);
+													String widgetType = child.getClass().getSimpleName();
+													
+													if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
+															switch (widgetType) {
+																	case "CheckBox":
+																	case "Switch":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "EditText":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".addTextChangedListener(new TextWatcher() {\n")
+																	.append("            @Override\n")
+																	.append("            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}\n")
+																	.append("            @Override\n")
+																	.append("            public void onTextChanged(CharSequence s, int start, int before, int count) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void afterTextChanged(Editable s) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "SeekBar":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void onStartTrackingTouch(SeekBar seekBar) {}\n")
+																	.append("            @Override\n")
+																	.append("            public void onStopTrackingTouch(SeekBar seekBar) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	case "Spinner":
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("            @Override\n")
+																	.append("            public void onNothingSelected(AdapterView<?> parent) {}\n")
+																	.append("        });\n");
+																	break;
+																	
+																	default:
+																	javaCode.append("\n        ")
+																	.append(widgetIdChild)
+																	.append(".setOnClickListener(new View.OnClickListener() {\n")
+																	.append("            @Override\n")
+																	.append("            public void onClick(View v) {\n")
+																	.append("                ")
+																	.append(logic)
+																	.append("\n")
+																	.append("            }\n")
+																	.append("        });\n");
+																	break;
+															}
+													}
+											}
+									}
+							}
+					}
+					
+					
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("    private void initializeLogic() {\n")
+					.append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
+					.append("    }\n");
+					
+					List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
+					if (functions != null) {
+							for (HashMap<String, Object> func : functions) {
+									String functionName = (String) func.get("functionName");
+									String returnType = (String) func.get("returnType");
+									List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
+									
+									javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
+									for (int i = 0; i < parameters.size(); i++) {
+											HashMap<String, String> param = parameters.get(i);
+											javaCode.append(param.get("type")).append(" ").append(param.get("name"));
+											if (i < parameters.size() - 1) {
+													javaCode.append(", ");
+											}
+									}
+									javaCode.append(") {\n");
+									javaCode.append("   \n");
+									javaCode.append("}\n\n");
+							}
+					}
+					
+					javaCode.append("    public void showMessage(String message) {\n");
+					javaCode.append("        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();\n");
+					javaCode.append("\n    }\n");
+					
+					javaCode.append("}\n");
+					
+					// Save the generated Java code
+					complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
+					return javaCode.toString();
+			} else {
+					return "Error generating source code...";
+			}
 	}
+	
 	/*
 TUDO : generateXmlLayout
 **/
@@ -1776,8 +1810,12 @@ TUDO : generateXmlLayout
 	public void generateXmlLayout() {
 		 try {
 			        // Post-process to format attributes one per line
-			        String xmlOutput = ViewBuilderFragmentActivity.instance.viewEditor.getXMLCode();
-			       // return formatXmlAttributes(xmlOutput);
+			        FragmentManager fragmentManager = getSupportFragmentManager();
+			ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+			    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+					if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+					   	 xmlOutput = ViewBuilderFragmentActivity.instance.viewEditor.getXMLCode();
+					}
 			        complex.setXmlCode(currentActivityBean.getLayoutName(), xmlOutput);
 			    } catch (Exception e) {
 			        e.printStackTrace();
@@ -1787,7 +1825,15 @@ TUDO : generateXmlLayout
 	
 	public String getXmlCode() {
 		    try {
-			        return ViewBuilderFragmentActivity.instance.viewEditor.getXMLCode();
+			        FragmentManager fragmentManager = getSupportFragmentManager();
+			        ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+			            .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			
+			        if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+				            return ViewBuilderFragmentActivity.instance.viewEditor.getXMLCode();
+				        } else {
+				            return "Error generating source code...";
+				        }
 			    } catch (Exception e) {
 			        e.printStackTrace();
 			        return "";
@@ -1795,40 +1841,40 @@ TUDO : generateXmlLayout
 	}
 	
 	private String formatXmlAttributes(String xml) {
-		    StringBuilder formatted = new StringBuilder();
-		    String[] lines = xml.split("\n");
-		    for (String line : lines) {
-			        if (line.trim().startsWith("<") && line.contains(" ")) {
-				            int firstSpace = line.indexOf(" ");
-				            if (firstSpace != -1 && !line.trim().startsWith("<?xml")) {
-					                String tagStart = line.substring(0, firstSpace);
-					                String rest = line.substring(firstSpace).trim();
-					                formatted.append(tagStart).append("\n");
-					                String[] attributes = rest.split("\" ");
-					                for (int i = 0; i < attributes.length; i++) {
-						                    String attr = attributes[i].trim();
-						                    if (!attr.endsWith("\"")) {
-							                        attr = attr + "\"";
-							                    }
-						                    if (i < attributes.length - 1 || rest.endsWith("\"")) {
-							                        formatted.append("  ").append(attr).append("\n");
-							                    } else {
-							                        formatted.append("  ").append(attr);
-							                    }
-						                }
-					                if (line.endsWith("/>")) {
-						                    formatted.append("/>\n");
-						                } else if (line.contains(">") && !line.endsWith("/>")) {
-						                    formatted.append(">\n");
-						                }
-					            } else {
-					                formatted.append(line).append("\n");
-					            }
-				        } else {
-				            formatted.append(line).append("\n");
-				        }
-			    }
-		    return formatted.toString().trim();
+			StringBuilder formatted = new StringBuilder();
+			String[] lines = xml.split("\n");
+			for (String line : lines) {
+					if (line.trim().startsWith("<") && line.contains(" ")) {
+							int firstSpace = line.indexOf(" ");
+							if (firstSpace != -1 && !line.trim().startsWith("<?xml")) {
+									String tagStart = line.substring(0, firstSpace);
+									String rest = line.substring(firstSpace).trim();
+									formatted.append(tagStart).append("\n");
+									String[] attributes = rest.split("\" ");
+									for (int i = 0; i < attributes.length; i++) {
+											String attr = attributes[i].trim();
+											if (!attr.endsWith("\"")) {
+													attr = attr + "\"";
+											}
+											if (i < attributes.length - 1 || rest.endsWith("\"")) {
+													formatted.append("  ").append(attr).append("\n");
+											} else {
+													formatted.append("  ").append(attr);
+											}
+									}
+									if (line.endsWith("/>")) {
+											formatted.append("/>\n");
+									} else if (line.contains(">") && !line.endsWith("/>")) {
+											formatted.append(">\n");
+									}
+							} else {
+									formatted.append(line).append("\n");
+							}
+					} else {
+							formatted.append(line).append("\n");
+					}
+			}
+			return formatted.toString().trim();
 	}
 	
 	private Element createWidgetElement(Document doc, View widget) {
@@ -2002,83 +2048,84 @@ TUDO : generateXmlLayout
 	
 	// Helper methods (unchanged or slightly modified)
 	private String getDimensionString(int dimension) {
-		    if (dimension == ViewGroup.LayoutParams.MATCH_PARENT) return "match_parent";
-		    if (dimension == ViewGroup.LayoutParams.WRAP_CONTENT) return "wrap_content";
-		    return dimension + "dp";
+			if (dimension == ViewGroup.LayoutParams.MATCH_PARENT) return "match_parent";
+			if (dimension == ViewGroup.LayoutParams.WRAP_CONTENT) return "wrap_content";
+			return dimension + "dp";
 	}
 	
 	private String visibilityToString(int visibility) {
-		    switch (visibility) {
-			        case View.VISIBLE: return "visible";
-			        case View.INVISIBLE: return "invisible";
-			        case View.GONE: return "gone";
-			        default: return "visible";
-			    }
+			switch (visibility) {
+					case View.VISIBLE: return "visible";
+					case View.INVISIBLE: return "invisible";
+					case View.GONE: return "gone";
+					default: return "visible";
+			}
 	}
 	
 	private String gravityToString(int gravity) {
-		    List<String> parts = new ArrayList<>();
-		    if ((gravity & Gravity.LEFT) == Gravity.LEFT) parts.add("left");
-		    if ((gravity & Gravity.RIGHT) == Gravity.RIGHT) parts.add("right");
-		    if ((gravity & Gravity.TOP) == Gravity.TOP) parts.add("top");
-		    if ((gravity & Gravity.BOTTOM) == Gravity.BOTTOM) parts.add("bottom");
-		    if ((gravity & Gravity.CENTER) == Gravity.CENTER) parts.add("center");
-		    return parts.isEmpty() ? "start" : String.join("|", parts);
+			List<String> parts = new ArrayList<>();
+			if ((gravity & Gravity.LEFT) == Gravity.LEFT) parts.add("left");
+			if ((gravity & Gravity.RIGHT) == Gravity.RIGHT) parts.add("right");
+			if ((gravity & Gravity.TOP) == Gravity.TOP) parts.add("top");
+			if ((gravity & Gravity.BOTTOM) == Gravity.BOTTOM) parts.add("bottom");
+			if ((gravity & Gravity.CENTER) == Gravity.CENTER) parts.add("center");
+			return parts.isEmpty() ? "start" : String.join("|", parts);
 	}
 	
 	private String typefaceStyleToString(int style) {
-		    switch (style) {
-			        case android.graphics.Typeface.BOLD: return "bold";
-			        case android.graphics.Typeface.ITALIC: return "italic";
-			        case android.graphics.Typeface.BOLD_ITALIC: return "bold|italic";
-			        default: return "normal";
-			    }
+			switch (style) {
+					case android.graphics.Typeface.BOLD: return "bold";
+					case android.graphics.Typeface.ITALIC: return "italic";
+					case android.graphics.Typeface.BOLD_ITALIC: return "bold|italic";
+					default: return "normal";
+			}
 	}
 	
 	private String ellipsizeToString(TextUtils.TruncateAt ellipsize) {
-		    if (ellipsize == null) return "none";
-		    switch (ellipsize) {
-			        case START: return "start";
-			        case MIDDLE: return "middle";
-			        case END: return "end";
-			        case MARQUEE: return "marquee";
-			        default: return "none";
-			    }
+			if (ellipsize == null) return "none";
+			switch (ellipsize) {
+					case START: return "start";
+					case MIDDLE: return "middle";
+					case END: return "end";
+					case MARQUEE: return "marquee";
+					default: return "none";
+			}
 	}
 	
 	private String autoLinkToString(int autoLinkMask) {
-		    List<String> links = new ArrayList<>();
-		    if ((autoLinkMask & Linkify.WEB_URLS) != 0) links.add("web");
-		    if ((autoLinkMask & Linkify.EMAIL_ADDRESSES) != 0) links.add("email");
-		    if ((autoLinkMask & Linkify.PHONE_NUMBERS) != 0) links.add("phone");
-		    if ((autoLinkMask & Linkify.MAP_ADDRESSES) != 0) links.add("map");
-		    return links.isEmpty() ? "none" : String.join("|", links);
+			List<String> links = new ArrayList<>();
+			if ((autoLinkMask & Linkify.WEB_URLS) != 0) links.add("web");
+			if ((autoLinkMask & Linkify.EMAIL_ADDRESSES) != 0) links.add("email");
+			if ((autoLinkMask & Linkify.PHONE_NUMBERS) != 0) links.add("phone");
+			if ((autoLinkMask & Linkify.MAP_ADDRESSES) != 0) links.add("map");
+			return links.isEmpty() ? "none" : String.join("|", links);
 	}
 	private String getWidgetType(View widget) {
-		    if (widget instanceof WidgetTextView) return "TextView";
-		    if (widget instanceof WidgetButton) return "Button";
-		    if (widget instanceof WidgetEditText) return "EditText";
-		    if (widget instanceof WidgetImageView) return "ImageView";
-		    if (widget instanceof WidgetCircleImageView) return "CircleImageView";
-		    if (widget instanceof WidgetLinearLayout) return "LinearLayout";
-		    if (widget instanceof WidgetFrameLayout) return "FrameLayout";
-		    if (widget instanceof WidgetWebView) return "WebView";
-		    if (widget instanceof WidgetListView) return "ListView";
-		    if (widget instanceof WidgetViewPager) return "ViewPager";
-		    if (widget instanceof WidgetCheckBox) return "CheckBox";
-		    if (widget instanceof WidgetSwitch) return "Switch";
-		    if (widget instanceof WidgetVideoView) return "VideoView";
-		    if (widget instanceof WidgetProgressBar) return "ProgressBar";
-		    if (widget instanceof WidgetSeekBar) return "SeekBar";
-		    if (widget instanceof WidgetRadioButton) return "RadioButton";
-		    if (widget instanceof WidgetSearchView) return "SearchView";
-		    if (widget instanceof WidgetRatingView) return "RatingBar";
-		    if (widget instanceof WidgetDigitalClock) return "DigitalClock";
-		    if (widget instanceof WidgetTimePicker) return "TimePicker";
-		    if (widget instanceof WidgetScrollView) return "ScrollView";
-		    if (widget instanceof WidgetHorizontalScrollView) return "HorizontalScrollView";
-		    return widget.getClass().getSimpleName();
+			if (widget instanceof WidgetTextView) return "TextView";
+			if (widget instanceof WidgetButton) return "Button";
+			if (widget instanceof WidgetEditText) return "EditText";
+			if (widget instanceof WidgetImageView) return "ImageView";
+			if (widget instanceof WidgetCircleImageView) return "CircleImageView";
+			if (widget instanceof WidgetLinearLayout) return "LinearLayout";
+			if (widget instanceof WidgetFrameLayout) return "FrameLayout";
+			if (widget instanceof WidgetWebView) return "WebView";
+			if (widget instanceof WidgetListView) return "ListView";
+			if (widget instanceof WidgetViewPager) return "ViewPager";
+			if (widget instanceof WidgetCheckBox) return "CheckBox";
+			if (widget instanceof WidgetSwitch) return "Switch";
+			if (widget instanceof WidgetVideoView) return "VideoView";
+			if (widget instanceof WidgetProgressBar) return "ProgressBar";
+			if (widget instanceof WidgetSeekBar) return "SeekBar";
+			if (widget instanceof WidgetRadioButton) return "RadioButton";
+			if (widget instanceof WidgetSearchView) return "SearchView";
+			if (widget instanceof WidgetRatingView) return "RatingBar";
+			if (widget instanceof WidgetDigitalClock) return "DigitalClock";
+			if (widget instanceof WidgetTimePicker) return "TimePicker";
+			if (widget instanceof WidgetScrollView) return "ScrollView";
+			if (widget instanceof WidgetHorizontalScrollView) return "HorizontalScrollView";
+			return widget.getClass().getSimpleName();
 	}
+	
 	/**
 TUDO ; HELPER showCreateActivityDialog
 **/
@@ -2218,130 +2265,110 @@ TUDO ; HELPER showCreateActivityDialog
 		    return result.toString() + (ViewEditorFragmentActivity.useAndroidX ? "AppCompatActivity" : "Activity");
 	}
 	private void showCustomSpinnerDialog() {
-			Dialog dialog = new Dialog(this, R.style.TransparentDialogTheme);
-			dialog.setContentView(R.layout.dialog_custom_view);
-			
-			RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
-			FloatingActionButton fab = dialog.findViewById(R.id.fabAddView);
-			TextView tabView = dialog.findViewById(R.id.tabView);
-			TextView tabCustom = dialog.findViewById(R.id.tabCustomView);
-			
-			// --- initial tab styling (Views) ---
-			tabView.setBackgroundResource(R.drawable.tab_selected_left);
-			tabView.setTextColor(Color.WHITE);
-			tabCustom.setBackgroundResource(R.drawable.tab_unselected_right);
-			tabCustom.setTextColor(Color.BLACK);
-			
-			// --- common item-click handler, sync now (!) ---
-			Consumer<ViewItem> onItemSelected = item -> {
-					dialog.dismiss();
-					
-					if (DesignActivity.abc != null) {
-							String javaCode = DesignActivity.abc.getJavaCode();
-							String xmlCode = DesignActivity.abc.getXmlCode();
-							DesignActivity.abc.complex.setXmlCode(DesignActivity.abc.currentActivityBean.getLayoutName(), xmlCode);
-							DesignActivity.abc.complex.setJavaCode(DesignActivity.abc.currentActivityBean.getActivityName(), javaCode);
-					}
-					
-					if (ViewBuilderFragmentActivity.instance != null) {
-							ViewBuilderFragmentActivity.instance.saveLayout();
-					}
-					
-					// 1) Update layout name if present
-					if (!item.getXmlFileName().isEmpty()) {
-							ViewBuilderFragmentActivity.layoutName = item.getXmlFileName();
-							ViewBuilderFragmentActivity.instance.viewEditor.tv_view_name.setText(item.getXmlName() + ".xml");
-							DesignActivity.currentActivityBean.setLayoutName(item.getXmlName());
-					}
-					
-					// 2) Update activity name if present
-					if (!item.getJavaFileName().isEmpty()) {
-							ViewBuilderFragmentActivity.activityName = item.getJavaFileName();
-							EventFragmentActivity.myData = item.getJavaFileName();
-							DesignActivity.currentActivityBean.setActivityName(item.getJavaName());
-					}
-					
-					// also in case someone else wants to reload
-					if (ViewBuilderFragmentActivity.instance != null) {
-							ViewBuilderFragmentActivity.instance.loadLayout();
-							ViewBuilderFragmentActivity.instance.u();
-					}
-					if (ComponentFragmentActivity.componentFragmentActivity != null) {
-							ComponentFragmentActivity.componentFragmentActivity.c();
-					}
-					
-					runOnUiThread(() -> {
-							if (file_spinner != null && file_spinner.getAdapter() != null) {
-									String currentSelection = file_spinner.getSelectedItem().toString(); // Preserve current selection
-									
-									// You should update the spinner data source here if needed (e.g., via an ArrayAdapter)
-									// For now, assuming no actual data change
-									
-									if (currentSelection != null) {
-											setSpinnerSelection(file_spinner, currentSelection); // Restore selection
-									}
-									
-									// Select the current activity/layout if available
-									String targetItem = (tab_layout.getSelectedTabPosition() == 0)
-									? ViewBuilderFragmentActivity.layoutName
-									: ViewBuilderFragmentActivity.activityName;
-									if (targetItem != null && !targetItem.isEmpty()) {
-											setSpinnerSelection(file_spinner, targetItem);
-									}
-							}
-					});
-			};
-			
-			// --- set up the two tabs ---
-			tabView.setOnClickListener(v -> {
-					tabView.setBackgroundResource(R.drawable.tab_selected_left);
-					tabView.setTextColor(Color.WHITE);
-					tabCustom.setBackgroundResource(R.drawable.tab_unselected_right);
-					tabCustom.setTextColor(Color.BLACK);
-					// Fix: Wrap Consumer in OnViewItemClickListener
-					complex.setupViewAdapter(recyclerView, item -> onItemSelected.accept(item));
-			});
-			
-			tabCustom.setOnClickListener(v -> {
-					tabCustom.setBackgroundResource(R.drawable.tab_selected_left);
-					tabCustom.setTextColor(Color.WHITE);
-					tabView.setBackgroundResource(R.drawable.tab_unselected_right);
-					tabView.setTextColor(Color.BLACK);
-					complex.setupCustomViewRecycler(recyclerView, viewName -> {
-							// first, save current state
-							//  _save_view();
-							// then treat this as a custom ViewItem
-							ViewItem customItem = new ViewItem(
-							viewName,
-							viewName.toLowerCase() + ".xml",
-							"",  // no Java file
-							""   // no Java name
-							);
-							onItemSelected.accept(customItem);
-					});
-			});
-			
-			// --- initial load of the "View" tab ---
-			// Fix: Wrap Consumer in OnViewItemClickListener
-			complex.setupViewAdapter(recyclerView, item -> onItemSelected.accept(item));
-			
-			// --- fab to add new screens/custom views ---
-			fab.setOnClickListener(v -> {
-					if (tabView.getCurrentTextColor() == Color.WHITE) {
-							//showCreateActivityDialog();
-							yq(false, null);
-					} else {
-							showCreateCustomViewDialog();
-					}
-			});
-			
-			dialog.setOnDismissListener(d -> {
-					// no more handlers to remove now
-			});
-			
-			dialog.show();
+		    Dialog dialog = new Dialog(this, R.style.TransparentDialogTheme);
+		    dialog.setContentView(R.layout.dialog_custom_view);
+		    
+		    RecyclerView recyclerView = dialog.findViewById(R.id.recyclerView);
+		    FloatingActionButton fab = dialog.findViewById(R.id.fabAddView);
+		    MaterialButtonToggleGroup toggleGroup = dialog.findViewById(R.id.toggleGroup);
+		    MaterialButton tabView = dialog.findViewById(R.id.tabView);
+		    MaterialButton tabCustom = dialog.findViewById(R.id.tabCustomView);
+		   
+		    tabView.setChecked(true); 
+		   
+		    Consumer<ViewItem> onItemSelected = item -> {
+			        dialog.dismiss();
+			        ViewBuilderFragmentActivity.instance.viewEditor.idManager.clearAllIds();
+			        
+			        if (DesignActivity.abc != null) {
+				            String javaCode = DesignActivity.abc.getJavaCode();
+				            String xmlCode = DesignActivity.abc.getXmlCode();
+				            DesignActivity.abc.complex.setXmlCode(DesignActivity.abc.currentActivityBean.getLayoutName(), xmlCode);
+				            DesignActivity.abc.complex.setJavaCode(DesignActivity.abc.currentActivityBean.getActivityName(), javaCode);
+				        }
+			        
+			        FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+			        if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+				            ViewBuilderFragmentActivity.instance.saveLayout();
+				        }
+			        
+			        if (!item.getXmlFileName().isEmpty()) {
+				            ViewBuilderFragmentActivity.instance.layoutName = item.getXmlFileName();
+				            ViewBuilderFragmentActivity.instance.viewEditor.tv_view_name.setText(item.getXmlName() + ".xml");
+				            DesignActivity.currentActivityBean.setLayoutName(item.getXmlName());
+				            defaultLayName = item.getXmlName();
+				        }
+			        
+			        if (!item.getJavaName().isEmpty()) {
+				            ViewBuilderFragmentActivity.instance.activityName = item.getJavaName();
+				            EventFragmentActivity.myData = item.getJavaName();
+				            DesignActivity.currentActivityBean.setActivityName(item.getJavaName());
+				            defaultAcName = item.getJavaName();
+				        }
+			        
+			        if (ViewBuilderFragmentActivity.instance != null) {
+				            ViewBuilderFragmentActivity.instance.loadLayout();
+				            ViewBuilderFragmentActivity.instance.u();
+				        }
+			        if (ComponentFragmentActivity.componentFragmentActivity != null) {
+				            ComponentFragmentActivity.componentFragmentActivity.c();
+				        }
+			        
+			        runOnUiThread(() -> {
+				            if (file_spinner != null && file_spinner.getAdapter() != null) {
+					                String currentSelection = file_spinner.getSelectedItem().toString(); 
+					                
+					                if (currentSelection != null) {
+						                    setSpinnerSelection(file_spinner, currentSelection); 
+						                }
+					                
+					                String targetItem = (tab_layout.getSelectedTabPosition() == 0)
+					                    ? ViewBuilderFragmentActivity.instance.layoutName
+					                    : ViewBuilderFragmentActivity.instance.activityName;
+					                if (targetItem != null && !targetItem.isEmpty()) {
+						                    setSpinnerSelection(file_spinner, targetItem);
+						                }
+					            }
+				        });
+			    };
+		    
+		    toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+			        if (isChecked) {
+				            if (checkedId == R.id.tabView) {
+					                complex.setupViewAdapter(recyclerView, item -> onItemSelected.accept(item));
+					            } else if (checkedId == R.id.tabCustomView) {
+					                complex.setupCustomViewRecycler(recyclerView, viewName -> {
+						                   
+						                    ViewItem customItem = new ViewItem(
+						                        viewName,
+						                        viewName.toLowerCase() + ".xml",
+						                        "",  
+						                        ""  
+						                    );
+						                    onItemSelected.accept(customItem);
+						                });
+					            }
+				        }
+			    });
+		    
+		    complex.setupViewAdapter(recyclerView, item -> onItemSelected.accept(item));
+		    
+		    fab.setOnClickListener(v -> {
+			        if (tabView.isChecked()) {
+				            yq(false, null);
+				        } else {
+				            showCreateCustomViewDialog();
+				        }
+			    });
+		    
+		    dialog.setOnDismissListener(d -> {
+			       
+			    });
+		    
+		    dialog.show();
 	}
-	
 	private void showCreateCustomViewDialog() {
 		    Dialog dialog = new Dialog(this);
 		    // Move this line BEFORE setContentView()
@@ -2568,27 +2595,6 @@ TUDO ; HELPER showCreateActivityDialog
 			}
 	}
 	private void updateSpinnerContent() {
-		  /*  runOnUiThread(() -> {
-        if (file_spinner != null && file_spinner.getAdapter() != null) {
-            String currentSelection = file_spinner.getSelectedItem().toString(); // Preserve current selection
-
-            // You should update the spinner data source here if needed (e.g., via an ArrayAdapter)
-            // For now, assuming no actual data change
-
-            if (currentSelection != null) {
-                setSpinnerSelection(file_spinner, currentSelection); // Restore selection
-            }
-
-            // Select the current activity/layout if available
-            String targetItem = (tab_layout.getSelectedTabPosition() == 0)
-                    ? ViewEditorFragmentActivity.layoutName
-                    : ViewEditorFragmentActivity.activityName;
-            if (targetItem != null && !targetItem.isEmpty()) {
-                setSpinnerSelection(file_spinner, targetItem);
-            }
-        }
-    });
-    */
 	}
 	
 	private class SaveProjectTask extends AsyncTask<Void, Void, Boolean> {
@@ -3677,42 +3683,45 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		    Map<String, List<String>> activityVars = variableMap.getOrDefault(activityName, new HashMap<>());
 		    return activityVars.getOrDefault(varType, new ArrayList<>());
 	}
-	public static void removeVariable(String activityName, String varType, String varDeclare) {
+	public static void removeVariable(String activityName, String componentName, String fieldName) {
 		    try {
-			        String variablePath = projectPath + "/block_logic/project_variables.json";
+			        String componentLogicPath = projectPath + "/block_logic/project_variables.json";
+			        FileUtil.makeDir(projectPath + "/block_logic/");
 			
-			        Map<String, List<String>> activityVars = variableMap.get(activityName);
-			        if (activityVars != null) {
-				            List<String> varList = activityVars.get(varType);
-				            if (varList != null && varList.contains(varDeclare)) {
-					                varList.remove(varDeclare);
-					
-					                // Remove empty lists and activities if needed
-					                if (varList.isEmpty()) {
-						                    activityVars.remove(varType);
-						                } else {
-						                    activityVars.put(varType, varList);
+			        if (!FileUtil.isExistFile(componentLogicPath)) return;
+			
+			        String encodedJson = FileUtil.readFile(componentLogicPath);
+			        String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
+			        Type mapType = new TypeToken<Map<String, List<HashMap<String, String>>>>(){}.getType();
+			        Map<String, List<HashMap<String, String>>> componentMap = new Gson().fromJson(decodedJson, mapType);
+			
+			        if (componentMap.containsKey(activityName)) {
+				            List<HashMap<String, String>> activityComponents = componentMap.get(activityName);
+				
+				            // Use iterator to safely remove matching variable
+				            Iterator<HashMap<String, String>> iterator = activityComponents.iterator();
+				            while (iterator.hasNext()) {
+					                HashMap<String, String> componentData = iterator.next();
+					                if (componentName.equals(componentData.get("varTypeName")) &&
+					                    fieldName.equals(componentData.get("varName"))) {
+						                    iterator.remove();
 						                }
-					
-					                if (activityVars.isEmpty()) {
-						                    variableMap.remove(activityName);
-						                } else {
-						                    variableMap.put(activityName, activityVars);
-						                }
-					
-					                // Save updated map
-					                String json = new Gson().toJson(variableMap);
-					                String encodedJson = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
-					                FileUtil.writeFile(variablePath, encodedJson);
 					            }
+				
+				            // Update the map
+				            componentMap.put(activityName, activityComponents);
+				            String json = new Gson().toJson(componentMap);
+				            String encoded = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+				            FileUtil.writeFile(componentLogicPath, encoded);
 				        }
 			    } catch (Exception e) {
-			        // Handle or log error
+			        // Handle error
 			    }
 	}
+	
 	public static List<HashMap<String, String>> loadVariableLogic(String activityName) {
 		    try {
-			        String componentLogicPath = ViewEditorFragmentActivity.projectPath + "/block_logic/project_variables.json";
+			        String componentLogicPath = projectPath + "/block_logic/project_variables.json";
 			        if (FileUtil.isExistFile(componentLogicPath)) {
 				            String encodedJson = FileUtil.readFile(componentLogicPath);
 				            String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
@@ -3734,8 +3743,8 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
  */
 	public static void addFunction(String activityName, String functionName, String returnType, List<HashMap<String, String>> parameters) {
 		    try {
-			        String functionLogicPath = ViewEditorFragmentActivity.projectPath + "/block_logic/project_functions.json";
-			        FileUtil.makeDir(ViewEditorFragmentActivity.projectPath + "/block_logic/");
+			        String functionLogicPath = projectPath + "/block_logic/project_functions.json";
+			        FileUtil.makeDir(projectPath + "/block_logic/");
 			
 			        // Read existing functions
 			        Map<String, List<HashMap<String, Object>>> functionMap = new HashMap<>();
@@ -3794,7 +3803,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
  */
 	public static List<HashMap<String, Object>> loadFunctions(String activityName) {
 		    try {
-			        String functionLogicPath = ViewEditorFragmentActivity.projectPath + "/block_logic/project_functions.json";
+			        String functionLogicPath = projectPath + "/block_logic/project_functions.json";
 			        if (FileUtil.isExistFile(functionLogicPath)) {
 				            String encodedJson = FileUtil.readFile(functionLogicPath);
 				            String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
@@ -3817,8 +3826,8 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
  */
 	public static void removeFunction(String activityName, String functionName) {
 		    try {
-			        String functionLogicPath = ViewEditorFragmentActivity.projectPath + "/block_logic/project_functions.json";
-			        FileUtil.makeDir(ViewEditorFragmentActivity.projectPath + "/block_logic/");
+			        String functionLogicPath = projectPath + "/block_logic/project_functions.json";
+			        FileUtil.makeDir(projectPath + "/block_logic/");
 			
 			        // Read existing functions
 			        Map<String, List<HashMap<String, Object>>> functionMap = new HashMap<>();
@@ -3954,6 +3963,33 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			return null;
 	}
 	
+	public static List<HashMap<String, String>> loadComponentFromName(String activityName, String componentName) {
+			try {
+					String componentLogicPath = projectPath + "/component_logic/project_components.json";
+					if (FileUtil.isExistFile(componentLogicPath)) {
+							String encodedJson = FileUtil.readFile(componentLogicPath);
+							String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
+							Type mapType = new TypeToken<Map<String, List<HashMap<String, String>>>>(){}.getType();
+							Map<String, List<HashMap<String, String>>> componentMap = new Gson().fromJson(decodedJson, mapType);
+							
+							// Get components for the activity, or an empty list if none exist
+							List<HashMap<String, String>> activityComponents = componentMap.getOrDefault(activityName, new ArrayList<>());
+							
+							// Filter components to only include those with componentName "Intent"
+							List<HashMap<String, String>> intentComponents = new ArrayList<>();
+							for (HashMap<String, String> component : activityComponents) {
+									if (componentName.equals(component.get("componentName"))) {
+											intentComponents.add(component);
+									}
+							}
+							return intentComponents;
+					}
+			} catch (Exception e) {
+					// Optionally log the error or show a toast
+					// TheBlockLogicsUtil.showToast(TheBlockLogicsUtil.getContext(), "Error loading Intent components: " + e.toString());
+			}
+			return new ArrayList<>();
+	}
 	{
 	}
 	
@@ -4218,6 +4254,12 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 	
 	
 	public boolean _save_view() {
+		FragmentManager fragmentManager = getSupportFragmentManager();
+ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
+    .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
+		if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+			    ViewBuilderFragmentActivity.instance.saveLayout();
+		}
 		return true;
 	}
 	

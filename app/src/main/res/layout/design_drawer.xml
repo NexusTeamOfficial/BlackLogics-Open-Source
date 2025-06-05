@@ -23,7 +23,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal|center_vertical"
-				android:textColor="@color/textColor"
+				android:textColor="#000000"
 				android:padding="8.0dip"
 				android:textSize="14.0sp"
 				android:focusable="false" />
@@ -48,7 +48,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="left"
-			android:textColor="@color/textColor"
+			android:textColor="#000000"
 			android:padding="8.0dip"
 			android:textSize="14.0sp"
 			android:focusable="false" />

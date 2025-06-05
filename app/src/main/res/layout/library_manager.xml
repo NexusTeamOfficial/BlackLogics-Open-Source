@@ -44,7 +44,7 @@
 					android:padding="4dp"
 					android:text="AppCompat and Design"
 					android:textSize="14sp"
-					android:textColor="@color/text_color" />
+					android:textColor="#000000" />
 				<com.google.android.material.textview.MaterialTextView
 					android:id="@+id/textview1"
 					android:layout_width="wrap_content"
@@ -52,7 +52,7 @@
 					android:padding="2dp"
 					android:text="DrawerLayout, FloatingActionButton"
 					android:textSize="12sp"
-					android:textColor="@color/text_color" />
+					android:textColor="#000000" />
 			</LinearLayout>
 		</LinearLayout>
 	</com.google.android.material.card.MaterialCardView>

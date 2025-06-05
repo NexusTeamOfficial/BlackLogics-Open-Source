@@ -77,13 +77,23 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashMap;
+
+import com.github.angads25.filepicker.controller.DialogSelectionListener;
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.content.pm.PackageManager;
 
 public class BlocksManagerDetailsActivity extends AppCompatActivity {
 	
 	private FloatingActionButton _fab;
 	public float dip = 0.0f;
 	private String paletteIndex = "";
+	private static final int REQUEST_STORAGE_PERMISSION = 100;
+	private FilePickerDialog filePickerDialog;
 	
 	private ArrayList<HashMap<String, Object>> blockList = new ArrayList<>();
 	
@@ -140,8 +150,9 @@ public class BlocksManagerDetailsActivity extends AppCompatActivity {
 		title.setText("Manage Block");
 		loadFile.setColorFilter(0xFFFFFFFF, PorterDuff.Mode.MULTIPLY);
 		loadFile.setImageResource(R.drawable.ic_more_vert_black);
-		loadFile.setVisibility(View.GONE);
+		loadFile.setVisibility(View.VISIBLE);
 		Helper.applyRippleToToolbarView(loadFile);
+		loadFile.setOnClickListener(v -> showImportExportMenu());
 		paletteIndex = getIntent().getStringExtra("paletteIndex");
 		
 		// Load blocks and set adapter
@@ -201,7 +212,7 @@ public class BlocksManagerDetailsActivity extends AppCompatActivity {
 	private void addBlockToPalette(RelativeLayout blockBuilder, String str, String str2, String str3, int i, Object... objArr) {
 			BlockBase addBlock = addBlock(blockBuilder, str, str2, str3, i, objArr);
 			addBlock.setClickable(false);
-		//	addBlock.setOnTouchListener(this);
+			//	addBlock.setOnTouchListener(this);
 	}
 	
 	public BlockBase addBlock(RelativeLayout blockBuilder, String str, String str2, String str3, int i, Object... objArr) {
@@ -214,7 +225,223 @@ public class BlocksManagerDetailsActivity extends AppCompatActivity {
 			return block;
 	}
 	
+	private void showImportExportMenu() {
+			PopupMenu popup = new PopupMenu(this, findViewById(R.id.ig_toolbar_load_file));
+			popup.getMenu().add("Export Blocks");
+			popup.getMenu().add("Import Blocks");
+			popup.setOnMenuItemClickListener(item -> {
+					if (item.getTitle().equals("Export Blocks")) {
+							checkStoragePermissions("export");
+					} else if (item.getTitle().equals("Import Blocks")) {
+							checkStoragePermissions("import");
+					}
+					return true;
+			});
+			popup.show();
+	}
+	
+	private void checkStoragePermissions(String action) {
+			if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+			ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+					ActivityCompat.requestPermissions(this, 
+					new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					REQUEST_STORAGE_PERMISSION);
+					// Store the action to perform after permission is granted
+					intent.putExtra("pendingAction", action);
+			} else {
+					if (action.equals("export")) {
+							exportBlocks();
+					} else {
+							importBlocks();
+					}
+			}
+	}
+	
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+			if (requestCode == REQUEST_STORAGE_PERMISSION && grantResults.length > 0 && 
+			grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					String action = intent.getStringExtra("pendingAction");
+					if (action != null) {
+							if (action.equals("export")) {
+									exportBlocks();
+							} else if (action.equals("import")) {
+									importBlocks();
+							}
+							intent.removeExtra("pendingAction");
+					}
+			} else {
+					showMessage("Storage permissions denied");
+			}
+	}
+	
+	private void exportBlocks() {
+			DialogProperties properties = new DialogProperties();
+			properties.selection_mode = DialogConfigs.SINGLE_MODE;
+			properties.selection_type = DialogConfigs.DIR_SELECT;
+			properties.root = new File("/storage/emulated/0/");
+			properties.error_dir = new File("/storage/emulated/0/");
+			properties.offset = new File("/storage/emulated/0/.blacklogics/resources/block/Export blocks/");
+			properties.extensions = null;
+			
+			filePickerDialog = new FilePickerDialog(this, properties);
+			filePickerDialog.setTitle("Select Export Directory");
+			filePickerDialog.setDialogSelectionListener(new DialogSelectionListener() {
+					@Override
+					public void onSelectedFilePaths(String[] files) {
+							if (files.length > 0) {
+									String selectedDir = files[0];
+									exportBlocksToFile(selectedDir);
+							}
+					}
+			});
+			filePickerDialog.show();
+	}
+	
+	private void exportBlocksToFile(String selectedDir) {
+			try {
+					String blockPath = "/storage/emulated/0/.blacklogics/resources/block/My Block/block.json";
+					File blockFile = new File(blockPath);
+					String exportDirPath = selectedDir.endsWith("/") ? selectedDir : selectedDir + "/";
+					String paletteName = "palette_" + paletteIndex; // Replace with actual palette name if available
+					String exportFilePath = exportDirPath + paletteName + ".json";
+					File exportFile = new File(exportFilePath);
+					
+					// Ensure export directory exists
+					File exportDir = new File(exportDirPath);
+					if (!exportDir.exists()) {
+							exportDir.mkdirs();
+					}
+					
+					if (blockFile.exists()) {
+							BufferedReader reader = new BufferedReader(new FileReader(blockFile));
+							StringBuilder jsonString = new StringBuilder();
+							String line;
+							while ((line = reader.readLine()) != null) {
+									jsonString.append(line);
+							}
+							reader.close();
+							
+							// Filter blocks by current paletteIndex
+							JSONArray jsonArray = new JSONArray(jsonString.toString());
+							JSONArray filteredArray = new JSONArray();
+							for (int i = 0; i < jsonArray.length(); i++) {
+									JSONObject blockObj = jsonArray.getJSONObject(i);
+									if (blockObj.getString("palette").equals(paletteIndex)) {
+											filteredArray.put(blockObj);
+									}
+							}
+							
+							// Write filtered blocks to the export file
+							try (FileWriter writer = new FileWriter(exportFile)) {
+									writer.write(filteredArray.toString(2));
+									showMessage("Blocks exported successfully to " + exportFilePath);
+							}
+					} else {
+							showMessage("No blocks file found to export");
+					}
+			} catch (Exception e) {
+					e.printStackTrace();
+					showMessage("Error exporting blocks: " + e.getMessage());
+			}
+	}
+	
+	private void importBlocks() {
+			DialogProperties properties = new DialogProperties();
+			properties.selection_mode = DialogConfigs.SINGLE_MODE;
+			properties.selection_type = DialogConfigs.FILE_SELECT;
+			properties.root = new File("/storage/emulated/0/");
+			properties.error_dir = new File("/storage/emulated/0/");
+			properties.offset = new File("/storage/emulated/0/.blacklogics/resources/block/Export blocks/");
+			properties.extensions = new String[]{"json"};
+			
+			filePickerDialog = new FilePickerDialog(this, properties);
+			filePickerDialog.setTitle("Select JSON File to Import");
+			filePickerDialog.setDialogSelectionListener(new DialogSelectionListener() {
+					@Override
+					public void onSelectedFilePaths(String[] files) {
+							if (files.length > 0) {
+									String selectedFile = files[0];
+									importBlocksFromFile(selectedFile);
+							}
+					}
+			});
+			filePickerDialog.show();
+	}
+	
+	private void importBlocksFromFile(String selectedFile) {
+			try {
+					String blockPath = "/storage/emulated/0/.blacklogics/resources/block/My Block/block.json";
+					File blockFile = new File(blockPath);
+					File parentDir = blockFile.getParentFile();
+					if (!parentDir.exists()) {
+							parentDir.mkdirs();
+					}
+					
+					// Read imported JSON
+					File importFile = new File(selectedFile);
+					if (importFile.exists()) {
+							BufferedReader reader = new BufferedReader(new FileReader(importFile));
+							StringBuilder jsonString = new StringBuilder();
+							String line;
+							while ((line = reader.readLine()) != null) {
+									jsonString.append(line);
+							}
+							reader.close();
+							
+							// Parse imported JSON (expecting an array of blocks)
+							JSONArray importedArray = new JSONArray(jsonString.toString());
+							JSONArray existingArray = new JSONArray();
+							
+							// Read existing blocks if file exists
+							if (blockFile.exists()) {
+									BufferedReader existingReader = new BufferedReader(new FileReader(blockFile));
+									StringBuilder existingJson = new StringBuilder();
+									while ((line = existingReader.readLine()) != null) {
+											existingJson.append(line);
+									}
+									existingReader.close();
+									existingArray = new JSONArray(existingJson.toString());
+							}
+							
+							// Keep blocks that don't belong to the current palette
+							JSONArray otherPalettesArray = new JSONArray();
+							for (int i = 0; i < existingArray.length(); i++) {
+									JSONObject blockObj = existingArray.getJSONObject(i);
+									if (!blockObj.getString("palette").equals(paletteIndex)) {
+											otherPalettesArray.put(blockObj);
+									}
+							}
+							
+							// Merge imported blocks into the current palette
+							for (int i = 0; i < importedArray.length(); i++) {
+									JSONObject blockObj = importedArray.getJSONObject(i);
+									blockObj.put("palette", paletteIndex);
+									otherPalettesArray.put(blockObj);
+							}
+							
+							// Write merged blocks back to file
+							try (FileWriter writer = new FileWriter(blockFile)) {
+									writer.write(otherPalettesArray.toString(2));
+							}
+							
+							// Reload blocks to update UI
+							blockList.clear();
+							loadBlocksFromJson(paletteIndex);
+							((BaseAdapter) listview1.getAdapter()).notifyDataSetChanged();
+							showMessage("Blocks imported successfully from " + selectedFile);
+					} else {
+							showMessage("Selected file not found");
+					}
+			} catch (Exception e) {
+					e.printStackTrace();
+					showMessage("Error importing blocks: " + e.getMessage());
+			}
+	}
+	
 	{
+			
 			
 	}
 	

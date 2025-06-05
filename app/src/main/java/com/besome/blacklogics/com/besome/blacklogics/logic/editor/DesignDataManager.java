@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.besome.blacklogics.DesignActivity;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -809,6 +811,7 @@ public class DesignDataManager {
 			dataMap.put("blocks", eventMap);
 			dataMap.put("variables", mapVariables);
 			dataMap.put("functions", mapFunctions); 
+			dataMap.put("lists", mapLists); 
 			
 			// Serialize the entire data map to JSON
 			String json = new Gson().toJson(dataMap);
@@ -853,6 +856,11 @@ public class DesignDataManager {
 			? deserializeFunctionMapFromJson(new Gson().toJson(dataMap.get("functions")))
 			: new HashMap<>();
 			
+			mapLists = dataMap.containsKey("lists")
+			? deserializeListMapFromJson(new Gson().toJson(dataMap.get("lists")))
+			: new HashMap<>();
+			
+			
 			// Return the blocks for the specified sc_id and key
 			return mapBlocks.containsKey(sc_id) && mapBlocks.get(sc_id).containsKey(key)
 			? mapBlocks.get(sc_id).get(key)
@@ -888,4 +896,13 @@ public class DesignDataManager {
 		}
 		return gson.fromJson(json, new TypeToken<Map<String, ArrayList<Pair<Integer, String>>>>(){}.getType());
 	}
+	
+	public static Map<String, ArrayList<Pair<Integer, String>>> deserializeListMapFromJson(String json) {
+		Gson gson = new Gson();
+		if (json == null || json.isEmpty()) {
+			return new HashMap<>();
+		}
+		return gson.fromJson(json, new TypeToken<Map<String, ArrayList<Pair<Integer, String>>>>(){}.getType());
+	}
+	
 }

@@ -114,14 +114,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import com.besome.blacklogics.R;
+import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.FileUtil;
 import com.besome.blacklogics.SketchwareUtil;
+import com.besome.blacklogics.logic.editor.LogicEditorActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.shapun.layouteditor.*;
 import com.shapun.layouteditor.utils.*;
+import java.io.StringReader;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -139,6 +142,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.Stack;
+import java.lang.ClassNotFoundException;
+import java.lang.InstantiationException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.NoSuchMethodException;
+import java.lang.IllegalAccessException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -160,7 +168,7 @@ public class ViewEditor extends LinearLayout {
 	private ImageView img_copy;
 	private ImageView img_add_image;
 	private LinearLayout linear8;
-	public static LinearLayout editorLayout;
+	public  LinearLayout editorLayout;
 	private ImageView img_add_view;
 	private RecyclerView listview_widgets;
 	
@@ -177,7 +185,7 @@ public class ViewEditor extends LinearLayout {
 	public HashMap<View, AttributeSet> oldAttributesValueMap = new HashMap<>();
 	
 	public String id = "";
-	public static String SAVE_PATH = "";
+	public String SAVE_PATH = "";
 	public int index;
 	private Vibrator vib;
 	private View placeHolder;
@@ -187,12 +195,14 @@ public class ViewEditor extends LinearLayout {
 	private HashMap<String, ArrayList<HashMap<String, Object>>> parentAttributesMap = new HashMap<>();
 	private HashMap<View, AttributeSet> attributesValueMap = new HashMap<>();
 	public static IdManager idManager = new IdManager();
-	public static IdManager oldIdManager = new IdManager();
+	public IdManager oldIdManager = new IdManager();
 	private OnWidgetAdd onWidgetAddListener;
 	// Undo/Redo stacks (action-based)
 	private Stack<EditorAction> undoStack = new Stack<>();
 	private Stack<EditorAction> redoStack = new Stack<>();
 	private boolean isUndoRedoInProgress = false;
+	
+	public Intent intent = new Intent();
 	
 	// Action types
 	private static final int ACTION_ADD_VIEW = 1;
@@ -264,7 +274,7 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	public void setPath(String SAVE_PATH) {
-		ViewEditor.SAVE_PATH = SAVE_PATH;
+		this.SAVE_PATH = SAVE_PATH;
 	}
 	
 	public void setCurrentViewGroup(ViewGroup viewGroup) {
@@ -334,6 +344,12 @@ public class ViewEditor extends LinearLayout {
 			});
 			inputDialog.setView(edittext);
 			inputDialog.show();
+		});
+		editorLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				hideProperties();
+			}
 		});
 	}
 	
@@ -688,7 +704,12 @@ public class ViewEditor extends LinearLayout {
 		dialog.show();
 	}
 	
-	private void showAttributesDialog(final View view) {
+	/*
+	* Modified showAttributesDialog method to use a tabbed layout with Attributes and Events tabs,
+	* supporting listeners like onClick, onTouch, and onLongPress based on widget type.
+	*/
+	
+	public void showAttributesDialog(final View view) {
 		// Initialize attributes list
 		final ArrayList<HashMap<String, Object>> attributesList = new ArrayList<>();
 		Class<?> cls = view.getClass();
@@ -703,7 +724,7 @@ public class ViewEditor extends LinearLayout {
 			cls = cls.getSuperclass();
 		}
 		
-		// Collect parent-dependent attributes (e.g., layout params) if parent is a ViewGroup
+		// Collect parent-dependent attributes
 		if (view.getParent() instanceof ViewGroup) {
 			cls = view.getParent().getClass();
 			while (cls != viewParentClass) {
@@ -715,6 +736,78 @@ public class ViewEditor extends LinearLayout {
 			}
 		}
 		
+		// Initialize listeners list based on widget type
+		final ArrayList<HashMap<String, Object>> listenersList = new ArrayList<>();
+		String viewType = view.getClass().getSimpleName().toLowerCase();
+		
+		// Common listeners for most views
+		listenersList.add(createListenerMap("onClick", "View.OnClickListener"));
+		listenersList.add(createListenerMap("onLongPress", "View.OnLongPressListener"));
+		listenersList.add(createListenerMap("onTouch", "View.OnTouchListener"));
+		
+		// EditText and text-based views
+		if (viewType.contains("edittext") || viewType.contains("textview")) {
+			listenersList.add(createListenerMap("onTextChanged", "TextWatcher"));
+			listenersList.add(createListenerMap("afterTextChanged", "TextWatcher"));
+		}
+		
+		// Button and ImageButton
+		if (viewType.contains("button") || viewType.contains("imagebutton")) {
+			listenersList.add(createListenerMap("onLongClick", "View.OnLongClickListener"));
+		}
+		
+		// SeekBar
+		if (viewType.contains("seekbar")) {
+			listenersList.add(createListenerMap("onProgressChanged", "SeekBar.OnSeekBarChangeListener"));
+			listenersList.add(createListenerMap("onStartTrackingTouch", "SeekBar.OnSeekBarChangeListener"));
+			listenersList.add(createListenerMap("onStopTrackingTouch", "SeekBar.OnSeekBarChangeListener"));
+		}
+		
+		// CheckBox, Switch, ToggleButton
+		if (viewType.contains("checkbox") || viewType.contains("switch") || viewType.contains("togglebutton")) {
+			listenersList.add(createListenerMap("onCheckedChanged", "CompoundButton.OnCheckedChangeListener"));
+		}
+		
+		// ListView, RecyclerView, Spinner
+		if (viewType.contains("listview") || viewType.contains("recyclerview")) {
+			listenersList.add(createListenerMap("onItemClick", "AdapterView.OnItemClickListener"));
+			listenersList.add(createListenerMap("onItemLongClick", "AdapterView.OnItemLongClickListener"));
+		}
+		if (viewType.contains("spinner")) {
+			listenersList.add(createListenerMap("onItemSelected", "AdapterView.OnItemSelectedListener"));
+			listenersList.add(createListenerMap("onNothingSelected", "AdapterView.OnItemSelectedListener"));
+		}
+		
+		// ViewPager
+		if (viewType.contains("viewpager")) {
+			listenersList.add(createListenerMap("onPageSelected", "ViewPager.OnPageChangeListener"));
+			listenersList.add(createListenerMap("onPageScrolled", "ViewPager.OnPageChangeListener"));
+			listenersList.add(createListenerMap("onPageScrollStateChanged", "ViewPager.OnPageChangeListener"));
+		}
+		
+		// ScrollView
+		if (viewType.contains("scrollview")) {
+			listenersList.add(createListenerMap("onScrollChanged", "ViewTreeObserver.OnScrollChangedListener"));
+		}
+		
+		// RatingBar
+		if (viewType.contains("ratingbar")) {
+			listenersList.add(createListenerMap("onRatingChanged", "RatingBar.OnRatingBarChangeListener"));
+		}
+		
+		// TextInputLayout or custom fields
+		if (viewType.contains("textinput")) {
+			listenersList.add(createListenerMap("onTextChanged", "TextWatcher"));
+		}
+		
+		// WebView
+		if (viewType.contains("webview")) {
+			listenersList.add(createListenerMap("onPageStarted", "WebViewClient"));
+			listenersList.add(createListenerMap("onPageFinished", "WebViewClient"));
+			listenersList.add(createListenerMap("shouldOverrideUrlLoading", "WebViewClient"));
+		}
+		
+		
 		// Create or clear attributes container
 		if (attributesContainer == null) {
 			attributesContainer = new LinearLayoutCompat(getContext());
@@ -723,7 +816,6 @@ public class ViewEditor extends LinearLayout {
 			ViewGroup.LayoutParams.MATCH_PARENT,
 			ViewGroup.LayoutParams.WRAP_CONTENT));
 			attributesContainer.setBackgroundColor(0xFFFFFFFF);
-			// Add to the root view of the activity
 			((ViewGroup) ((Activity) getContext()).getWindow().findViewById(android.R.id.content))
 			.addView(attributesContainer);
 		} else {
@@ -732,22 +824,36 @@ public class ViewEditor extends LinearLayout {
 		
 		showProperties();
 		
-		// Inflate attributes UI into attributesContainer
+		// Inflate new tabbed layout
 		View inflated = LayoutInflater.from(getContext()).inflate(R.layout.attributes_bottom_sheet, attributesContainer, false);
 		attributesContainer.addView(inflated);
 		
 		// Initialize UI components
 		final TextView tv_view_id = inflated.findViewById(R.id.tv_view_id);
 		final RecyclerView rv_attributes = inflated.findViewById(R.id.rv_attributes);
+		final RecyclerView rv_listeners = inflated.findViewById(R.id.listeners);
 		final ImageView img_edit_id = inflated.findViewById(R.id.img_edit_id);
 		final ImageView img_common_attributes = inflated.findViewById(R.id.img_common_attributes);
 		final ImageView img_custom = inflated.findViewById(R.id.img_custom);
+		final com.google.android.material.tabs.TabLayout tabLayout = inflated.findViewById(R.id.attributesOrListener);
+		final LinearLayout attributesTab = inflated.findViewById(R.id.attributesTab);
+		final LinearLayout eventTab = inflated.findViewById(R.id.eventTab);
 		
-		// Setup RecyclerView for attributes
-		LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-		rv_attributes.setLayoutManager(layoutManager);
-		AttributeRecyclerAdapter adapter = new AttributeRecyclerAdapter(getContext(), attributesList);
-		rv_attributes.setAdapter(adapter);
+		// Setup TabLayout
+		tabLayout.removeAllTabs();
+		tabLayout.addTab(tabLayout.newTab().setText("attributes"));
+		tabLayout.addTab(tabLayout.newTab().setText("events"));
+		
+		// Setup RecyclerViews
+		LinearLayoutManager attrLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+		rv_attributes.setLayoutManager(attrLayoutManager);
+		AttributeRecyclerAdapter attrAdapter = new AttributeRecyclerAdapter(getContext(), attributesList);
+		rv_attributes.setAdapter(attrAdapter);
+		
+		LinearLayoutManager listenerLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+		rv_listeners.setLayoutManager(listenerLayoutManager);
+		ListenerRecyclerAdapter listenerAdapter = new ListenerRecyclerAdapter(getContext(), listenersList);
+		rv_listeners.setAdapter(listenerAdapter);
 		
 		// Set corner radius and background
 		GradientDrawable background = new GradientDrawable();
@@ -759,6 +865,26 @@ public class ViewEditor extends LinearLayout {
 		
 		// Set view ID
 		tv_view_id.setText(idManager.getId(view));
+		
+		// Tab selection listener
+		tabLayout.addOnTabSelectedListener(new com.google.android.material.tabs.TabLayout.OnTabSelectedListener() {
+			@Override
+			public void onTabSelected(com.google.android.material.tabs.TabLayout.Tab tab) {
+				if (tab.getPosition() == 0) {
+					attributesTab.setVisibility(View.VISIBLE);
+					eventTab.setVisibility(View.GONE);
+				} else {
+					attributesTab.setVisibility(View.GONE);
+					eventTab.setVisibility(View.VISIBLE);
+				}
+			}
+			
+			@Override
+			public void onTabUnselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+			
+			@Override
+			public void onTabReselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+		});
 		
 		// Edit ID listener
 		img_edit_id.setOnClickListener(v -> {
@@ -783,7 +909,7 @@ public class ViewEditor extends LinearLayout {
 		img_custom.setOnClickListener(v -> showCustomAttributesDialog(view));
 		
 		// Attribute item click listener
-		adapter.setOnItemClickListener(position -> {
+		attrAdapter.setOnItemClickListener(position -> {
 			final HashMap<String, Object> attribute = attributesList.get(position);
 			final String attrName = attribute.get("attribute_name").toString();
 			final String attrType = attribute.get("argument_type").toString();
@@ -794,6 +920,7 @@ public class ViewEditor extends LinearLayout {
 			String currentValue = attrSet != null && attrSet.getAttribute(attrName) != null ?
 			attrSet.getAttribute(attrName).getValue() : "";
 			
+			// Handle attribute input dialogs (unchanged from original)
 			switch (attrType) {
 				case "boolean":
 				final RadioGroup rg = new RadioGroup(getContext());
@@ -1107,6 +1234,24 @@ public class ViewEditor extends LinearLayout {
 			inputDialog.show();
 		});
 		
+		// Listener item click listener
+		listenerAdapter.setOnItemClickListener(position -> {
+			DesignActivity designActivity = (DesignActivity) getContext();
+			final HashMap<String, Object> listener = listenersList.get(position);
+			final String listenerName = listener.get("name").toString();
+			final String listenerType = listener.get("type").toString();
+			
+			intent.putExtra("id", "onClick" + idManager.getId(view) + DesignActivity.currentActivityBean.getActivityName());
+			intent.putExtra("event", "onClick");
+			intent.putExtra("event_text", idManager.getId(view));
+			intent.putExtra("filename", idManager.getId(view) + DesignActivity.currentActivityBean.getActivityName() + listenerType);
+			intent.putExtra("sc_id", DesignActivity.getScId());
+			intent.putExtra("activityName", DesignActivity.currentActivityBean.getActivityName());
+			intent.putExtra("widgetId", idManager.getId(view));
+			intent.setClass(getContext(), LogicEditorActivity.class);
+			getContext().startActivity(intent);
+		});
+		
 		// Set listeners for the view
 		_rearrangeListener(view);
 		if (view instanceof ViewGroup) {
@@ -1115,37 +1260,125 @@ public class ViewEditor extends LinearLayout {
 		}
 	}
 	
-	String generateCode(View view) {
+	// Helper method to create listener map
+	private HashMap<String, Object> createListenerMap(String name, String type) {
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("name", name);
+		map.put("type", type);
+		return map;
+	}
+	
+	// New RecyclerView Adapter for listeners
+	public class ListenerRecyclerAdapter extends RecyclerView.Adapter<ListenerRecyclerAdapter.ViewHolder> {
+		private ArrayList<HashMap<String, Object>> data;
+		private Context context;
+		private AttributeRecyclerAdapter.OnItemClickListener listener;
+		
+		public ListenerRecyclerAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
+			this.context = context;
+			this.data = data;
+		}
+		
+		public void setOnItemClickListener(AttributeRecyclerAdapter.OnItemClickListener listener) {
+			this.listener = listener;
+		}
+		
+		@NonNull
+		@Override
+		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+			View view = LayoutInflater.from(context).inflate(R.layout.attribute_view, parent, false);
+			return new ViewHolder(view);
+		}
+		
+		@Override
+		public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+			HashMap<String, Object> item = data.get(position);
+			String listenerName = item.get("name").toString();
+			holder.tvName.setText(listenerName);
+			
+			// Set icon based on listener type (customize as needed)
+			holder.ivIcon.setVisibility(View.GONE);
+			/*
+			if (listenerName.equals("onClick")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_touch_app_48);
+			} else if (listenerName.equals("onLongPress") || listenerName.equals("onLongClick")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_gesture_48);
+			} else if (listenerName.equals("onTouch")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_swipe_48);
+			} else if (listenerName.equals("onTextChanged")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_text_fields_48);
+			} else if (listenerName.equals("onProgressChanged")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_sliders_48);
+			} else if (listenerName.equals("onCheckedChanged")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_check_box_48);
+			} else if (listenerName.equals("onItemClick")) {
+			holder.ivIcon.setImageResource(R.drawable.ic_list_48);
+			} else {
+			holder.ivIcon.setVisibility(View.GONE);
+			}*/
+			
+			holder.itemView.setOnClickListener(v -> {
+				if (listener != null) {
+					listener.onItemClick(position);
+				}
+			});
+		}
+		
+		@Override
+		public int getItemCount() {
+			return data.size();
+		}
+		
+		public class ViewHolder extends RecyclerView.ViewHolder {
+			TextView tvName;
+			ImageView ivIcon;
+			
+			public ViewHolder(@NonNull View itemView) {
+				super(itemView);
+				tvName = itemView.findViewById(R.id.tv_name);
+				ivIcon = itemView.findViewById(R.id.iv_icon);
+			}
+		}
+	}
+	
+	private String generateCode(View view) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<").append(view.getClass().getSimpleName());
+		
+		String tagName = view.getClass().getSimpleName();
+		sb.append("<").append(tagName);
 		
 		AttributeSet attributeSet = attributesValueMap.get(view);
 		if (attributeSet != null) {
-			StringBuilder attrBuilder = new StringBuilder();
 			for (Attribute attr : attributeSet.getAttributes()) {
-				// Skip xmlns:android to avoid duplicates
-				if (!attr.getName().equals("xmlns:android")) {
-					attrBuilder.append("    ").append(attr.getName()).append("=\"")
-					.append(attr.getValue()).append("\"\n");
+				// Skip xmlns:android to avoid redundancy
+				if (!"xmlns:android".equals(attr.getName())) {
+					sb.append("\n    ").append(attr.getName()).append("=\"")
+					.append(attr.getValue()).append("\"");
 				}
-			}
-			if (attrBuilder.length() > 0) {
-				sb.append("\n").append(attrBuilder.toString().trim());
 			}
 		}
 		
 		if (view instanceof ViewGroup) {
 			sb.append(">\n");
-			for (int i = 0; i < ((ViewGroup)view).getChildCount(); i++) {
-				View child = ((ViewGroup)view).getChildAt(i);
-				String childXml = generateCode(child);
-				sb.append(childXml.replaceAll("(?m)^", "    ")).append("\n");
+			
+			ViewGroup group = (ViewGroup) view;
+			for (int i = 0; i < group.getChildCount(); i++) {
+				String childXml = generateCode(group.getChildAt(i));
+				sb.append(indent(childXml, 4)).append("\n");
 			}
-			sb.append("</").append(view.getClass().getSimpleName()).append(">");
+			
+			sb.append("</").append(tagName).append(">");
 		} else {
-			sb.append("/>");
+			sb.append(" />");
 		}
+		
 		return sb.toString();
+	}
+	
+	// Helper method for indenting child views
+	private String indent(String xml, int spaces) {
+		String pad = " ".repeat(spaces);
+		return xml.replaceAll("(?m)^", pad);
 	}
 	
 	public String generateCode(View view, boolean isRoot) {
@@ -1201,6 +1434,7 @@ public class ViewEditor extends LinearLayout {
 				final int action = event.getAction();
 				switch (action) {
 					case DragEvent.ACTION_DRAG_STARTED:
+					hideProperties();
 					log("drag started" + destinationView.toString());
 					if (draggedView != null) ViewGroupUtils.removeView(draggedView);
 					log("start ended");
@@ -1594,153 +1828,92 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	public void saveLayout(String layoutName) {
+		if (SAVE_PATH == null || SAVE_PATH.isEmpty() || layoutName == null || layoutName.trim().isEmpty())
+		return;
+		
 		try {
-			// Validate inputs
-			if (SAVE_PATH == null || SAVE_PATH.isEmpty()) {
-				//SketchwareUtil.showMessage(getContext(), "SAVE_PATH is not set");
-				return;
-			}
-			if (layoutName == null || layoutName.trim().isEmpty()) {
-				//	SketchwareUtil.showMessage(getContext(), "Layout name cannot be empty");
-				return;
-			}
+			String xmlCode = cleanXML(getXMLCode());
 			
-			// Generate XML
-			StringBuilder xmlBuilder = new StringBuilder();
-			if (editorLayout.getChildCount() == 0) {
-				/*	xmlBuilder.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
-				.append("<LinearLayout\n")
-				.append("    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n")
-				.append("    android:layout_width=\"match_parent\"\n")
-				.append("    android:layout_height=\"match_parent\"\n")
-				.append("    android:orientation=\"vertical\">\n")
-				.append("</LinearLayout>");*/
-			} else {
-				View view = editorLayout.getChildAt(0);
-				String xmlCode = generateCode(view);
-				xmlCode = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-				xmlCode.substring(0, xmlCode.indexOf("\n")) + "\n" +
-				"xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
-				xmlCode.substring(xmlCode.indexOf("\n"));
-				xmlBuilder.append(xmlCode);
-				
-			}
-			String xmlCode = xmlBuilder.toString();
-			Log.d("ViewEditor", "Generated XML: " + xmlCode);
+			if (!validateXML(xmlCode)) return;
 			
-			// Prepare layout data
+			if (editorLayout.getChildCount() == 0) return;
+			
+			View rootView = editorLayout.getChildAt(0);
+			String rawXml = generateCode(rootView);
+			
+			String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+			rawXml.substring(0, rawXml.indexOf("\n")) + "\n" +
+			"xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
+			rawXml.substring(rawXml.indexOf("\n"));
+			
 			HashMap<String, Object> layoutData = new HashMap<>();
-			layoutData.put("name", layoutName);
-			layoutData.put("xml", xmlCode);
+			layoutData.put("name", layoutName.trim());
+			layoutData.put("xml", formattedXml);
 			
-			// Prepare file path and ensure directory exists
-			String layoutsFile = SAVE_PATH + "/root_layout.json";
-			File file = new File(layoutsFile);
-			File parentDir = file.getParentFile();
-			if (!parentDir.exists() && !parentDir.mkdirs()) {
-				SketchwareUtil.showMessage(getContext(), "Failed to create directory: " + parentDir);
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			File file = new File(layoutFilePath);
+			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+				SketchwareUtil.showMessage(getContext(), "Directory creation failed: " + file.getParent());
 				return;
 			}
 			
-			// Read existing layouts or create new list
-			ArrayList<HashMap<String, Object>> layoutsList;
-			if (FileUtil.isExistFile(layoutsFile)) {
-				String json = FileUtil.readFile(layoutsFile);
-				layoutsList = new Gson().fromJson(json,
-				new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-			} else {
-				layoutsList = new ArrayList<>();
-			}
+			ArrayList<HashMap<String, Object>> layoutList = FileUtil.isExistFile(layoutFilePath)
+			? new Gson().fromJson(FileUtil.readFile(layoutFilePath),
+			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType())
+			: new ArrayList<>();
 			
-			// Remove existing layout with the same name (case-insensitive)
-			layoutsList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
-			layoutsList.add(layoutData);
+			layoutList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
+			layoutList.add(layoutData);
 			
-			// Serialize to JSON
-			String json = new Gson().toJson(layoutsList);
-			Log.d("ViewEditor", "JSON: " + json);
+			FileUtil.writeFile(layoutFilePath, new Gson().toJson(layoutList));
 			
-			// Write to file
-			FileUtil.writeFile(layoutsFile, json);
-			//SketchwareUtil.showMessage(getContext(), "Layout '" + layoutName + "' saved successfully");
-			
+			// SketchwareUtil.showMessage(getContext(), "Layout saved: " + layoutName);
 		} catch (Exception e) {
-			SketchwareUtil.showMessage(getContext(), "Error saving layout: " + e.getMessage());
-			Log.e("ViewEditor", "saveLayout failed", e);
+			SketchwareUtil.showMessage(getContext(), "Error: " + e.getMessage());
+			Log.e("ViewEditor", "saveLayout() failed", e);
 		}
 	}
 	
+	
 	public void loadLayout(String layoutName) {
+		editorLayout.removeAllViews();
+		if (layoutName == null || layoutName.trim().isEmpty()) return;
+		
 		try {
 			
-			// Clear current editor
-			editorLayout.removeAllViews();
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			if (!FileUtil.isExistFile(layoutFilePath)) return;
 			
-			// Read layouts file
-			String layoutsFile = SAVE_PATH + "/root_layout.json";
-			if (!FileUtil.isExistFile(layoutsFile)) {
-				// SketchwareUtil.showMessage(getContext(), "No saved layouts found");
-				return;
-			}
-			
-			// Parse JSON
-			String json = FileUtil.readFile(layoutsFile);
-			ArrayList<HashMap<String, Object>> layoutsList = new Gson().fromJson(json,
+			ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(FileUtil.readFile(layoutFilePath),
 			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
 			
-			// Find layout by name
-			HashMap<String, Object> targetLayout = null;
-			for (HashMap<String, Object> layout : layoutsList) {
-				if (layoutName.equals(layout.get("name"))) {
-					targetLayout = layout;
-					break;
-				}
-			}
+			HashMap<String, Object> targetLayout = layoutList.stream()
+			.filter(layout -> layoutName.equals(layout.get("name")))
+			.findFirst().orElse(null);
 			
-			if (targetLayout == null) {
-				// SketchwareUtil.showMessage(getContext(), "Layout '" + layoutName + "' not found");
-				return;
-			}
+			if (targetLayout == null) return;
 			
-			// Backup current state in case loading fails
+			// Backup previous state
 			oldIdManager = idManager;
 			oldAttributesValueMap = new HashMap<>(attributesValueMap);
 			
 			idManager = new IdManager();
 			attributesValueMap.clear();
 			
-			// Parse XML
-			String xmlContent = (String) targetLayout.get("xml");
-			XmlPullParserFactory pullParserFactory = XmlPullParserFactory.newInstance();
-			XmlPullParser parser = pullParserFactory.newPullParser();
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
 			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-			parser.setInput(new java.io.StringReader(xmlContent));
+			parser.setInput(new StringReader((String) targetLayout.get("xml")));
 			
-			// Stack to track view hierarchy
 			ArrayList<View> viewStack = new ArrayList<>();
-			viewStack.add(editorLayout); // Root parent
+			viewStack.add(editorLayout);
 			
-			int eventType = parser.getEventType();
-			while (eventType != XmlPullParser.END_DOCUMENT) {
-				switch (eventType) {
-					case XmlPullParser.START_TAG:
-					String viewName = parser.getName();
-					View view;
-					// Use placeholder views for specific widgets
-					if (viewName.equals("WebView")) {
-						view = new PlaceholderWebView(getContext());
-					} else if (viewName.equals("VideoView")) {
-						view = new PlaceholderWidget(getContext(), "VideoView");
-					} else if (viewName.equals("ViewPager")) {
-						view = new PlaceholderWidget(getContext(), "ViewPager");
-					} else {
-						view = ReflectionUtils.createView(getContext(), "android.widget." + viewName);
-						if (view == null) {
-							view = ReflectionUtils.createView(getContext(), viewName);
-						}
-					}
+			for (int eventType = parser.getEventType(); eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()) {
+				if (eventType == XmlPullParser.START_TAG) {
+					String tag = parser.getName();
+					View view = createPlaceholderOrStandardView(tag);
+					
 					if (view != null) {
-						// Setup view properties
 						view.setOnClickListener(v -> showAttributesDialog(v));
 						_rearrangeListener(view);
 						if (view instanceof ViewGroup) {
@@ -1748,88 +1921,63 @@ public class ViewEditor extends LinearLayout {
 							view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
 						}
 						
-						// Handle attributes
-						AttributeSet attributeSet = new AttributeSet();
-						attributesValueMap.put(view, attributeSet);
+						AttributeSet attrSet = new AttributeSet();
+						attributesValueMap.put(view, attrSet);
 						for (int i = 0; i < parser.getAttributeCount(); i++) {
-							String attributeName = parser.getAttributeName(i);
-							String attributeValue = parser.getAttributeValue(i);
-							if (attributeName.equals("android:id")) {
-								idManager.addNewId(view, AttributeUtils.getName(attributeValue));
+							String attrName = parser.getAttributeName(i);
+							String attrValue = parser.getAttributeValue(i);
+							if ("android:id".equals(attrName)) {
+								idManager.addNewId(view, AttributeUtils.getName(attrValue));
 							}
-							attributeSet.add(new Attribute(attributeName, attributeValue));
+							attrSet.add(new Attribute(attrName, attrValue));
 						}
 						
-						// Add to view stack
 						viewStack.add(view);
-					} else {
-						//   SketchwareUtil.showMessage(getContext(), "Failed to create view: " + viewName);
 					}
-					break;
 					
-					case XmlPullParser.END_TAG:
-					if (viewStack.size() > 1) { // Ensure we have a view to add
-						View childView = viewStack.remove(viewStack.size() - 1); // Pop current view
-						View parentView = viewStack.get(viewStack.size() - 1); // Get parent
-						if (parentView instanceof ViewGroup) {
-							((ViewGroup) parentView).addView(childView);
-						} else {
-							//SketchwareUtil.showMessage(getContext(), "Parent is not a ViewGroup: " + parentView.getClass().getSimpleName());
-						}
-					}
-					break;
-				}
-				eventType = parser.next();
-			}
-			
-			// Apply attributes after building the hierarchy
-			for (View view : attributesValueMap.keySet()) {
-				AttributeSet attributeSet = attributesValueMap.get(view);
-				for (Attribute attr : attributeSet.getAttributes()) {
-					applyAttribute(view, attr);
+				} else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
+					View child = viewStack.remove(viewStack.size() - 1);
+					ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
+					parent.addView(child);
 				}
 			}
 			
-			//SketchwareUtil.showMessage(getContext(), "Layout '" + layoutName + "' loaded successfully");
+			for (View v : attributesValueMap.keySet()) {
+				for (Attribute a : attributesValueMap.get(v).getAttributes()) {
+					applyAttribute(v, a);
+				}
+			}
+			
+			// SketchwareUtil.showMessage(getContext(), "Layout loaded: " + layoutName);
 		} catch (Exception e) {
-			// Restore previous state on failure
-			idManager = oldIdManager;
-			attributesValueMap = oldAttributesValueMap;
-			editorLayout.removeAllViews();
-			// Re-add views from old state
-			for (View view : oldAttributesValueMap.keySet()) {
-				if (view.getParent() == null) {
-					editorLayout.addView(view);
-				}
-			}
-			// SketchwareUtil.showMessage(getContext(), "Error loading layout: " + e.toString());
+			restorePreviousStateOnFailure();
+			SketchwareUtil.showMessage(getContext(), "Load error: " + e.getMessage());
+			Log.e("ViewEditor", "loadLayout() failed", e);
 		}
 	}
 	
+	
 	public String getXMLCode() {
 		ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
-		String code;
+		
 		if (rootView == null) {
-			code = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+			return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
 			"<LinearLayout\n" +
 			"    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
 			"    android:layout_width=\"match_parent\"\n" +
 			"    android:layout_height=\"match_parent\"\n" +
-			"    android:orientation=\"vertical\">\n" +
-			"</LinearLayout>";
-		} else {
-			code = generateCode(rootView);
-			// Only add the namespace if it doesn't already exist in the generated code
-			if (!code.contains("xmlns:android")) {
-				code = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-				code.substring(0, code.indexOf("\n")) + "\n" +
-				"    xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
-				code.substring(code.indexOf("\n"));
-			} else {
-				code = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + code;
-			}
+			"    android:orientation=\"vertical\" />";
 		}
-		return code;
+		
+		String xml = generateCode(rootView);
+		if (!xml.contains("xmlns:android")) {
+			int firstLineEnd = xml.indexOf('\n');
+			String tagLine = (firstLineEnd != -1) ? xml.substring(0, firstLineEnd) : xml;
+			String rest = (firstLineEnd != -1) ? xml.substring(firstLineEnd) : "";
+			xml = tagLine + "\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"" + rest;
+		}
+		
+		return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + xml;
 	}
 	
 	public class PlaceholderWidget extends View {
@@ -2161,6 +2309,79 @@ public class ViewEditor extends LinearLayout {
 		
 		return true;
 	}
+	
+	public static List<String> getIdsByType(String type) {
+		List<String> ids = new ArrayList<>();
+		for (View view : idManager.getViews()) {
+			String className = view.getClass().getSimpleName();
+			if (type.equalsIgnoreCase("all") || className.equalsIgnoreCase(type)) {
+				ids.add(idManager.getId(view));
+			}
+		}
+		return ids;
+	}
+	
+	private String cleanXML(String xmlCode) {
+		// Remove duplicate xmlns declarations
+		xmlCode = xmlCode.replaceAll("(?m)^\\s*xmlns:android=\"http://schemas.android.com/apk/res/android\"\\s*$", "");
+		// Ensure single xmlns declaration at root
+		if (!xmlCode.contains("xmlns:android")) {
+			xmlCode = xmlCode.replaceFirst("<(\\w+)", "<$1 xmlns:android=\"http://schemas.android.com/apk/res/android\"");
+		}
+		// Remove invalid or empty IDs
+		xmlCode = xmlCode.replaceAll("android:id=\"@\\+id/\"", "");
+		xmlCode = xmlCode.replaceAll("android:id=\"@\\+id/\\s*\"", "");
+		// Normalize whitespace
+		xmlCode = xmlCode.replaceAll("\\s+\n", "\n").trim();
+		return xmlCode;
+	}
+	
+	private boolean validateXML(String xmlContent) {
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+			parser.setInput(new StringReader(xmlContent));
+			parser.nextTag(); // Ensure it starts with a tag
+			return true;
+		} catch (XmlPullParserException | IOException e) {
+			Log.e("ViewEditor", "XML validation failed: " + e.getMessage());
+			return false;
+		}
+	}
+	
+	private View createPlaceholderOrStandardView(String tag) {
+		switch (tag) {
+			case "WebView":
+			return new PlaceholderWebView(getContext());
+			case "VideoView":
+			case "ViewPager":
+			return new PlaceholderWidget(getContext(), tag);
+			default:
+			try {
+				View view = ReflectionUtils.createView(getContext(), "android.widget." + tag);
+				return (view != null) ? view : ReflectionUtils.createView(getContext(), tag);
+			} catch (ClassNotFoundException |
+			InstantiationException |
+			InvocationTargetException |
+			NoSuchMethodException |
+			IllegalAccessException e) {
+				e.printStackTrace(); // Optional: log the error
+				return null; // Or a default placeholder view
+			}
+		}
+	}
+	
+	
+	private void restorePreviousStateOnFailure() {
+		idManager = oldIdManager;
+		attributesValueMap = oldAttributesValueMap;
+		editorLayout.removeAllViews();
+		for (View v : oldAttributesValueMap.keySet()) {
+			if (v.getParent() == null) editorLayout.addView(v);
+		}
+	}
+	
 	
 	@Deprecated
 	public void showMessage(String _s) {

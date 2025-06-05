@@ -28,17 +28,24 @@ public class Project {
 	}
 	
 	public void setResourcesFiles(List<File> files) {
-		mResourcesFiles = new ArrayList<>(files); // Ensure a new list to avoid external modifications
+		mResourcesFiles = new ArrayList<>(files != null ? files : new ArrayList<>()); // Handle null input
 		if (mLogger != null) {
-			mLogger.d("Project", "Set resource files: " + mResourcesFiles);
+			mLogger.d("Project", "Setting resource files. Total resources: " + mResourcesFiles.size());
 			for (File file : mResourcesFiles) {
-				if (!file.exists()) {
-					mLogger.w("Project", "Resource file does not exist: " + file.getAbsolutePath());
+				if (!file.exists() || !file.isDirectory()) {
+					mLogger.w("Project", "Invalid resource directory: " + file.getAbsolutePath());
+				} else {
+					mLogger.d("Project", "Added project resource: " + file.getAbsolutePath());
 				}
 			}
 		}
-		addLibraryResources(); // Ensure library resources are included after setting resources
+		addLibraryResources(); // Append library resources
+		if (mLogger != null) {
+			mLogger.d("Project", "After adding library resources, total resources: " + mResourcesFiles.size());
+		}
 	}
+	
+	
 	
 	public List<File> getJavaFiles() {
 		return mJavaFiles;
@@ -83,7 +90,17 @@ public class Project {
 	
 	public void setLibraries(List<Library> libraries) {
 		mLibraries = libraries;
+		if (mLogger != null) {
+			mLogger.d("Project", "Setting libraries. Count: " + (libraries != null ? libraries.size() : 0));
+		}
 		addLibraryResources(); // Add library resources when libraries are set
+		
+		// Also ensure dex files are updated
+		if (libraries != null) {
+			for (Library lib : libraries) {
+				dexFiles.addAll(lib.getDexFiles());
+			}
+		}
 	}
 	
 	public int getMinSdk() {
@@ -164,16 +181,19 @@ public class Project {
 			for (Library library : mLibraries) {
 				if (library.requiresResourceFile()) {
 					File resFile = library.getResourcesFile();
-					if (resFile != null && resFile.exists() && !mResourcesFiles.contains(resFile)) {
+					if (resFile != null && resFile.exists() && resFile.isDirectory() && !mResourcesFiles.contains(resFile)) {
 						mResourcesFiles.add(resFile);
 						if (mLogger != null) {
-							mLogger.d("Project", "Added library resource: " + resFile.getAbsolutePath());
+							mLogger.d("Project", "Added library resource: " + resFile.getAbsolutePath() + " for library: " + library.getName());
 						}
 					} else if (mLogger != null) {
-						mLogger.w("Project", "Library resource not found or already included: " + library.getName());
+						mLogger.w("Project", "Library resource not found, invalid, or already included: " + library.getName() + " at " + (resFile != null ? resFile.getAbsolutePath() : "null"));
 					}
 				}
 			}
+		}
+		if (mLogger != null) {
+			mLogger.d("Project", "Final resource list: " + mResourcesFiles);
 		}
 	}
 }

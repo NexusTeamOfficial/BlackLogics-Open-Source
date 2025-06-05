@@ -427,4 +427,8 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			return Uri.fromFile(file);
 		}
 	}
+    
+    public void initlizeLibs() {
+        
+    }
 }

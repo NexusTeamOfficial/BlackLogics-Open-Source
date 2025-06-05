@@ -46,7 +46,7 @@
 						android:focusable="false"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:textColor="@color/textColor"
+						android:textColor="#000000"
 						android:singleLine="true"
 						android:textSize="14.0sp"
 						android:ellipsize="end" />
@@ -55,7 +55,7 @@
 						android:focusable="false"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:textColor="@color/textColor"
+						android:textColor="#000000"
 						android:singleLine="true"
 						android:textSize="12.0sp"
 						android:ellipsize="end" />

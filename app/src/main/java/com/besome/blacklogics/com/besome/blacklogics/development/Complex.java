@@ -51,6 +51,7 @@ import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import com.besome.blacklogics.R;
+import com.besome.blacklogics.FileUtil;
 import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.model.DesignDataManager;
 import com.besome.blacklogics.ViewEditorFragmentActivity;
@@ -450,6 +451,7 @@ public class Complex {
 			if (xmlData == null) return;
 			
 			File folder = new File(path);
+			File abcd = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/files/resource");
 			folder.mkdirs();
 			
 			Iterator<String> keys = xmlData.keys();
@@ -460,6 +462,11 @@ public class Complex {
 				String decodedData = decodeData(encodedData);
 				
 				File file = new File(folder, decodedName + ".xml");
+				
+				File existingFile = new File(abcd, decodedName + ".xml");
+				
+				if (existingFile.exists()) continue;
+				
 				writeFile(file, decodedData);
 			}
 		} catch (JSONException | IOException e) {
@@ -476,6 +483,7 @@ public class Complex {
 			if (javaData == null) return;
 			
 			File folder = new File(path);
+			File abcd = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/files/java");
 			folder.mkdirs();
 			
 			Iterator<String> keys = javaData.keys();
@@ -494,6 +502,10 @@ public class Complex {
 					String modifiedCode = injectLogic(originalCode, logic, activityName);
 					
 					File file = new File(folder, decodedName + ".java");
+					File existingFile = new File(abcd, decodedName + ".java");
+					
+					if (existingFile.exists()) continue;
+					
 					writeFile(file, modifiedCode);
 				} else {
 					File file = new File(folder, decodedName + ".java");
@@ -683,7 +695,6 @@ public class Complex {
 			JSONObject metaData = jsonData.optJSONObject("meta");
 			if (metaData == null) metaData = new JSONObject();
 			
-			// If no Gradle build file exists, use a default one
 			if (gradleBuild == null || gradleBuild.trim().isEmpty()) {
 				gradleBuild =
 				"apply plugin: 'com.android.application'\n\n" +
@@ -705,8 +716,10 @@ public class Complex {
 				"}\n\n" +
 				"dependencies {\n" +
 				"    implementation 'androidx.appcompat:appcompat:1.6.1'\n" +
-				"    implementation 'com.google.android.material:material:1.9.0'\n" +
-				"}";
+				"    implementation 'androidx.core:core:1.12.0'\n" +
+				"    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'\n" +
+				"    implementation 'com.google.android.material:material:1.12.0'\n" +
+				"}\n";
 			}
 			
 			metaData.put("gradle", encodeData(gradleBuild));
@@ -4437,5 +4450,74 @@ public class Complex {
 			e.printStackTrace();
 		}
 	}
+	
+	public void refreshData() {
+		loadJson(); // Load from disk
+		
+		runtimeLogicCache.clear();
+		javaItems.clear();
+		xmlItems.clear();
+		xmlToJavaMap.clear();
+		javaToXmlMap.clear();
+		
+		try {
+			// Refresh logic
+			if (activityLogicStorage != null) {
+				Iterator<String> keys = activityLogicStorage.keys();
+				while (keys.hasNext()) {
+					String encodedKey = keys.next();
+					runtimeLogicCache.put(decodeData(encodedKey), decodeData(activityLogicStorage.getString(encodedKey)));
+				}
+			}
+			
+			JSONObject meta = jsonData.optJSONObject("meta");
+			if (meta != null) {
+				// Refresh acName and xName
+				JSONArray acArray = meta.optJSONArray("acName");
+				JSONArray xArray = meta.optJSONArray("xName");
+				if (acArray != null && xArray != null) {
+					int len = Math.min(acArray.length(), xArray.length());
+					for (int i = 0; i < len; i++) {
+						String javaName = decodeData(acArray.getString(i));
+						String xmlName = decodeData(xArray.getString(i));
+						javaItems.add(javaName);
+						xmlItems.add(xmlName);
+						xmlToJavaMap.put(xmlName, javaName);
+						javaToXmlMap.put(javaName, xmlName);
+					}
+				}
+				
+				// Optional: Reload androidX
+				boolean androidX = meta.optBoolean("androidX", false);
+				// Use androidX variable as needed...
+				
+				// Optional: Reload toolbar, fab, startup
+				JSONObject toolbarData = meta.optJSONObject("toolbar");
+				JSONObject fabData = meta.optJSONObject("fab");
+				JSONObject startupData = meta.optJSONObject("startup");
+				// Use as needed...
+				
+				// Permissions refresh (if needed)
+				JSONArray permissionArray = meta.optJSONArray("permissions");
+				// You can repopulate runtime permissions list if you maintain one
+			}
+			
+			// Optional: Refresh manifest, gradle, res, etc.
+			String manifest = getManifest();
+			String gradle = getGradleBuild();
+			String settings = getSettingsGradle();
+			String strings = getStringResources();
+			String styles = getStyleResources();
+			
+			// Refresh spinners and UI
+			if (xmlSpinner != null) setXmlAdapter(xmlSpinner);
+			if (javaSpinner != null) setJavaAdapter(javaSpinner);
+			updateFragmentState();
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 }

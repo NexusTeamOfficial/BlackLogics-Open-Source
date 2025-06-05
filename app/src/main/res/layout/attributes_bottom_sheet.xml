@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
-	android:background="?attr/colorSurface"
+	android:background="#FFFFFF"
 	android:padding="0dp">
 	<LinearLayout
 		android:id="@+id/lin_header"
@@ -51,9 +51,45 @@
 		android:layout_width="match_parent"
 		android:layout_height="2dp"
 		android:background="#CFD8DC" />
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/rv_attributes"
+	<com.google.android.material.tabs.TabLayout
+		android:id="@+id/attributesOrListener"
+		android:layout_width="240dp"
+		android:layout_height="wrap_content"
+		android:background="@color/md_theme_light_surface"
+		app:tabGravity="fill"
+		app:tabMode="fixed"
+		app:tabIndicatorHeight="3dp"
+		app:tabIndicatorColor="@android:color/white"
+		app:tabSelectedTextColor="@android:color/white"
+		app:tabTextColor="@android:color/white"
+		app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget" />
+	<LinearLayout
+		android:id="@+id/linear1"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:overScrollMode="never" />
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/attributesTab"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/rv_attributes"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:overScrollMode="never" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/eventTab"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:visibility="gone">
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/listeners"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+		</LinearLayout>
+	</LinearLayout>
 </LinearLayout>

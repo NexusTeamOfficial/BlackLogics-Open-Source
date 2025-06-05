@@ -10,8 +10,8 @@
 		android:id="@+id/linear1"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="#FFFFFF"
-		android:orientation="vertical">
+		android:orientation="vertical"
+		android:background="?attr/colorPrimary">
 		<LinearLayout
 			android:id="@+id/linear2"
 			android:layout_width="match_parent"
@@ -38,7 +38,7 @@
 				android:id="@+id/textview2"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="0.0.1 alpha01 (112)"
+				android:text="0.0.2 alpha02 (1134)"
 				android:textSize="14sp"
 				android:textColor="#607D8B" />
 		</LinearLayout>
@@ -116,7 +116,7 @@
 				android:padding="5dp"
 				android:text="Suggest ideas"
 				android:textSize="16sp"
-				android:textColor="@color/textColor" />
+				android:textColor="@color/text_color" />
 			<TextView
 				android:id="@+id/textview6"
 				android:layout_width="wrap_content"

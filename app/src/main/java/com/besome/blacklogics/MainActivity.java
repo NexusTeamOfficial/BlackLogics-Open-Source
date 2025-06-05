@@ -318,6 +318,15 @@ public class MainActivity extends AppCompatActivity {
 				startActivity(intent);
 			}
 		});
+		
+		_drawer_Create.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				Intent intent = new Intent(getApplicationContext(), NewKeyStoreActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				startActivity(intent);
+			}
+		});
 	}
 	
 	private void initializeLogic() {

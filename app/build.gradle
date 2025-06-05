@@ -12,8 +12,8 @@ android {
 		namespace "com.besome.blacklogics"
 		minSdkVersion 21
 		targetSdkVersion 30
-		versionCode 112
-		versionName "0.0.1 beta01"
+		versionCode 1134
+		versionName "0.0.2 beta01"
 	}
 	
 	buildTypes {

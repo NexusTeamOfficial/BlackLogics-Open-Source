@@ -36,6 +36,8 @@ import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.ViewEditorFragmentActivity;
 import com.besome.blacklogics.file.ProjectFileManager;
 
+import com.shapun.layouteditor.ViewEditor;
+
 import com.besome.blacklogics.development.Complex;
 
 import com.nexusteam.internal.os.layouteditor.beans.ViewBean;
@@ -62,7 +64,7 @@ public class BlockArg extends BlockBase {
 	private String mMenuName = "";
 	private TextView mTextView;
 	private int paddingText = 4;
-	
+	private ViewEditor viewEditor;
 	
 	private Complex complex;
 	
@@ -71,8 +73,14 @@ public class BlockArg extends BlockBase {
 		this.mContext = var1;
 		this.mMenuName = var4;
 		this.init(var1);
-		this.complex = new Complex();
-		this.complex.setId(DesignActivity.getScId());
+        if (complex != null) {
+	   	this.complex = new Complex();
+	   	this.complex.setId(DesignActivity.getScId());
+        }
+        this.viewEditor = new ViewEditor(var1);
+        if (DesignActivity.currentActivityBean != null) {
+           this.viewEditor.loadLayout(DesignActivity.currentActivityBean.getActivityName());
+        }
 	}
 	
 	// $FF: synthetic method
@@ -532,43 +540,36 @@ public class BlockArg extends BlockBase {
 		var2.setView(var1);
 		this.content = var1.findViewById(R.id.rg_content);
 		
-		ViewEditorFragmentActivity.viewBean = ViewEditorFragmentActivity.loadViewBeanFromJson();
+		var2.setTitle("Select View");
 		
-		List<ViewBean.WidgetInfo> widgetList = new ArrayList<>();
+		List<String> idList = new ArrayList<>();
 		switch (mMenuName) {
 			case "view":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgets();
+			idList = ViewEditor.getIdsByType("all");
 			break;
 			case "textview":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgetsByType("TextView");
+			idList = ViewEditor.getIdsByType("TextView");
 			break;
 			case "imageview":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgetsByType("ImageView");
+			idList = ViewEditor.getIdsByType("ImageView");
 			break;
 			case "checkbox":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgetsByType("CheckBox");
+			idList = ViewEditor.getIdsByType("CheckBox");
 			break;
 			case "listview":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgetsByType("ListView");
+			idList = ViewEditor.getIdsByType("ListView");
 			break;
 			case "spinner":
-			var2.setTitle(this.getContext().getResources().getString(R.string.title_popup_select_view));
-			widgetList = ViewEditorFragmentActivity.viewBean.getWidgetsByType("Spinner");
+			idList = ViewEditor.getIdsByType("Spinner");
 			break;
 			case "listSpn":
-			var2.setTitle("select list (ListView, Spinner)");
-			widgetList.addAll(ViewEditorFragmentActivity.viewBean.getWidgetsByType("ListView"));
-			widgetList.addAll(ViewEditorFragmentActivity.viewBean.getWidgetsByType("Spinner"));
+			idList.addAll(ViewEditor.getIdsByType("ListView"));
+			idList.addAll(ViewEditor.getIdsByType("Spinner"));
 			break;
 		}
 		
-		for (ViewBean.WidgetInfo widget : widgetList) {
-			RadioButton radioButton = createPairItem(widget.getWidgetType(), widget.getWidgetId());
+		for (String id : idList) {
+			RadioButton radioButton = createPairItem("id", id);
 			this.content.addView(radioButton);
 		}
 		
@@ -598,6 +599,7 @@ public class BlockArg extends BlockBase {
 		mDlg = var2.create();
 		mDlg.show();
 	}
+	
 	
 	public void showSelectPopup() {
 		View var1 = LayoutUtil.inflate(this.getContext(), R.layout.property_popup_selector_single);
@@ -642,7 +644,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("intent")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(ViewEditorFragmentActivity.activityName);
+			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(DesignActivity.currentActivityBean.getActivityName());
 			if (intentComponents != null) {
 				for (HashMap<String, String> component : intentComponents) {
 					String componentId = component.get("fieldName"); // Or use another field like "name"
@@ -654,22 +656,142 @@ public class BlockArg extends BlockBase {
 			if (var4.isEmpty()) {
 				// Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
 			}
-		} else if (this.mMenuName.equals("calendar")) {
+		} else if (this.mMenuName.equals("intent")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> calendarComponents = DesignActivity.loadCalendarComponents(ViewEditorFragmentActivity.activityName);
-			if (calendarComponents != null) {
-				for (HashMap<String, String> componentQ : calendarComponents) {
-					String componentIdR = componentQ.get("fieldName"); // Or use another field like "name"
-					if (componentIdR != null) {
-						var4.add(componentIdR);
+			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(DesignActivity.currentActivityBean.getActivityName());
+			if (intentComponents != null) {
+				for (HashMap<String, String> component : intentComponents) {
+					String componentId = component.get("fieldName"); // Or use another field like "name"
+					if (componentId != null) {
+						var4.add(componentId);
+					}
+				}
+			}
+			if (var4.isEmpty()) {
+				// Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
+			}
+		} else if (this.mMenuName.equals("timer")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> timerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Timer");
+			if (timerComponent != null) {
+				for (HashMap<String, String> timerComponemtQ : timerComponent) {
+					String cI = timerComponemtQ.get("fieldName"); // Or use another field like "name"
+					if (cI != null) {
+						var4.add(cI);
 					}
 				}
 			}
 			if (var4.isEmpty()) {
 				//Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
 			}
-		}/*else if(this.mMenuName.equals("vibrator")) {
+		} else if (this.mMenuName.equals("dialog")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> dialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Dialog");
+			if (dialogComponent != null) {
+				for (HashMap<String, String> dcomponent : dialogComponent) {
+					String dcomponentId = dcomponent.get("fieldName"); // Or use another field like "name"
+					if (dcomponentId != null) {
+						var4.add(dcomponentId);
+					}
+				}
+			}
+			if (var4.isEmpty()) {
+				// Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
+			}
+		} else if (this.mMenuName.equals("objectanimator")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> objectAnimatorComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ObjectAnimator");
+			if (objectAnimatorComponent != null) {
+				for (HashMap<String, String> obComponent : objectAnimatorComponent) {
+					String oCI = obComponent.get("fieldName"); // Or use another field like "name"
+					if (oCI != null) {
+						var4.add(oCI);
+					}
+				}
+			}
+			if (var4.isEmpty()) {
+				// Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
+			}
+		} else if (this.mMenuName.equals("sharedpreferences")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> sharedPreferencesComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "SharedPreferences");
+			if (sharedPreferencesComponent != null) {
+				for (HashMap<String, String> sharedPreferencescomponent : sharedPreferencesComponent) {
+					String sComponentId = sharedPreferencescomponent.get("fieldName"); // Or use another field like "name"
+					if (sComponentId != null) {
+						var4.add(sComponentId);
+					}
+				}
+			}
+			if (var4.isEmpty()) {
+				// Toast.makeText(this.getContext(), "No intent components found", Toast.LENGTH_SHORT).show();
+			}
+		} else if (this.mMenuName.equals("datepickerdialog")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> datePickerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "DatePickerDialog");
+			if (datePickerComponent != null) {
+				for (HashMap<String, String> component : datePickerComponent) {
+					String fieldName = component.get("fieldName");
+					if (fieldName != null) {
+						var4.add(fieldName);
+					}
+				}
+			}
+		} else if (this.mMenuName.equals("timepickerdialog")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> timePickerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "TimePickerDialog");
+			if (timePickerComponent != null) {
+				for (HashMap<String, String> component : timePickerComponent) {
+					String fieldName = component.get("fieldName");
+					if (fieldName != null) {
+						var4.add(fieldName);
+					}
+				}
+			}
+		} else if (this.mMenuName.equals("progressdialog")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> progressDialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ProgressDialog");
+			if (progressDialogComponent != null) {
+				for (HashMap<String, String> component : progressDialogComponent) {
+					String fieldName = component.get("fieldName");
+					if (fieldName != null) {
+						var4.add(fieldName);
+					}
+				}
+			}
+		} else if (this.mMenuName.equals("alertdialog")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> alertDialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "AlertDialog");
+			if (alertDialogComponent != null) {
+				for (HashMap<String, String> component : alertDialogComponent) {
+					String fieldName = component.get("fieldName");
+					if (fieldName != null) {
+						var4.add(fieldName);
+					}
+				}
+			}
+		} else if (this.mMenuName.equals("vibrator")) {
+			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+			var4 = new ArrayList<>();
+			List<HashMap<String, String>> vibratorComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Vibrator");
+			if (vibratorComponent != null) {
+				for (HashMap<String, String> component : vibratorComponent) {
+					String fieldName = component.get("fieldName");
+					if (fieldName != null) {
+						var4.add(fieldName);
+					}
+				}
+			}
+		} /*else if(this.mMenuName.equals("vibrator")) {
 		var2.setTitle(this.getResources().getString(R.string.title_popup_select_vibrator_component));
 		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 4);
 		}*/ /* else if(this.mMenuName.equals("intent")) {

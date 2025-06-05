@@ -31,8 +31,8 @@ public class QuizList {
 		quizBean.add(new QuizBean("The activity's lifecycle, \"onStop\" occurs after the \"onDestroy\" event.",
 				QuizBean.QUIZ_TYPE_OX));
 		quizBean.add(
-				new QuizBean("Deleting the Sketchware app will remove all the saved projects.", QuizBean.QUIZ_TYPE_OX));
-		quizBean.add(new QuizBean("Sketchware automatically saves the project for you.", QuizBean.QUIZ_TYPE_OX));
+				new QuizBean("Deleting the BlackLogics app will remove all the saved projects.", QuizBean.QUIZ_TYPE_OX));
+		quizBean.add(new QuizBean("BlackLogics automatically saves the project for you.", QuizBean.QUIZ_TYPE_OX));
 		quizBean.add(new QuizBean("SharedPreferences and FileUtil does the same thing.", QuizBean.QUIZ_TYPE_OX));
 		quizBean.add(new QuizBean("You can update the app on the Play Store using a different release key.",
 				QuizBean.QUIZ_TYPE_OX));
@@ -87,7 +87,7 @@ public class QuizList {
 		quizBean.add(new QuizBean("A component created in \"Activity A\" can be accessed from \"Activity B.\"",
 				QuizBean.QUIZ_TYPE_OX));
 		quizBean.add(
-				new QuizBean("You can use custom Blocks created with Sketchware Pro in Sketchware from Google Play.",
+				new QuizBean("You can use custom Blocks created with BlackLogics in BlackLogics from Google Play.",
 						QuizBean.QUIZ_TYPE_OX));
 		quizBean.add(new QuizBean(
 				"File blocks work on Android 11 and newer when target SDK version is set to 30 and higher.",
@@ -150,7 +150,7 @@ public class QuizList {
 		quizBean.add(
 				new QuizBean("You can add onClick event on Widgets other than the Button.", QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("You can also add events inside the \"Component\" tab.", QuizBean.QUIZ_TYPE_INFO));
-		quizBean.add(new QuizBean("You can change the language settings for Sketchware.", QuizBean.QUIZ_TYPE_INFO));
+		quizBean.add(new QuizBean("You can change the language settings for BlackLogics.", QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("You can edit the image file after it has been added.", QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("You can export the project to continue working on Android Studio.",
 				QuizBean.QUIZ_TYPE_INFO));
@@ -195,7 +195,7 @@ public class QuizList {
 				QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("You can use MoreBlocks to develop more quickly and efficiently.",
 				QuizBean.QUIZ_TYPE_INFO));
-		quizBean.add(new QuizBean("You can share finished projects to other people without Sketchware.",
+		quizBean.add(new QuizBean("You can share finished projects to other people without BlackLogics.",
 				QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("Verbally abusing other people in the community could result in a ban.",
 				QuizBean.QUIZ_TYPE_INFO));
@@ -221,7 +221,7 @@ public class QuizList {
 		quizBean.add(new QuizBean(
 				"The \"INVISIBLE\" option for visibility property makes the widget disappear, but still takes up space.",
 				QuizBean.QUIZ_TYPE_INFO));
-		quizBean.add(new QuizBean("It's possible to create a landscape application on Sketchware.",
+		quizBean.add(new QuizBean("It's possible to create a landscape application on BlackLogics.",
 				QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean("It's possible to infinitely loop a sound file.", QuizBean.QUIZ_TYPE_INFO));
 		quizBean.add(new QuizBean(

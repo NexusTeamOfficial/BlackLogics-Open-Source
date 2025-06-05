@@ -103,6 +103,9 @@ public  class IdManager {
 		return list;
 	}
 	
+	public void clearAllIds() {
+		mViewIdMap.clear();
+	}
 	
 	
 }

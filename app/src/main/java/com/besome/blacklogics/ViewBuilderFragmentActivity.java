@@ -64,14 +64,14 @@ import com.shapun.layouteditor.ViewEditor;
 
 public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.OnWidgetAdd {
 	
-	public static String layoutName = "main";
-	public static String activityName = "MainActivity";
 	public static LinearLayout fab;
 	public static ViewBuilderFragmentActivity instance;
 	public static boolean isMainActivity = true;
 	public static String projectPath;
 	public static String scName = "NewProject";
 	public static String sc_id = "601";
+	public String layoutName = "main";
+	public String activityName = "MainActivity";
 	
 	private ArrayList<HashMap<String, Object>> viewsList = new ArrayList<>();
 	private ArrayList<String> typeList = new ArrayList<>();
