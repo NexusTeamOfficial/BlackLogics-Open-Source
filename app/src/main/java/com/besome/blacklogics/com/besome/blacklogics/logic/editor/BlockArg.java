@@ -69,19 +69,25 @@ public class BlockArg extends BlockBase {
 	private Complex complex;
 	
 	public BlockArg(Context var1, String var2, int var3, String var4) {
-		super(var1, var2, true);
-		this.mContext = var1;
-		this.mMenuName = var4;
-		this.init(var1);
-        if (complex != null) {
-	   	this.complex = new Complex();
-	   	this.complex.setId(DesignActivity.getScId());
-        }
-        this.viewEditor = new ViewEditor(var1);
-        if (DesignActivity.currentActivityBean != null) {
-           this.viewEditor.loadLayout(DesignActivity.currentActivityBean.getActivityName());
-        }
-	}
+    super(var1, var2, true);
+    this.mContext = var1;
+    this.mMenuName = var4;
+    this.init(var1);
+		
+    this.complex = new Complex();
+    
+    if DesignActivity.getScId() != null && !DesignActivity.getScId().isEmpty()) {
+        this.complex.setId(scId);
+    } else {
+        android.util.Log.w("BlockArg", "DesignActivity.getScId() returned null or empty, using default ID");
+        this.complex.setId("600");
+    }
+
+    this.viewEditor = new ViewEditor(var1);
+    if (DesignActivity.currentActivityBean != null) {
+        this.viewEditor.loadLayout(DesignActivity.currentActivityBean.getActivityName());
+    }
+}
 	
 	// $FF: synthetic method
 	static AlertDialog access$000(BlockArg var0) {
