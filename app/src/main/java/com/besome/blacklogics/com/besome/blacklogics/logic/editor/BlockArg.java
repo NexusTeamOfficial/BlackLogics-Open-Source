@@ -77,7 +77,7 @@ public class BlockArg extends BlockBase {
     this.complex = new Complex();
     
     if DesignActivity.getScId() != null && !DesignActivity.getScId().isEmpty()) {
-        this.complex.setId(scId);
+        this.complex.setId(DesignActivity.getScId());
     } else {
         android.util.Log.w("BlockArg", "DesignActivity.getScId() returned null or empty, using default ID");
         this.complex.setId("600");
