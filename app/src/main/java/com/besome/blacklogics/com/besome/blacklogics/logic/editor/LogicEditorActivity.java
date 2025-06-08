@@ -1491,7 +1491,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 					}
 					
 					DesignDataManager.removeList(LogicEditorActivity.filename, var4.getText().toString());
-                    DesignActivity.removeVariable(DesignActivity.currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
+					DesignActivity.removeVariable(DesignActivity.currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
 					this.this$1.this$0.onBlockCategorySelect(1, -3384542);
 				}
 				
@@ -1634,9 +1634,10 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	public void onBackPressed() {
 		saveLogic();
 		//	complex.setLogic(getSourceCode(), activityName);
-		DesignActivity.saveBlockLogic(activityName, getSourceCode());
 		if (widgetId != null) {
 			DesignActivity.saveBlockLogicForWidget(activityName, widgetId, getSourceCode());
+		} else {
+			DesignActivity.saveBlockLogic(activityName, getSourceCode());
 		}
 		try {
 			SourceCodeBean sourceCodeBean = new SourceCodeBean(activityName, eventName, getSourceCode(), DesignActivity.getScId());
@@ -1759,6 +1760,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			addBlockToPalette("", "s", "trim", color, new Object[0]);
 			addBlockToPalette("", "s", "toUpperCase", color, new Object[0]);
 			addBlockToPalette("", "s", "toLowerCase", color, new Object[0]);
+            loadCustomBlocks(3, color);
 			//	addBlockToPalette("add source directly %s.inputOnly", " ", "%s", color, new Object[]{specABC});
 			/*	addBlockToPalette("", " ", "GsonStringToListString", color, new Object[0]);
 			addBlockToPalette("", " ", "addSourceDirectly", color, new Object[0]);

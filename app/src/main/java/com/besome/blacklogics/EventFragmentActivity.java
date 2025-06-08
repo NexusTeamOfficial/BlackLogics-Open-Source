@@ -48,6 +48,8 @@ import com.example.myapp.*;
 import com.github.angads25.filepicker.*;
 import com.google.android.material.*;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
@@ -93,8 +95,14 @@ public class EventFragmentActivity extends Fragment {
 	public static String myData = "";
 	
 	private LinearLayout linear1;
-	private LinearLayout linear2;
 	private LinearLayout linear4;
+	private LinearLayout linear9;
+	private NavigationView side_nav;
+	private LinearLayout linear11;
+	private LinearLayout lifecycleEvents;
+	private LinearLayout viewLifeCycle;
+	private LinearLayout moreBlockLifeCycle;
+	private LinearLayout linear2;
 	private RecyclerView rvSelectedEvents;
 	private ImageView imageview1;
 	private LinearLayout linear3;
@@ -116,8 +124,14 @@ public class EventFragmentActivity extends Fragment {
 	private void initialize(Bundle _savedInstanceState, View _view) {
 		_fab = _view.findViewById(R.id._fab);
 		linear1 = _view.findViewById(R.id.linear1);
-		linear2 = _view.findViewById(R.id.linear2);
 		linear4 = _view.findViewById(R.id.linear4);
+		linear9 = _view.findViewById(R.id.linear9);
+		side_nav = _view.findViewById(R.id.side_nav);
+		linear11 = _view.findViewById(R.id.linear11);
+		lifecycleEvents = _view.findViewById(R.id.lifecycleEvents);
+		viewLifeCycle = _view.findViewById(R.id.viewLifeCycle);
+		moreBlockLifeCycle = _view.findViewById(R.id.moreBlockLifeCycle);
+		linear2 = _view.findViewById(R.id.linear2);
 		rvSelectedEvents = _view.findViewById(R.id.rvSelectedEvents);
 		imageview1 = _view.findViewById(R.id.imageview1);
 		linear3 = _view.findViewById(R.id.linear3);

@@ -55,7 +55,7 @@
 		android:id="@+id/attributesOrListener"
 		android:layout_width="240dp"
 		android:layout_height="wrap_content"
-		android:background="@color/md_theme_light_surface"
+		android:background="@color/colorPrimaryVariant"
 		app:tabGravity="fill"
 		app:tabMode="fixed"
 		app:tabIndicatorHeight="3dp"

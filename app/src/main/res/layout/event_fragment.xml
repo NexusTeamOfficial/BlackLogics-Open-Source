@@ -14,55 +14,93 @@
 			android:id="@+id/linear1"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:padding="8dp"
 			android:orientation="vertical"
 			android:background="?attr/colorSurface">
-			<LinearLayout
-				android:id="@+id/linear2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:gravity="center_vertical"
-				android:orientation="horizontal">
-				<ImageView
-					android:id="@+id/imageview1"
-					android:layout_width="38dp"
-					android:layout_height="35dp"
-					android:src="@drawable/widget_source"
-					android:scaleType="fitCenter" />
-				<LinearLayout
-					android:id="@+id/linear3"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:padding="4dp"
-					android:orientation="vertical">
-					<TextView
-						android:id="@+id/textview2"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:padding="4dp"
-						android:text="onCreate"
-						android:textSize="14sp"
-						android:textColor="@color/textColor" />
-					<TextView
-						android:id="@+id/textview1"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:padding="4dp"
-						android:text="On activity create"
-						android:textSize="12sp"
-						android:textColor="@color/textColor" />
-				</LinearLayout>
-			</LinearLayout>
 			<LinearLayout
 				android:id="@+id/linear4"
 				android:layout_width="match_parent"
 				android:layout_height="0dp"
 				android:orientation="vertical" />
-			<androidx.recyclerview.widget.RecyclerView
-				android:id="@+id/rvSelectedEvents"
+			<LinearLayout
+				android:id="@+id/linear9"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:padding="8dp" />
+				android:orientation="horizontal">
+				<com.google.android.material.navigation.NavigationView
+					android:id="@+id/side_nav"
+					android:layout_width="120dp"
+					android:layout_height="match_parent"
+					android:layout_gravity="start"
+					app:menu="@menu/menu_vertical"
+					app:itemIconTint="?attr/colorControlNormal"
+					app:itemTextColor="?attr/colorOnSurface" />
+				<LinearLayout
+					android:id="@+id/linear11"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:padding="8dp"
+					android:orientation="vertical">
+					<LinearLayout
+						android:id="@+id/lifecycleEvents"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:orientation="vertical">
+						<LinearLayout
+							android:id="@+id/linear2"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:gravity="center_vertical"
+							android:orientation="horizontal">
+							<ImageView
+								android:id="@+id/imageview1"
+								android:layout_width="38dp"
+								android:layout_height="35dp"
+								android:src="@drawable/widget_source"
+								android:scaleType="fitCenter" />
+							<LinearLayout
+								android:id="@+id/linear3"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:padding="4dp"
+								android:orientation="vertical">
+								<TextView
+									android:id="@+id/textview2"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:padding="4dp"
+									android:text="onCreate"
+									android:textSize="14sp"
+									android:textColor="@color/textColor" />
+								<TextView
+									android:id="@+id/textview1"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:padding="4dp"
+									android:text="On activity create"
+									android:textSize="12sp"
+									android:textColor="@color/textColor" />
+							</LinearLayout>
+						</LinearLayout>
+						<androidx.recyclerview.widget.RecyclerView
+							android:id="@+id/rvSelectedEvents"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:padding="8dp" />
+					</LinearLayout>
+					<LinearLayout
+						android:id="@+id/viewLifeCycle"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:padding="8dp"
+						android:orientation="horizontal" />
+					<LinearLayout
+						android:id="@+id/moreBlockLifeCycle"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:padding="8dp"
+						android:orientation="horizontal" />
+				</LinearLayout>
+			</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>
 	<com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -106,7 +106,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -123,15 +122,11 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import com.shapun.layouteditor.*;
 import com.shapun.layouteditor.utils.*;
 import java.io.StringReader;
 import java.io.BufferedReader;
 import java.io.File;
-import java.security.SecureRandom;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -213,11 +208,6 @@ public class ViewEditor extends LinearLayout {
 	private static final int ACTION_ADD_VIEW = 1;
 	private static final int ACTION_REMOVE_VIEW = 2;
 	private static final int ACTION_UPDATE_ATTR = 3;
-    
-    // AES Encryption Key (256-bit, must be 32 bytes)
-    private static final String AES_KEY = "NexusTeamSmartIndia2025LayoutKey"; // Replace with secure key management
-    private static final String AES_IV = "1234567890abcdef"; // 16-byte IV, replace with secure IV
-    private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
 	
 	// Action data structure
 	private static class EditorAction {
@@ -1246,7 +1236,6 @@ public class ViewEditor extends LinearLayout {
 		
 		// Listener item click listener
 		listenerAdapter.setOnItemClickListener(position -> {
-            saveLayout(DesignActivity.currentActivityBean.getLayoutName());
 			DesignActivity designActivity = (DesignActivity) getContext();
 			final HashMap<String, Object> listener = listenersList.get(position);
 			final String listenerName = listener.get("name").toString();
@@ -1839,159 +1828,133 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	public void saveLayout(String layoutName) {
-        if (SAVE_PATH == null || SAVE_PATH.isEmpty() || layoutName == null || layoutName.trim().isEmpty())
-            return;
-
-        try {
-            String xmlCode = cleanXML(getXMLCode());
-
-            if (!validateXML(xmlCode)) return;
-
-            if (editorLayout.getChildCount() == 0) return;
-
-            View rootView = editorLayout.getChildAt(0);
-            String rawXml = generateCode(rootView);
-
-            String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    rawXml.substring(0, rawXml.indexOf("\n")) + "\n" +
-                    "xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
-                    rawXml.substring(rawXml.indexOf("\n"));
-
-            HashMap<String, Object> layoutData = new HashMap<>();
-            layoutData.put("name", layoutName.trim());
-            layoutData.put("xml", formattedXml);
-
-            ArrayList<HashMap<String, Object>> layoutList = new ArrayList<>();
-            String layoutFilePath = SAVE_PATH + "/root_layout.json";
-            File file = new File(layoutFilePath);
-
-            // Read existing layouts if file exists
-            if (FileUtil.isExistFile(layoutFilePath)) {
-                String encryptedContent = FileUtil.readFile(layoutFilePath);
-                String decryptedContent = decrypt(encryptedContent);
-                if (decryptedContent != null) {
-                    layoutList = new Gson().fromJson(decryptedContent,
-                            new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-                } else {
-                    SketchwareUtil.showMessage(getContext(), "Failed to decrypt existing layouts");
-                    return;
-                }
-            }
-
-            // Update or add layout
-            layoutList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
-            layoutList.add(layoutData);
-
-            // Encrypt and save
-            String json = new Gson().toJson(layoutList);
-            String encryptedJson = encrypt(json);
-            if (encryptedJson == null) {
-                SketchwareUtil.showMessage(getContext(), "Encryption failed");
-                return;
-            }
-
-            // Ensure directory exists
-            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-                SketchwareUtil.showMessage(getContext(), "Directory creation failed: " + file.getParent());
-                return;
-            }
-
-            FileUtil.writeFile(layoutFilePath, encryptedJson);
-
-            // SketchwareUtil.showMessage(getContext(), "Layout saved: " + layoutName);
-        } catch (Exception e) {
-            SketchwareUtil.showMessage(getContext(), "Error: " + e.getMessage());
-            Log.e("ViewEditor", "saveLayout() failed", e);
-        }
-    }
-
-    public void loadLayout(String layoutName) {
-        editorLayout.removeAllViews();
-        if (layoutName == null || layoutName.trim().isEmpty()) return;
-
-        try {
-            String layoutFilePath = SAVE_PATH + "/root_layout.json";
-            if (!FileUtil.isExistFile(layoutFilePath)) return;
-
-            // Read and decrypt file
-            String encryptedContent = FileUtil.readFile(layoutFilePath);
-            String decryptedContent = decrypt(encryptedContent);
-            if (decryptedContent == null) {
-                SketchwareUtil.showMessage(getContext(), "Decryption failed");
-                return;
-            }
-
-            ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(decryptedContent,
-                    new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-
-            HashMap<String, Object> targetLayout = layoutList.stream()
-                    .filter(layout -> layoutName.equals(layout.get("name")))
-                    .findFirst().orElse(null);
-
-            if (targetLayout == null) return;
-
-            // Backup previous state
-            oldIdManager = idManager;
-            oldAttributesValueMap = new HashMap<>(attributesValueMap);
-
-            idManager = new IdManager();
-            attributesValueMap.clear();
-
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            XmlPullParser parser = factory.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(new StringReader((String) targetLayout.get("xml")));
-
-            ArrayList<View> viewStack = new ArrayList<>();
-            viewStack.add(editorLayout);
-
-            for (int eventType = parser.getEventType(); eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    String tag = parser.getName();
-                    View view = createPlaceholderOrStandardView(tag);
-
-                    if (view != null) {
-                        view.setOnClickListener(v -> showAttributesDialog(v));
-                        _rearrangeListener(view);
-                        if (view instanceof ViewGroup) {
-                            view.setOnDragListener(dragListener);
-                            view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
-                        }
-
-                        AttributeSet attrSet = new AttributeSet();
-                        attributesValueMap.put(view, attrSet);
-                        for (int i = 0; i < parser.getAttributeCount(); i++) {
-                            String attrName = parser.getAttributeName(i);
-                            String attrValue = parser.getAttributeValue(i);
-                            if ("android:id".equals(attrName)) {
-                                idManager.addNewId(view, AttributeUtils.getName(attrValue));
-                            }
-                            attrSet.add(new Attribute(attrName, attrValue));
-                        }
-
-                        viewStack.add(view);
-                    }
-
-                } else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
-                    View child = viewStack.remove(viewStack.size() - 1);
-                    ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
-                    parent.addView(child);
-                }
-            }
-
-            for (View v : attributesValueMap.keySet()) {
-                for (Attribute a : attributesValueMap.get(v).getAttributes()) {
-                    applyAttribute(v, a);
-                }
-            }
-
-            // SketchwareUtil.showMessage(getContext(), "Layout loaded: " + layoutName);
-        } catch (Exception e) {
-            restorePreviousStateOnFailure();
-            SketchwareUtil.showMessage(getContext(), "Load error: " + e.getMessage());
-            Log.e("ViewEditor", "loadLayout() failed", e);
-        }
-    }
+		if (SAVE_PATH == null || SAVE_PATH.isEmpty() || layoutName == null || layoutName.trim().isEmpty())
+		return;
+		
+		try {
+			String xmlCode = cleanXML(getXMLCode());
+			
+			if (!validateXML(xmlCode)) return;
+			
+			if (editorLayout.getChildCount() == 0) return;
+			
+			View rootView = editorLayout.getChildAt(0);
+			String rawXml = generateCode(rootView);
+			
+			String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+			rawXml.substring(0, rawXml.indexOf("\n")) + "\n" +
+			"xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
+			rawXml.substring(rawXml.indexOf("\n"));
+			
+			HashMap<String, Object> layoutData = new HashMap<>();
+			layoutData.put("name", layoutName.trim());
+			layoutData.put("xml", formattedXml);
+			
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			File file = new File(layoutFilePath);
+			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+				SketchwareUtil.showMessage(getContext(), "Directory creation failed: " + file.getParent());
+				return;
+			}
+			
+			ArrayList<HashMap<String, Object>> layoutList = FileUtil.isExistFile(layoutFilePath)
+			? new Gson().fromJson(FileUtil.readFile(layoutFilePath),
+			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType())
+			: new ArrayList<>();
+			
+			layoutList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
+			layoutList.add(layoutData);
+			
+			FileUtil.writeFile(layoutFilePath, new Gson().toJson(layoutList));
+			
+			// SketchwareUtil.showMessage(getContext(), "Layout saved: " + layoutName);
+		} catch (Exception e) {
+			SketchwareUtil.showMessage(getContext(), "Error: " + e.getMessage());
+			Log.e("ViewEditor", "saveLayout() failed", e);
+		}
+	}
+	
+	
+	public void loadLayout(String layoutName) {
+		editorLayout.removeAllViews();
+		if (layoutName == null || layoutName.trim().isEmpty()) return;
+		
+		try {
+			
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			if (!FileUtil.isExistFile(layoutFilePath)) return;
+			
+			ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(FileUtil.readFile(layoutFilePath),
+			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
+			
+			HashMap<String, Object> targetLayout = layoutList.stream()
+			.filter(layout -> layoutName.equals(layout.get("name")))
+			.findFirst().orElse(null);
+			
+			if (targetLayout == null) return;
+			
+			// Backup previous state
+			oldIdManager = idManager;
+			oldAttributesValueMap = new HashMap<>(attributesValueMap);
+			
+			idManager = new IdManager();
+			attributesValueMap.clear();
+			
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+			parser.setInput(new StringReader((String) targetLayout.get("xml")));
+			
+			ArrayList<View> viewStack = new ArrayList<>();
+			viewStack.add(editorLayout);
+			
+			for (int eventType = parser.getEventType(); eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()) {
+				if (eventType == XmlPullParser.START_TAG) {
+					String tag = parser.getName();
+					View view = createPlaceholderOrStandardView(tag);
+					
+					if (view != null) {
+						view.setOnClickListener(v -> showAttributesDialog(v));
+						_rearrangeListener(view);
+						if (view instanceof ViewGroup) {
+							view.setOnDragListener(dragListener);
+							view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+						}
+						
+						AttributeSet attrSet = new AttributeSet();
+						attributesValueMap.put(view, attrSet);
+						for (int i = 0; i < parser.getAttributeCount(); i++) {
+							String attrName = parser.getAttributeName(i);
+							String attrValue = parser.getAttributeValue(i);
+							if ("android:id".equals(attrName)) {
+								idManager.addNewId(view, AttributeUtils.getName(attrValue));
+							}
+							attrSet.add(new Attribute(attrName, attrValue));
+						}
+						
+						viewStack.add(view);
+					}
+					
+				} else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
+					View child = viewStack.remove(viewStack.size() - 1);
+					ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
+					parent.addView(child);
+				}
+			}
+			
+			for (View v : attributesValueMap.keySet()) {
+				for (Attribute a : attributesValueMap.get(v).getAttributes()) {
+					applyAttribute(v, a);
+				}
+			}
+			
+			// SketchwareUtil.showMessage(getContext(), "Layout loaded: " + layoutName);
+		} catch (Exception e) {
+			restorePreviousStateOnFailure();
+			SketchwareUtil.showMessage(getContext(), "Load error: " + e.getMessage());
+			Log.e("ViewEditor", "loadLayout() failed", e);
+		}
+	}
 	
 	
 	public String getXMLCode() {
@@ -2418,36 +2381,6 @@ public class ViewEditor extends LinearLayout {
 			if (v.getParent() == null) editorLayout.addView(v);
 		}
 	}
-    
-    private String encrypt(String data) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-            byte[] encrypted = cipher.doFinal(data.getBytes("UTF-8"));
-            return Base64.encodeToString(encrypted, Base64.DEFAULT);
-        } catch (Exception e) {
-            Log.e("ViewEditor", "Encryption failed: " + e.getMessage(), e);
-            return null;
-        }
-    }
-
-    // Decrypt data using AES
-    private String decrypt(String encryptedData) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            byte[] decoded = Base64.decode(encryptedData, Base64.DEFAULT);
-            byte[] decrypted = cipher.doFinal(decoded);
-            return new String(decrypted, "UTF-8");
-        } catch (Exception e) {
-            Log.e("ViewEditor", "Decryption failed: " + e.getMessage(), e);
-            return null;
-        }
-    }
 	
 	
 	@Deprecated

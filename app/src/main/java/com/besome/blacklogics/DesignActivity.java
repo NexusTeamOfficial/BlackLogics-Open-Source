@@ -1230,7 +1230,39 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 									case "Timer":
 									javaCode.append("import java.util.Timer;\n");
 									javaCode.append("import java.util.TimerTask;\n");
-									break;    
+									break;
+									case "CameraX":
+									javaCode.append("import androidx.camera.core.*;\n");
+									javaCode.append("import androidx.camera.lifecycle.ProcessCameraProvider;\n");
+									break;
+									case "FilePicker":
+									javaCode.append("import android.content.Intent;\n");
+									javaCode.append("import android.provider.DocumentsContract;\n");
+									break;
+									case "ImagePicker":
+									javaCode.append("import android.provider.MediaStore;\n");
+									break;
+									case "VideoPicker":
+									javaCode.append("import android.provider.MediaStore;\n");
+									break;
+									case "AudioRecorder":
+									javaCode.append("import android.media.MediaRecorder;\n");
+									break;
+									case "SpeechRecognizer":
+									javaCode.append("import android.speech.SpeechRecognizer;\n");
+									break;
+									case "QRScanner":
+									javaCode.append("import com.google.zxing.integration.android.IntentIntegrator;\n");
+									javaCode.append("import com.google.zxing.integration.android.IntentResult;\n");
+									break;
+									case "DocumentPicker":
+									javaCode.append("import android.content.Intent;\n");
+									javaCode.append("import android.provider.OpenableColumns;\n");
+									break;
+									case "BiometricAuth":
+									javaCode.append("import androidx.biometric.BiometricPrompt;\n");
+									javaCode.append("import androidx.core.content.ContextCompat;\n");
+									break;
 							}
 					}
 					
@@ -1259,15 +1291,40 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 					for (HashMap<String, String> component : components) {
 							String componentName = component.get("componentName");
 							String fieldName = component.get("fieldName");
-							
-							if ("Timer".equals(componentName)) {
-									if (!timerDeclared) {
-											javaCode.append("private Timer _timer = new Timer();\n");
-											timerDeclared = true;
-									}
-									javaCode.append("private TimerTask ").append(fieldName).append(";\n");
-							} else {
-									javaCode.append("private ").append(componentName).append(" ").append(fieldName).append(";\n");
+							switch (componentName) {
+									case "Intent":
+									javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
+									break;
+									case "Dialog":
+									javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
+									break;
+									case "ObjectAnimator":
+									javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
+									break;
+									case "CameraX":
+									javaCode.append("        // Initialize CameraX if required\n");
+									break;
+									case "FilePicker":
+									javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_OPEN_DOCUMENT);\n");
+									javaCode.append("        ").append(fieldName).append(".setType(\"*/*\");\n");
+									case "ImagePicker":
+									javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);\n");
+									break;
+									case "VideoPicker":
+									javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);\n");
+									break;
+									case "AudioRecorder":
+									javaCode.append("        ").append(fieldName).append(" = new MediaRecorder();\n");
+									break;
+									case "SpeechRecognizer":
+									javaCode.append("        ").append(fieldName).append(" = SpeechRecognizer.createSpeechRecognizer(this);\n");
+									break;
+									/*	case "QRScanner":
+				javaCode.append("        // Use IntentIntegrator to start QR scan\n");
+				break;
+				case "BiometricAuth":
+				javaCode.append("        // Setup Biometric Prompt\n");
+				break;*/
 							}
 					}
 					
@@ -1313,8 +1370,8 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(y);
 							if (view instanceof ViewGroup) {
 									ViewGroup parent = (ViewGroup) view;
-									if (parent.getChildCount() > 0) {
-											View child = parent.getChildAt(0);
+									for (int i = 0; i < parent.getChildCount(); i++) {
+											View child = parent.getChildAt(i);
 											if (child != null) {
 													String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
 													String logic = getBlockLogic(widgetIdChild);
@@ -1405,6 +1462,7 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 					}
 					
 					
+					
 					javaCode.append("\n    }\n");
 					
 					javaCode.append("    private void initializeLogic() {\n")
@@ -1437,6 +1495,7 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 					javaCode.append("\n    }\n");
 					
 					javaCode.append("}\n");
+			        String prettyPrintedCode = prettyPrintCode(javaCode.toString());
 					
 					// Save the generated Java code
 					complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
@@ -1482,325 +1541,408 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 	}
 	
 	public String getJavaCode() {
-			FragmentManager fragmentManager = getSupportFragmentManager();
+		    FragmentManager fragmentManager = getSupportFragmentManager();
 ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentManager
     .findFragmentByTag("android:switcher:" + customViewPager.getId() + ":0");
-			if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
-					StringBuilder javaCode = new StringBuilder();
-					javaCode.append("package ").append(pkgName).append(";\n\n");
-					
-					if (complex.getAndroidXEnable()) {
-							javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
-							javaCode.append("import androidx.fragment.app.Fragment;\n");
-							javaCode.append("import androidx.fragment.app.FragmentManager;\n");
-							javaCode.append("import androidx.fragment.app.DialogFragment;\n");
-							javaCode.append("import com.google.android.material.*;\n");
-					} else {
-							javaCode.append("import android.app.Activity;\n");
-					}
-					
-					javaCode.append("import android.app.*;\n");
-					javaCode.append("import android.os.*;\n");
-					javaCode.append("import android.os.Bundle;\n");
-					javaCode.append("import android.widget.*;\n");
-					javaCode.append("import android.text.*;\n");
-					javaCode.append("import android.net.*;\n");
-					javaCode.append("import android.util.*;\n");
-					javaCode.append("import android.view.*;\n");
-					javaCode.append("import android.graphics.*;\n");
-					javaCode.append("import android.content.*;\n");
-					javaCode.append("import android.widget.Toast;\n");
-					javaCode.append("import android.webkit.*;\n");
-					javaCode.append("import android.view.animation.*;\n");
-					
-					// Add imports for components
-					List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
-					List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
-					for (HashMap<String, String> component : components) {
-							String componentName = component.get("componentName");
-							switch (componentName) {
-									case "Intent":
-									javaCode.append("import android.content.Intent;\n");
-									break;
-									case "Dialog":
-									javaCode.append("import android.app.Dialog;\n");
-									break;
-									case "ObjectAnimator":
-									javaCode.append("import android.animation.ObjectAnimator;\n");
-									break;
-									case "SharedPreferences":
-									javaCode.append("import android.content.SharedPreferences;\n");
-									break;
-									case "AsyncTask":
-									javaCode.append("import android.os.AsyncTask;\n");
-									break;
-									case "Handler":
-									javaCode.append("import android.os.Handler;\n");
-									break;
-									case "Service":
-									javaCode.append("import android.app.Service;\n");
-									break;
-									case "BroadcastReceiver":
-									javaCode.append("import android.content.BroadcastReceiver;\n");
-									break;
-									case "ContentProvider":
-									javaCode.append("import android.content.ContentProvider;\n");
-									break;
-									case "Fragment":
-									javaCode.append("import androidx.fragment.app.Fragment;\n");
-									break;
-									case "ViewModel":
-									javaCode.append("import androidx.lifecycle.ViewModel;\n");
-									break;
-									case "LiveData":
-									javaCode.append("import androidx.lifecycle.LiveData;\n");
-									break;
-									case "Room":
-									javaCode.append("import androidx.room.*;\n");
-									break;
-									case "WorkManager":
-									javaCode.append("import androidx.work.*;\n");
-									break;
-									case "RecyclerView":
-									javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
-									break;
-									case "ViewPager":
-									javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
-									break;
-									case "MediaPlayer":
-									javaCode.append("import android.media.MediaPlayer;\n");
-									break;
-									case "Camera":
-									javaCode.append("import android.hardware.Camera;\n");
-									break;
-									case "LocationManager":
-									javaCode.append("import android.location.LocationManager;\n");
-									break;
-									case "SensorManager":
-									javaCode.append("import android.hardware.SensorManager;\n");
-									break;
-									case "BluetoothAdapter":
-									javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
-									break;
-									case "Timer":
-									javaCode.append("import java.util.Timer;\n");
-									javaCode.append("import java.util.TimerTask;\n");
-									break;    
-							}
-					}
-					
-					for (HashMap<String, String> componentA : variables) {
-							String componentName = componentA.get("varTypeName");
-							switch (componentName) {
-									case "ArrayList<String>":
-									case "ArrayList<Double>": 
-									javaCode.append("import java.util.ArrayList;\n");
-									break;
-							}
-					}
-					
-					javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
-					javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
-					
-					// Add widget fields
-					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
-							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
-							declareWidgetFields(view, javaCode);
-					}
-					
-					// Add component fields
-					boolean timerDeclared = false;
-					
-					for (HashMap<String, String> component : components) {
-							String componentName = component.get("componentName");
-							String fieldName = component.get("fieldName");
+		    if (ViewBuilderFragmentActivity.instance != null && ViewBuilderFragmentActivity.instance.viewEditor != null) {
+			        StringBuilder javaCode = new StringBuilder();
+			        javaCode.append("package ").append(pkgName).append(";\n\n");
+			
+			        if (complex.getAndroidXEnable()) {
+				            javaCode.append("import androidx.appcompat.app.AppCompatActivity;\n");
+				            javaCode.append("import androidx.fragment.app.Fragment;\n");
+				            javaCode.append("import androidx.fragment.app.FragmentManager;\n");
+				            javaCode.append("import androidx.fragment.app.DialogFragment;\n");
+				            javaCode.append("import com.google.android.material.*;\n");
+				        } else {
+				            javaCode.append("import android.app.Activity;\n");
+				        }
+			
+			        javaCode.append("import android.app.*;\n");
+			        javaCode.append("import android.os.*;\n");
+			        javaCode.append("import android.os.Bundle;\n");
+			        javaCode.append("import android.widget.*;\n");
+			        javaCode.append("import android.text.*;\n");
+			        javaCode.append("import android.net.*;\n");
+			        javaCode.append("import android.util.*;\n");
+			        javaCode.append("import android.view.*;\n");
+			        javaCode.append("import android.graphics.*;\n");
+			        javaCode.append("import android.content.*;\n");
+			        javaCode.append("import android.widget.Toast;\n");
+			        javaCode.append("import android.webkit.*;\n");
+			        javaCode.append("import android.view.animation.*;\n");
+			
+			        // Add imports for components
+			        List<HashMap<String, String>> variables = loadVariableLogic(DesignActivity.currentActivityBean.getActivityName());
+			        List<HashMap<String, String>> components = loadComponentLogic(DesignActivity.currentActivityBean.getActivityName());
+			        for (HashMap<String, String> component : components) {
+				            String componentName = component.get("componentName");
+				            switch (componentName) {
+					                case "Intent":
+					                    javaCode.append("import android.content.Intent;\n");
+					                    break;
+					                case "Dialog":
+					                    javaCode.append("import android.app.Dialog;\n");
+					                    break;
+					                case "ObjectAnimator":
+					                    javaCode.append("import android.animation.ObjectAnimator;\n");
+					                    break;
+					                case "SharedPreferences":
+					                    javaCode.append("import android.content.SharedPreferences;\n");
+					                    break;
+					                case "AsyncTask":
+					                    javaCode.append("import android.os.AsyncTask;\n");
+					                    break;
+					                case "Handler":
+					                    javaCode.append("import android.os.Handler;\n");
+					                    break;
+					                case "Service":
+					                    javaCode.append("import android.app.Service;\n");
+					                    break;
+					                case "BroadcastReceiver":
+					                    javaCode.append("import android.content.BroadcastReceiver;\n");
+					                    break;
+					                case "ContentProvider":
+					                    javaCode.append("import android.content.ContentProvider;\n");
+					                    break;
+					                case "Fragment":
+					                    javaCode.append("import androidx.fragment.app.Fragment;\n");
+					                    break;
+					                case "ViewModel":
+					                    javaCode.append("import androidx.lifecycle.ViewModel;\n");
+					                    break;
+					                case "LiveData":
+					                    javaCode.append("import androidx.lifecycle.LiveData;\n");
+					                    break;
+					                case "Room":
+					                    javaCode.append("import androidx.room.*;\n");
+					                    break;
+					                case "WorkManager":
+					                    javaCode.append("import androidx.work.*;\n");
+					                    break;
+					                case "RecyclerView":
+					                    javaCode.append("import androidx.recyclerview.widget.RecyclerView;\n");
+					                    break;
+					                case "ViewPager":
+					                    javaCode.append("import androidx.viewpager.widget.ViewPager;\n");
+					                    break;
+					                case "MediaPlayer":
+					                    javaCode.append("import android.media.MediaPlayer;\n");
+					                    break;
+					                case "Camera":
+					                    javaCode.append("import android.hardware.Camera;\n");
+					                    break;
+					                case "LocationManager":
+					                    javaCode.append("import android.location.LocationManager;\n");
+					                    break;
+					                case "SensorManager":
+					                    javaCode.append("import android.hardware.SensorManager;\n");
+					                    break;
+					                case "BluetoothAdapter":
+					                    javaCode.append("import android.bluetooth.BluetoothAdapter;\n");
+					                    break;
+					                case "Timer":
+					                    javaCode.append("import java.util.Timer;\n");
+					                    javaCode.append("import java.util.TimerTask;\n");
+					                    break;
+					                case "CameraX":
+					                    javaCode.append("import androidx.camera.core.*;\n");
+					                    javaCode.append("import androidx.camera.lifecycle.ProcessCameraProvider;\n");
+					                    break;
+					                case "FilePicker":
+					                    javaCode.append("import android.content.Intent;\n");
+					                    javaCode.append("import android.provider.DocumentsContract;\n");
+					                    break;
+					                case "ImagePicker":
+					                    javaCode.append("import android.provider.MediaStore;\n");
+					                    break;
+					                case "VideoPicker":
+					                    javaCode.append("import android.provider.MediaStore;\n");
+					                    break;
+					                case "AudioRecorder":
+					                    javaCode.append("import android.media.MediaRecorder;\n");
+					                    break;
+					                case "SpeechRecognizer":
+					                    javaCode.append("import android.speech.SpeechRecognizer;\n");
+					                    break;
+					                case "QRScanner":
+					                    javaCode.append("import com.google.zxing.integration.android.IntentIntegrator;\n");
+					                    javaCode.append("import com.google.zxing.integration.android.IntentResult;\n");
+					                    break;
+					                case "DocumentPicker":
+					                    javaCode.append("import android.content.Intent;\n");
+					                    javaCode.append("import android.provider.OpenableColumns;\n");
+					                    break;
+					                case "BiometricAuth":
+					                    javaCode.append("import androidx.biometric.BiometricPrompt;\n");
+					                    javaCode.append("import androidx.core.content.ContextCompat;\n");
+					                    break;
+					            }
+				        }
+			
+			        for (HashMap<String, String> componentA : variables) {
+				            String componentName = componentA.get("varTypeName");
+				            switch (componentName) {
+					                case "ArrayList<String>":
+					                case "ArrayList<Double>":
+					                    javaCode.append("import java.util.ArrayList;\n");
+					                    break;
+					            }
+				        }
+			
+			        javaCode.append("\npublic class ").append(currentActivityBean.getActivityName()).append(" extends ");
+			        javaCode.append(complex.getAndroidXEnable() ? "AppCompatActivity" : "Activity").append(" {\n\n");
+			
+			        // Add widget fields
+			        for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+				            View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+				            declareWidgetFields(view, javaCode);
+				        }
+			
+			        // Add component fields
+			        boolean timerDeclared = false;
+			
+			        for (HashMap<String, String> component : components) {
+				            String componentName = component.get("componentName");
+				            String fieldName = component.get("fieldName");
+				
+				            if ("Timer".equals(componentName)) {
+					                if (!timerDeclared) {
+						                    javaCode.append("private Timer _timer = new Timer();\n");
+						                    timerDeclared = true;
+						                }
+					                javaCode.append("private TimerTask ").append(fieldName).append(";\n");
+					            } else {
+					                javaCode.append("private ").append(componentName).append(" ").append(fieldName).append(";\n");
+					            }
+				        }
+			
+			        for (HashMap<String, String> variable : variables) {
+				            String varType = variable.get("varTypeName");
+				            String varName = variable.get("varName");
+				            javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
+				        }
+			
+			        javaCode.append("\n    @Override\n");
+			        javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
+			        javaCode.append("        super.onCreate(savedInstanceState);\n");
+			        javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
+			        javaCode.append("        initialize(savedInstanceState);\n");
+			        javaCode.append("        initializeLogic();\n");
+			        javaCode.append("\n    }\n");
+			
+			        javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
+			        for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
+				            View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
+				            initializeWidgetFields(view, javaCode);
+				        }
+			
+			        // Initialize components
+			        for (HashMap<String, String> component : components) {
+				            String componentName = component.get("componentName");
+				            String fieldName = component.get("fieldName");
+				            switch (componentName) {
+					                case "Intent":
+					                    javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
+					                    break;
+					                case "Dialog":
+					                    javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
+					                    break;
+					                case "ObjectAnimator":
+					                    javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
+					                    break;
+					                case "CameraX":
+					                    javaCode.append("        // Initialize CameraX if required\n");
+					                    break;
+					                case "FilePicker":
+					                    javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_OPEN_DOCUMENT);\n");
+					                    javaCode.append("        ").append(fieldName).append(".setType(\"*/*\");\n");
+					                    break;
+					                case "ImagePicker":
+					                    javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);\n");
+					                    break;
+					                case "VideoPicker":
+					                    javaCode.append("        ").append(fieldName).append(" = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);\n");
+					                    break;
+					                case "AudioRecorder":
+					                    javaCode.append("        ").append(fieldName).append(" = new MediaRecorder();\n");
+					                    break;
+					                case "SpeechRecognizer":
+					                    javaCode.append("        ").append(fieldName).append(" = SpeechRecognizer.createSpeechRecognizer(this);\n");
+					                    break;
+					            }
+				        }
+			
+			        for (int y = 0; y < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); y++) {
+				            View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(y);
+				            if (view instanceof ViewGroup) {
+					                ViewGroup parent = (ViewGroup) view;
+					                for (int i = 0; i < parent.getChildCount(); i++) {
+						                    View child = parent.getChildAt(i);
+						                    if (child != null) {
+							                        String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
+							                        String logic = getBlockLogic(widgetIdChild);
+							                        String widgetType = child.getClass().getSimpleName();
 							
-							if ("Timer".equals(componentName)) {
-									if (!timerDeclared) {
-											javaCode.append("private Timer _timer = new Timer();\n");
-											timerDeclared = true;
-									}
-									javaCode.append("private TimerTask ").append(fieldName).append(";\n");
-							} else {
-									javaCode.append("private ").append(componentName).append(" ").append(fieldName).append(";\n");
-							}
-					}
-					
-					
-					for (HashMap<String, String> variable : variables) {
-							String varType = variable.get("varTypeName");
-							String varName = variable.get("varName");
-							javaCode.append("    private ").append(varType).append(" ").append(varName).append(";\n");
-					}
-					
-					javaCode.append("\n    @Override\n");
-					javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
-					javaCode.append("        super.onCreate(savedInstanceState);\n");
-					javaCode.append("        setContentView(R.layout.").append(currentActivityBean.getLayoutName()).append(");\n");
-					javaCode.append("        initialize(savedInstanceState);\n");
-					javaCode.append("        initializeLogic();\n");
-					javaCode.append("\n    }\n");
-					
-					javaCode.append("    private void initialize(Bundle _savedInstanceState) {\n");
-					for (int i = 0; i < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); i++) {
-							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(i);
-							initializeWidgetFields(view, javaCode);
-					}
-					
-					// Initialize components
-					for (HashMap<String, String> component : components) {
-							String componentName = component.get("componentName");
-							String fieldName = component.get("fieldName");
-							switch (componentName) {
-									case "Intent":
-									javaCode.append("        ").append(fieldName).append(" = new Intent();\n");
-									break;
-									case "Dialog":
-									javaCode.append("        ").append(fieldName).append(" = new Dialog(this);\n");
-									break;
-									case "ObjectAnimator":
-									javaCode.append("        ").append(fieldName).append(" = new ObjectAnimator();\n");
-									break;
-							}
-					}
-					
-					for (int y = 0; y < ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildCount(); y++) {
-							View view = ViewBuilderFragmentActivity.instance.viewEditor.editorLayout.getChildAt(y);
-							if (view instanceof ViewGroup) {
-									ViewGroup parent = (ViewGroup) view;
-									if (parent.getChildCount() > 0) {
-											View child = parent.getChildAt(0);
-											if (child != null) {
-													String widgetIdChild = ViewBuilderFragmentActivity.instance.viewEditor.idManager.getId(child);
-													String logic = getBlockLogic(widgetIdChild);
-													String widgetType = child.getClass().getSimpleName();
-													
-													if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
-															switch (widgetType) {
-																	case "CheckBox":
-																	case "Switch":
-																	javaCode.append("\n        ")
-																	.append(widgetIdChild)
-																	.append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
-																	.append("            @Override\n")
-																	.append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
-																	.append("                ")
-																	.append(logic)
-																	.append("\n")
-																	.append("            }\n")
-																	.append("        });\n");
-																	break;
-																	
-																	case "EditText":
-																	javaCode.append("\n        ")
-																	.append(widgetIdChild)
-																	.append(".addTextChangedListener(new TextWatcher() {\n")
-																	.append("            @Override\n")
-																	.append("            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}\n")
-																	.append("            @Override\n")
-																	.append("            public void onTextChanged(CharSequence s, int start, int before, int count) {\n")
-																	.append("                ")
-																	.append(logic)
-																	.append("\n")
-																	.append("            }\n")
-																	.append("            @Override\n")
-																	.append("            public void afterTextChanged(Editable s) {}\n")
-																	.append("        });\n");
-																	break;
-																	
-																	case "SeekBar":
-																	javaCode.append("\n        ")
-																	.append(widgetIdChild)
-																	.append(".setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {\n")
-																	.append("            @Override\n")
-																	.append("            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {\n")
-																	.append("                ")
-																	.append(logic)
-																	.append("\n")
-																	.append("            }\n")
-																	.append("            @Override\n")
-																	.append("            public void onStartTrackingTouch(SeekBar seekBar) {}\n")
-																	.append("            @Override\n")
-																	.append("            public void onStopTrackingTouch(SeekBar seekBar) {}\n")
-																	.append("        });\n");
-																	break;
-																	
-																	case "Spinner":
-																	javaCode.append("\n        ")
-																	.append(widgetIdChild)
-																	.append(".setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {\n")
-																	.append("            @Override\n")
-																	.append("            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {\n")
-																	.append("                ")
-																	.append(logic)
-																	.append("\n")
-																	.append("            }\n")
-																	.append("            @Override\n")
-																	.append("            public void onNothingSelected(AdapterView<?> parent) {}\n")
-																	.append("        });\n");
-																	break;
-																	
-																	default:
-																	javaCode.append("\n        ")
-																	.append(widgetIdChild)
-																	.append(".setOnClickListener(new View.OnClickListener() {\n")
-																	.append("            @Override\n")
-																	.append("            public void onClick(View v) {\n")
-																	.append("                ")
-																	.append(logic)
-																	.append("\n")
-																	.append("            }\n")
-																	.append("        });\n");
-																	break;
-															}
-													}
-											}
-									}
-							}
-					}
-					
-					
-					javaCode.append("\n    }\n");
-					
-					javaCode.append("    private void initializeLogic() {\n")
-					.append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
-					.append("    }\n");
-					
-					List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
-					if (functions != null) {
-							for (HashMap<String, Object> func : functions) {
-									String functionName = (String) func.get("functionName");
-									String returnType = (String) func.get("returnType");
-									List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
+							                        if (widgetIdChild != null && !widgetIdChild.isEmpty()) {
+								                            switch (widgetType) {
+									                                case "CheckBox":
+									                                case "Switch":
+									                                    javaCode.append("\n        ")
+									                                            .append(widgetIdChild)
+									                                            .append(".setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n")
+									                                            .append("                ")
+									                                            .append(logic)
+									                                            .append("\n")
+									                                            .append("            }\n")
+									                                            .append("        });\n");
+									                                    break;
 									
-									javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
-									for (int i = 0; i < parameters.size(); i++) {
-											HashMap<String, String> param = parameters.get(i);
-											javaCode.append(param.get("type")).append(" ").append(param.get("name"));
-											if (i < parameters.size() - 1) {
-													javaCode.append(", ");
-											}
-									}
-									javaCode.append(") {\n");
-									javaCode.append("   \n");
-									javaCode.append("}\n\n");
-							}
-					}
+									                                case "EditText":
+									                                    javaCode.append("\n        ")
+									                                            .append(widgetIdChild)
+									                                            .append(".addTextChangedListener(new TextWatcher() {\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onTextChanged(CharSequence s, int start, int before, int count) {\n")
+									                                            .append("                ")
+									                                            .append(logic)
+									                                            .append("\n")
+									                                            .append("            }\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void afterTextChanged(Editable s) {}\n")
+									                                            .append("        });\n");
+									                                    break;
+									
+									                                case "SeekBar":
+									                                    javaCode.append("\n        ")
+									                                            .append(widgetIdChild)
+									                                            .append(".setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {\n")
+									                                            .append("                ")
+									                                            .append(logic)
+									                                            .append("\n")
+									                                            .append("            }\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onStartTrackingTouch(SeekBar seekBar) {}\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onStopTrackingTouch(SeekBar seekBar) {}\n")
+									                                            .append("        });\n");
+									                                    break;
+									
+									                                case "Spinner":
+									                                    javaCode.append("\n        ")
+									                                            .append(widgetIdChild)
+									                                            .append(".setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {\n")
+									                                            .append("                ")
+									                                            .append(logic)
+									                                            .append("\n")
+									                                            .append("            }\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onNothingSelected(AdapterView<?> parent) {}\n")
+									                                            .append("        });\n");
+									                                    break;
+									
+									                                default:
+									                                    javaCode.append("\n        ")
+									                                            .append(widgetIdChild)
+									                                            .append(".setOnClickListener(new View.OnClickListener() {\n")
+									                                            .append("            @Override\n")
+									                                            .append("            public void onClick(View v) {\n")
+									                                            .append("                ")
+									                                            .append(logic)
+									                                            .append("\n")
+									                                            .append("            }\n")
+									                                            .append("        });\n");
+									                                    break;
+									                            }
+								                        }
+							                    }
+						                }
+					            }
+				        }
+			
+			        javaCode.append("\n    }\n");
+			
+			        javaCode.append("    private void initializeLogic() {\n")
+			                .append("        ").append(getBlockLogicForWidget(currentActivityBean.getActivityName() + "initializeLogic")).append("\n")
+			                .append("    }\n");
+			
+			      /*  // Add pretty print utility method
+        javaCode.append("\n    private String prettyPrint(String message) {\n")
+                .append("        StringBuilder formatted = new StringBuilder();\n")
+                .append("        formatted.append(\"[INFO] \").append(message).append(\"\\n\");\n")
+                .append("        return formatted.toString();\n")
+                .append("    }\n");*/
+			
+			        List<HashMap<String, Object>> functions = loadFunctions(DesignActivity.currentActivityBean.getActivityName());
+			        if (functions != null) {
+				            for (HashMap<String, Object> func : functions) {
+					                String functionName = (String) func.get("functionName");
+					                String returnType = (String) func.get("returnType");
+					                List<HashMap<String, String>> parameters = (List<HashMap<String, String>>) func.get("parameters");
 					
-					javaCode.append("    public void showMessage(String message) {\n");
-					javaCode.append("        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();\n");
-					javaCode.append("\n    }\n");
-					
-					javaCode.append("}\n");
-					
-					// Save the generated Java code
-					complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
-					return javaCode.toString();
-			} else {
-					return "Error generating source code...";
-			}
+					                javaCode.append("public ").append(returnType).append(" ").append(functionName).append("(");
+					                for (int i = 0; i < parameters.size(); i++) {
+						                    HashMap<String, String> param = parameters.get(i);
+						                    javaCode.append(param.get("type")).append(" ").append(param.get("name"));
+						                    if (i < parameters.size() - 1) {
+							                        javaCode.append(", ");
+							                    }
+						                }
+					                javaCode.append(") {\n");
+					                javaCode.append("   \n");
+					                javaCode.append("}\n\n");
+					            }
+				        }
+			
+			        // Modify showMessage to use prettyPrint
+			        javaCode.append("    public void showMessage(String message) {\n");
+			        javaCode.append("        Toast.makeText(getApplicationContext(), prettyPrint(message), Toast.LENGTH_SHORT).show();\n");
+			        javaCode.append("\n    }\n");
+			
+			        javaCode.append("}\n");
+			
+			        // Save the generated Java code
+			        complex.setJavaCode(currentActivityBean.getActivityName(), javaCode.toString());
+			
+			        // Pretty print the generated code for debugging (if needed)
+			        String prettyPrintedCode = prettyPrintCode(javaCode.toString());
+			        Log.d("GeneratedJavaCode", prettyPrintedCode); // Assuming android.util.Log for debugging
+			
+			        return javaCode.toString();
+			    } else {
+			        String errorMessage = "Error generating source code...";
+			        Log.d("GeneratedJavaCode", prettyPrintCode(errorMessage));
+			        return errorMessage;
+			    }
 	}
 	
+	// Utility method for pretty printing the generated code for debugging
+	private String prettyPrintCode(String code) {
+		    StringBuilder formatted = new StringBuilder();
+		    String[] lines = code.split("\n");
+		    int indentLevel = 0;
+		    for (String line : lines) {
+			        String trimmedLine = line.trim();
+			        if (trimmedLine.endsWith("}")) {
+				            indentLevel--;
+				        }
+			        formatted.append("  ".repeat(Math.max(0, indentLevel)))
+			                .append(trimmedLine)
+			                .append("\n");
+			        if (trimmedLine.endsWith("{")) {
+				            indentLevel++;
+				        }
+			    }
+		    return formatted.toString();
+	}
 	/*
 TUDO : generateXmlLayout
 **/
@@ -2853,7 +2995,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			
 			        FileUtil.makeDir(projectPath + "/block_logic/");
 			
-			        // Read existing logic
+			        // Read existing logic (if encoded file exists)
 			        Map<String, Map<String, String>> logicMap = new HashMap<>();
 			        if (FileUtil.isExistFile(blockLogicPath)) {
 				            String encodedJson = FileUtil.readFile(blockLogicPath);
@@ -2867,21 +3009,21 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			        activityLogic.put(activityName + "initializeLogic", logic);
 			        logicMap.put(activityName, activityLogic);
 			
-			        // Save encoded logic
-			        String json = new Gson().toJson(logicMap);
-			        String encodedJson = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+			        // Create a pretty-printed JSON first
+			        Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
+			        String prettyJson = gsonPretty.toJson(logicMap);
+			
+			        // Save encoded version (Base64 of pretty JSON)
+			        String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
 			        FileUtil.writeFile(blockLogicPath, encodedJson);
 			
-			        // Save pretty-printed logic
-			        Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
-			        String prettyJson = gsonPretty.toJson(activityLogic);
-			        FileUtil.writeFile(prettyLogicPath, prettyJson);
+			        // Save pretty-printed version (plain readable JSON)
+			     //   FileUtil.writeFile(prettyLogicPath, prettyJson);
 			
 			    } catch (Exception e) {
 			        // TheBlockLogicsUtil.showToast(TheBlockLogicsUtil.getContext(), "Error saving block logic: " + e.toString());
 			    }
 	}
-	
 	private String getBlockLogicForWidget(String widgetId) {
 		    try {
 			        String blockLogicPath = projectPath + "/block_logic/project_logic.json";
@@ -2926,7 +3068,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			        if (FileUtil.isExistFile(blockLogicPath)) {
 				            String encodedJson = FileUtil.readFile(blockLogicPath);
 				            String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
-				            Type mapType = new TypeToken<Map<String, Map<String, String>>>(){}.getType();
+				            Type mapType = new TypeToken<Map<String, Map<String, String>>>() {}.getType();
 				            logicMap = new Gson().fromJson(decodedJson, mapType);
 				        }
 			
@@ -2935,12 +3077,16 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			        activityLogic.put(widgetId, logic);
 			        logicMap.put(activityName, activityLogic);
 			
-			        // Save updated logic
-			        String json = new Gson().toJson(logicMap);
-			        String encodedJson = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+			        // Create pretty-printed JSON first
+			        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			        String prettyJson = gson.toJson(logicMap);
+			
+			        // Then encode the pretty JSON
+			        String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
 			        FileUtil.writeFile(blockLogicPath, encodedJson);
+			
 			    } catch (Exception e) {
-			       // TheBlockLogicsUtil.showToast(TheBlockLogicsUtil.getContext(), "Error saving block logic: " + e.toString());
+			        // TheBlockLogicsUtil.showToast(TheBlockLogicsUtil.getContext(), "Error saving block logic: " + e.toString());
 			    }
 	}
 	private String getBlockLogic(String widgetId) {
@@ -3284,12 +3430,18 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			        activityComponents.add(componentData);
 			        componentMap.put(activityName, activityComponents);
 			
-			        // Save updated components
-			        String json = new Gson().toJson(componentMap);
-			        String encodedJson = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+			        // Create pretty-printed JSON
+			        Gson gson = new GsonBuilder()
+			            .setPrettyPrinting()
+			            .create();
+			        String prettyJson = gson.toJson(componentMap);
+			
+			        // Encode and save
+			        String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
 			        FileUtil.writeFile(componentLogicPath, encodedJson);
+			
 			    } catch (Exception e) {
-			        //TheBlockLogicsUtil.showToast(getApplicationContext(), "Error saving component logic: " + e.toString());
+			        // TheBlockLogicsUtil.showToast(getApplicationContext(), "Error saving component logic: " + e.toString());
 			    }
 	}
 	public static List<HashMap<String, String>> loadComponentLogic(String activityName) {
@@ -3651,29 +3803,35 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			        String componentLogicPath = projectPath + "/block_logic/project_variables.json";
 			        FileUtil.makeDir(projectPath + "/block_logic/");
 			
-			        // Read existing components
-			        Map<String, List<HashMap<String, String>>> componentMap = new HashMap<>();
+			        // Read existing variables
+			        Map<String, List<HashMap<String, String>>> variableMap = new HashMap<>();
 			        if (FileUtil.isExistFile(componentLogicPath)) {
 				            String encodedJson = FileUtil.readFile(componentLogicPath);
 				            String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
 				            Type mapType = new TypeToken<Map<String, List<HashMap<String, String>>>>(){}.getType();
-				            componentMap = new Gson().fromJson(decodedJson, mapType);
+				            variableMap = new Gson().fromJson(decodedJson, mapType);
 				        }
 			
-			        // Update components
-			        List<HashMap<String, String>> activityComponents = componentMap.getOrDefault(activityName, new ArrayList<>());
-			        HashMap<String, String> componentData = new HashMap<>();
-			        componentData.put("varTypeName", componentName);
-			        componentData.put("varName", fieldName);
-			        activityComponents.add(componentData);
-			        componentMap.put(activityName, activityComponents);
+			        // Update variables
+			        List<HashMap<String, String>> activityVariables = variableMap.getOrDefault(activityName, new ArrayList<>());
+			        HashMap<String, String> variableData = new HashMap<>();
+			        variableData.put("varTypeName", componentName);
+			        variableData.put("varName", fieldName);
+			        activityVariables.add(variableData);
+			        variableMap.put(activityName, activityVariables);
 			
-			        // Save updated components
-			        String json = new Gson().toJson(componentMap);
-			        String encodedJson = Base64.encodeToString(json.getBytes(), Base64.DEFAULT);
+			        // Create pretty-printed JSON
+			        Gson gson = new GsonBuilder()
+			            .setPrettyPrinting()
+			            .create();
+			        String prettyJson = gson.toJson(variableMap);
+			
+			        // Encode and save
+			        String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
 			        FileUtil.writeFile(componentLogicPath, encodedJson);
+			
 			    } catch (Exception e) {
-			        //TheBlockLogicsUtil.showToast(getApplicationContext(), "Error saving component logic: " + e.toString());
+			        // TheBlockLogicsUtil.showToast(getApplicationContext(), "Error saving variable: " + e.toString());
 			    }
 	}
 	public static Map<String, List<String>> getVariables(String activityName) {

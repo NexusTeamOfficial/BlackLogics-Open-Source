@@ -3,12 +3,15 @@ package com.besome.blacklogics;
 import android.animation.*;
 import android.app.*;
 import android.content.*;
+import android.content.Intent;
 import android.content.res.*;
 import android.graphics.*;
 import android.graphics.drawable.*;
 import android.media.*;
 import android.net.*;
+import android.net.Uri;
 import android.os.*;
+import android.os.Bundle;
 import android.text.*;
 import android.text.style.*;
 import android.util.*;
@@ -52,6 +55,7 @@ import io.github.rosemoe.sora.*;
 import io.github.rosemoe.sora.langs.java.*;
 import io.github.rosemoe.sora.langs.textmate.*;
 import java.io.*;
+import java.io.InputStream;
 import java.text.*;
 import java.util.*;
 import java.util.regex.*;
@@ -78,9 +82,13 @@ public class ComponentFragmentActivity extends Fragment {
 	private boolean isDeleteMode = false;
 	public ComponentFragmentActivity activity;
 	public static ComponentFragmentActivity componentFragmentActivity;
+	private String componentName = "";
+	private String fieldName = "";
 	
 	private LinearLayout baseComponentLayout;
 	private RecyclerView baseComponentRecycler;
+	
+	private Intent intent = new Intent();
 	
 	@NonNull
 	@Override
@@ -212,6 +220,107 @@ public class ComponentFragmentActivity extends Fragment {
 			dialog.show();
 	}
 	
+	private List<String> getComponentEvents(String componentName) {
+			List<String> events = new ArrayList<>();
+			switch (componentName) {
+					case "Dialog":
+					events.add("show");
+					events.add("onDismiss");
+					events.add("onCancel");
+					break;
+					case "Intent":
+					events.add("onActivityResult");
+					break;
+					case "ObjectAnimator":
+					events.add("onAnimationStart");
+					events.add("onAnimationEnd");
+					events.add("onAnimationCancel");
+					events.add("onAnimationRepeat");
+					break;
+					case "Timer":
+					events.add("onTick");
+					events.add("onFinish");
+					break;
+					case "Notification":
+					events.add("onNotificationPosted");
+					events.add("onNotificationRemoved");
+					break;
+					case "AsyncTask":
+					events.add("onPreExecute");
+					events.add("onProgressUpdate");
+					events.add("onPostExecute");
+					events.add("onCancelled");
+					break;
+					case "Handler":
+					events.add("handleMessage");
+					break;
+					case "Service":
+					events.add("onCreate");
+					events.add("onStartCommand");
+					events.add("onBind");
+					events.add("onDestroy");
+					break;
+					case "BroadcastReceiver":
+					events.add("onReceive");
+					break;
+					case "ViewModel":
+					events.add("onCleared");
+					break;
+					case "LiveData":
+					events.add("onActive");
+					events.add("onInactive");
+					break;
+					case "WorkManager":
+					events.add("onWorkStateChanged");
+					break;
+					case "MediaPlayer":
+					events.add("onPrepared");
+					events.add("onCompletion");
+					events.add("onError");
+					break;
+					case "Camera":
+					case "Camera2 API":
+					events.add("onPictureTaken");
+					events.add("onVideoRecorded");
+					break;
+					case "FilePicker":
+					case "Storage Access Framework":
+					events.add("onFileSelected");
+					break;
+					case "LocationManager":
+					events.add("onLocationChanged");
+					events.add("onProviderEnabled");
+					events.add("onProviderDisabled");
+					break;
+					case "SensorManager":
+					events.add("onSensorChanged");
+					events.add("onAccuracyChanged");
+					break;
+					case "BluetoothAdapter":
+					events.add("onBluetoothStateChanged");
+					events.add("onDeviceFound");
+					break;
+					case "AlarmManager":
+					events.add("onAlarmTriggered");
+					break;
+					case "JobScheduler":
+					events.add("onJobFinished");
+					break;
+					default:
+					events.add("onClick"); // Generic event for UI-related components
+					break;
+			}
+			return events;
+	}
+	
+	// Placeholder method to handle event selection
+	private void handleEventSelection(String componentName, String fieldName, String eventName) {
+			// Implement your logic here, e.g., add the event to a code editor or logic block
+			TheBlockLogicsUtil.showToast(getActivity(), "Handling " + eventName + " for " + componentName + " (" + fieldName + ")");
+			// Example: Add to a code editor or logic system
+			// DesignActivity.addEventLogic(DesignActivity.currentActivityBean.getActivityName(), componentName, fieldName, eventName);
+	}
+	
 	{
 	}
 	
@@ -237,6 +346,7 @@ public class ComponentFragmentActivity extends Fragment {
 			View _view = _holder.itemView;
 			
 			final LinearLayout base = _view.findViewById(R.id.base);
+			final LinearLayout baseOptions = _view.findViewById(R.id.baseOptions);
 			final LinearLayout baseComponentDeleteUi = _view.findViewById(R.id.baseComponentDeleteUi);
 			final LinearLayout baseIconUi = _view.findViewById(R.id.baseIconUi);
 			final LinearLayout baseLayout = _view.findViewById(R.id.baseLayout);
@@ -250,6 +360,8 @@ public class ComponentFragmentActivity extends Fragment {
 			ArrayList<HashMap<String, Object>> data = _data;
 			int position= _position;
 			HashMap<String, Object> component = data.get(position);
+			componentName = component.get("componentName").toString();
+			fieldName = component.get("fieldName").toString();
 			baseComponentName.setText(component.get("componentName").toString());
 			baseComponentSubName.setText(component.get("fieldName").toString());
 			
@@ -280,6 +392,35 @@ public class ComponentFragmentActivity extends Fragment {
 					baseComponentIcon.setImageResource(isDeleteMode ? 2131231644 : 2131231642);
 					notifyDataSetChanged(); // Refresh to update visibility for all items
 			});
+			
+			//baseOptions.removeViewsInLayout(2, baseOptions.getChildCount() - 2); // Assuming first two children are existing UI elements
+			baseOptions.removeAllViews(); 
+			// Get the list of events for the component
+			List<String> events = getComponentEvents(componentName);
+			
+			// Programmatically add a button for each event
+			for (String event : events) {
+					Button eventButton = new Button(getActivity());
+					eventButton.setText(event);
+					eventButton.setLayoutParams(new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.WRAP_CONTENT,
+					LinearLayout.LayoutParams.WRAP_CONTENT
+					));
+					// Style the button (customize as needed)
+					eventButton.setBackgroundTintList(ColorStateList.valueOf(getActivity().getResources().getColor(android.R.color.holo_blue_light)));
+					eventButton.setTextColor(getActivity().getResources().getColor(android.R.color.white));
+					eventButton.setTextSize(12); // Smaller text size for better fit
+					eventButton.setPadding(8, 4, 8, 4); // Add padding for better appearance
+					eventButton.setTag("eventButton_" + event); // Unique tag for each event button
+					
+					// Set click listener for the event button
+					eventButton.setOnClickListener(v -> {
+							handleEventSelection(componentName, fieldName, event);
+					});
+					
+					// Add the button to the baseLayout
+					baseOptions.addView(eventButton);
+			}
 		}
 		
 		@Override
