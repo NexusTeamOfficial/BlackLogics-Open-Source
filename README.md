@@ -54,6 +54,8 @@
 ### **Logic Editor**
 ![Logic Editor](screenshots/s4.png.png)
 
+### **Permission Manager**
+![Permission Manager](screenshots/ss1.png)
 ---
 
 ## ⚙️ Installation Guide
