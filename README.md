@@ -56,6 +56,10 @@
 
 ### **Permission Manager**
 ![Permission Manager](screenshots/ss1.png)
+
+### **Import icons**
+![Import Icons](screenshots/Screenshot_2025-06-08-23-24-23-11.png)
+
 ---
 
 ## ⚙️ Installation Guide
