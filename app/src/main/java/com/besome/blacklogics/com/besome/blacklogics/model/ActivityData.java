@@ -7,6 +7,7 @@ import java.util.List;
 public class ActivityData {
     private String name;
     private String layoutName;
+    private String activityName;
     private boolean isMainActivity;
     private List<View> widgets;
 
@@ -20,6 +21,9 @@ public class ActivityData {
     // Getters and setters
     public String getName() { return name; }
     public String getLayoutName() { return layoutName; }
+    public String getActivityName() { return activityName; }
+    public void setActivityName(String activityName) { this.activityName = activityName; }
+    public void setLayoutName(String layoutName) { this.layoutName = layoutName; }
     public boolean isMainActivity() { return isMainActivity; }
     public List<View> getWidgets() { return widgets; }
     

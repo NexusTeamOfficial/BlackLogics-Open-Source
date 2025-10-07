@@ -31,10 +31,12 @@ import android.content.BroadcastReceiver;
 
 import com.bumptech.glide.*;
 
+import com.besome.blacklogics.beans.ProjectActivityBean;
 import com.besome.blacklogics.R;
 import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.ViewEditorFragmentActivity;
 import com.besome.blacklogics.file.ProjectFileManager;
+import com.besome.blacklogics.project.ProjectDataHelper;
 
 import com.shapun.layouteditor.ViewEditor;
 
@@ -67,6 +69,7 @@ public class BlockArg extends BlockBase {
 	private ViewEditor viewEditor;
 	
 	private Complex complex;
+	private ProjectActivityBean currentActivityBean;
 	
 	public BlockArg(Context var1, String var2, int var3, String var4) {
 		super(var1, var2, true);
@@ -78,14 +81,22 @@ public class BlockArg extends BlockBase {
 		
 		if (DesignActivity.getScId() != null && !DesignActivity.getScId().isEmpty()) {
 			this.complex.setId(DesignActivity.getScId());
+			currentActivityBean = new ProjectActivityBean(
+			ProjectDataHelper.getActivityName(var1), // activityName
+			"",         // layoutName
+			"", // packageName
+			true,           // isMainActivity
+			ProjectDataHelper.getScId(var1),
+			""     // projectName
+			);
 		} else {
 			android.util.Log.w("BlockArg", "DesignActivity.getScId() returned null or empty, using default ID");
 			this.complex.setId("600");
 		}
 		
 		this.viewEditor = new ViewEditor(var1);
-		if (DesignActivity.currentActivityBean != null) {
-			this.viewEditor.loadLayout(DesignActivity.currentActivityBean.getActivityName());
+		if (currentActivityBean != null) {
+			this.viewEditor.loadLayout(currentActivityBean.getActivityName());
 		}
 	}
 	
@@ -446,11 +457,11 @@ public class BlockArg extends BlockBase {
 			var6.setImeOptions(1);
 		}
 		/*
-		String currentValue = this.mTextView.getText() != null ? this.mTextView.getText().toString() : "";
-		if (this.mType.equals("s.inputOnly")) {
-		this.mTextView.setText(""); // Force empty for s.inputOnly
-		}
-		*/
+String currentValue = this.mTextView.getText() != null ? this.mTextView.getText().toString() : "";
+if (this.mType.equals("s.inputOnly")) {
+this.mTextView.setText(""); // Force empty for s.inputOnly
+}
+*/		
 		var6.setText(this.mTextView.getText());
 		var3.setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface var1, int var2) {
@@ -652,7 +663,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("intent")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(DesignActivity.currentActivityBean.getActivityName());
+			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(currentActivityBean.getActivityName());
 			if (intentComponents != null) {
 				for (HashMap<String, String> component : intentComponents) {
 					String componentId = component.get("fieldName"); // Or use another field like "name"
@@ -667,7 +678,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("intent")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(DesignActivity.currentActivityBean.getActivityName());
+			List<HashMap<String, String>> intentComponents = DesignActivity.loadIntentComponents(currentActivityBean.getActivityName());
 			if (intentComponents != null) {
 				for (HashMap<String, String> component : intentComponents) {
 					String componentId = component.get("fieldName"); // Or use another field like "name"
@@ -682,7 +693,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("timer")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> timerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Timer");
+			List<HashMap<String, String>> timerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Timer");
 			if (timerComponent != null) {
 				for (HashMap<String, String> timerComponemtQ : timerComponent) {
 					String cI = timerComponemtQ.get("fieldName"); // Or use another field like "name"
@@ -697,7 +708,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("dialog")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> dialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Dialog");
+			List<HashMap<String, String>> dialogComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Dialog");
 			if (dialogComponent != null) {
 				for (HashMap<String, String> dcomponent : dialogComponent) {
 					String dcomponentId = dcomponent.get("fieldName"); // Or use another field like "name"
@@ -712,7 +723,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("objectanimator")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> objectAnimatorComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ObjectAnimator");
+			List<HashMap<String, String>> objectAnimatorComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "ObjectAnimator");
 			if (objectAnimatorComponent != null) {
 				for (HashMap<String, String> obComponent : objectAnimatorComponent) {
 					String oCI = obComponent.get("fieldName"); // Or use another field like "name"
@@ -727,7 +738,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("sharedpreferences")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> sharedPreferencesComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "SharedPreferences");
+			List<HashMap<String, String>> sharedPreferencesComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "SharedPreferences");
 			if (sharedPreferencesComponent != null) {
 				for (HashMap<String, String> sharedPreferencescomponent : sharedPreferencesComponent) {
 					String sComponentId = sharedPreferencescomponent.get("fieldName"); // Or use another field like "name"
@@ -742,7 +753,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("datepickerdialog")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> datePickerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "DatePickerDialog");
+			List<HashMap<String, String>> datePickerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "DatePickerDialog");
 			if (datePickerComponent != null) {
 				for (HashMap<String, String> component : datePickerComponent) {
 					String fieldName = component.get("fieldName");
@@ -754,7 +765,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("timepickerdialog")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> timePickerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "TimePickerDialog");
+			List<HashMap<String, String>> timePickerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "TimePickerDialog");
 			if (timePickerComponent != null) {
 				for (HashMap<String, String> component : timePickerComponent) {
 					String fieldName = component.get("fieldName");
@@ -766,7 +777,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("progressdialog")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> progressDialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ProgressDialog");
+			List<HashMap<String, String>> progressDialogComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "ProgressDialog");
 			if (progressDialogComponent != null) {
 				for (HashMap<String, String> component : progressDialogComponent) {
 					String fieldName = component.get("fieldName");
@@ -778,7 +789,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("alertdialog")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> alertDialogComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "AlertDialog");
+			List<HashMap<String, String>> alertDialogComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "AlertDialog");
 			if (alertDialogComponent != null) {
 				for (HashMap<String, String> component : alertDialogComponent) {
 					String fieldName = component.get("fieldName");
@@ -790,7 +801,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("vibrator")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> vibratorComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Vibrator");
+			List<HashMap<String, String>> vibratorComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Vibrator");
 			if (vibratorComponent != null) {
 				for (HashMap<String, String> component : vibratorComponent) {
 					String fieldName = component.get("fieldName");
@@ -802,7 +813,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("notification")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> notificationComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Notification");
+			List<HashMap<String, String>> notificationComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Notification");
 			if (notificationComponent != null) {
 				for (HashMap<String, String> component : notificationComponent) {
 					String fieldName = component.get("fieldName");
@@ -814,7 +825,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("locationmanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> locationManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "LocationManager");
+			List<HashMap<String, String>> locationManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "LocationManager");
 			if (locationManagerComponent != null) {
 				for (HashMap<String, String> component : locationManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -826,7 +837,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("mediaplayer")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> mediaPlayerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "MediaPlayer");
+			List<HashMap<String, String>> mediaPlayerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "MediaPlayer");
 			if (mediaPlayerComponent != null) {
 				for (HashMap<String, String> component : mediaPlayerComponent) {
 					String fieldName = component.get("fieldName");
@@ -838,7 +849,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("sensormanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> sensorManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "SensorManager");
+			List<HashMap<String, String>> sensorManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "SensorManager");
 			if (sensorManagerComponent != null) {
 				for (HashMap<String, String> component : sensorManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -850,7 +861,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("toast")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> toastComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Toast");
+			List<HashMap<String, String>> toastComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Toast");
 			if (toastComponent != null) {
 				for (HashMap<String, String> component : toastComponent) {
 					String fieldName = component.get("fieldName");
@@ -862,7 +873,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("sharedpreferences")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> sharedPreferencesComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "SharedPreferences");
+			List<HashMap<String, String>> sharedPreferencesComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "SharedPreferences");
 			if (sharedPreferencesComponent != null) {
 				for (HashMap<String, String> component : sharedPreferencesComponent) {
 					String fieldName = component.get("fieldName");
@@ -874,7 +885,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("alarmmanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> alarmManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "AlarmManager");
+			List<HashMap<String, String>> alarmManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "AlarmManager");
 			if (alarmManagerComponent != null) {
 				for (HashMap<String, String> component : alarmManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -886,7 +897,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("bluetoothadapter")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> bluetoothAdapterComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "BluetoothAdapter");
+			List<HashMap<String, String>> bluetoothAdapterComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "BluetoothAdapter");
 			if (bluetoothAdapterComponent != null) {
 				for (HashMap<String, String> component : bluetoothAdapterComponent) {
 					String fieldName = component.get("fieldName");
@@ -898,7 +909,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("wifimanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> wifiManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "WifiManager");
+			List<HashMap<String, String>> wifiManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "WifiManager");
 			if (wifiManagerComponent != null) {
 				for (HashMap<String, String> component : wifiManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -910,7 +921,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("camera")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> cameraComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Camera");
+			List<HashMap<String, String>> cameraComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Camera");
 			if (cameraComponent != null) {
 				for (HashMap<String, String> component : cameraComponent) {
 					String fieldName = component.get("fieldName");
@@ -922,7 +933,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("clipboardmanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> clipboardManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ClipboardManager");
+			List<HashMap<String, String>> clipboardManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "ClipboardManager");
 			if (clipboardManagerComponent != null) {
 				for (HashMap<String, String> component : clipboardManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -934,7 +945,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("powermanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> powerManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "PowerManager");
+			List<HashMap<String, String>> powerManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "PowerManager");
 			if (powerManagerComponent != null) {
 				for (HashMap<String, String> component : powerManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -946,7 +957,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("connectivitymanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> connectivityManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ConnectivityManager");
+			List<HashMap<String, String>> connectivityManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "ConnectivityManager");
 			if (connectivityManagerComponent != null) {
 				for (HashMap<String, String> component : connectivityManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -958,7 +969,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("audiomanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> audioManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "AudioManager");
+			List<HashMap<String, String>> audioManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "AudioManager");
 			if (audioManagerComponent != null) {
 				for (HashMap<String, String> component : audioManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -970,7 +981,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("sensor")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> sensorComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "Sensor");
+			List<HashMap<String, String>> sensorComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "Sensor");
 			if (sensorComponent != null) {
 				for (HashMap<String, String> component : sensorComponent) {
 					String fieldName = component.get("fieldName");
@@ -982,7 +993,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("mediarouter")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> mediaRouterComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "MediaRouter");
+			List<HashMap<String, String>> mediaRouterComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "MediaRouter");
 			if (mediaRouterComponent != null) {
 				for (HashMap<String, String> component : mediaRouterComponent) {
 					String fieldName = component.get("fieldName");
@@ -992,7 +1003,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("telecommanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> telecomManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "TelecomManager");
+			List<HashMap<String, String>> telecomManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "TelecomManager");
 			if (telecomManagerComponent != null) {
 				for (HashMap<String, String> component : telecomManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -1002,7 +1013,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("shortcutmanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> shortcutManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "ShortcutManager");
+			List<HashMap<String, String>> shortcutManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "ShortcutManager");
 			if (shortcutManagerComponent != null) {
 				for (HashMap<String, String> component : shortcutManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -1012,7 +1023,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("mediaprojectionmanager")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> mediaProjectionManagerComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "MediaProjectionManager");
+			List<HashMap<String, String>> mediaProjectionManagerComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "MediaProjectionManager");
 			if (mediaProjectionManagerComponent != null) {
 				for (HashMap<String, String> component : mediaProjectionManagerComponent) {
 					String fieldName = component.get("fieldName");
@@ -1022,7 +1033,7 @@ public class BlockArg extends BlockBase {
 		} else if (this.mMenuName.equals("biometricprompt")) {
 			var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
 			var4 = new ArrayList<>();
-			List<HashMap<String, String>> biometricPromptComponent = DesignActivity.loadComponentFromName(DesignActivity.currentActivityBean.getActivityName(), "BiometricPrompt");
+			List<HashMap<String, String>> biometricPromptComponent = DesignActivity.loadComponentFromName(currentActivityBean.getActivityName(), "BiometricPrompt");
 			if (biometricPromptComponent != null) {
 				for (HashMap<String, String> component : biometricPromptComponent) {
 					String fieldName = component.get("fieldName");
@@ -1030,38 +1041,38 @@ public class BlockArg extends BlockBase {
 				}
 			}
 		} /*else if(this.mMenuName.equals("vibrator")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_vibrator_component));
-		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 4);
-		}*/ /* else if(this.mMenuName.equals("intent")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
-		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 1);
-		} else if(this.mMenuName.equals("file")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_file_component));
-		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 2);
-		} else if(this.mMenuName.equals("intentAction")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_action));
-		var4 = new ArrayList(Arrays.asList(DefineSource.getIntentAction()));
-		} else if(this.mMenuName.equals("activity")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_activity));
-		Iterator var17 = ProjectFileManager.javaFileList.iterator();
-		
-		while(var17.hasNext()) {
-		String var18 = (String)var17.next();
-		var4.add(var18.substring(0, var18.indexOf(".java")));
-		}
-		} else if(this.mMenuName.equals("calendar")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_calendar_component));
-		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 3);
-		} else if(this.mMenuName.equals("calendarField")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_calendar_field));
-		var4 = new ArrayList(Arrays.asList(DefineSource.CALENDAR_FIELD));
-		} else if(this.mMenuName.equals("vibrator")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_vibrator_component));
-		var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 4);
-		} else if(this.mMenuName.equals("visible")) {
-		var2.setTitle(this.getResources().getString(R.string.title_popup_select_visibility));
-		var4 = new ArrayList(Arrays.asList(DefineSource.VISIBILITY_FIELD));
-		}*/
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_vibrator_component));
+var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 4);
+}*/		/* else if(this.mMenuName.equals("intent")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_component));
+var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 1);
+} else if(this.mMenuName.equals("file")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_file_component));
+var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 2);
+} else if(this.mMenuName.equals("intentAction")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_intent_action));
+var4 = new ArrayList(Arrays.asList(DefineSource.getIntentAction()));
+} else if(this.mMenuName.equals("activity")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_activity));
+Iterator var17 = ProjectFileManager.javaFileList.iterator();
+
+while(var17.hasNext()) {
+String var18 = (String)var17.next();
+var4.add(var18.substring(0, var18.indexOf(".java")));
+}
+} else if(this.mMenuName.equals("calendar")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_calendar_component));
+var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 3);
+} else if(this.mMenuName.equals("calendarField")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_calendar_field));
+var4 = new ArrayList(Arrays.asList(DefineSource.CALENDAR_FIELD));
+} else if(this.mMenuName.equals("vibrator")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_vibrator_component));
+var4 = DesignDataManager.getComponentsByType(LogicEditorActivity.filename, 4);
+} else if(this.mMenuName.equals("visible")) {
+var2.setTitle(this.getResources().getString(R.string.title_popup_select_visibility));
+var4 = new ArrayList(Arrays.asList(DefineSource.VISIBILITY_FIELD));
+}*/		
 		
 		Iterator var6 = var4.iterator();
 		

@@ -1,160 +1,61 @@
 package com.nexusteam.internal.os.layouteditor.widget;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.MotionEvent;
-import android.view.View;
-import com.besome.blacklogics.R;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 import com.nexusteam.internal.os.layouteditor.util.WidgetUtil;
 
-public class WidgetWebView extends WebView implements WidgetContract {
-    private String mWidgetId;
-    private String mWidgetName;
-    private boolean isSelected = false;
-    private Paint widgetPaint = new Paint();
+public class WidgetWebView extends Widget {
+    private WebView mWebView;
+    private TextView mPlaceholderText;
+    private FrameLayout container;
     private String url = "";
-    private Paint placeholderPaint;
-    private float dragStartX, dragStartY;
 
     public WidgetWebView(Context context) {
-        this(context, null);
+        super(context);
+
+        container = new FrameLayout(context);
+        container.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+        // WebView
+        mWebView = new WebView(context);
+        mWebView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+        // Placeholder Text (Default "WebView" at Center)
+        mPlaceholderText = new TextView(context);
+        mPlaceholderText.setText("WebView");
+        mPlaceholderText.setTextSize(14);
+        mPlaceholderText.setTextColor(Color.GRAY);
+        mPlaceholderText.setGravity(Gravity.CENTER);
+
+        // Center the Text
+        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER
+        );
+        mPlaceholderText.setLayoutParams(textParams);
+
+        container.addView(mWebView);
+        container.addView(mPlaceholderText);
+        addView(this.container, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
-    public WidgetWebView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+   // @Override
+    public void setLayoutParams(LayoutParams layoutParams) {
+        super.setLayoutParams(layoutParams);
+        container.setLayoutParams(layoutParams);
     }
 
-    public WidgetWebView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    //@Override
-    public void init() {
-    //    super.init();
-        setPadding(8, 8, 8, 8);
-        setEnabled(false);
-        getSettings().setJavaScriptEnabled(false);
-        placeholderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        placeholderPaint.setColor(Color.GRAY);
-        placeholderPaint.setTextSize(40);
-        placeholderPaint.setTextAlign(Paint.Align.CENTER);
-        //setOnTouchListener(new DragTouchListener());
-    }
-
-    @Override
-    public void setWidgetId(String id) {
-        this.mWidgetId = id;
-    }
-
-    @Override
-    public String getWidgetId() {
-        return mWidgetId;
-    }
-
-    @Override
-    public void setWidgetName(String name) {
-        this.mWidgetName = name;
-    }
-
-    @Override
-    public String getWidgetName() {
-        return mWidgetName;
-    }
-
-    @Override
-    public Paint getWidgetPaint() {
-        return widgetPaint;
-    }
-
-    @Override
-    public void select() {
-        isSelected = true;
-        widgetPaint.setColor(getResources().getColor(R.color.widget_selection_color));
-        invalidate();
-    }
-
-    @Override
-    public void unselect() {
-        isSelected = false;
-        widgetPaint.setColor(0);
-        invalidate();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (url == null || url.isEmpty()) {
-            canvas.drawText("WebView", getWidth() / 2f, getHeight() / 2f, placeholderPaint);
-        }
-        if (isSelected) {
-            canvas.drawRect(0, 0, getWidth(), getHeight(), widgetPaint);
-        }
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-        if (url != null && !url.isEmpty()) {
-            loadUrl(url);
-        }
-        invalidate();
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void enableJavaScript(boolean enable) {
-        getSettings().setJavaScriptEnabled(enable);
-    }
-
-    public void setWebViewClient(WebViewClient client) {
-        super.setWebViewClient(client);
-    }
-
-    public void setWebChromeClient(WebChromeClient client) {
-        super.setWebChromeClient(client);
-    }
-
-    public void reloadWebView() {
-        reload();
-    }
-
-    public void clearCache(boolean includeDiskFiles) {
-        clearCache(includeDiskFiles);
-        clearHistory();
-    }
-
-    public void goBack() {
-        if (canGoBack()) {
-            goBack();
-        }
-    }
-
-    public void goForward() {
-        if (canGoForward()) {
-            goForward();
-        }
-    }
-
-    public void stopLoading() {
-        super.stopLoading();
-    }
-
-    public void setPosition(float x, float y) {
-        setX(x);
-        setY(y);
-        requestLayout();
-    }
-
-    @Override
-    public String newWidgetId() {
+    public static String newWidgetId() {
         int i = 1;
         while (WidgetUtil.isWidgetIdExist("webview" + i)) {
             i++;
@@ -162,22 +63,66 @@ public class WidgetWebView extends WebView implements WidgetContract {
         return "webview" + i;
     }
 
-    private class DragTouchListener implements OnTouchListener {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    dragStartX = event.getRawX() - getX();
-                    dragStartY = event.getRawY() - getY();
-                    select();
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    setPosition(event.getRawX() - dragStartX, event.getRawY() - dragStartY);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    return true;
-            }
-            return false;
+    // Function to Load URL
+    public void loadUrl(String url) {
+        mWebView.loadUrl(url);
+        mPlaceholderText.setVisibility(GONE); // Hide Placeholder when URL loads
+    }
+
+    // Enable JavaScript
+    public void enableJavaScript(boolean enable) {
+        mWebView.getSettings().setJavaScriptEnabled(enable);
+    }
+
+    // Set WebViewClient
+    public void setWebViewClient(WebViewClient client) {
+        mWebView.setWebViewClient(client);
+    }
+
+    // Set WebChromeClient
+    public void setWebChromeClient(WebChromeClient client) {
+        mWebView.setWebChromeClient(client);
+    }
+
+    // Reload WebView
+    public void reloadWebView() {
+        mWebView.reload();
+    }
+
+    // Clear Cache
+    public void clearCache(boolean includeDiskFiles) {
+        mWebView.clearCache(includeDiskFiles);
+        mWebView.clearHistory();
+    }
+
+    // Go Back
+    public void goBack() {
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
         }
     }
+
+    // Go Forward
+    public void goForward() {
+        if (mWebView.canGoForward()) {
+            mWebView.goForward();
+        }
+    }
+
+    // Stop Loading
+    public void stopLoading() {
+        mWebView.stopLoading();
+    }
+    
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+        if (url != null && !url.isEmpty()) {
+            loadUrl(url);
+        }
+    }
+    
 }

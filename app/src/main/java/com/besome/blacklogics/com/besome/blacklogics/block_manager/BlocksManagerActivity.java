@@ -116,6 +116,8 @@ public class BlocksManagerActivity extends AppCompatActivity {
 				
 				// Automatically add # at the start if not present
 				colorHexInput.addTextChangedListener(new TextWatcher() {
+					private boolean isUpdating = false; // Prevent infinite loop
+					
 					@Override
 					public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 					
@@ -124,27 +126,35 @@ public class BlocksManagerActivity extends AppCompatActivity {
 					
 					@Override
 					public void afterTextChanged(Editable s) {
+						if (isUpdating) return; // prevent recursion
+						isUpdating = true;
+						
 						String input = s.toString();
 						
-						// Ensure the input starts with #
+						// Always prepend # if missing
 						if (!input.startsWith("#")) {
-							colorHexInput.setText("#" + input);
-							colorHexInput.setSelection(colorHexInput.getText().length()); // Move cursor to end
+							input = "#" + input;
 						}
 						
-						// Validate hex code
-						if (input.length() > 1) { // Ignore the # for validation
-							String hexPart = input.substring(1); // Get part after #
-							if (!hexPart.matches("[0-9A-Fa-f]{0,6}")) { // Allow 0-6 hex chars
-								colorHexInput.setError("Invalid hex code! Use 0-9, A-F (e.g., #FF0000)");
-							} else if (hexPart.length() != 6 && hexPart.length() != 3 && hexPart.length() != 0) {
-								colorHexInput.setError("Hex code must be 3 or 6 characters long (e.g., #FFF or #FFFFFF)");
-							} else {
-								colorHexInput.setError(null); // Clear error if valid
-							}
+						// Limit hex part to 6 characters
+						if (input.length() > 7) {
+							input = input.substring(0, 7);
 						}
+						
+						// Remove invalid characters
+						String hexPart = input.substring(1);
+						hexPart = hexPart.replaceAll("[^0-9A-Fa-f]", ""); // only allow hex digits
+						
+						// Rebuild final string
+						input = "#" + hexPart;
+						
+						colorHexInput.setText(input);
+						colorHexInput.setSelection(input.length()); // move cursor to end
+						
+						isUpdating = false;
 					}
 				});
+				
 				
 				// Request focus on the first field
 				paletteNameInput.requestFocus();
@@ -163,12 +173,15 @@ public class BlocksManagerActivity extends AppCompatActivity {
 						colorPicker.setOnColorPickedListener(new OnColorPickedListener() {
 							@Override
 							public void onColorPicked(String str) {
-								try {
-								   colorHexInput.setText(str);
-								} catch (Exception e) {
-								
+								if (str != null) {
+									// Ensure only # + 6 hex digits
+									if (str.length() > 7) {
+										str = str.substring(0, 7);
+									}
+									colorHexInput.setText(str.toUpperCase());
 								}
 							}
+							
 						});
 						
 						// Launch color picker
@@ -365,17 +378,33 @@ public class BlocksManagerActivity extends AppCompatActivity {
 		public void pick() {
 			Intent intent = new Intent(context, ColorPickerActivity.class);
 			intent.putExtra("pip", pipEnabled);
+			
 			LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
 				@Override
 				public void onReceive(Context context, Intent intent) {
 					LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+					
 					if (listener != null && intent.hasExtra(TypedValues.Custom.S_COLOR)) {
-						listener.onColorPicked(intent.getStringExtra(TypedValues.Custom.S_COLOR));
+						String picked = intent.getStringExtra(TypedValues.Custom.S_COLOR);
+						
+						if (picked != null) {
+							// Remove alpha if color is in format #AARRGGBB → #RRGGBB
+							if (picked.length() == 9 && picked.startsWith("#")) {
+								picked = "#" + picked.substring(3);
+							}
+							
+							// Always ensure uppercase
+							picked = picked.toUpperCase();
+							
+							listener.onColorPicked(picked);
+						}
 					}
 				}
 			}, new IntentFilter("data"));
+			
 			context.startActivity(intent);
 		}
 	}
+	
 	
 }

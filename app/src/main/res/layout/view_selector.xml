@@ -25,7 +25,7 @@
 			android:layout_width="16dp"
 			android:layout_height="16dp"
 			android:padding="2dp"
-			android:src="@drawable/default_image"
+			android:src="@drawable/icon_edit_round"
 			android:scaleType="fitCenter"
 			android:focusable="false"
 			android:layout_alignParentTop="true"
@@ -53,7 +53,7 @@
 			android:layout_height="wrap_content"
 			android:text="MainActivity.java"
 			android:textSize="14sp"
-			android:textColor="#666666"
+			android:textColor="@color/color_dark_light"
 			android:focusable="false" />
 	</LinearLayout>
 </LinearLayout>

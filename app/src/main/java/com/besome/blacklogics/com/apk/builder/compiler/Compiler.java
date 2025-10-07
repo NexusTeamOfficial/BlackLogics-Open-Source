@@ -17,7 +17,7 @@ public abstract class Compiler {
 	}
 	
 	protected OnProgressUpdateListener listener;
-	protected Project project; // Add project field to access project data
+	protected Project project;
 	
 	public void setProject(Project project) {
 		this.project = project;
@@ -37,65 +37,88 @@ public abstract class Compiler {
 	
 	abstract public void run() throws CompilerException, IOException;
 	
-	public File getAndroidJarFile() {
+	public File getAndroidJarFile() throws CompilerException {
 		File check = new File(ApplicationLoader.applicationContext.getFilesDir() + "/temp/android.jar");
 		
 		if (check.exists()) {
 			return check;
 		}
 		
-		Decompress.unzipFromAssets(ApplicationLoader.applicationContext, "android.jar.zip", check.getParentFile().getAbsolutePath());
+		// Verify if android.jar.zip exists in assets
+		try {
+			Decompress.unzipFromAssets(ApplicationLoader.applicationContext, "android.jar.zip", check.getParentFile().getAbsolutePath());
+			if (!check.exists()) {
+				throw new CompilerException("Failed to unzip android.jar: File not found at " + check.getAbsolutePath());
+			}
+			project.getLogger().d("Compiler", "Extracted android.jar to: " + check.getAbsolutePath());
+		} catch (Exception e) {
+			project.getLogger().e("Compiler", "Failed to extract android.jar: " + e.getMessage());
+			throw new CompilerException("Failed to extract android.jar: " + e.getMessage());
+		}
 		
 		return check;
 	}
 	
 	public void enableAndroidX() throws CompilerException, IOException {
-    if (project == null) {
-        throw new CompilerException("Project not set for compiler");
-    }
+		if (project == null) {
+			throw new CompilerException("Project not set for compiler");
+		}
 
-    onProgressUpdate("Enabling AndroidX support...");
+		onProgressUpdate("Enabling AndroidX support...");
 
-    // Define paths
-    String assetsAndroidXPath = "androidx";
-    String destinationPath = ApplicationLoader.applicationContext.getFilesDir() + "/temp/androidx";
-    File destinationDir = new File(destinationPath);
+		// Define paths
+		String assetsAndroidXPath = "androidx.zip";
+		String destinationPath = ApplicationLoader.applicationContext.getFilesDir() + "/temp/androidx";
+		File destinationDir = new File(destinationPath);
 
-    // Create destination directory if it doesn't exist
-    if (!destinationDir.exists() && !destinationDir.mkdirs()) {
-        throw new CompilerException("Failed to create AndroidX directory: " + destinationPath);
-    }
+		// Create destination directory
+		if (!destinationDir.exists()) {
+			if (!destinationDir.mkdirs()) {
+				project.getLogger().e("Compiler", "Failed to create AndroidX directory: " + destinationPath);
+				throw new CompilerException("Failed to create AndroidX directory: " + destinationPath);
+			}
+			project.getLogger().d("Compiler", "Created AndroidX directory: " + destinationPath);
+		}
 
-    // Unzip AndroidX libraries from assets
-    try {
-        Decompress.unzipFromAssets(ApplicationLoader.applicationContext, assetsAndroidXPath + ".zip", destinationPath);
-        project.getLogger().d("Compiler", "Extracted AndroidX libraries to: " + destinationPath);
-    } catch (Exception e) {
-        project.getLogger().e("Compiler", "Failed to extract AndroidX libraries: " + e.getMessage());
-        throw new CompilerException("Failed to extract AndroidX libraries: " + e.getMessage());
-    }
+		// Verify if androidx.zip exists in assets
+		try {
+			// Check if asset file exists (requires API level 23+ for AssetManager.list())
+			// If you need to support lower APIs, consider using a try-catch as below
+			Decompress.unzipFromAssets(ApplicationLoader.applicationContext, assetsAndroidXPath, destinationPath);
+			project.getLogger().d("Compiler", "Extracted AndroidX libraries to: " + destinationPath);
+		} catch (Exception e) {
+			project.getLogger().e("Compiler", "Failed to extract AndroidX libraries: " + e.getMessage());
+			throw new CompilerException("Failed to extract AndroidX libraries: " + e.getMessage());
+		}
 
-    // Create Library objects for AndroidX libraries
-    List<Library> androidxLibraries = Library.fromFile(destinationDir);
-    if (androidxLibraries.isEmpty()) {
-        project.getLogger().w("Compiler", "No AndroidX libraries found in: " + destinationPath);
-        return;
-    }
+		// Verify extracted files
+		if (!destinationDir.exists() || destinationDir.listFiles() == null || destinationDir.listFiles().length == 0) {
+			project.getLogger().e("Compiler", "No files found in AndroidX directory: " + destinationPath);
+			throw new CompilerException("No files extracted to AndroidX directory: " + destinationPath);
+		}
 
-    // Add AndroidX libraries to the existing project libraries without overwriting
-    List<Library> projectLibraries = project.getLibraries();
-    if (projectLibraries == null) {
-        projectLibraries = new ArrayList<>();
-        project.setLibraries(projectLibraries); // Initialize if null
-    }
-    // Add only new AndroidX libraries, avoiding duplicates
-    for (Library androidxLibrary : androidxLibraries) {
-        if (!projectLibraries.contains(androidxLibrary)) { // Check for duplicates
-            projectLibraries.add(androidxLibrary);
-        }
-    }
+		// Create Library objects for AndroidX libraries
+		List<Library> androidxLibraries = Library.fromFile(destinationDir);
+		if (androidxLibraries.isEmpty()) {
+			project.getLogger().w("Compiler", "No AndroidX libraries found in: " + destinationPath);
+			return; // Allow continuation even if no libraries are found
+		}
 
-    project.getLogger().d("Compiler", "Added " + androidxLibraries.size() + " AndroidX libraries to project");
-    onProgressUpdate("AndroidX libraries and their resources enabled successfully");
-}
+		// Add AndroidX libraries to project
+		List<Library> projectLibraries = project.getLibraries();
+		if (projectLibraries == null) {
+			projectLibraries = new ArrayList<>();
+			project.setLibraries(projectLibraries);
+		}
+		int addedCount = 0;
+		for (Library androidxLibrary : androidxLibraries) {
+			if (!projectLibraries.contains(androidxLibrary)) {
+				projectLibraries.add(androidxLibrary);
+				addedCount++;
+			}
+		}
+
+		project.getLogger().d("Compiler", "Added " + addedCount + " AndroidX libraries to project");
+		onProgressUpdate("AndroidX libraries enabled successfully");
+	}
 }

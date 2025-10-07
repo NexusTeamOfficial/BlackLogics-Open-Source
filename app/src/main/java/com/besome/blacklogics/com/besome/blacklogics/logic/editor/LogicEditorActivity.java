@@ -35,10 +35,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.besome.blacklogics.beans.ProjectActivityBean;
 import com.besome.blacklogics.R;
 import com.besome.blacklogics.ViewEditorFragmentActivity;
 import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.development.Complex;
+import com.besome.blacklogics.beans.ProjectActivityBean;
+import com.besome.blacklogics.util.ProjectActivityManager;
 
 import com.besome.blacklogics.beans.SourceCodeBean;
 
@@ -61,6 +64,8 @@ import java.util.ArrayList;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import android.graphics.Color;
@@ -78,11 +83,16 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	private static final int PALETTE_SIZE_VERTICAL = 240;
 	public static String filename = "";
 	private String BLOCK_PATH = "/storage/emulated/0/.blacklogics/resources/block/My Block/block.json";
+	private String CUSTOM_BLOCKS_PATH = "/storage/emulated/0/.blacklogics/data/$/custom_blocks";
 	private Context context;
 	
 	private Complex complex;
+	private ProjectActivityBean bean;
+	private ProjectActivityBean currentActivityBean;
+	private ProjectActivityManager projectActivityManager;
 	
 	private String activityName;
+	private Set<String> usedBlockIds = new HashSet<>();
 	
 	private ObjectAnimator aniHideIconDelete;
 	private ObjectAnimator aniHidePalette;
@@ -142,6 +152,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	public int BLOCK_DRAG_Y = -30;
 	
 	public String widgetId;
+	public String type;
 	
 	private void activeIconDelete(boolean z) {
 		if (this.bActiveIconDelete != z) {
@@ -462,7 +473,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	
 	private void loadLogic() {
 		String key = filename + "_" + id + LOGIC_NAME_SEPARATOR + eventName;
-		ArrayList<BlockBean> blocks = DesignDataManager.loadBlocksFromFile(getApplicationContext(), "data", key, DesignActivity.getScId());
+		ArrayList<BlockBean> blocks = DesignDataManager.loadBlocksFromFile(getApplicationContext(), "data", key, bean.getScId());
 		if (blocks != null && !blocks.isEmpty()) {
 			Map<Integer, Block> blockMap = new HashMap<>();
 			// Step 1: Create all blocks and map them by ID
@@ -631,7 +642,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		
 		public void onClick(View var1) {
 			this.val$args.remove(-1 + this.val$removeArea.indexOfChild(var1));
-			ArrayList var3 = new ArrayList(Arrays.asList(new String[0]/*DefineSource.getUsedWord(DesignActivity.getScId())*/));
+			ArrayList var3 = new ArrayList(Arrays.asList(new String[0]/*DefineSource.getUsedWord(bean.getScId())*/));
 			Iterator var4 = this.val$args.iterator();
 			
 			while(var4.hasNext()) {
@@ -797,7 +808,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	private void saveLogic() {
 		ArrayList<BlockBean> blocks = pane.getBlocks();
 		String key = filename + "_" + id + LOGIC_NAME_SEPARATOR + eventName;
-		DesignDataManager.saveBlocksToFile(getApplicationContext(), "data", key, blocks, DesignActivity.getScId());
+		DesignDataManager.saveBlocksToFile(getApplicationContext(), "data", key, blocks, bean.getScId());
 	}
 	
 	private void showAddBlockPopup() {
@@ -813,10 +824,10 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		TextInputLayout textInputLayout = (TextInputLayout) inflate.findViewById(R.id.ti_boolean);
 		TextInputLayout textInputLayout2 = (TextInputLayout) inflate.findViewById(R.id.ti_number);
 		TextInputLayout textInputLayout3 = (TextInputLayout) inflate.findViewById(R.id.ti_string);
-		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_name), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), DesignDataManager.getAllNamesForValid(filename));
-		this.booleanValidator = new VariableNameValidator(this.context, textInputLayout, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), new ArrayList());
-		this.numberValidator = new VariableNameValidator(this.context, textInputLayout2, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), new ArrayList());
-		this.stringValidator = new VariableNameValidator(this.context, textInputLayout3, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), new ArrayList());
+		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_name), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), DesignDataManager.getAllNamesForValid(filename));
+		this.booleanValidator = new VariableNameValidator(this.context, textInputLayout, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), new ArrayList());
+		this.numberValidator = new VariableNameValidator(this.context, textInputLayout2, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), new ArrayList());
+		this.stringValidator = new VariableNameValidator(this.context, textInputLayout3, DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), new ArrayList());
 		EditText editText = (EditText) inflate.findViewById(R.id.ed_name);
 		EditText editText2 = (EditText) inflate.findViewById(R.id.ed_boolean);
 		EditText editText3 = (EditText) inflate.findViewById(R.id.ed_number);
@@ -901,7 +912,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 				}
 				
 				// Add function!!! 
-				DesignActivity.addFunction(DesignActivity.currentActivityBean.getActivityName(), this.this$1.val$edName.getText().toString(), "void", parameters);
+				DesignActivity.addFunction(currentActivityBean.getActivityName(), this.this$1.val$edName.getText().toString(), "void", parameters);
 				// Save function 
 				DesignDataManager.addFunction(
 				LogicEditorActivity.filename,
@@ -988,7 +999,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			if(LogicEditorActivity.access$1500(this.this$0).isValid()) {
 				this.val$args.add(new Pair("s", this.val$edString.getText().toString()));
 				LogicEditorActivity.access$1200(this.this$0, this.val$blockArea, this.val$removeArea, this.val$block, this.val$edName.getText().toString(), this.val$args);
-				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(DesignActivity.getScId())));
+				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(bean.getScId())));
 				Iterator var4 = this.val$args.iterator();
 				
 				while(var4.hasNext()) {
@@ -1047,7 +1058,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			if(LogicEditorActivity.access$1400(this.this$0).isValid()) {
 				this.val$args.add(new Pair("d", this.val$edNumber.getText().toString()));
 				LogicEditorActivity.access$1200(this.this$0, this.val$blockArea, this.val$removeArea, this.val$block, this.val$edName.getText().toString(), this.val$args);
-				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(DesignActivity.getScId())));
+				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(bean.getScId())));
 				Iterator var4 = this.val$args.iterator();
 				
 				while(var4.hasNext()) {
@@ -1137,7 +1148,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			if(LogicEditorActivity.access$1300(this.this$0).isValid()) {
 				this.val$args.add(new Pair("b", this.val$edBoolean.getText().toString()));
 				LogicEditorActivity.access$1200(this.this$0, this.val$blockArea, this.val$removeArea, this.val$block, this.val$edName.getText().toString(), this.val$args);
-				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(DesignActivity.getScId())));
+				ArrayList var3 = new ArrayList(Arrays.asList(DefineSource.getUsedWord(bean.getScId())));
 				Iterator var4 = this.val$args.iterator();
 				
 				while(var4.hasNext()) {
@@ -1213,15 +1224,15 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	}
 	
 	/*   // $FF: synthetic method
-	static void access$500(LogicEditorActivity var0) {
-	var0.dismissProgress();
-	}
-	
-	// $FF: synthetic method
-	static void access$600(LogicEditorActivity var0) {
-	var0.dismissProgress();
-	}
-	*/
+static void access$500(LogicEditorActivity var0) {
+var0.dismissProgress();
+}
+
+// $FF: synthetic method
+static void access$600(LogicEditorActivity var0) {
+var0.dismissProgress();
+}
+*/	
 	// $FF: synthetic method
 	static Context access$700(LogicEditorActivity var0) {
 		return var0.context;
@@ -1248,7 +1259,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		builder.setTitle(getString(R.string.logic_popup_title_add_list));
 		RadioGroup radioGroup = (RadioGroup) inflate.findViewById(R.id.rg_type);
 		EditText editText = (EditText) inflate.findViewById(R.id.ed_input);
-		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_input), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), DesignDataManager.getAllNamesForValid(filename));
+		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_input), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), DesignDataManager.getAllNamesForValid(filename));
 		editText.setPrivateImeOptions("defaultInputmode=english;");
 		builder.setNegativeButton(R.string.btn_cancel, new LogicEditorActivity$9(this));
 		builder.setPositiveButton(R.string.btn_accept, null);
@@ -1305,7 +1316,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 				}
 				
 				String var3 = this.this$1.val$edInput.getText().toString();
-				DesignActivity.saveVariable(DesignActivity.currentActivityBean.getActivityName(), type, var3);
+				DesignActivity.saveVariable(currentActivityBean.getActivityName(), type, var3);
 				DesignDataManager.addList(LogicEditorActivity.filename, var2, var3);
 				this.this$1.this$0.onBlockCategorySelect(1, -3384542);
 				LogicEditorActivity.access$800(this.this$1.this$0).dismiss();
@@ -1342,7 +1353,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		RadioGroup radioGroup = (RadioGroup) inflate.findViewById(R.id.rg_type);
 		EditText editText = (EditText) inflate.findViewById(R.id.ed_input);
 		editText.setPrivateImeOptions("defaultInputmode=english;");
-		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_input), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(DesignActivity.getScId()), DesignDataManager.getAllNamesForValid(filename));
+		VariableNameValidator variableNameValidator = new VariableNameValidator(this.context, (TextInputLayout) inflate.findViewById(R.id.ti_input), DefineSource.RESERVED_WORD, DefineSource.getUsedWord(bean.getScId()), DesignDataManager.getAllNamesForValid(filename));
 		builder.setNegativeButton(R.string.btn_cancel, null);
 		builder.setPositiveButton(R.string.btn_accept, null);
 		this.mDlg = builder.create();
@@ -1400,7 +1411,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			
 			String var3 = this.this$1.val$edInput.getText().toString();
 			if(this.this$1.val$varNameValidator.isValid()) {
-				DesignActivity.saveVariable(DesignActivity.currentActivityBean.getActivityName(), type, var3);
+				DesignActivity.saveVariable(currentActivityBean.getActivityName(), type, var3);
 				DesignDataManager.addVariable(LogicEditorActivity.filename, var2, var3);
 				this.this$1.this$0.onBlockCategorySelect(0, -1147626);
 				LogicEditorActivity.access$800(this.this$1.this$0).dismiss();
@@ -1491,7 +1502,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 					}
 					
 					DesignDataManager.removeList(LogicEditorActivity.filename, var4.getText().toString());
-					DesignActivity.removeVariable(DesignActivity.currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
+					DesignActivity.removeVariable(currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
 					this.this$1.this$0.onBlockCategorySelect(1, -3384542);
 				}
 				
@@ -1568,7 +1579,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 					}
 					
 					DesignDataManager.removeVariable(LogicEditorActivity.filename, var4.getText().toString());
-					DesignActivity.removeVariable(DesignActivity.currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
+					DesignActivity.removeVariable(currentActivityBean.getActivityName(), LogicEditorActivity.filename, var4.getText().toString());
 					this.this$1.this$0.onBlockCategorySelect(0, -1147626);
 				}
 				
@@ -1589,18 +1600,18 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	}
 	
 	/*   private void startLogicTutorialActivity() {
-	Intent intent = new Intent(this.context, LogicTutorialActivity.class);
-	intent.setFlags(536870912);
-	intent.putExtra("sc_id", DesignActivity.getScId());
-	startActivity(intent);
-	}
-	
-	private void startManageImageActivity() {
-	Intent intent = new Intent(getApplicationContext(), ManageImageActivity.class);
-	intent.setFlags(536870912);
-	intent.putExtra("sc_id", DesignActivity.getScId());
-	startActivityForResult(intent, 209);
-	}*/
+Intent intent = new Intent(this.context, LogicTutorialActivity.class);
+intent.setFlags(536870912);
+intent.putExtra("sc_id", bean.getScId());
+startActivity(intent);
+}
+
+private void startManageImageActivity() {
+Intent intent = new Intent(getApplicationContext(), ManageImageActivity.class);
+intent.setFlags(536870912);
+intent.putExtra("sc_id", bean.getScId());
+startActivityForResult(intent, 209);
+}*/	
 	
 	private void updateIconDeletePosition() {
 		if (this.isPaletteOpened && 1 == getResources().getConfiguration().orientation) {
@@ -1636,11 +1647,13 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		//	complex.setLogic(getSourceCode(), activityName);
 		if (widgetId != null) {
 			DesignActivity.saveBlockLogicForWidget(activityName, widgetId, getSourceCode());
+		} else if (type != null) {
+			DesignActivity.saveBlockLogicForEvent(activityName, type, getSourceCode());
 		} else {
 			DesignActivity.saveBlockLogic(activityName, getSourceCode());
 		}
 		try {
-			SourceCodeBean sourceCodeBean = new SourceCodeBean(activityName, eventName, getSourceCode(), DesignActivity.getScId());
+			SourceCodeBean sourceCodeBean = new SourceCodeBean(activityName, eventName, getSourceCode(), bean.getScId());
 			sourceCodeBean.save();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
@@ -1703,7 +1716,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			}
 		} catch (IOException | JSONException e) {
 			Log.e(TAG, "Error loading custom blocks from " + BLOCK_PATH, e);
-			Toast.makeText(this, "Error loading custom blocks: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			//	Toast.makeText(this, "Error loading custom blocks: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
 	
@@ -1760,11 +1773,11 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			addBlockToPalette("", "s", "trim", color, new Object[0]);
 			addBlockToPalette("", "s", "toUpperCase", color, new Object[0]);
 			addBlockToPalette("", "s", "toLowerCase", color, new Object[0]);
-            loadCustomBlocks(3, color);
+			loadCustomBlocks(3, color);
 			//	addBlockToPalette("add source directly %s.inputOnly", " ", "%s", color, new Object[]{specABC});
 			/*	addBlockToPalette("", " ", "GsonStringToListString", color, new Object[0]);
-			addBlockToPalette("", " ", "addSourceDirectly", color, new Object[0]);
-			addBlockToPalette("%s", " ", "asd %s", color, new Object[0]);*/
+addBlockToPalette("", " ", "addSourceDirectly", color, new Object[0]);
+addBlockToPalette("%s", " ", "asd %s", color, new Object[0]);*/			
 			break;
 			case 4:
 			addBlockToPalette("", " ", "setEnable", color, new Object[0]);
@@ -1774,12 +1787,12 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			addBlockToPalette("", "s", "getText", color, new Object[0]);
 			addBlockToPalette("", " ", "setBgColor", color, new Object[0]);
 			addBlockToPalette("", " ", "setTextColor", color, new Object[0]);
-			if (DesignActivity.getScId().equals("107") || DesignActivity.getScId().equals("108") || DesignActivity.getScId().equals("110") || DesignActivity.getScId().equals("113") || DesignActivity.getScId().equals("102") || ScDefine.isCustomEditMode(DesignActivity.getScId())) {
+			if (bean.getScId().equals("107") || bean.getScId().equals("108") || bean.getScId().equals("110") || bean.getScId().equals("113") || bean.getScId().equals("102") || ScDefine.isCustomEditMode(bean.getScId())) {
 				addBlockToPalette("", " ", "setImage", color, new Object[0]);
 				addBlockToPalette("", " ", "setRotate", color, new Object[0]);
 				addBlockToPalette("", "d", "getRotate", color, new Object[0]);
 			}
-			if (ScDefine.isCustomEditMode(DesignActivity.getScId())) {
+			if (ScDefine.isCustomEditMode(bean.getScId())) {
 				addBlockToPalette("", " ", "setChecked", color, new Object[0]);
 				addBlockToPalette("", "b", "getChecked", color, new Object[0]);
 				addBlockToPalette("", " ", "listSetData", color, new Object[0]);
@@ -1799,7 +1812,7 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			addBlockToPalette("", " ", "intentSetData", color, new Object[0]);
 			addBlockToPalette("", " ", "startActivity", color, new Object[0]);
 			addBlockToPalette("", " ", "intentPutExtra", color, new Object[0]);
-			if (ScDefine.isCustomEditMode(DesignActivity.getScId())) {
+			if (ScDefine.isCustomEditMode(bean.getScId())) {
 				addBlockToPalette("", "s", "intentGetString", color, new Object[0]);
 				addBlockToPalette("", "f", "finishActivity", color, new Object[0]);
 			}
@@ -1837,17 +1850,17 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			}
 		}
 		/*     switch (view.getId()) {
-		case R.id.btn_cancel:
-		setResult(0);
-		finish();
-		return;
-		case R.id.btn_accept:
-		setResult(-1, new Intent());
-		finish();
-		return;
-		default:
-		return;
-		}*/
+case R.id.btn_cancel:
+setResult(0);
+finish();
+return;
+case R.id.btn_accept:
+setResult(-1, new Intent());
+finish();
+return;
+default:
+return;
+}*/		
 	}
 	
 	public void onConfigurationChanged(Configuration configuration) {
@@ -1872,14 +1885,40 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			if (getIntent().hasExtra("widgetId")) {
 				this.widgetId = getIntent().getStringExtra("widgetId");
 			}
+			if (getIntent().hasExtra("type")) {
+				this.type = getIntent().getStringExtra("type");
+			}
+			
+			usedBlockIds = new HashSet<>(); 
 			
 			
 			this.complex.setId(getIntent().getStringExtra("sc_id"));
+			ProjectActivityManager.getInstance(this.context, getIntent().getStringExtra("sc_id")).loadFromFile(this.context, getIntent().getStringExtra("sc_id"));
 			DesignDataManager.setSc(getIntent().getStringExtra("sc_id"));
 			
-			/* if (this.prefInstall.getBoolean("P1I5" + DesignActivity.getScId(), true) && !ScDefine.isCustomEditMode(DesignActivity.getScId())) {
-			startLogicTutorialActivity();
-			}*/
+			currentActivityBean = new ProjectActivityBean(
+			getIntent().getStringExtra("activityName"), // activityName
+			"",         // layoutName
+			"", // packageName
+			true,           // isMainActivity
+			getIntent().getStringExtra("sc_id"),
+			""     // projectName
+			);
+			
+			CUSTOM_BLOCKS_PATH = "/storage/emulated/0/.blacklogics/data/" + getIntent().getStringExtra("sc_id") + "/custom_blocks";
+			
+			
+			bean = new ProjectActivityBean(
+			getIntent().getStringExtra("activityName"), // activityName
+			"",         // layoutName
+			"", // packageName
+			true,           // isMainActivity
+			getIntent().getStringExtra("sc_id"),
+			""     // projectName
+			);
+			/* if (this.prefInstall.getBoolean("P1I5" + bean.getScId(), true) && !ScDefine.isCustomEditMode(bean.getScId())) {
+startLogicTutorialActivity();
+}*/			
 			this.toolbar = (Toolbar) findViewById(R.id.toolbar);
 			setSupportActionBar(this.toolbar);
 			findViewById(R.id.layout_main_logo).setVisibility(8);
@@ -1935,9 +1974,9 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 		getMenuInflater().inflate(R.menu.logic_menu, menu);
 		this.menu = menu;
 		refreshPasteIcon();
-		/* if (ScDefine.isCustomEditMode(DesignActivity.getScId())) {
-		menu.removeItem(R.id.menu_logic_tutorial);
-		}*/
+		/* if (ScDefine.isCustomEditMode(bean.getScId())) {
+menu.removeItem(R.id.menu_logic_tutorial);
+}*/		
 		return true;
 	}
 	
@@ -1947,14 +1986,14 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 		/*   if (menuItem.getItemId() == R.id.menu_block_helper) {
-		Intent intent = new Intent(this, BlockHelperActivity.class);
-		intent.setFlags(536870912);
-		startActivity(intent);
-		return true;
-		}
-		if (menuItem.getItemId() == R.id.menu_logic_tutorial) {
-		startLogicTutorialActivity();
-		}*/
+Intent intent = new Intent(this, BlockHelperActivity.class);
+intent.setFlags(536870912);
+startActivity(intent);
+return true;
+}
+if (menuItem.getItemId() == R.id.menu_logic_tutorial) {
+startLogicTutorialActivity();
+}*/		
 		if (menuItem.getItemId() == R.id.menu_block_copy) {
 			startBlockCopyInterface();
 		}
@@ -1965,8 +2004,8 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			showSourceCode();
 		}
 		/* if (menuItem.getItemId() == R.id.menu_mng_image) {
-		startManageImageActivity();
-		}*/
+startManageImageActivity();
+}*/		
 		return super.onOptionsItemSelected(menuItem);
 	}
 	
@@ -1987,24 +2026,110 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 	protected void onPostCreate(@Nullable Bundle var1) {
 		super.onPostCreate(var1);
 		String var2;
-		if(this.eventName.equals("initializeLogic")) {
+		
+		if (this.eventName.equals("initializeLogic")) {
 			var2 = this.getString(R.string.root_spec_initialize);
-		} else if(this.eventName.equals("moreBlock")) {
+			
+		} else if (this.eventName.equals("moreBlock")) {
 			String var20 = DesignDataManager.getFunctionSpec(filename, this.id);
 			var2 = this.getString(R.string.root_spec_define) + " " + var20;
-		} else if(this.eventName.equals("onClick")) {
+			
+		} else if (this.eventName.equals("onClick")) {
 			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.getString(R.string.root_spec_onclicked);
-		} else if(this.eventName.equals("onCheckedChange")) {
+			
+		} else if (this.eventName.equals("onCheckedChange")) {
 			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.getString(R.string.root_spec_oncheckchanged);
-		} else if(this.eventName.equals("onItemSelected")) {
+			
+		} else if (this.eventName.equals("onItemSelected")) {
 			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.getString(R.string.root_spec_onitemselected);
-		} else if(this.eventName.equals("onItemClicked")) {
+			
+		} else if (this.eventName.equals("onItemClicked")) {
 			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.getString(R.string.root_spec_onitemclicked);
-		} else if(this.eventName.equals("onTextChanged")) {
-			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + " " + this.getString(R.string.root_spec_ontextchanged);
+			
+		} else if (this.eventName.equals("onTextChanged")) {
+			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.getString(R.string.root_spec_ontextchanged);
+			
+		}
+		// 🔥 New listeners (no R.string)
+		else if (this.eventName.equals("onFocusChange")) {
+			var2 = "When " + this.id + " FocusChanged";
+			
+		} else if (this.eventName.equals("onLongClick")) {
+			var2 = "When " + this.id + " LongClicked";
+			
+		} else if (this.eventName.equals("onTouch")) {
+			var2 = "When " + this.id + " Touched";
+			
+		} else if (this.eventName.equals("onKey")) {
+			var2 = "When " + this.id + " KeyPressed";
+			
+		} else if (this.eventName.equals("onKeyDown")) {
+			var2 = "When " + this.id + " KeyDown";
+			
+		} else if (this.eventName.equals("onKeyUp")) {
+			var2 = "When " + this.id + " KeyUp";
+			
+		} else if (this.eventName.equals("onScroll")) {
+			var2 = "When " + this.id + " Scrolled";
+			
+		} else if (this.eventName.equals("onDrag")) {
+			var2 = "When " + this.id + " Dragged";
+			
+		} else if (this.eventName.equals("onSwipe")) {
+			var2 = "When " + this.id + " Swiped";
+			
+		} else if (this.eventName.equals("onTextSubmit")) {
+			var2 = "When " + this.id + " TextSubmitted";
+			
+		} else if (this.eventName.equals("onEditorAction")) {
+			var2 = "When " + this.id + " EditorAction";
+			
+		} else if (this.eventName.equals("onPageScrolled")) {
+			var2 = "When " + this.id + " PageScrolled";
+			
+		} else if (this.eventName.equals("onPageSelected")) {
+			var2 = "When " + this.id + " PageSelected";
+			
+		} else if (this.eventName.equals("onPageScrollStateChanged")) {
+			var2 = "When " + this.id + " PageScrollStateChanged";
+			
+		} else if (this.eventName.equals("onSeekBarChange")) {
+			var2 = "When " + this.id + " SeekBarChanged";
+			
+		} else if (this.eventName.equals("onProgressChanged")) {
+			var2 = "When " + this.id + " ProgressChanged";
+			
+		} else if (this.eventName.equals("onStartTrackingTouch")) {
+			var2 = "When " + this.id + " StartTrackingTouch";
+			
+		} else if (this.eventName.equals("onStopTrackingTouch")) {
+			var2 = "When " + this.id + " StopTrackingTouch";
+			
+		} else if (this.eventName.equals("onAnimationStart")) {
+			var2 = "When " + this.id + " AnimationStarted";
+			
+		} else if (this.eventName.equals("onAnimationEnd")) {
+			var2 = "When " + this.id + " AnimationEnded";
+			
+		} else if (this.eventName.equals("onAnimationRepeat")) {
+			var2 = "When " + this.id + " AnimationRepeated";
+			
+		} else if (this.eventName.equals("onCheckedChanged")) {
+			var2 = "When " + this.id + " CheckedChanged";
+			
+		} else if (this.eventName.equals("onDateChanged")) {
+			var2 = "When " + this.id + " DateChanged";
+			
+		} else if (this.eventName.equals("onTimeChanged")) {
+			var2 = "When " + this.id + " TimeChanged";
+			
+		} else if (this.eventName.equals("onRatingChanged")) {
+			var2 = "When " + this.id + " RatingChanged";
+			
 		} else {
 			var2 = this.getString(R.string.root_spec_when) + " " + this.id + " " + this.eventName;
 		}
+		
 		
 		this.pane.addRoot(var2, this.eventName);
 		ArrayList var3 = StringUtil.tokenize(var2);
@@ -2069,11 +2194,13 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			this.posInitX = motionEvent.getX();
 			this.posInitY = motionEvent.getY();
 			this.currentTouchedView = view;
+			this.dummy.setBlockColor(((Block) view).getBlockColor());
 			return true;
 		} else if (action == 2) {
 			if (this.isDragged) {
 				this.handler.removeCallbacks(this.longPressed);
 				this.dummy.moveDummy(view, motionEvent.getX(), motionEvent.getY(), this.posInitX, this.posInitY, (float)BLOCK_DRAG_X, (float)BLOCK_DRAG_Y);
+				this.dummy.setBlockColor(((Block) view).getBlockColor());
 				if (hitTestIconDelete(motionEvent.getRawX(), motionEvent.getRawY())) {
 					this.dummy.setAllow(true);
 					activeIconDelete(true);
@@ -2111,6 +2238,8 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 						this.dummy.getDummyPosition(this.posDummy);
 						if (((Block) view).getBlockType() == 1) {
 							this.pane.blockDropped((Block) view, this.posDummy[0], this.posDummy[1], false).setOnTouchListener(this);
+							usedBlockIds.add(((Block) view).getSpec()); // Track unique block spec
+							saveUsedBlocksToJson(); 
 						} else {
 							this.pane.setVisibleBlock((Block) view, 0);
 							this.pane.blockDropped((Block) view, this.posDummy[0], this.posDummy[1], true);
@@ -2201,7 +2330,113 @@ public class LogicEditorActivity extends AppCompatActivity implements OnClickLis
 			}
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
-			Toast.makeText(this, "Failed to load block.json", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, "Failed to load block.json", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	private void saveUsedBlocksToJson() {
+		try {
+			CUSTOM_BLOCKS_PATH = "/storage/emulated/0/.blacklogics/data/" + getIntent().getStringExtra("sc_id") + "/custom_blocks";
+			// Check if we have any blocks to save
+			if (usedBlockIds == null || usedBlockIds.isEmpty()) {
+				Log.d(TAG, "No used blocks to save");
+				return;
+			}
+			
+			// Ensure blockDefinitions is loaded
+			if (blockDefinitions == null) {
+				loadBlockDefinitions();
+			}
+			
+			if (blockDefinitions == null || blockDefinitions.isEmpty()) {
+				Log.e(TAG, "No block definitions available");
+				return;
+			}
+			
+			// Load existing blocks from custom_blocks.json to avoid duplicates
+			Set<String> existingBlockIds = new HashSet<>();
+			File file = new File(CUSTOM_BLOCKS_PATH);
+			
+			// Create directory if it doesn't exist
+			File parentDir = file.getParentFile();
+			if (parentDir != null && !parentDir.exists()) {
+				if (!parentDir.mkdirs()) {
+					Log.e(TAG, "Failed to create directory: " + parentDir.getAbsolutePath());
+					return;
+				}
+			}
+			
+			if (file.exists()) {
+				try {
+					BufferedReader reader = new BufferedReader(new FileReader(file));
+					StringBuilder stringBuilder = new StringBuilder();
+					String line;
+					
+					while ((line = reader.readLine()) != null) {
+						stringBuilder.append(line);
+					}
+					reader.close();
+					
+					if (stringBuilder.length() > 0) {
+						JSONArray existingArray = new JSONArray(stringBuilder.toString());
+						for (int i = 0; i < existingArray.length(); i++) {
+							JSONObject obj = existingArray.getJSONObject(i);
+							if (obj.has("id")) {
+								existingBlockIds.add(obj.getString("id"));
+							}
+						}
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error reading existing custom_blocks.json", e);
+					// Continue with empty existingBlockIds
+				}
+			}
+			
+			// Create new JSON array for used blocks
+			JSONArray jsonArray = new JSONArray();
+			boolean hasNewBlocks = false;
+			
+			for (String blockId : usedBlockIds) {
+				if (blockId == null) continue;
+				
+				if (!existingBlockIds.contains(blockId)) { // Only add new blocks
+					for (BlockDefinition blockDef : blockDefinitions) {
+						if (blockDef != null && blockDef.palette != null && blockDef.palette.equals(blockId)) {
+							JSONObject jsonObject = new JSONObject();
+							jsonObject.put("id", blockDef.palette);
+							jsonObject.put("type", blockDef.type != null ? blockDef.type : "");
+							jsonObject.put("spec", blockDef.spec != null ? blockDef.spec : "");
+							jsonObject.put("color", blockDef.color != null ? blockDef.color : "");
+							jsonArray.put(jsonObject);
+							
+							existingBlockIds.add(blockId); // Track as added
+							hasNewBlocks = true;
+							break;
+						}
+					}
+				}
+			}
+			
+			// Write to file only if there are new blocks
+			if (hasNewBlocks && jsonArray.length() > 0) {
+				try {
+					FileWriter writer = new FileWriter(file, true); // Append mode
+					// If file already has content, we need to handle JSON array merging properly
+					if (file.exists() && file.length() > 0) {
+						writer.write("," + jsonArray.toString().substring(1, jsonArray.toString().length() - 1));
+					} else {
+						writer.write(jsonArray.toString(2));
+					}
+					writer.close();
+					
+					Log.d(TAG, "Saved used blocks to " + CUSTOM_BLOCKS_PATH);
+				} catch (IOException e) {
+					Log.e(TAG, "Error writing to custom_blocks.json", e);
+				}
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to save custom_blocks.json", e);
+			// Don't show Toast here as it might cause recursive issues
 		}
 	}
 	

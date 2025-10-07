@@ -11,6 +11,9 @@
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 	<uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
@@ -24,7 +27,8 @@
 		android:name="com.apk.builder.ApplicationLoader"
 		android:requestLegacyExternalStorage="true"
 		android:usesCleartextTraffic="true"
-		android:theme="@style/AppTheme">
+		android:theme="@style/AppTheme"
+		android:largeHeap="true">
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
@@ -113,6 +117,11 @@
 			android:supportsPictureInPicture="true" />
 		<activity
 			android:name=".AndroidxBuiltInActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true" />
+		<activity
+			android:name=".WebToApkActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true" />

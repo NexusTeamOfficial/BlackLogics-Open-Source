@@ -193,25 +193,25 @@ public class AAPT2Compiler extends Compiler {
 		args.add("--manifest");
 		args.add(mProject.getManifestFile().getAbsolutePath());
 		
-StringBuilder sb = new StringBuilder();
-for (Library library : mLibrariesCopy) {
-    if (library.requiresResourceFile()) {
-        String packageName = library.getPackageName();
-        if (packageName != null && !packageName.isEmpty() && !packageName.equals("null")) {
-            mProject.getLogger().d(TAG, "Adding extra package: " + packageName);
-            sb.append(packageName);
-            sb.append(":");
-        } else {
-            mProject.getLogger().w(TAG, "Skipping library with invalid package name: " + library.getName() + " (Package: " + packageName + ")");
-        }
-    }
-}
-if (!sb.toString().isEmpty()) {
-    args.add("--extra-packages");
-    args.add(sb.toString().substring(0, sb.toString().length() - 1));
-} else {
-    mProject.getLogger().d(TAG, "No valid extra packages to include");
-}
+		StringBuilder sb = new StringBuilder();
+		for (Library library : mLibrariesCopy) {
+			if (library.requiresResourceFile()) {
+				String packageName = library.getPackageName();
+				if (packageName != null && !packageName.isEmpty() && !packageName.equals("null")) {
+					mProject.getLogger().d(TAG, "Adding extra package: " + packageName);
+					sb.append(packageName);
+					sb.append(":");
+				} else {
+					mProject.getLogger().w(TAG, "Skipping library with invalid package name: " + library.getName() + " (Package: " + packageName + ")");
+				}
+			}
+		}
+		if (!sb.toString().isEmpty()) {
+			args.add("--extra-packages");
+			args.add(sb.toString().substring(0, sb.toString().length() - 1));
+		} else {
+			mProject.getLogger().d(TAG, "No valid extra packages to include");
+		}
 		
 		args.add("-o");
 		args.add(createNewFile(binDir, "generated.apk.res").getAbsolutePath());

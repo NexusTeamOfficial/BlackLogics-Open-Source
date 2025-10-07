@@ -41,13 +41,12 @@
 		android:orientation="horizontal">
 		<ProgressBar
 			android:id="@+id/progressbar1"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="4dp"
 			android:layout_marginBottom="4dp"
 			android:indeterminate="false"
 			style="?android:progressBarStyleHorizontal"
-			android:layout_weight="1"
 			android:focusable="false" />
 	</LinearLayout>
 	<LinearLayout
@@ -55,17 +54,19 @@
 		android:layout_width="match_parent"
 		android:layout_height="50dp"
 		android:gravity="center_horizontal|center_vertical"
-		android:orientation="horizontal">
+		android:orientation="horizontal"
+		android:descendantFocusability="beforeDescendants">
 		<EditText
 			android:id="@+id/edittext1"
-			android:focusable="false"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:textSize="14sp"
 			android:textColor="#000000"
 			android:hint="Example: com.anjlab.android.iab.v3:library:1.0.44"
 			android:textColorHint="#607D8B"
-			android:singleLine="true" />
+			android:singleLine="true"
+			android:focusable="true"
+			android:focusableInTouchMode="true" />
 	</LinearLayout>
 	<LinearLayout
 		android:id="@+id/linear7"
@@ -92,23 +93,22 @@
 		android:id="@+id/linear8"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:paddingLeft="4dp"
-		android:paddingRight="4dp"
+		android:paddingLeft="2dp"
+		android:paddingRight="2dp"
+		android:gravity="center_horizontal|center_vertical"
 		android:orientation="horizontal">
 		<LinearLayout
 			android:id="@+id/linear9"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="35dp"
-			android:layout_marginRight="2dp"
 			android:background="#296CF7"
 			android:gravity="center_horizontal|center_vertical"
-			android:orientation="horizontal"
 			android:layout_weight="1">
 			<TextView
 				android:id="@+id/textview8"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="    Start    "
+				android:text="Start"
 				android:textSize="14sp"
 				android:textColor="#FFFFFF"
 				android:singleLine="true"
@@ -116,19 +116,17 @@
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear10"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="35dp"
 			android:layout_marginLeft="2dp"
-			android:layout_marginRight="2dp"
 			android:background="#296CF7"
 			android:gravity="center_horizontal|center_vertical"
-			android:orientation="horizontal"
 			android:layout_weight="1">
 			<TextView
 				android:id="@+id/textview9"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="  Pause  "
+				android:text="Pause"
 				android:textSize="14sp"
 				android:textColor="#FFFFFF"
 				android:singleLine="true"
@@ -136,13 +134,11 @@
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear11"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="35dp"
 			android:layout_marginLeft="2dp"
-			android:layout_marginRight="2dp"
 			android:background="#296CF7"
 			android:gravity="center_horizontal|center_vertical"
-			android:orientation="horizontal"
 			android:layout_weight="1">
 			<TextView
 				android:id="@+id/textview10"
@@ -156,18 +152,18 @@
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear12"
-			android:layout_width="wrap_content"
+			android:layout_width="0dp"
 			android:layout_height="35dp"
 			android:layout_marginLeft="2dp"
 			android:background="#296CF7"
 			android:gravity="center_horizontal|center_vertical"
-			android:orientation="horizontal"
-			android:layout_weight="1">
+			android:layout_weight="1"
+			android:visibility="gone">
 			<TextView
 				android:id="@+id/textview11"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="  Cancel  "
+				android:text="Cancel"
 				android:textSize="14sp"
 				android:textColor="#FFFFFF"
 				android:singleLine="true"

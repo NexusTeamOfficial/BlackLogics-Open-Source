@@ -4,32 +4,40 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
 	<include layout="@layout/toolbar_improved" />
 	<LinearLayout
 		android:id="@+id/linear1"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:padding="8dp"
 		android:orientation="vertical">
 		<LinearLayout
 			android:id="@+id/blockManagerLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="8dp"
+			android:background="?attr/colorSurface"
 			android:gravity="center_vertical"
-			android:orientation="horizontal">
+			android:orientation="horizontal"
+			android:elevation="4dp"
+			android:clipToPadding="false"
+			android:clipChildren="false">
 			<ImageView
 				android:id="@+id/blockManager"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:src="@drawable/block_flled_white"
 				android:scaleType="center"
-				android:tint="#000000" />
+				android:tint="?attr/colorPrimary" />
 			<LinearLayout
 				android:id="@+id/linear3"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="vertical"
+				android:paddingStart="8dp">
 				<TextView
 					android:id="@+id/blocksManagerTitle"
 					android:layout_width="wrap_content"
@@ -44,35 +52,40 @@
 					android:layout_height="wrap_content"
 					android:padding="3dp"
 					android:text="@string/block_manager_sub_title"
-					android:textSize="12sp"
-					android:textColor="#607D8B" />
+					android:textSize="12sp" />
 			</LinearLayout>
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear5"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="8dp"
+			android:background="?attr/colorSurface"
 			android:gravity="center_vertical"
-			android:orientation="horizontal">
+			android:orientation="horizontal"
+			android:elevation="4dp"
+			android:clipToPadding="false"
+			android:clipChildren="false">
 			<ImageView
 				android:id="@+id/imageview1"
 				android:layout_width="25dp"
 				android:layout_height="25dp"
 				android:src="@drawable/icon_info_round"
 				android:scaleType="fitCenter"
-				android:tint="#9C27B0" />
+				android:tint="?attr/colorSecondary" />
 			<LinearLayout
 				android:id="@+id/linear6"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="vertical"
+				android:paddingStart="8dp">
 				<TextView
 					android:id="@+id/textview1"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:padding="5dp"
-					android:text="Enivorment Evlation"
+					android:text="Environment Evaluation"
 					android:textSize="12sp"
 					android:textColor="@color/textColor" />
 				<TextView
@@ -80,18 +93,16 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:padding="3dp"
-					android:text="Check your current enivorment evulation"
-					android:textSize="12sp"
-					android:textColor="#607D8B" />
+					android:text="Check your current environment evaluation"
+					android:textSize="12sp" />
 			</LinearLayout>
 		</LinearLayout>
 		<Switch
 			android:id="@+id/switch1"
-			android:layout_width="match_parent"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
-			android:text="Mod dark or light"
-			android:textSize="12sp"
-			android:textColor="@color/text_color" />
+			android:text="Dark Light "
+			android:textSize="12sp" />
 	</LinearLayout>
 </LinearLayout>

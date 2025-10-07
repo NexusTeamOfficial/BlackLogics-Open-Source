@@ -4,149 +4,76 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.widget.TextView;
-import com.besome.blacklogics.R;
+import android.view.ViewGroup;
 import com.nexusteam.internal.os.layouteditor.util.WidgetUtil;
 
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Gravity;
-
-public class WidgetCodeViewer extends TextView implements WidgetContract {
-    private String mWidgetId;
-    private String mWidgetName;
-    private boolean isSelected = false;
-    private Paint widgetPaint = new Paint();
-    private float dragStartX, dragStartY;
-
+public class WidgetCodeViewer extends Widget {
+    private Paint textPaint;
+    private Paint backgroundPaint;
+    
     public WidgetCodeViewer(Context context) {
-        this(context, null);
+        super(context);
+        init();
     }
-
+    
     public WidgetCodeViewer(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        init();
     }
-
+    
     public WidgetCodeViewer(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
-
-    //@Override
-    public void init() {
-      //  super.init();
-        setPadding(8, 8, 8, 8);
-        setTypeface(Typeface.MONOSPACE);
-        setTextSize(14);
-        setBackgroundColor(Color.DKGRAY);
-        setEnabled(false);
-        setOnTouchListener(new DragTouchListener());
-        setDummyCode();
+    
+    private void init() {
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setTextSize(40);
+        textPaint.setTypeface(android.graphics.Typeface.MONOSPACE);
+        
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.DKGRAY);
     }
-
-    private void setDummyCode() {
-        String[] lines = {
-            "class MyWidget {",
-            "    void render() {",
-            "        draw(text: \"Hello World\");",
-            "    }",
-            "}"
-        };
-        int[] colors = {Color.CYAN, Color.GREEN, Color.YELLOW, Color.GREEN, Color.CYAN};
-
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            int start = builder.length();
-            builder.append(line).append("\n");
-            builder.setSpan(new ForegroundColorSpan(colors[i]), start, start + line.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        setText(builder);
-    }
-
-    @Override
-    public void setWidgetId(String id) {
-        this.mWidgetId = id;
-    }
-
-    @Override
-    public String getWidgetId() {
-        return mWidgetId;
-    }
-
-    @Override
-    public void setWidgetName(String name) {
-        this.mWidgetName = name;
-    }
-
-    @Override
-    public String getWidgetName() {
-        return mWidgetName;
-    }
-
-    @Override
-    public Paint getWidgetPaint() {
-        return widgetPaint;
-    }
-
-    @Override
-    public void select() {
-        isSelected = true;
-        widgetPaint.setColor(getResources().getColor(R.color.widget_selection_color));
-        invalidate();
-    }
-
-    @Override
-    public void unselect() {
-        isSelected = false;
-        widgetPaint.setColor(0);
-        invalidate();
-    }
-
+    
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (isSelected) {
-            canvas.drawRect(0, 0, getWidth(), getHeight(), widgetPaint);
-        }
+        
+        canvas.drawRect(0, 0, getWidth(), getHeight(), backgroundPaint);
+        
+        int x = 30;
+        int y = 80;
+        
+        drawCodeLine(canvas, "class MyWidget {", x, y, Color.CYAN);
+        y += 50;
+        drawCodeLine(canvas, "    void render() {", x + 30, y, Color.GREEN);
+        y += 50;
+        drawCodeLine(canvas, "        draw(text: \"Hello World\");", x + 60, y, Color.YELLOW);
+        y += 50;
+        drawCodeLine(canvas, "    }", x + 30, y, Color.GREEN);
+        y += 50;
+        drawCodeLine(canvas, "}", x, y, Color.CYAN);
     }
-
-    public void setPosition(float x, float y) {
-        setX(x);
-        setY(y);
-        requestLayout();
+    
+    private void drawCodeLine(Canvas canvas, String text, int x, int y, int color) {
+        textPaint.setColor(color);
+        canvas.drawText(text, x, y, textPaint);
     }
-
-    @Override
-    public String newWidgetId() {
+    
+    public static String newWidgetId() {
         int i = 1;
         while (WidgetUtil.isWidgetIdExist("codeviewer" + i)) {
             i++;
         }
         return "codeviewer" + i;
     }
-
-    private class DragTouchListener implements OnTouchListener {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    dragStartX = event.getRawX() - getX();
-                    dragStartY = event.getRawY() - getY();
-                    select();
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    setPosition(event.getRawX() - dragStartX, event.getRawY() - dragStartY);
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    return true;
-            }
-            return false;
+    
+  /*  @Override
+    public void setLayoutParams(ViewGroup.LayoutParams params) {
+        super.setLayoutParams(params);
+        if (backgroundPaint != null) {
+            backgroundPaint.setLayoutParams(params);
         }
-    }
+    }*/
 }

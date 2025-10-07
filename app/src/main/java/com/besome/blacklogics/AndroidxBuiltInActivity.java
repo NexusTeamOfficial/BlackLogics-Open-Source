@@ -31,7 +31,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -109,31 +108,31 @@ public class AndroidxBuiltInActivity extends AppCompatActivity {
 		complex.setId(getIntent().getStringExtra("sc_id"));
 		switch1.setChecked(complex.getAndroidXEnable());
 		switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				@Override
-				public void onCheckedChanged(CompoundButton _param1, boolean _param2) {
-						final boolean _isChecked = _param2;
-						if (complex.getAndroidXEnable()) {
-								new com.google.android.material.dialog.MaterialAlertDialogBuilder(AndroidxBuiltInActivity.this)
-								.setTitle("Warning")
-								.setMessage("The existing Drawer Layout and FAB will be deleted. Would you like to continue?")
-								.setIcon(R.drawable.ic_warning_red)
-								.setNegativeButton("Cancel", (dialog, which) -> {
-										dialog.dismiss();
-										complex.enableAndroidX(true);
-						                complex.refreshData();
-										switch1.setChecked(true);
-								})
-								.setPositiveButton("Delete", (dialog, which) -> {
-										// Deletion logic
-						                complex.enableAndroidX(false);
-						                complex.refreshData();
-								})
-								.show();
-						} else {
-								complex.enableAndroidX(_isChecked);
-					            complex.refreshData();
-						}
+			@Override
+			public void onCheckedChanged(CompoundButton _param1, boolean _param2) {
+				final boolean _isChecked = _param2;
+				if (complex.getAndroidXEnable()) {
+					new com.google.android.material.dialog.MaterialAlertDialogBuilder(AndroidxBuiltInActivity.this)
+					.setTitle("Warning")
+					.setMessage("The existing Drawer Layout and FAB will be deleted. Would you like to continue?")
+					.setIcon(R.drawable.ic_warning_red)
+					.setNegativeButton("Cancel", (dialog, which) -> {
+						dialog.dismiss();
+						complex.enableAndroidX(true);
+						complex.refreshData();
+						switch1.setChecked(true);
+					})
+					.setPositiveButton("Delete", (dialog, which) -> {
+						// Deletion logic
+						complex.enableAndroidX(false);
+						complex.refreshData();
+					})
+					.show();
+				} else {
+					complex.enableAndroidX(_isChecked);
+					complex.refreshData();
 				}
+			}
 		});
 		
 	}

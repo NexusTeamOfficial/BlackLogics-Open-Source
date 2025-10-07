@@ -35,7 +35,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -122,11 +121,10 @@ public class AppSettingsActivity extends AppCompatActivity {
 				
 				// Apply dark mode
 				if (_isChecked) {
-						AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+					AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 				} else {
-						AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+					AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 				}
-				
 			}
 		});
 	}

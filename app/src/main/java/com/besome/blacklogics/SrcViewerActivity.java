@@ -32,7 +32,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -63,6 +62,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import com.besome.blacklogics.development.Complex;
+import android.os.Environment;
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.Magnifier;
@@ -90,6 +90,7 @@ public class SrcViewerActivity extends AppCompatActivity {
 	private void initialize(Bundle _savedInstanceState) {
 		logViewerPreferences = getPreferences(Context.MODE_PRIVATE);
 		complex = new Complex();
+		complex.setC(this);
 		complex.setId(getIntent().getStringExtra("sc_id"));
 		linear1 = findViewById(R.id.linear1);
 		editor = findViewById(R.id.editor);
@@ -105,6 +106,8 @@ public class SrcViewerActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
+		complex.setC(this);
+		complex.refreshData();
 		editor.setTextSize(getFontSizePreference());
 		editor.setTypefaceText(Typeface.MONOSPACE);
 		editor.setColorScheme(new EditorColorScheme());
@@ -112,66 +115,129 @@ public class SrcViewerActivity extends AppCompatActivity {
 		editor.setWordwrap(false);
 		editor.getComponent(Magnifier.class).setWithinEditorForcibly(true);
 		List<String> allItems = new ArrayList<>();
-		allItems.addAll(complex.javaItems); // e.g. MainActivity.java
-		allItems.addAll(complex.xmlItems);  // e.g. activity_main.xml
 		
-		// Step 2: Set adapter to spinner
+		// Populate Java and XML items, ensuring correct extensions
+		for (String javaName : complex.javaItems) {
+			allItems.add(javaName.endsWith(".java") ? javaName : javaName + ".java");
+		}
+		for (String xmlName : complex.xmlItems) {
+			allItems.add(xmlName.endsWith(".xml") ? xmlName : xmlName + ".xml");
+		}
+		
+		// Handle empty case
+		if (allItems.isEmpty()) {
+			Log.e("SrcViewer", "No Java or XML files found for project ID: " + complex.sc_id);
+			allItems.add("MainActivity.java");
+			allItems.add("activity_main.xml");
+			editor.setText("// No files found. Check if logic file exists at: " + 
+			Environment.getExternalStorageDirectory().getAbsolutePath() + "/.blacklogics/data/" + complex.sc_id + "/logic");
+			showMessage("No files found for project ID: " + complex.sc_id);
+		}
+		
+		// Set spinner adapter
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, allItems);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		file_spinner.setAdapter(adapter);
 		
-		// Step 3: Set item selected listener
-		file_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-				@Override
-				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						String item = parent.getItemAtPosition(position).toString();
-						
-						if (complex.javaItems.contains(item)) {
-								// It's a Java file
-								editor.setText(complex.getJavaContent(item));
-						} else if (complex.xmlItems.contains(item)) {
-								// It's an XML file
-								editor.setText(complex.getXmlContent(item));
-						} else {
-								editor.setText("// Unknown item: " + item);
-						}
-				}
-				
-				@Override
-				public void onNothingSelected(AdapterView<?> parent) {}
-		});
+		// Load first item if available
+		if (!allItems.isEmpty()) {
+			file_spinner.setSelection(0);
+			loadFileContent(allItems.get(0));
+		}
 		
+		// Set spinner listener
+		file_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				String item = parent.getItemAtPosition(position).toString();
+				loadFileContent(item);
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				editor.setText("// No file selected.");
+			}
+		});
 	}
 	
 	public void _a() {
 	}
 	private int getFontSizePreference() {
-			return logViewerPreferences.getInt(PREFERENCE_FONT_SIZE, 11);
+		return logViewerPreferences.getInt(PREFERENCE_FONT_SIZE, 11);
 	}
 	private void changeFontSizeDialog() {
-			NumberPicker picker = new NumberPicker(this);
-			picker.setMinValue(10); //Must not be less than setValue(), which is currently 11 in src_viewer.xml
-			picker.setMaxValue(70);
-			picker.setWrapSelectorWheel(false);
-			picker.setValue(getFontSizePreference());
+		NumberPicker picker = new NumberPicker(this);
+		picker.setMinValue(10); //Must not be less than setValue(), which is currently 11 in src_viewer.xml
+		picker.setMaxValue(70);
+		picker.setWrapSelectorWheel(false);
+		picker.setValue(getFontSizePreference());
+		
+		LinearLayout layout = new LinearLayout(this);
+		layout.addView(picker, new LinearLayout.LayoutParams(
+		LinearLayout.LayoutParams.WRAP_CONTENT,
+		LinearLayout.LayoutParams.WRAP_CONTENT,
+		Gravity.CENTER));
+		
+		new AlertDialog.Builder(this)
+		.setTitle("Select font size")
+		.setView(layout)
+		.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+			logViewerPreferences.edit().putInt(PREFERENCE_FONT_SIZE, picker.getValue()).apply();
 			
-			LinearLayout layout = new LinearLayout(this);
-			layout.addView(picker, new LinearLayout.LayoutParams(
-			LinearLayout.LayoutParams.WRAP_CONTENT,
-			LinearLayout.LayoutParams.WRAP_CONTENT,
-			Gravity.CENTER));
-			
-			new AlertDialog.Builder(this)
-			.setTitle("Select font size")
-			.setView(layout)
-			.setPositiveButton(android.R.string.ok, (dialog, which) -> {
-					logViewerPreferences.edit().putInt(PREFERENCE_FONT_SIZE, picker.getValue()).apply();
-					
-					editor.setTextSize((float) picker.getValue());
-			})
-			.setNegativeButton(android.R.string.cancel, null)
-			.show();
+			editor.setTextSize((float) picker.getValue());
+		})
+		.setNegativeButton(android.R.string.cancel, null)
+		.show();
 	}
+	/**
+ * Load file content dynamically based on the selected item from the spinner.
+ * Supports .java and .xml display names, but internally loads using clean names
+ * (since Complex saves files without extensions).
+ *
+ * @param item The selected file name (e.g. "MainActivity.java" or "activity_main.xml")
+ */
+	private void loadFileContent(String item) {
+		if (item == null || item.trim().isEmpty()) {
+			return;
+		}
+		
+		item = item.trim();
+		
+		
+		String cleanName = item
+		.replace(".java", "")
+		.replace(".xml", "")
+		.trim();
+		
+		if (item.endsWith(".java")) {
+			String javaContent = complex.getJavaContent(cleanName);
+			
+			if (javaContent != null && !javaContent.isEmpty()
+			&& !javaContent.startsWith("// Error")
+			&& !javaContent.startsWith("// Java file not found")) {
+				
+				editor.setText(javaContent);
+			} else {
+				
+			}
+			
+		} else if (item.endsWith(".xml")) {
+			String xmlContent = complex.getXmlContent(cleanName);
+			
+			if (xmlContent != null && !xmlContent.isEmpty()
+			&& !xmlContent.startsWith("<!-- Error")
+			&& !xmlContent.startsWith("<!-- XML file not found")) {
+				
+				editor.setText(xmlContent);
+			} else {
+				
+			}
+			
+		} else {
+			
+		}
+	}
+	
 	{
 	}
 	

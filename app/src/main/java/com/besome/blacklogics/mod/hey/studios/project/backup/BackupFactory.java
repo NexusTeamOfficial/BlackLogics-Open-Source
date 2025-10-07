@@ -463,7 +463,7 @@ public class BackupFactory {
         File data = new File(outFolder, "data");
         File res = new File(outFolder, "resources");
 
-        HashMap<String, Object> map = getProject(project);
+       /* HashMap<String, Object> map = getProject(project);
 
         if (map == null) {
             error = "couldn't read the project file";
@@ -479,7 +479,11 @@ public class BackupFactory {
             error = "couldn't write to the project file";
             restoreSuccess = false;
             return;
-        }
+        }*/
+        
+        //copy(data, getDataDir());
+        
+        //FileUtil.writeFile(project.toString(), String str);
 
         // Copy data
         copy(data, getDataDir());

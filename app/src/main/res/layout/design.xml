@@ -36,18 +36,18 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:padding="4dp"
+				android:background="?attr/colorPrimary"
 				android:gravity="center_vertical"
 				android:orientation="horizontal"
-				android:background="?attr/colorPrimary"
-				android:layout_alignTop="@id/anchor">
+				android:layout_alignParentTop="true">
 				<ImageView
 					android:id="@+id/img_icon"
 					android:layout_width="24dp"
 					android:layout_height="24dp"
 					android:layout_margin="8dp"
+					android:background="?attr/colorPrimary"
 					android:src="@drawable/arrow_back_white_48dp"
 					android:scaleType="fitCenter"
-					android:background="?attr/colorPrimary"
 					android:contentDescription="@string/back_button_description" />
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/linear9"
@@ -58,36 +58,35 @@
 						android:id="@+id/linear10"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
+						android:background="?attr/colorPrimary"
 						android:gravity="center_vertical"
-						android:orientation="horizontal"
-						android:background="?attr/colorPrimary">
+						android:orientation="horizontal">
 						<androidx.appcompat.widget.LinearLayoutCompat
 							android:id="@+id/linear11"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:padding="8dp"
+							android:background="?attr/colorPrimary"
 							android:orientation="vertical"
-							android:layout_weight="1"
-							android:background="?attr/colorPrimary">
+							android:layout_weight="1">
 							<com.google.android.material.textview.MaterialTextView
 								android:id="@+id/tv_root_title"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
+								android:background="?attr/colorPrimary"
 								android:text="@string/app_name"
 								android:textSize="14sp"
+								android:textColor="@color/toolText"
 								android:singleLine="true"
-								android:background="?attr/colorPrimary"
-								android:textColor="?attr/colorOnPrimary"
 								android:ellipsize="end" />
 							<com.google.android.material.textview.MaterialTextView
 								android:id="@+id/tv_sub_title"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
+								android:background="?attr/colorPrimary"
 								android:text="601"
 								android:textSize="12sp"
-								android:textColor="@color/textColor"
 								android:singleLine="true"
-								android:background="?attr/colorPrimary"
 								android:ellipsize="end" />
 						</androidx.appcompat.widget.LinearLayoutCompat>
 						<Space
@@ -99,9 +98,9 @@
 							android:id="@+id/undoIcon"
 							android:layout_width="24dp"
 							android:layout_height="24dp"
+							android:background="?attr/colorPrimary"
 							android:src="@drawable/ic_undo_white_48dp"
 							android:scaleType="fitCenter"
-							android:background="?attr/colorPrimary"
 							android:contentDescription="@string/undo_button_description" />
 						<Space
 							android:id="@+id/linear14"
@@ -112,9 +111,9 @@
 							android:id="@+id/redoIcon"
 							android:layout_width="24dp"
 							android:layout_height="24dp"
+							android:background="?attr/colorPrimary"
 							android:src="@drawable/ic_redo_white_48dp"
 							android:scaleType="fitCenter"
-							android:background="?attr/colorPrimary"
 							android:contentDescription="@string/redo_button_description" />
 						<Space
 							android:id="@+id/linear17"
@@ -125,9 +124,9 @@
 							android:id="@+id/save_logic_button"
 							android:layout_width="24dp"
 							android:layout_height="24dp"
+							android:background="?attr/colorPrimary"
 							android:src="@drawable/icon_save_baseline"
 							android:scaleType="fitCenter"
-							android:background="?attr/colorPrimary"
 							android:contentDescription="@string/save_button_description" />
 						<Space
 							android:id="@+id/linear12"
@@ -138,9 +137,9 @@
 							android:id="@+id/img_more"
 							android:layout_width="24dp"
 							android:layout_height="24dp"
+							android:background="?attr/colorPrimary"
 							android:src="@drawable/icon_more_vert_twotone"
 							android:scaleType="fitCenter"
-							android:background="?attr/colorPrimary"
 							android:contentDescription="@string/more_options_description" />
 					</androidx.appcompat.widget.LinearLayoutCompat>
 				</androidx.appcompat.widget.LinearLayoutCompat>
@@ -179,15 +178,15 @@
 				android:layout_height="wrap_content"
 				android:padding="8dp"
 				android:orientation="horizontal"
-				android:layout_toEndOf="@id/customViewPager" />
+				android:layout_above="@id/control_panel" />
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/control_panel"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:background="?attr/colorSurface"
 				android:gravity="center_vertical"
 				android:orientation="horizontal"
 				android:padding="@dimen/control_panel_padding"
-				android:background="?attr/colorSurface"
 				android:layout_alignParentBottom="true"
 				android:layout_alignBottom="@id/ll_properties">
 				<androidx.appcompat.widget.AppCompatSpinner
@@ -213,7 +212,6 @@
 					android:text="@string/run_button_text"
 					android:textStyle="bold"
 					android:textSize="@dimen/button_text_size"
-					android:textColor="?attr/colorOnPrimary"
 					android:layout_marginEnd="@dimen/button_margin_end"
 					style="@style/Widget.MaterialComponents.Button"
 					app:backgroundTint="?attr/colorPrimary" />

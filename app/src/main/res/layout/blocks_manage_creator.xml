@@ -165,7 +165,7 @@
 								android:id="@+id/imageview2"
 								android:layout_width="25dp"
 								android:layout_height="25dp"
-								android:src="@drawable/default_image"
+								android:src="@drawable/color_palette_48"
 								android:scaleType="fitXY" />
 						</LinearLayout>
 						<com.google.android.material.textfield.TextInputLayout
@@ -324,7 +324,7 @@
 					android:layout_height="wrap_content"
 					android:layout_margin="8dp"
 					android:padding="8dp"
-					android:background="#008DCD"
+					app:backgroundTint="#008DCD"
 					android:gravity="center_horizontal|center_vertical"
 					android:text="@string/common_word_cancel"
 					android:textSize="12sp"
@@ -338,7 +338,7 @@
 					android:layout_height="wrap_content"
 					android:layout_margin="8dp"
 					android:padding="8dp"
-					android:background="#008DCD"
+					app:backgroundTint="#008DCD"
 					android:gravity="center_horizontal|center_vertical"
 					android:text="@string/common_word_save"
 					android:textSize="12sp"

@@ -54,7 +54,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable; 
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,6 +63,7 @@ import android.os.Vibrator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
@@ -75,17 +76,16 @@ import android.view.View;
 import android.view.View.*;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.webkit.*;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.ArrayAdapter; 
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -97,6 +97,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -106,32 +107,32 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Base64;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import com.besome.blacklogics.R;
+import com.besome.blacklogics.*;
 import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.FileUtil;
 import com.besome.blacklogics.SketchwareUtil;
+import com.besome.blacklogics.beans.ProjectActivityBean;
+import com.besome.blacklogics.beans.ProjectActivityBean.ViewBean;
 import com.besome.blacklogics.logic.editor.LogicEditorActivity;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import com.nexusteam.internal.os.layouteditor.util.*;
+import com.nexusteam.internal.os.layouteditor.util.WidgetStorageManager;
 import com.shapun.layouteditor.*;
 import com.shapun.layouteditor.utils.*;
-import java.io.StringReader;
 import java.io.BufferedReader;
 import java.io.File;
-import java.security.SecureRandom;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -139,22 +140,29 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
+import java.lang.ClassNotFoundException;
+import java.lang.InstantiationException;
+import java.lang.NoSuchMethodException;
+import java.lang.IllegalAccessException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map; 
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.Stack;
-import java.lang.ClassNotFoundException;
-import java.lang.InstantiationException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.NoSuchMethodException;
-import java.lang.IllegalAccessException;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
 
 public class ViewEditor extends LinearLayout {
 	
@@ -164,6 +172,10 @@ public class ViewEditor extends LinearLayout {
 	
 	private ArrayList<String> typeList = new ArrayList<>();
 	private ArrayList<HashMap<String, Object>> viewsList = new ArrayList<>();
+	
+	private HashMap<String, Object> widget_add_map = new HashMap<>();
+	
+	private ArrayList<HashMap<String, Object>> list_widget_map = new ArrayList<>();
 	
 	private LinearLayout lin_toolbar;
 	private LinearLayout linear7;
@@ -191,6 +203,7 @@ public class ViewEditor extends LinearLayout {
 	
 	public String id = "";
 	public String SAVE_PATH = "";
+	public static String SC_ID = "601";
 	public int index;
 	private Vibrator vib;
 	private View placeHolder;
@@ -209,27 +222,39 @@ public class ViewEditor extends LinearLayout {
 	
 	public Intent intent = new Intent();
 	
+	private TempLayoutManager tempLayoutManager;
+	private DesignActivity designActivity;
+	
 	// Action types
 	private static final int ACTION_ADD_VIEW = 1;
 	private static final int ACTION_REMOVE_VIEW = 2;
 	private static final int ACTION_UPDATE_ATTR = 3;
-    
-    // AES Encryption Key (256-bit, must be 32 bytes)
-    private static final String AES_KEY = "NexusTeamSmartIndia2025LayoutKey"; // Replace with secure key management
-    private static final String AES_IV = "1234567890abcdef"; // 16-byte IV, replace with secure IV
-    private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
+	
+	private HashMap<String, Stack<EditorAction>> undoStacks = new HashMap<>();
+	private HashMap<String, Stack<EditorAction>> redoStacks = new HashMap<>();
+	
+	// AES Encryption Key (256-bit, must be 32 bytes)
+	private static final String AES_KEY = "NexusTeamSmartIndia2025LayoutKey"; // Replace with secure key management
+	private static final String AES_IV = "1234567890abcdef"; // 16-byte IV, replace with secure IV
+	// Obfuscated key & IV parts (XOR + split)
+	private static final int[] KEY_PARTS = {78,101,120,117,115,84,101,97,109,83,109,97,114,116,73,110,100,105,97,50,48,50,53,76,97,121,111,117,116};
+	private static final int[] IV_PARTS  = {49,50,51,52,53,54,55,56,57,48,97,98,99,100,101,102};
+	
+	private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
 	
 	// Action data structure
 	private static class EditorAction {
 		int actionType;
 		View view;
 		ViewGroup parent;
-		int index; // Position in parent
-		Attribute oldAttr; // For attribute changes
+		int index;
+		Attribute oldAttr;
 		Attribute newAttr;
-		String viewId; // To restore views if needed
+		String viewId;
+		String activityName;
 		
-		EditorAction(int actionType, View view, ViewGroup parent, int index, Attribute oldAttr, Attribute newAttr) {
+		EditorAction(int actionType, View view, ViewGroup parent, int index,
+		Attribute oldAttr, Attribute newAttr, String activityName) {
 			this.actionType = actionType;
 			this.view = view;
 			this.parent = parent;
@@ -237,6 +262,7 @@ public class ViewEditor extends LinearLayout {
 			this.oldAttr = oldAttr;
 			this.newAttr = newAttr;
 			this.viewId = (view != null) ? idManager.getId(view) : null;
+			this.activityName = activityName;
 		}
 	}
 	
@@ -259,6 +285,14 @@ public class ViewEditor extends LinearLayout {
 		this.onWidgetAddListener = listener;
 	}
 	
+	public void setScId(String SC_ID) {
+		this.SC_ID = SC_ID;
+	}
+	
+	public void setDesignActivity(DesignActivity designActivity) {
+		this.designActivity = designActivity;
+	}
+	
 	private void initialize(Context context) {
 		setOrientation(VERTICAL);
 		LayoutInflater inflater = LayoutInflater.from(context);
@@ -279,6 +313,7 @@ public class ViewEditor extends LinearLayout {
 		phone_action_bar = view.findViewById(R.id.phone_action_bar);
 		vib = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		
+		this.tempLayoutManager = new TempLayoutManager(this);
 		setupListeners();
 		initializeLogic(context);
 	}
@@ -323,7 +358,7 @@ public class ViewEditor extends LinearLayout {
 				
 				code = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"+ code.substring(0,code.indexOf("\n"))+"\n"+"xmlns:android=\"http://schemas.android.com/apk/res/android\""+code.substring(code.indexOf("\n"),code.length());
 				/*	((ClipboardManager) getSystemService(((Activity) getContext()).CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("clipboard", code));
-				SketchwareUtil.showMessage(((Activity) getContext()), "Copied");*/
+SketchwareUtil.showMessage(((Activity) getContext()), "Copied");*/				
 			}
 		});
 		
@@ -382,11 +417,15 @@ public class ViewEditor extends LinearLayout {
 		
 		dragListener = new DragListener();
 		editorLayout.setOnDragListener(dragListener);
-		DragAndDropUtils.startDragAndDrop(img_import, null, new View.DragShadowBuilder(null), null, 0);
+		//DragAndDropUtils.startDragAndDrop(img_import, null, new View.DragShadowBuilder(null), null, 0);
 		deleteImg = new ImageView(context);
 		deleteImg.setImageResource(R.drawable.ic_delete_white);
 		deleteImg.setColorFilter(0xFF757575, PorterDuff.Mode.SRC_ATOP);
 		deleteImg.setVisibility(View.GONE);
+		
+		if (tempLayoutManager != null) {
+			tempLayoutManager.showGlobalRestoreDialog();
+		}
 		
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 		(int) SketchwareUtil.getDip(context, 60),
@@ -408,7 +447,7 @@ public class ViewEditor extends LinearLayout {
 		parentAttributesMap = new Gson().fromJson(Utils.readFromAsset(context, "parent_dependent_attributes.json"),
 		new TypeToken<HashMap<String, ArrayList<HashMap<String, Object>>>>() {}.getType());
 		listview_widgets.setLayoutManager(new LinearLayoutManager(context));
-		listview_widgets.setAdapter(new Listview_widgetsAdapter(viewsList));
+		listview_widgets.setAdapter(new Listview_widgetsAdapter(context, viewsList));
 		lin_toolbar.setElevation(5);
 	}
 	
@@ -599,23 +638,23 @@ public class ViewEditor extends LinearLayout {
 					startY = event.getY(); 
 					bClick = true;
 					/*
-					new Handler().postDelayed(new Runnable(){ 
-					public void run() { 
-					if (bClick == true) { 
-					MainActivity.this.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-					//long click event 
-					try{				
-					DragAndDropUtils.startDragAndDrop(v,null, new View.DragShadowBuilder(v), v , 1);	
-					}catch(
-					Exception e){showMessage(e.toString());
-					}
-					}
-					});				
-					} 
-					} }, 300);
-					*/
+new Handler().postDelayed(new Runnable(){ 
+public void run() { 
+if (bClick == true) { 
+MainActivity.this.runOnUiThread(new Runnable() {
+@Override
+public void run() {
+//long click event 
+try{				
+DragAndDropUtils.startDragAndDrop(v,null, new View.DragShadowBuilder(v), v , 1);	
+}catch(
+Exception e){showMessage(e.toString());
+}
+}
+});				
+} 
+} }, 300);
+*/					
 					break;
 					case MotionEvent.ACTION_UP:
 					endX = event.getX(); 
@@ -715,9 +754,9 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	/*
-	* Modified showAttributesDialog method to use a tabbed layout with Attributes and Events tabs,
-	* supporting listeners like onClick, onTouch, and onLongPress based on widget type.
-	*/
+* Modified showAttributesDialog method to use a tabbed layout with Attributes and Events tabs,
+* supporting listeners like onClick, onTouch, and onLongPress based on widget type.
+*/	
 	
 	public void showAttributesDialog(final View view) {
 		// Initialize attributes list
@@ -1102,7 +1141,7 @@ public class ViewEditor extends LinearLayout {
 				case "Drawable":
 				ArrayList<String> listData = new ArrayList<>();
 				ArrayList<String> imagePaths = new ArrayList<>();
-				FileUtil.listDir(FileUtil.getPackageDataDir(getContext()) + "/images/", imagePaths);
+				FileUtil.listDir(FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + designActivity.currentActivityBean.getScId() + "/", imagePaths);
 				for (String name : imagePaths) {
 					if (name.endsWith(".png")) {
 						name = Uri.parse(name).getLastPathSegment();
@@ -1246,22 +1285,77 @@ public class ViewEditor extends LinearLayout {
 		
 		// Listener item click listener
 		listenerAdapter.setOnItemClickListener(position -> {
-            saveLayout(DesignActivity.currentActivityBean.getLayoutName());
+			saveLayout(designActivity.currentActivityBean.getLayoutName());
 			DesignActivity designActivity = (DesignActivity) getContext();
 			final HashMap<String, Object> listener = listenersList.get(position);
+			
 			final String listenerName = listener.get("name").toString();
 			final String listenerType = listener.get("type").toString();
 			
+			// Load previous list
+			if (FileUtil.isExistFile(FileUtil.getExternalStorageDir()
+			.concat("/.blacklogics/data/")
+			.concat(SC_ID)
+			.concat("/basedata"))) {
+				list_widget_map = new Gson().fromJson(
+				FileUtil.readFile(FileUtil.getExternalStorageDir()
+				.concat("/.blacklogics/data/")
+				.concat(SC_ID)
+				.concat("/basedata")),
+				new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType()
+				);
+			} else {
+				list_widget_map = new ArrayList<>();
+			}
+			
+			// New map
+			widget_add_map = new HashMap<>();
+			widget_add_map.put("widget_id", idManager.getId(view));
+			widget_add_map.put("widget_type", getWidgetTypeName(view));
+			widget_add_map.put("widget_listener_name", listenerName);
+			widget_add_map.put("activityName", designActivity.currentActivityBean.getActivityName());
+			
+			// ✅ Check if same entry already exists
+			boolean alreadyExists = false;
+			for (HashMap<String, Object> item : list_widget_map) {
+				if (item.get("widget_id").equals(widget_add_map.get("widget_id"))
+				&& item.get("widget_listener_name").equals(widget_add_map.get("widget_listener_name"))
+				&& item.get("activityName").equals(widget_add_map.get("activityName"))) {
+					alreadyExists = true;
+					break;
+				}
+			}
+			
+			if (!alreadyExists) {
+				list_widget_map.add(widget_add_map);
+				FileUtil.writeFile(
+				FileUtil.getExternalStorageDir()
+				.concat("/.blacklogics/data/")
+				.concat(SC_ID)
+				.concat("/basedata"),
+				new Gson().toJson(list_widget_map)
+				);
+			}
+			
+			// Dynamic event set hoga (name ya type se)
+			String event = listenerType;
+			
 			intent.putExtra("id", idManager.getId(view));
-			intent.putExtra("event", "onClick");
+			intent.putExtra("event", event);
 			intent.putExtra("event_text", idManager.getId(view));
-			intent.putExtra("filename", idManager.getId(view) + DesignActivity.currentActivityBean.getActivityName() + listenerType);
+			intent.putExtra("filename",
+			idManager.getId(view) +
+			designActivity.currentActivityBean.getActivityName() +
+			event);
 			intent.putExtra("sc_id", DesignActivity.getScId());
-			intent.putExtra("activityName", DesignActivity.currentActivityBean.getActivityName());
+			intent.putExtra("activityName", designActivity.currentActivityBean.getActivityName());
 			intent.putExtra("widgetId", idManager.getId(view));
+			intent.putExtra("type", "");
 			intent.setClass(getContext(), LogicEditorActivity.class);
 			getContext().startActivity(intent);
 		});
+		
+		
 		
 		// Set listeners for the view
 		_rearrangeListener(view);
@@ -1310,23 +1404,23 @@ public class ViewEditor extends LinearLayout {
 			// Set icon based on listener type (customize as needed)
 			holder.ivIcon.setVisibility(View.GONE);
 			/*
-			if (listenerName.equals("onClick")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_touch_app_48);
-			} else if (listenerName.equals("onLongPress") || listenerName.equals("onLongClick")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_gesture_48);
-			} else if (listenerName.equals("onTouch")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_swipe_48);
-			} else if (listenerName.equals("onTextChanged")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_text_fields_48);
-			} else if (listenerName.equals("onProgressChanged")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_sliders_48);
-			} else if (listenerName.equals("onCheckedChanged")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_check_box_48);
-			} else if (listenerName.equals("onItemClick")) {
-			holder.ivIcon.setImageResource(R.drawable.ic_list_48);
-			} else {
-			holder.ivIcon.setVisibility(View.GONE);
-			}*/
+if (listenerName.equals("onClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_touch_app_48);
+} else if (listenerName.equals("onLongPress") || listenerName.equals("onLongClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_gesture_48);
+} else if (listenerName.equals("onTouch")) {
+holder.ivIcon.setImageResource(R.drawable.ic_swipe_48);
+} else if (listenerName.equals("onTextChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_text_fields_48);
+} else if (listenerName.equals("onProgressChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_sliders_48);
+} else if (listenerName.equals("onCheckedChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_check_box_48);
+} else if (listenerName.equals("onItemClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_list_48);
+} else {
+holder.ivIcon.setVisibility(View.GONE);
+}*/			
 			
 			holder.itemView.setOnClickListener(v -> {
 				if (listener != null) {
@@ -1352,32 +1446,71 @@ public class ViewEditor extends LinearLayout {
 		}
 	}
 	
+	private HashMap<String, Object> findAttributeMap(String attrName, View view) {
+		Class<?> cls = view.getClass();
+		while (cls != null && !cls.equals(View.class.getSuperclass())) {
+			ArrayList<HashMap<String, Object>> tempList = attributesMap.get(cls.getName());
+			if (tempList != null) {
+				for (HashMap<String, Object> map : tempList) {
+					if (map.get("attribute_name").equals(attrName)) {
+						return map;
+					}
+				}
+			}
+			cls = cls.getSuperclass();
+		}
+		return null;
+	}
+	
+	// Helper: format value with correct unit
+	private String formatAttributeValue(Attribute attr, HashMap<String, Object> map) {
+		String value = attr.getValue();
+		
+		if (map != null && map.containsKey("dimension")) {
+			String unit = map.get("dimension").toString(); // "dp" or "sp"
+			if (!value.endsWith(unit)) {
+				return value.replaceAll("\\.0$", "") + unit; // remove ".0" if present
+			}
+		}
+		
+		return value.replaceAll("\\.0$", ""); // clean numbers like 15.0 -> 15
+	}
+	
 	private String generateCode(View view) {
 		StringBuilder sb = new StringBuilder();
-		
 		String tagName = view.getClass().getSimpleName();
+		
+		// Replace PlaceholderWebView with WebView
+		if ("PlaceholderWebView".equals(tagName)) {
+			tagName = "WebView";
+		}
+		
 		sb.append("<").append(tagName);
 		
 		AttributeSet attributeSet = attributesValueMap.get(view);
 		if (attributeSet != null) {
 			for (Attribute attr : attributeSet.getAttributes()) {
-				// Skip xmlns:android to avoid redundancy
 				if (!"xmlns:android".equals(attr.getName())) {
-					sb.append("\n    ").append(attr.getName()).append("=\"")
-					.append(attr.getValue()).append("\"");
+					HashMap<String, Object> attrMap = findAttributeMap(attr.getName(), view);
+					String value = formatAttributeValue(attr, attrMap);
+					
+					sb.append("\n    ").append(attr.getName())
+					.append("=\"").append(value).append("\"");
 				}
 			}
+		} else {
+			// Default attributes
+			sb.append("\n    android:layout_width=\"wrap_content\"");
+			sb.append("\n    android:layout_height=\"wrap_content\"");
 		}
 		
 		if (view instanceof ViewGroup) {
 			sb.append(">\n");
-			
 			ViewGroup group = (ViewGroup) view;
 			for (int i = 0; i < group.getChildCount(); i++) {
 				String childXml = generateCode(group.getChildAt(i));
 				sb.append(indent(childXml, 4)).append("\n");
 			}
-			
 			sb.append("</").append(tagName).append(">");
 		} else {
 			sb.append(" />");
@@ -1385,6 +1518,7 @@ public class ViewEditor extends LinearLayout {
 		
 		return sb.toString();
 	}
+	
 	
 	// Helper method for indenting child views
 	private String indent(String xml, int spaces) {
@@ -1446,13 +1580,20 @@ public class ViewEditor extends LinearLayout {
 				switch (action) {
 					case DragEvent.ACTION_DRAG_STARTED:
 					hideProperties();
-					log("drag started" + destinationView.toString());
-					if (draggedView != null) ViewGroupUtils.removeView(draggedView);
+					log("drag started: " + destinationView.toString());
+					if (draggedView != null) {
+						ViewGroupUtils.removeView(draggedView);
+						deleteImg.setVisibility(View.VISIBLE);
+						deleteImg.bringToFront();
+						deleteImg.invalidate();
+					} else {
+						deleteImg.setVisibility(View.GONE);
+					}
 					log("start ended");
 					return true;
 					case DragEvent.ACTION_DRAG_LOCATION:
 					case DragEvent.ACTION_DRAG_ENTERED:
-					log("drag entered location " + destinationView.toString());
+					log("drag entered location: " + destinationView.toString());
 					if (destinationView != deleteImg) {
 						addView(placeHolder, (ViewGroup) destinationView, event);
 					}
@@ -1465,102 +1606,332 @@ public class ViewEditor extends LinearLayout {
 						ViewGroup parent = (ViewGroup) draggedView.getParent();
 						if (parent != null) {
 							int index = parent.indexOfChild(draggedView);
+							String widgetId = idManager.getId(draggedView);
+							
+							// Remove from ViewBean and update parent
+							removeViewBean(widgetId, parent);
+							
 							parent.removeView(draggedView);
 							idManager.remove(draggedView);
 							attributesValueMap.remove(draggedView);
-							undoStack.push(new EditorAction(ACTION_REMOVE_VIEW, draggedView, parent, index, null, null));
+							EditorAction deleteAction = new EditorAction(ACTION_REMOVE_VIEW, draggedView, parent, index,
+							null, null, getCurrentActivityName());
+							addAction(deleteAction);
 							redoStack.clear();
 							SketchwareUtil.showMessage(getContext(), "View deleted");
 							vib.vibrate(100);
 						}
 						return true;
 					}
+					
+					ViewGroup destinationParent = (ViewGroup) destinationView;
+					index = destinationParent.indexOfChild(placeHolder);
+					
 					if (draggedView == null) {
-						try {
-							HashMap<String, Object> viewData = (HashMap) event.getLocalState();
-							String classPath = viewData.get("class_path").toString();
-							View newView;
-							index = ((ViewGroup) destinationView).indexOfChild(placeHolder);
-							
-							if (classPath.equals("android.widget.WebView")) {
-								newView = new PlaceholderWebView(getContext());
-							} else if (classPath.equals("android.widget.VideoView")) {
-								newView = new PlaceholderWidget(getContext(), "VideoView");
-								newView.setForeground(getContext().getResources().getDrawable(R.drawable.item_video_view));
-							} else if (classPath.equals("androidx.viewpager.widget.ViewPager")) {
-								newView = new PlaceholderWidget(getContext(), "ViewPager");
-							} else {
-								newView = ReflectionUtils.createView(getContext(), classPath);
-							}
-							
-							newView.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
-							newView.setMinimumWidth((int) SketchwareUtil.getDip(getContext(), 30));
-							_rearrangeListener(newView);
-							ViewGroupUtils.removeView(placeHolder);
-							addView(newView, (ViewGroup) destinationView, event);
-							
-							if (newView instanceof ViewGroup) {
-								newView.setOnDragListener(dragListener);
-								int dp = (int) SketchwareUtil.getDip(getContext(), 8);
-								newView.setPadding(dp, dp, dp, dp);
-								com.shapun.layouteditor.utils.AnimationUtils.animate((ViewGroup) newView);
-								newView.setBackground(UiUtils.createStrokedBackground(0, 0xFF000000, 1));
-							}
-							
-							idManager.addNewId(newView, idManager.generateNewId(newView));
-							AttributeSet attributeSet = new AttributeSet();
-							attributesValueMap.put(newView, attributeSet);
-							attributeSet.add(new Attribute("android:id", "@+id/" + idManager.getId(newView)));
-							ViewGroup.LayoutParams params = newView.getLayoutParams();
-							
-							if (newView instanceof ViewGroup) {
-								params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-								attributeSet.add(new Attribute("android:layout_width", "match_parent"));
-								params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-								attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
-							} else {
-								params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-								params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-								attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
-								attributeSet.add(new Attribute("android:layout_width", "wrap_content"));
-							}
-							addInitialAttributes(newView, viewData);
-							
-							EditorAction actionB = new EditorAction(ACTION_ADD_VIEW, newView, (ViewGroup) destinationView, index, null, null);
-							undoStack.push(actionB);
-							redoStack.clear();
-							
-							if (onWidgetAddListener != null) {
-								onWidgetAddListener.onWidgetAdded(newView, (ViewGroup) destinationView);
-							}
-						} catch (Throwable t) {
-							SketchwareUtil.showMessage(getContext(), event.toString() + t.toString());
+						// Adding a new view
+						HashMap<String, Object> viewData = (HashMap) event.getLocalState();
+						String classPath = viewData.get("class_path").toString();
+						View newView;
+						
+						if (classPath.equals("android.widget.WebView")) {
+							newView = new PlaceholderWebView(getContext());
+						} else if (classPath.equals("android.widget.VideoView")) {
+							newView = new PlaceholderWidget(getContext(), "VideoView");
+							newView.setForeground(getContext().getResources().getDrawable(R.drawable.item_video_view));
+						} else if (classPath.equals("androidx.viewpager.widget.ViewPager")) {
+							newView = new PlaceholderWidget(getContext(), "ViewPager");
+						} else {
+							newView = ReflectionUtils.createView(getContext(), classPath);
 						}
-					} else {
+						
+						newView.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+						newView.setMinimumWidth((int) SketchwareUtil.getDip(getContext(), 30));
+						_rearrangeListener(newView);
 						ViewGroupUtils.removeView(placeHolder);
-						addView(draggedView, (ViewGroup) destinationView, event);
+						addView(newView, destinationParent, event);
+						
+						if (newView instanceof ViewGroup) {
+							newView.setOnDragListener(dragListener);
+							int dp = (int) SketchwareUtil.getDip(getContext(), 8);
+							newView.setPadding(dp, dp, dp, dp);
+							com.shapun.layouteditor.utils.AnimationUtils.animate((ViewGroup) newView);
+							newView.setBackground(UiUtils.createStrokedBackground(0, 0xFF000000, 1));
+						}
+						
+						String widgetId = idManager.generateNewId(newView);
+						idManager.addNewId(newView, widgetId);
+						AttributeSet attributeSet = new AttributeSet();
+						attributesValueMap.put(newView, attributeSet);
+						attributeSet.add(new Attribute("android:id", "@+id/" + widgetId));
+						
+						ViewGroup.LayoutParams params = newView.getLayoutParams();
+						if (newView instanceof ViewGroup) {
+							params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+							params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+							attributeSet.add(new Attribute("android:layout_width", "match_parent"));
+							attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
+						} else {
+							params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+							params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+							attributeSet.add(new Attribute("android:layout_width", "wrap_content"));
+							attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
+						}
+						addInitialAttributes(newView, viewData);
+						
+						String activityName = getCurrentActivityName();
+						String widgetType = getWidgetTypeName(newView);
+						
+						saveWidgetInfo(activityName, widgetType, widgetId);
+						WidgetStorageManager storageManager = new WidgetStorageManager(getContext(), SC_ID, activityName);
+						storageManager.saveWidgetMetadata(newView, widgetId);
+						
+						designActivity.generateJavaCode();
+						designActivity.generateXmlLayout();
+						
+						EditorAction addAction = new EditorAction(ACTION_ADD_VIEW, newView, destinationParent, index,
+						null, null, activityName);
+						addAction(addAction);
+						
+						// Notify listener
+						if (onWidgetAddListener != null) {
+							onWidgetAddListener.onWidgetAdded(newView, destinationParent);
+						}
+						
+						//	saveAndGenerateCode(newView);
+					} else {
+						// Moving an existing view
+						ViewGroupUtils.removeView(placeHolder);
+						addView(draggedView, destinationParent, event);
+						
+						String widgetId = idManager.getId(draggedView);
+						updateViewBeanParent(widgetId, destinationParent);
+						
+						EditorAction moveAction = new EditorAction(ACTION_ADD_VIEW, draggedView, destinationParent, index,
+						null, null, getCurrentActivityName());
+						addAction(moveAction);
+					}
+					
+					// Save the entire layout to temp storage
+					ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+					if (rootView != null) {
+						String xmlCode = generateCode(rootView);
+						//	tempLayoutManager.saveTempLayout(activityName);
 					}
 					return true;
 					case DragEvent.ACTION_DRAG_ENDED:
-					log("drag ended" + destinationView.toString());
+					log("drag ended: " + destinationView.toString());
 					ViewGroupUtils.removeView(placeHolder);
+					deleteImg.setVisibility(View.GONE);
 					if (event.getResult()) {
 						vib.vibrate(100);
-					} else {
-						if (draggedView != null) {
-							idManager.remove(draggedView);
-							attributesValueMap.remove(draggedView);
-						}
+					} else if (draggedView != null) {
+						idManager.remove(draggedView);
+						attributesValueMap.remove(draggedView);
 					}
-					draggedView = null;
 					return true;
 					default:
 					break;
 				}
 			} catch (Exception e) {
-				showMessage(e.toString());
+				Log.e("ViewEditor", "Drag event error: " + e.getMessage(), e);
+				SketchwareUtil.showMessage(getContext(), "Drag error: " + e.getMessage());
 			}
 			return true;
+		}
+		
+		// Helper method to create a ViewBean
+		private ProjectActivityBean.ViewBean createViewBean(View view, String widgetId, String widgetType, ViewGroup parent, String activityName) {
+			ProjectActivityBean.ViewBean bean = new ProjectActivityBean.ViewBean(widgetType, widgetId);
+			bean.setScId(SC_ID);
+			bean.setActivityName(activityName);
+			
+			// Set dimensions and margins
+			ViewGroup.LayoutParams params = view.getLayoutParams();
+			if (params != null) {
+				bean.setWidth(params.width);
+				bean.setHeight(params.height);
+				if (params instanceof ViewGroup.MarginLayoutParams) {
+					ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+					bean.setMarginLeft(marginParams.leftMargin);
+					bean.setMarginTop(marginParams.topMargin);
+					bean.setMarginRight(marginParams.rightMargin);
+					bean.setMarginBottom(marginParams.bottomMargin);
+				}
+			}
+			
+			// Set parent-child relationship
+			if (parent != null) {
+				String parentId = idManager.getId(parent);
+				if (parentId != null) {
+					bean.setParentId(parentId);
+					// Update parent's children list
+					ProjectActivityBean parentActivityBean = ProjectActivityBean.loadFromStorage(SC_ID, activityName);
+					if (parentActivityBean != null) {
+						for (ProjectActivityBean.ViewBean parentBean : parentActivityBean.getWidgets()) {
+							if (parentBean.getWidgetId().equals(parentId)) {
+								if (parentBean.getChildren() == null) {
+									parentBean.setChildren(new ArrayList<>());
+								}
+								parentBean.getChildren().add(bean);
+								parentActivityBean.saveToStorage();
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			// Set type-specific properties
+			if (view instanceof TextView) {
+				TextView tv = (TextView) view;
+				bean.setText(tv.getText().toString());
+				bean.setTextSize(tv.getTextSize() / getResources().getDisplayMetrics().density);
+				bean.setTextColor(tv.getCurrentTextColor());
+				bean.setGravity(tv.getGravity());
+				bean.setTextAlignment(tv.getTextAlignment());
+				bean.setMaxLines(tv.getMaxLines());
+				bean.setHint(tv.getHint() != null ? tv.getHint().toString() : "");
+				bean.setInputType(tv.getInputType());
+				Typeface typeface = tv.getTypeface();
+				if (typeface != null) {
+					StringBuilder textStyle = new StringBuilder();
+					if (typeface.isBold()) textStyle.append("bold|");
+					if (typeface.isItalic()) textStyle.append("italic|");
+					if (textStyle.length() > 0) {
+						bean.setTextStyle(textStyle.substring(0, textStyle.length() - 1));
+					}
+					bean.setFontFamily(typeface.toString());
+				}
+				bean.setLineSpacingMultiplier(tv.getLineSpacingMultiplier());
+				bean.setLineSpacingExtra(tv.getLineSpacingExtra() / getResources().getDisplayMetrics().density);
+			} else if (view instanceof Button) {
+				Button btn = (Button) view;
+				bean.setText(btn.getText().toString());
+				bean.setTextSize(btn.getTextSize() / getResources().getDisplayMetrics().density);
+				bean.setTextColor(btn.getCurrentTextColor());
+				bean.setGravity(btn.getGravity());
+				Typeface typeface = btn.getTypeface();
+				if (typeface != null) {
+					StringBuilder textStyle = new StringBuilder();
+					if (typeface.isBold()) textStyle.append("bold|");
+					if (typeface.isItalic()) textStyle.append("italic|");
+					if (textStyle.length() > 0) {
+						bean.setTextStyle(textStyle.substring(0, textStyle.length() - 1));
+					}
+				}
+			} else if (view instanceof ImageView) {
+				ImageView img = (ImageView) view;
+				bean.setScaleType(img.getScaleType() != null ? img.getScaleType().toString() : "FIT_CENTER");
+				if (img.getDrawable() instanceof BitmapDrawable) {
+					bean.setImagePath(""); // Implement actual image path logic based on your project structure
+				}
+			} else if (view instanceof SeekBar) {
+				SeekBar seekBar = (SeekBar) view;
+				bean.setProgress(seekBar.getProgress());
+				bean.setMaxProgress(seekBar.getMax());
+				bean.setProgressType("HORIZONTAL");
+			} else if (view instanceof ProgressBar) {
+				ProgressBar progressBar = (ProgressBar) view;
+				bean.setProgress(progressBar.getProgress());
+				bean.setMaxProgress(progressBar.getMax());
+				bean.setProgressType("CIRCULAR");
+			} else if (view instanceof CheckBox || view instanceof Switch) {
+				CompoundButton cb = (CompoundButton) view;
+				bean.setChecked(cb.isChecked());
+				bean.setText(cb.getText().toString());
+				bean.setTextSize(cb.getTextSize() / getResources().getDisplayMetrics().density);
+				bean.setTextColor(cb.getCurrentTextColor());
+			} else if (view instanceof EditText) {
+				EditText et = (EditText) view;
+				bean.setText(et.getText().toString());
+				bean.setTextSize(et.getTextSize() / getResources().getDisplayMetrics().density);
+				bean.setTextColor(et.getCurrentTextColor());
+				bean.setHint(et.getHint() != null ? et.getHint().toString() : "");
+				bean.setInputType(et.getInputType());
+				bean.setGravity(et.getGravity());
+				bean.setMaxLines(et.getMaxLines());
+			}
+			
+			// Set common properties
+			bean.setBackgroundColor(Color.TRANSPARENT);
+			bean.setVisibility(view.getVisibility());
+			bean.setAlpha(view.getAlpha());
+			bean.setRotation(view.getRotation());
+			bean.setScaleX(view.getScaleX());
+			bean.setScaleY(view.getScaleY());
+			bean.setPaddingLeft(view.getPaddingLeft());
+			bean.setPaddingTop(view.getPaddingTop());
+			bean.setPaddingRight(view.getPaddingRight());
+			bean.setPaddingBottom(view.getPaddingBottom());
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				bean.setElevation(view.getElevation());
+			}
+			
+			return bean;
+		}
+		
+		// Helper method to remove a ViewBean
+		private void removeViewBean(String widgetId, ViewGroup parent) {
+			ProjectActivityBean activityBean = ProjectActivityBean.loadFromStorage(SC_ID, getCurrentActivityName());
+			if (activityBean != null) {
+				// Remove from widgets list
+				activityBean.getWidgets().removeIf(bean -> bean.getWidgetId().equals(widgetId));
+				
+				// Remove from parent's children list
+				if (parent != null) {
+					String parentId = idManager.getId(parent);
+					if (parentId != null) {
+						for (ProjectActivityBean.ViewBean parentBean : activityBean.getWidgets()) {
+							if (parentBean.getWidgetId().equals(parentId)) {
+								parentBean.getChildren().removeIf(child -> child.getWidgetId().equals(widgetId));
+								break;
+							}
+						}
+					}
+				}
+				
+				activityBean.saveToStorage();
+			}
+		}
+		
+		// Helper method to update ViewBean parent
+		private void updateViewBeanParent(String widgetId, ViewGroup newParent) {
+			ProjectActivityBean activityBean = ProjectActivityBean.loadFromStorage(SC_ID, getCurrentActivityName());
+			if (activityBean != null) {
+				// Find the ViewBean
+				for (ProjectActivityBean.ViewBean bean : activityBean.getWidgets()) {
+					if (bean.getWidgetId().equals(widgetId)) {
+						// Remove from old parent's children list
+						String oldParentId = bean.getParentId();
+						if (oldParentId != null) {
+							for (ProjectActivityBean.ViewBean parentBean : activityBean.getWidgets()) {
+								if (parentBean.getWidgetId().equals(oldParentId)) {
+									parentBean.getChildren().removeIf(child -> child.getWidgetId().equals(widgetId));
+									break;
+								}
+							}
+						}
+						
+						// Update parentId and add to new parent's children
+						String newParentId = idManager.getId(newParent);
+						bean.setParentId(newParentId != null ? newParentId : "");
+						if (newParentId != null) {
+							for (ProjectActivityBean.ViewBean parentBean : activityBean.getWidgets()) {
+								if (parentBean.getWidgetId().equals(newParentId)) {
+									if (parentBean.getChildren() == null) {
+										parentBean.setChildren(new ArrayList<>());
+									}
+									parentBean.getChildren().add(bean);
+									break;
+								}
+							}
+						}
+						
+						break;
+					}
+				}
+				activityBean.saveToStorage();
+			}
 		}
 		
 		public int getIndexForNewChildOfLinearLayout(LinearLayout linear, DragEvent dragEvent) {
@@ -1623,7 +1994,14 @@ public class ViewEditor extends LinearLayout {
 					.gravity = getGravityForNewChildOfFrameLayout((FrameLayout) destination, event);
 					return;
 				}
+				
 				ViewGroupUtils.addView(view, (ViewGroup) destination);
+				// After drop completes, save temp layout globally
+				ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+				String xmlCode = generateCode(rootView);
+				tempLayoutManager.saveTempLayout(xmlCode);
+				
+				
 			} catch (Exception e) {
 				SketchwareUtil.showMessage(getContext(), view.toString() + destination.toString() + e.toString());
 			}
@@ -1644,11 +2022,13 @@ public class ViewEditor extends LinearLayout {
 	public void applyAttribute(View view, Attribute attribute) {
 		// Inside applyAttribute():
 		if (!isUndoRedoInProgress) {
+			String currentActivity = getCurrentActivityName();
 			Attribute oldAttr = (attrSet != null) ? attrSet.getAttribute(attribute.getName()) : null;
-			EditorAction action = new EditorAction(ACTION_UPDATE_ATTR, view, null, -1, oldAttr, attribute);
-			undoStack.push(action);
-			redoStack.clear();
+			EditorAction action = new EditorAction(ACTION_UPDATE_ATTR, view, null, -1,
+			oldAttr, attribute, currentActivity);
+			addAction(action);
 		}
+		
 		final ArrayList<HashMap<String, Object>> listMap = new ArrayList<>();
 		Class cls = view.getClass();
 		Class viewParentClass = View.class.getSuperclass();
@@ -1664,15 +2044,21 @@ public class ViewEditor extends LinearLayout {
 				break;
 			}
 		}
+		
+		// After drop completes, save temp layout globally
+		ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+		String xmlCode = generateCode(rootView);
+		tempLayoutManager.saveTempLayout(xmlCode);
+		
 	}
 	
 	public void applyAttribute(View view, Attribute attribute, HashMap<String, Object> map) {
 		// Inside applyAttribute():
 		if (!isUndoRedoInProgress) {
-			Attribute oldAttr = (attrSet != null) ? attrSet.getAttribute(attribute.getName()) : null;
-			EditorAction action = new EditorAction(ACTION_UPDATE_ATTR, view, null, -1, oldAttr, attribute);
-			undoStack.push(action);
-			redoStack.clear();
+			/*Attribute oldAttr = (attrSet != null) ? attrSet.getAttribute(attribute.getName()) : null;
+EditorAction action = new EditorAction(ACTION_UPDATE_ATTR, view, null, -1, oldAttr, attribute);
+undoStack.push(action);
+redoStack.clear();*/			
 		}
 		final String argument_type = map.get("argument_type").toString();
 		String value = attribute.getValue();
@@ -1703,7 +2089,15 @@ public class ViewEditor extends LinearLayout {
 				}
 				break;
 				case "String":
-				argumentValue = value;
+				// Handle @string/ references for android:text
+				if ("android:text".equals(attribute_name) && value.startsWith("@string/")) {
+					String resourceName = value.substring("@string/".length());
+					String scId = DesignActivity.getScId(); // Get sc_id from DesignActivity
+					String resolvedValue = getStringResourceValue(scId, resourceName);
+					argumentValue = (resolvedValue != null) ? resolvedValue : value; // Fallback to original value if not found
+				} else {
+					argumentValue = value;
+				}
 				break;
 				case "Size":
 				if (value.equals("match_parent")) {
@@ -1798,6 +2192,14 @@ public class ViewEditor extends LinearLayout {
 					view.requestLayout();
 				}
 			}
+			// After drop completes, save temp layout globally
+			ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+			String xmlCode = generateCode(rootView);
+			tempLayoutManager.saveTempLayout(xmlCode);
+			String activityName = getCurrentActivityName();
+			/*  designActivity.complex.setXmlCode(designActivity.currentActivityBean.getLayoutName(), getXMLCode());
+designActivity.generateJavaCode(activityName, designActivity.currentActivityBean.getLayoutName());*/			
+			
 		} catch (Exception e) {
 			showMessage("error while applying attribute \"" + attribute_name + "\"\n" + e.toString());
 		}
@@ -1838,184 +2240,368 @@ public class ViewEditor extends LinearLayout {
 		dialog.show();
 	}
 	
+	// Updated saveLayout method
 	public void saveLayout(String layoutName) {
-        if (SAVE_PATH == null || SAVE_PATH.isEmpty() || layoutName == null || layoutName.trim().isEmpty())
-            return;
-
-        try {
-            String xmlCode = cleanXML(getXMLCode());
-
-            if (!validateXML(xmlCode)) return;
-
-            if (editorLayout.getChildCount() == 0) return;
-
-            View rootView = editorLayout.getChildAt(0);
-            String rawXml = generateCode(rootView);
-
-            String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                    rawXml.substring(0, rawXml.indexOf("\n")) + "\n" +
-                    "xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
-                    rawXml.substring(rawXml.indexOf("\n"));
-
-            HashMap<String, Object> layoutData = new HashMap<>();
-            layoutData.put("name", layoutName.trim());
-            layoutData.put("xml", formattedXml);
-
-            ArrayList<HashMap<String, Object>> layoutList = new ArrayList<>();
-            String layoutFilePath = SAVE_PATH + "/root_layout.json";
-            File file = new File(layoutFilePath);
-
-            // Read existing layouts if file exists
-            if (FileUtil.isExistFile(layoutFilePath)) {
-                String encryptedContent = FileUtil.readFile(layoutFilePath);
-                String decryptedContent = decrypt(encryptedContent);
-                if (decryptedContent != null) {
-                    layoutList = new Gson().fromJson(decryptedContent,
-                            new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-                } else {
-                    SketchwareUtil.showMessage(getContext(), "Failed to decrypt existing layouts");
-                    return;
-                }
-            }
-
-            // Update or add layout
-            layoutList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
-            layoutList.add(layoutData);
-
-            // Encrypt and save
-            String json = new Gson().toJson(layoutList);
-            String encryptedJson = encrypt(json);
-            if (encryptedJson == null) {
-                SketchwareUtil.showMessage(getContext(), "Encryption failed");
-                return;
-            }
-
-            // Ensure directory exists
-            if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-                SketchwareUtil.showMessage(getContext(), "Directory creation failed: " + file.getParent());
-                return;
-            }
-
-            FileUtil.writeFile(layoutFilePath, encryptedJson);
-
-            // SketchwareUtil.showMessage(getContext(), "Layout saved: " + layoutName);
-        } catch (Exception e) {
-            SketchwareUtil.showMessage(getContext(), "Error: " + e.getMessage());
-            Log.e("ViewEditor", "saveLayout() failed", e);
-        }
-    }
-
-    public void loadLayout(String layoutName) {
-        editorLayout.removeAllViews();
-        if (layoutName == null || layoutName.trim().isEmpty()) return;
-
-        try {
-            String layoutFilePath = SAVE_PATH + "/root_layout.json";
-            if (!FileUtil.isExistFile(layoutFilePath)) return;
-
-            // Read and decrypt file
-            String encryptedContent = FileUtil.readFile(layoutFilePath);
-            String decryptedContent = decrypt(encryptedContent);
-            if (decryptedContent == null) {
-                SketchwareUtil.showMessage(getContext(), "Decryption failed");
-                return;
-            }
-
-            ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(decryptedContent,
-                    new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
-
-            HashMap<String, Object> targetLayout = layoutList.stream()
-                    .filter(layout -> layoutName.equals(layout.get("name")))
-                    .findFirst().orElse(null);
-
-            if (targetLayout == null) return;
-
-            // Backup previous state
-            oldIdManager = idManager;
-            oldAttributesValueMap = new HashMap<>(attributesValueMap);
-
-            idManager = new IdManager();
-            attributesValueMap.clear();
-
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            XmlPullParser parser = factory.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(new StringReader((String) targetLayout.get("xml")));
-
-            ArrayList<View> viewStack = new ArrayList<>();
-            viewStack.add(editorLayout);
-
-            for (int eventType = parser.getEventType(); eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    String tag = parser.getName();
-                    View view = createPlaceholderOrStandardView(tag);
-
-                    if (view != null) {
-                        view.setOnClickListener(v -> showAttributesDialog(v));
-                        _rearrangeListener(view);
-                        if (view instanceof ViewGroup) {
-                            view.setOnDragListener(dragListener);
-                            view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
-                        }
-
-                        AttributeSet attrSet = new AttributeSet();
-                        attributesValueMap.put(view, attrSet);
-                        for (int i = 0; i < parser.getAttributeCount(); i++) {
-                            String attrName = parser.getAttributeName(i);
-                            String attrValue = parser.getAttributeValue(i);
-                            if ("android:id".equals(attrName)) {
-                                idManager.addNewId(view, AttributeUtils.getName(attrValue));
-                            }
-                            attrSet.add(new Attribute(attrName, attrValue));
-                        }
-
-                        viewStack.add(view);
-                    }
-
-                } else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
-                    View child = viewStack.remove(viewStack.size() - 1);
-                    ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
-                    parent.addView(child);
-                }
-            }
-
-            for (View v : attributesValueMap.keySet()) {
-                for (Attribute a : attributesValueMap.get(v).getAttributes()) {
-                    applyAttribute(v, a);
-                }
-            }
-
-            // SketchwareUtil.showMessage(getContext(), "Layout loaded: " + layoutName);
-        } catch (Exception e) {
-            restorePreviousStateOnFailure();
-            SketchwareUtil.showMessage(getContext(), "Load error: " + e.getMessage());
-            Log.e("ViewEditor", "loadLayout() failed", e);
-        }
-    }
+		if (SAVE_PATH == null || SAVE_PATH.isEmpty() || layoutName == null || layoutName.trim().isEmpty())
+		return;
+		
+		try {
+			String xmlCode = cleanXML(getXMLCode());
+			
+			if (!validateXML(xmlCode)) return;
+			
+			if (editorLayout.getChildCount() == 0) return;
+			
+			View rootView = editorLayout.getChildAt(0);
+			String rawXml = generateCode(rootView);
+			
+			String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+			rawXml.substring(0, rawXml.indexOf("\n")) + "\n" +
+			"xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
+			rawXml.substring(rawXml.indexOf("\n"));
+			
+			HashMap<String, Object> layoutData = new HashMap<>();
+			layoutData.put("name", layoutName.trim());
+			layoutData.put("xml", formattedXml);
+			
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			File file = new File(layoutFilePath);
+			if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+				SketchwareUtil.showMessage(getContext(), "Directory creation failed: " + file.getParent());
+				return;
+			}
+			
+			ArrayList<HashMap<String, Object>> layoutList = FileUtil.isExistFile(layoutFilePath)
+			? new Gson().fromJson(FileUtil.readFile(layoutFilePath),
+			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType())
+			: new ArrayList<>();
+			
+			layoutList.removeIf(layout -> layoutName.equalsIgnoreCase((String) layout.get("name")));
+			layoutList.add(layoutData);
+			
+			FileUtil.writeFile(layoutFilePath, new Gson().toJson(layoutList));
+			
+			// SketchwareUtil.showMessage(getContext(), "Layout saved: " + layoutName);
+		} catch (Exception e) {
+			SketchwareUtil.showMessage(getContext(), "Error: " + e.getMessage());
+			Log.e("ViewEditor", "saveLayout() failed", e);
+		}
+	}
 	
+	
+	public void loadLayout(String layoutName) {
+		editorLayout.removeAllViews();
+		if (layoutName == null || layoutName.trim().isEmpty()) return;
+		
+		try {
+			
+			String layoutFilePath = SAVE_PATH + "/root_layout.json";
+			if (!FileUtil.isExistFile(layoutFilePath)) return;
+			
+			ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(FileUtil.readFile(layoutFilePath),
+			new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
+			
+			HashMap<String, Object> targetLayout = layoutList.stream()
+			.filter(layout -> layoutName.equals(layout.get("name")))
+			.findFirst().orElse(null);
+			
+			if (targetLayout == null) return;
+			
+			// Backup previous state
+			oldIdManager = idManager;
+			oldAttributesValueMap = new HashMap<>(attributesValueMap);
+			
+			idManager = new IdManager();
+			attributesValueMap.clear();
+			
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+			parser.setInput(new StringReader((String) targetLayout.get("xml")));
+			
+			ArrayList<View> viewStack = new ArrayList<>();
+			viewStack.add(editorLayout);
+			
+			for (int eventType = parser.getEventType(); eventType != XmlPullParser.END_DOCUMENT; eventType = parser.next()) {
+				if (eventType == XmlPullParser.START_TAG) {
+					String tag = parser.getName();
+					View view = createPlaceholderOrStandardView(tag);
+					
+					if (view != null) {
+						view.setOnClickListener(v -> showAttributesDialog(v));
+						_rearrangeListener(view);
+						if (view instanceof ViewGroup) {
+							view.setOnDragListener(dragListener);
+							view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+						}
+						
+						AttributeSet attrSet = new AttributeSet();
+						attributesValueMap.put(view, attrSet);
+						for (int i = 0; i < parser.getAttributeCount(); i++) {
+							String attrName = parser.getAttributeName(i);
+							String attrValue = parser.getAttributeValue(i);
+							if ("android:id".equals(attrName)) {
+								idManager.addNewId(view, AttributeUtils.getName(attrValue));
+							}
+							attrSet.add(new Attribute(attrName, attrValue));
+						}
+						
+						viewStack.add(view);
+					}
+					
+				} else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
+					View child = viewStack.remove(viewStack.size() - 1);
+					ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
+					parent.addView(child);
+				}
+			}
+			
+			for (View v : attributesValueMap.keySet()) {
+				for (Attribute a : attributesValueMap.get(v).getAttributes()) {
+					applyAttribute(v, a);
+				}
+			}
+			
+			// SketchwareUtil.showMessage(getContext(), "Layout loaded: " + layoutName);
+		} catch (Exception e) {
+			restorePreviousStateOnFailure();
+			SketchwareUtil.showMessage(getContext(), "Load error: " + e.getMessage());
+			Log.e("ViewEditor", "loadLayout() failed", e);
+		}
+	}
+	
+	// Helper: Recursive save view to JsonObject (includes all attributes in properties)
+	private JsonObject saveViewRecursive(View view) {
+		JsonObject jsonObject = new JsonObject();
+		
+		// Type with orientation if LinearLayout
+		String type = view.getClass().getSimpleName();
+		if (view instanceof LinearLayout) {
+			type += (((LinearLayout) view).getOrientation() == LinearLayout.HORIZONTAL) ? "(H)" : "(V)";
+		}
+		jsonObject.addProperty("type", type);
+		
+		// ID
+		jsonObject.addProperty("id", idManager.getId(view));
+		
+		// All attributes in properties (as per your request for all attributes)
+		JsonObject properties = new JsonObject();
+		AttributeSet set = attributesValueMap.get(view);
+		if (set != null) {
+			for (Attribute attr : set.getAttributes()) {
+				properties.addProperty(attr.getName(), attr.getValue());
+			}
+		}
+		jsonObject.add("properties", properties);
+		
+		// Common layout params as top-level (matching example structure)
+		ViewGroup.LayoutParams params = view.getLayoutParams();
+		if (params != null) {
+			jsonObject.addProperty("width", params.width);
+			jsonObject.addProperty("height", params.height);
+		}
+		if (params instanceof ViewGroup.MarginLayoutParams) {
+			ViewGroup.MarginLayoutParams mparams = (ViewGroup.MarginLayoutParams) params;
+			jsonObject.addProperty("leftMargin", mparams.leftMargin);
+			jsonObject.addProperty("topMargin", mparams.topMargin);
+			jsonObject.addProperty("rightMargin", mparams.rightMargin);
+			jsonObject.addProperty("bottomMargin", mparams.bottomMargin);
+		}
+		
+		// Additional common attributes (paddings, gravity, etc. for more completeness)
+		if (params instanceof LinearLayout.LayoutParams) {
+			LinearLayout.LayoutParams lparams = (LinearLayout.LayoutParams) params;
+			jsonObject.addProperty("layout_weight", lparams.weight);
+			jsonObject.addProperty("layout_gravity", lparams.gravity);
+		}
+		jsonObject.addProperty("paddingLeft", view.getPaddingLeft());
+		jsonObject.addProperty("paddingTop", view.getPaddingTop());
+		jsonObject.addProperty("paddingRight", view.getPaddingRight());
+		jsonObject.addProperty("paddingBottom", view.getPaddingBottom());
+		jsonObject.addProperty("backgroundColor", (view.getBackground() instanceof ColorDrawable ? ((ColorDrawable) view.getBackground()).getColor() : 0));
+		jsonObject.addProperty("visibility", view.getVisibility());
+		jsonObject.addProperty("alpha", view.getAlpha());
+		jsonObject.addProperty("rotation", view.getRotation());
+		jsonObject.addProperty("scaleX", view.getScaleX());
+		jsonObject.addProperty("scaleY", view.getScaleY());
+		jsonObject.addProperty("elevation", view.getElevation());
+		
+		// Type-specific additional attributes
+		if (view instanceof TextView) {
+			TextView tv = (TextView) view;
+			jsonObject.addProperty("textSize", tv.getTextSize());
+			jsonObject.addProperty("textColor", tv.getCurrentTextColor());
+			jsonObject.addProperty("gravity", tv.getGravity());
+			jsonObject.addProperty("maxLines", tv.getMaxLines());
+		} else if (view instanceof ImageView) {
+			ImageView iv = (ImageView) view;
+			jsonObject.addProperty("scaleType", iv.getScaleType().ordinal());
+		} else if (view instanceof ProgressBar) {
+			ProgressBar pb = (ProgressBar) view;
+			jsonObject.addProperty("progress", pb.getProgress());
+			jsonObject.addProperty("maxProgress", pb.getMax());
+		}
+		
+		// Children for hierarchy
+		if (view instanceof ViewGroup) {
+			JsonArray children = new JsonArray();
+			ViewGroup group = (ViewGroup) view;
+			for (int i = 0; i < group.getChildCount(); i++) {
+				children.add(saveViewRecursive(group.getChildAt(i)));
+			}
+			jsonObject.add("children", children);
+		}
+		
+		return jsonObject;
+	}
+	
+	// Helper: Recursive load view from JsonObject
+	private View loadViewRecursive(Context context, JsonObject jsonObject) {
+		String typeStr = jsonObject.get("type").getAsString();
+		String type = typeStr.replaceAll("\\(H\\)|\\(V\\)", "");
+		View view = null;
+		
+		try {
+			view = ReflectionUtils.createView(context, "android.widget." + type);
+		} catch (Exception e) {
+			view = new View(context);
+		}
+		
+		if (view == null) return null;
+		
+		// Set orientation for LinearLayout
+		if (view instanceof LinearLayout) {
+			if (typeStr.endsWith("(H)")) {
+				((LinearLayout) view).setOrientation(LinearLayout.HORIZONTAL);
+			} else if (typeStr.endsWith("(V)")) {
+				((LinearLayout) view).setOrientation(LinearLayout.VERTICAL);
+			}
+		}
+		
+		// Set ID
+		if (jsonObject.has("id")) {
+			idManager.addNewId(view, jsonObject.get("id").getAsString());
+		}
+		
+		// Apply all attributes from properties
+		JsonObject properties = jsonObject.getAsJsonObject("properties");
+		AttributeSet set = new AttributeSet();
+		if (properties != null) {
+			for (Map.Entry<String, JsonElement> entry : properties.entrySet()) {
+				Attribute attr = new Attribute(entry.getKey(), entry.getValue().getAsString());
+				set.add(attr);
+				applyAttribute(view, attr);
+			}
+		}
+		attributesValueMap.put(view, set);
+		
+		// Set common layout params
+		int width = jsonObject.has("width") ? jsonObject.get("width").getAsInt() : ViewGroup.LayoutParams.WRAP_CONTENT;
+		int height = jsonObject.has("height") ? jsonObject.get("height").getAsInt() : ViewGroup.LayoutParams.WRAP_CONTENT;
+		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(width, height);
+		
+		if (jsonObject.has("leftMargin") || jsonObject.has("topMargin") || jsonObject.has("rightMargin") || jsonObject.has("bottomMargin")) {
+			ViewGroup.MarginLayoutParams mparams = new ViewGroup.MarginLayoutParams(params);
+			if (jsonObject.has("leftMargin")) mparams.leftMargin = jsonObject.get("leftMargin").getAsInt();
+			if (jsonObject.has("topMargin")) mparams.topMargin = jsonObject.get("topMargin").getAsInt();
+			if (jsonObject.has("rightMargin")) mparams.rightMargin = jsonObject.get("rightMargin").getAsInt();
+			if (jsonObject.has("bottomMargin")) mparams.bottomMargin = jsonObject.get("bottomMargin").getAsInt();
+			params = mparams;
+		}
+		
+		if (jsonObject.has("layout_weight") || jsonObject.has("layout_gravity")) {
+			LinearLayout.LayoutParams lparams = new LinearLayout.LayoutParams(params);
+			if (jsonObject.has("layout_weight")) lparams.weight = jsonObject.get("layout_weight").getAsFloat();
+			if (jsonObject.has("layout_gravity")) lparams.gravity = jsonObject.get("layout_gravity").getAsInt();
+			params = lparams;
+		}
+		view.setLayoutParams(params);
+		
+		// --- FIXED PADDING SECTION ---
+		int paddingLeft = view.getPaddingLeft();
+		int paddingTop = view.getPaddingTop();
+		int paddingRight = view.getPaddingRight();
+		int paddingBottom = view.getPaddingBottom();
+		
+		if (jsonObject.has("paddingLeft")) {
+			paddingLeft = jsonObject.get("paddingLeft").getAsInt();
+		}
+		if (jsonObject.has("paddingTop")) {
+			paddingTop = jsonObject.get("paddingTop").getAsInt();
+		}
+		if (jsonObject.has("paddingRight")) {
+			paddingRight = jsonObject.get("paddingRight").getAsInt();
+		}
+		if (jsonObject.has("paddingBottom")) {
+			paddingBottom = jsonObject.get("paddingBottom").getAsInt();
+		}
+		
+		view.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+		
+		// Set additional common attributes
+		if (jsonObject.has("backgroundColor")) view.setBackgroundColor(jsonObject.get("backgroundColor").getAsInt());
+		if (jsonObject.has("visibility")) view.setVisibility(jsonObject.get("visibility").getAsInt());
+		if (jsonObject.has("alpha")) view.setAlpha(jsonObject.get("alpha").getAsFloat());
+		if (jsonObject.has("rotation")) view.setRotation(jsonObject.get("rotation").getAsFloat());
+		if (jsonObject.has("scaleX")) view.setScaleX(jsonObject.get("scaleX").getAsFloat());
+		if (jsonObject.has("scaleY")) view.setScaleY(jsonObject.get("scaleY").getAsFloat());
+		if (jsonObject.has("elevation")) view.setElevation(jsonObject.get("elevation").getAsFloat());
+		
+		// Type-specific
+		if (view instanceof TextView && jsonObject.has("textSize")) {
+			((TextView) view).setTextSize(jsonObject.get("textSize").getAsFloat());
+		}
+		if (view instanceof ImageView && jsonObject.has("scaleType")) {
+			((ImageView) view).setScaleType(ImageView.ScaleType.values()[jsonObject.get("scaleType").getAsInt()]);
+		}
+		if (view instanceof ProgressBar && jsonObject.has("progress")) {
+			((ProgressBar) view).setProgress(jsonObject.get("progress").getAsInt());
+		}
+		
+		// Load children
+		if (jsonObject.has("children") && view instanceof ViewGroup) {
+			JsonArray children = jsonObject.getAsJsonArray("children");
+			ViewGroup group = (ViewGroup) view;
+			for (JsonElement e : children) {
+				View child = loadViewRecursive(context, e.getAsJsonObject());
+				if (child != null) group.addView(child);
+			}
+		}
+		
+		// Setup listeners
+		view.setOnClickListener(v -> showAttributesDialog(v));
+		_rearrangeListener(view);
+		if (view instanceof ViewGroup) {
+			view.setOnDragListener(dragListener);
+			view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+		}
+		
+		return view;
+	}
 	
 	public String getXMLCode() {
-		ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+		StringBuilder sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 		
-		if (rootView == null) {
-			return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-			"<LinearLayout\n" +
-			"    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
-			"    android:layout_width=\"match_parent\"\n" +
-			"    android:layout_height=\"match_parent\"\n" +
-			"    android:orientation=\"vertical\" />";
+		// Default root LinearLayout with white background
+		sb.append("<LinearLayout\n")
+		.append("    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n")
+		.append("    android:layout_width=\"match_parent\"\n")
+		.append("    android:layout_height=\"match_parent\"\n")
+		.append("    android:orientation=\"vertical\"\n")
+		.append("    android:background=\"#FFFFFF\">\n");
+		
+		// Iterate all direct children of editorLayout
+		for (int i = 0; i < editorLayout.getChildCount(); i++) {
+			View child = editorLayout.getChildAt(i);
+			String childXml = generateCode(child);
+			sb.append(indent(childXml, 4)).append("\n");
 		}
 		
-		String xml = generateCode(rootView);
-		if (!xml.contains("xmlns:android")) {
-			int firstLineEnd = xml.indexOf('\n');
-			String tagLine = (firstLineEnd != -1) ? xml.substring(0, firstLineEnd) : xml;
-			String rest = (firstLineEnd != -1) ? xml.substring(firstLineEnd) : "";
-			xml = tagLine + "\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"" + rest;
-		}
-		
-		return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + xml;
+		sb.append("</LinearLayout>");
+		return sb.toString();
 	}
+	
 	
 	public class PlaceholderWidget extends View {
 		private final String placeholderText;
@@ -2064,91 +2650,97 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	public class Listview_widgetsAdapter extends RecyclerView.Adapter<Listview_widgetsAdapter.ViewHolder> {
-		ArrayList<HashMap<String, Object>> _data;
 		
-		public Listview_widgetsAdapter(ArrayList<HashMap<String, Object>> _arr) {
-			_data = _arr;
+		private Context context;
+		private ArrayList<HashMap<String, Object>> data;
+		
+		public Listview_widgetsAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
+			this.context = context;
+			this.data = data;
 		}
 		
 		@NonNull
 		@Override
 		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-			LayoutInflater _inflater = LayoutInflater.from(parent.getContext());
-			View _view = _inflater.inflate(R.layout.views_item, parent, false);
-			return new ViewHolder(_view);
+			View v = LayoutInflater.from(context).inflate(R.layout.list_widget, parent, false);
+			return new ViewHolder(v);
 		}
 		
 		@Override
-		public void onBindViewHolder(@NonNull ViewHolder holder, int _position) {
-			holder.tv_name.setText(_data.get(_position).get("name").toString());
-			holder.img_icon.setVisibility(View.GONE);
+		public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+			HashMap<String, Object> item = data.get(position);
+			
+			int n = holder.lin_main.getId();
+			int n2 = TheBlockLogicsUtil.getDip(context, 18);
+			int n3 = TheBlockLogicsUtil.getDip(context, 18);
+			int n4 = TheBlockLogicsUtil.getDip(context, 0);
+			int n5 = TheBlockLogicsUtil.getDip(context, 2);
+			
+			GradientDrawable gradientDrawable = TheBlockLogicsUtil.getGradient(
+			context, 1, Color.parseColor("#DDDDDD"), -1
+			);
+			gradientDrawable.setCornerRadius((float) n4);
+			
+			holder.lin_main.setElevation(2f);
+			holder.lin_main.setGravity(Gravity.CENTER_VERTICAL);
+			holder.lin_main.setPadding(n5, n5, n5, n5);
+			holder.lin_main.setBackground(gradientDrawable);
+			
+			// 🟢 Apply same padding to children
+			holder.ivIcon.setPadding(n5, n5, n5, n5);
+			//holder.tvName.setPadding(n5, n5, n5, n5);
+			
+			// 🟢 Icon handling
+			if (item.containsKey("icon")) {
+				String iconName = item.get("icon").toString();
+				int resId = context.getResources()
+				.getIdentifier(iconName, "drawable", context.getPackageName());
+				if (resId != 0) {
+					holder.ivIcon.setImageResource(resId);
+					holder.ivIcon.setVisibility(View.VISIBLE);
+				} else {
+					holder.ivIcon.setVisibility(View.GONE);
+				}
+			} else {
+				holder.ivIcon.setVisibility(View.GONE);
+			}
+			
+			// 🟢 Text handling
+			if (item.containsKey("name")) {
+				holder.tvName.setText(item.get("name").toString());
+			} else {
+				holder.tvName.setText("LinearLayout");
+			}
+			holder.tvName.setTextColor(Color.parseColor("#555555"));
+			holder.tvName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+			holder.tvName.setSingleLine();
+			
+			
 			holder.lin_main.setOnLongClickListener(v -> {
-				DragAndDropUtils.startDragAndDrop(v, null, new View.DragShadowBuilder(holder.lin_main), _data.get(_position), 1);
+				DragAndDropUtils.startDragAndDrop(v, null, new View.DragShadowBuilder(holder.lin_main), data.get(position), 1);
 				return true;
 			});
-			/*
-			if (_data.get(_position).get("name").toString().equals("TextView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_text_view);
-			} else if (_data.get(_position).get("name").toString().equals("ImageView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_image_view);
-			} else if (_data.get(_position).get("name").toString().equals("Button")) {
-			holder.img_icon.setImageResource(R.drawable.widget_button);
-			} else if (_data.get(_position).get("name").toString().equals("FrameLayout")) {
-			holder.img_icon.setImageResource(R.drawable.widget_linear_horizontal);
-			} else if (_data.get(_position).get("name").toString().equals("Switch")) {
-			holder.img_icon.setImageResource(R.drawable.widget_switch);
-			} else if (_data.get(_position).get("name").toString().equals("LinearLayout")) {
-			holder.img_icon.setImageResource(R.drawable.widget_linear_horizontal);
-			} else if (_data.get(_position).get("name").toString().equals("CheckBox")) {
-			holder.img_icon.setImageResource(R.drawable.widget_check_box);
-			} else if (_data.get(_position).get("name").toString().equals("RadioButton")) {
-			holder.img_icon.setImageResource(R.drawable.widget_radio_button);
-			} else if (_data.get(_position).get("name").toString().equals("EditText")) {
-			holder.img_icon.setImageResource(R.drawable.widget_edit_text);
-			} else if (_data.get(_position).get("name").toString().equals("SeekBar")) {
-			holder.img_icon.setImageResource(R.drawable.widget_seek_bar);
-			} else if (_data.get(_position).get("name").toString().equals("ProgressBar")) {
-			holder.img_icon.setImageResource(R.drawable.widget_progress_bar);
-			} else if (_data.get(_position).get("name").toString().equals("RatingBar")) {
-			holder.img_icon.setImageResource(R.drawable.star_blank);
-			} else if (_data.get(_position).get("name").toString().equals("SearchView")) {
-			holder.img_icon.setImageResource(R.drawable.search_icon_grey);
-			} else if (_data.get(_position).get("name").toString().equals("ListView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_list_view);
-			} else if (_data.get(_position).get("name").toString().equals("DigitalClock")) {
-			holder.img_icon.setImageResource(R.drawable.widget_timer);
-			} else if (_data.get(_position).get("name").toString().equals("TimePicker")) {
-			holder.img_icon.setImageResource(R.drawable.widget_time_picker_dialog);
-			} else if (_data.get(_position).get("name").toString().equals("HorizontalScrollView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_horizontalscrollview);
-			} else if (_data.get(_position).get("name").toString().equals("ScrollView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_scrollview);
-			} else if (_data.get(_position).get("name").toString().equals("VideoView")) {
-			holder.img_icon.setImageResource(R.drawable.widget_video_view);
-			} else {
-			holder.img_icon.setVisibility(View.GONE);
-			}
-			*/
 		}
-		
 		@Override
 		public int getItemCount() {
-			return _data.size();
+			return data.size();
 		}
 		
 		public class ViewHolder extends RecyclerView.ViewHolder {
 			LinearLayout lin_main;
-			TextView tv_name;
-			ImageView img_icon;
+			TextView tvName;
+			ImageView ivIcon;
 			
 			public ViewHolder(@NonNull View itemView) {
 				super(itemView);
 				lin_main = itemView.findViewById(R.id.lin_main);
-				tv_name = itemView.findViewById(R.id.tv_name);
-				img_icon = itemView.findViewById(R.id.img_icon);
+				tvName = itemView.findViewById(R.id.title);
+				ivIcon = itemView.findViewById(R.id.icon);
 			}
 		}
 	}
+	
+	
 	
 	public /*static*/ void showProperties() {
 		LinearLayoutCompat base = attributesContainer;
@@ -2174,176 +2766,85 @@ public class ViewEditor extends LinearLayout {
 	}
 	
 	public boolean undo() {
-		if (undoStack.isEmpty()) {
-			Log.d("ViewEditor", "Undo stack is empty");
-			return false;
-		}
+		String activityName = getCurrentActivityName();
+		if (!undoStacks.containsKey(activityName) || undoStacks.get(activityName).isEmpty())
+		return false;
+		
+		EditorAction action = undoStacks.get(activityName).pop();
+		redoStacks.get(activityName).push(action);
 		
 		isUndoRedoInProgress = true;
-		EditorAction action = undoStack.pop();
-		Log.d("ViewEditor", "Undoing action: " + action.actionType + ", View ID: " + action.viewId);
-		
 		try {
 			switch (action.actionType) {
 				case ACTION_ADD_VIEW:
-				// Undo = Remove the view
-				if (action.view != null && action.view.getParent() != null) {
-					ViewGroup parent = (ViewGroup) action.view.getParent();
-					int index = parent.indexOfChild(action.view);
-					parent.removeView(action.view);
+				if (action.parent != null && action.view != null) {
+					action.parent.removeView(action.view);
 					idManager.remove(action.view);
 					attributesValueMap.remove(action.view);
-					redoStack.push(new EditorAction(ACTION_REMOVE_VIEW, action.view, parent, index, null, null));
-					Log.d("ViewEditor", "Undid ACTION_ADD_VIEW for view: " + action.viewId);
-				} else {
-					Log.e("ViewEditor", "View or parent is null for ACTION_ADD_VIEW");
-					return false;
 				}
 				break;
 				
 				case ACTION_REMOVE_VIEW:
-				// Undo = Re-add the view
 				if (action.parent != null && action.view != null) {
-					if (action.index >= 0 && action.index <= action.parent.getChildCount()) {
-						action.parent.addView(action.view, action.index);
-					} else {
-						action.parent.addView(action.view);
-						action.index = action.parent.getChildCount() - 1; // Update index
-					}
+					action.parent.addView(action.view, action.index);
 					idManager.addNewId(action.view, action.viewId);
-					// Reattach listeners
-					action.view.setOnClickListener(v -> showAttributesDialog(v));
-					_rearrangeListener(action.view);
-					if (action.view instanceof ViewGroup) {
-						action.view.setOnDragListener(dragListener);
+					if (action.oldAttr != null) {
+						applyAttribute(action.view, action.oldAttr);
 					}
-					redoStack.push(new EditorAction(ACTION_ADD_VIEW, action.view, action.parent, action.index, null, null));
-					Log.d("ViewEditor", "Undid ACTION_REMOVE_VIEW for view: " + action.viewId);
-				} else {
-					Log.e("ViewEditor", "Invalid parent or view for ACTION_REMOVE_VIEW");
-					return false;
 				}
 				break;
 				
 				case ACTION_UPDATE_ATTR:
-				// Undo = Revert to old attribute
 				if (action.view != null && action.oldAttr != null) {
-					AttributeSet attrSet = attributesValueMap.get(action.view);
-					if (attrSet == null) {
-						attrSet = new AttributeSet();
-						attributesValueMap.put(action.view, attrSet);
-					}
-					attrSet.add(action.oldAttr);
 					applyAttribute(action.view, action.oldAttr);
-					redoStack.push(new EditorAction(ACTION_UPDATE_ATTR, action.view, null, -1, action.newAttr, action.oldAttr));
-					Log.d("ViewEditor", "Undid ACTION_UPDATE_ATTR for view: " + action.viewId);
-				} else {
-					Log.e("ViewEditor", "Invalid view or oldAttr for ACTION_UPDATE_ATTR");
-					return false;
 				}
 				break;
-				
-				default:
-				Log.e("ViewEditor", "Unknown action type: " + action.actionType);
-				return false;
 			}
 		} catch (Exception e) {
-			Log.e("ViewEditor", "Undo failed: " + e.getMessage(), e);
-			SketchwareUtil.showMessage(getContext(), "Undo failed: " + e.getMessage());
-			return false;
+			SketchwareUtil.showMessage(getContext(), "Undo error: " + e.toString());
 		} finally {
 			isUndoRedoInProgress = false;
 		}
-		
 		return true;
 	}
 	
 	public boolean redo() {
-		if (redoStack.isEmpty()) {
-			Log.d("ViewEditor", "Redo stack is empty");
-			return false;
-		}
+		String activityName = getCurrentActivityName();
+		if (!redoStacks.containsKey(activityName) || redoStacks.get(activityName).isEmpty())
+		return false;
+		
+		EditorAction action = redoStacks.get(activityName).pop();
+		undoStacks.get(activityName).push(action);
 		
 		isUndoRedoInProgress = true;
-		EditorAction action = redoStack.pop();
-		Log.d("ViewEditor", "Redoing action: " + action.actionType + ", View ID: " + action.viewId);
-		
 		try {
 			switch (action.actionType) {
 				case ACTION_ADD_VIEW:
-				// Redo = Add the view again
 				if (action.parent != null && action.view != null) {
-					// Ensure view is not already attached
-					if (action.view.getParent() != null) {
-						((ViewGroup) action.view.getParent()).removeView(action.view);
-					}
-					if (action.index >= 0 && action.index <= action.parent.getChildCount()) {
-						action.parent.addView(action.view, action.index);
-					} else {
-						action.parent.addView(action.view);
-						action.index = action.parent.getChildCount() - 1; // Update index
-					}
+					action.parent.addView(action.view, action.index);
 					idManager.addNewId(action.view, action.viewId);
-					// Reattach listeners
-					action.view.setOnClickListener(v -> showAttributesDialog(v));
-					_rearrangeListener(action.view);
-					if (action.view instanceof ViewGroup) {
-						action.view.setOnDragListener(dragListener);
-					}
-					undoStack.push(new EditorAction(ACTION_REMOVE_VIEW, action.view, action.parent, action.index, null, null));
-					Log.d("ViewEditor", "Redid ACTION_ADD_VIEW for view: " + action.viewId);
-				} else {
-					Log.e("ViewEditor", "Invalid parent or view for ACTION_ADD_VIEW");
-					return false;
 				}
 				break;
 				
 				case ACTION_REMOVE_VIEW:
-				// Redo = Delete the view again
-				if (action.view != null && action.view.getParent() != null) {
-					ViewGroup parent = (ViewGroup) action.view.getParent();
-					int index = parent.indexOfChild(action.view);
-					parent.removeView(action.view);
+				if (action.parent != null && action.view != null) {
+					action.parent.removeView(action.view);
 					idManager.remove(action.view);
 					attributesValueMap.remove(action.view);
-					undoStack.push(new EditorAction(ACTION_ADD_VIEW, action.view, parent, index, null, null));
-					Log.d("ViewEditor", "Redid ACTION_REMOVE_VIEW for view: " + action.viewId);
-				} else {
-					Log.e("ViewEditor", "View or parent is null for ACTION_REMOVE_VIEW");
-					return false;
 				}
 				break;
 				
 				case ACTION_UPDATE_ATTR:
-				// Redo = Reapply the new attribute
 				if (action.view != null && action.newAttr != null) {
-					AttributeSet attrSet = attributesValueMap.get(action.view);
-					if (attrSet == null) {
-						attrSet = new AttributeSet();
-						attributesValueMap.put(action.view, attrSet);
-					}
-					attrSet.add(action.newAttr);
 					applyAttribute(action.view, action.newAttr);
-					undoStack.push(new EditorAction(ACTION_UPDATE_ATTR, action.view, null, -1, action.oldAttr, action.newAttr));
-					Log.d("ViewEditor", "Redid ACTION_UPDATE_ATTR for view: " + action.viewId + ", attr: " + action.newAttr.getName());
-				} else {
-					Log.e("ViewEditor", "Invalid view or newAttr for ACTION_UPDATE_ATTR");
-					return false;
 				}
 				break;
-				
-				default:
-				Log.e("ViewEditor", "Unknown action type: " + action.actionType);
-				return false;
 			}
 		} catch (Exception e) {
-			Log.e("ViewEditor", "Redo failed: " + e.getMessage(), e);
-			SketchwareUtil.showMessage(getContext(), "Redo failed: " + e.getMessage());
-			return false;
+			SketchwareUtil.showMessage(getContext(), "Redo error: " + e.toString());
 		} finally {
 			isUndoRedoInProgress = false;
 		}
-		
 		return true;
 	}
 	
@@ -2409,6 +2910,19 @@ public class ViewEditor extends LinearLayout {
 		}
 	}
 	
+	private void setupImportedView(View view) {
+		view.setOnClickListener(v -> showAttributesDialog(v));
+		_rearrangeListener(view);
+		
+		if (view instanceof ViewGroup) {
+			((ViewGroup) view).setOnDragListener(dragListener);
+			((ViewGroup) view).setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+		}
+		
+		view.setMinimumWidth((int) SketchwareUtil.getDip(getContext(), 50));
+		view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+	}
+	
 	
 	private void restorePreviousStateOnFailure() {
 		idManager = oldIdManager;
@@ -2418,37 +2932,356 @@ public class ViewEditor extends LinearLayout {
 			if (v.getParent() == null) editorLayout.addView(v);
 		}
 	}
-    
-    private String encrypt(String data) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-            byte[] encrypted = cipher.doFinal(data.getBytes("UTF-8"));
-            return Base64.encodeToString(encrypted, Base64.DEFAULT);
-        } catch (Exception e) {
-            Log.e("ViewEditor", "Encryption failed: " + e.getMessage(), e);
-            return null;
-        }
-    }
-
-    // Decrypt data using AES
-    private String decrypt(String encryptedData) {
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
-            IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
-            Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
-            cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            byte[] decoded = Base64.decode(encryptedData, Base64.DEFAULT);
-            byte[] decrypted = cipher.doFinal(decoded);
-            return new String(decrypted, "UTF-8");
-        } catch (Exception e) {
-            Log.e("ViewEditor", "Decryption failed: " + e.getMessage(), e);
-            return null;
-        }
-    }
 	
+	// Deterministic runtime key generation
+	private static SecretKeySpec getKey() {
+		byte[] keyBytes = new byte[KEY_PARTS.length];
+		for (int i = 0; i < KEY_PARTS.length; i++) {
+			keyBytes[i] = (byte) ((KEY_PARTS[i] ^ 0x55) + 3); // XOR + shift obfuscation
+		}
+		return new SecretKeySpec(keyBytes, "AES");
+	}
+	
+	// Deterministic runtime IV generation
+	private static IvParameterSpec getIV() {
+		byte[] ivBytes = new byte[IV_PARTS.length];
+		for (int i = 0; i < IV_PARTS.length; i++) {
+			ivBytes[i] = (byte) ((IV_PARTS[i] ^ 0x55) + 3); // XOR + shift obfuscation
+		}
+		return new IvParameterSpec(ivBytes);
+	}
+	
+	// Encrypt data
+	private String encrypt(String data) {
+		try {
+			SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
+			IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
+			Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+			cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+			byte[] encrypted = cipher.doFinal(data.getBytes("UTF-8"));
+			return Base64.encodeToString(encrypted, Base64.DEFAULT);
+		} catch (Exception e) {
+			Log.e("ViewEditor", "Encryption failed: " + e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	// Decrypt data
+	private String decrypt(String encryptedData) {
+		try {
+			SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
+			IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
+			Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+			cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+			byte[] decoded = Base64.decode(encryptedData, Base64.DEFAULT);
+			byte[] decrypted = cipher.doFinal(decoded);
+			return new String(decrypted, "UTF-8");
+		} catch (Exception e) {
+			Log.e("ViewEditor", "Decryption failed: " + e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	
+	private String getStringResourceValue(String scId, String resourceName) {
+		String filePath = "/storage/emulated/0/.blacklogics/data/" + scId + "/files/resource/values/strings.xml";
+		File file = new File(filePath);
+		
+		if (!file.exists()) {
+			Log.e("ViewEditor", "strings.xml not found at: " + filePath);
+			return null;
+		}
+		
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setInput(new FileInputStream(file), "UTF-8");
+			
+			String currentName = null;
+			StringBuilder currentValue = new StringBuilder();
+			int eventType = parser.getEventType();
+			
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_TAG && "string".equals(parser.getName())) {
+					currentName = parser.getAttributeValue(null, "name");
+				} else if (eventType == XmlPullParser.TEXT && currentName != null) {
+					currentValue.append(parser.getText());
+				} else if (eventType == XmlPullParser.END_TAG && "string".equals(parser.getName())) {
+					if (currentName != null && currentName.equals(resourceName)) {
+						return currentValue.toString();
+					}
+					currentName = null;
+					currentValue.setLength(0);
+				}
+				eventType = parser.next();
+			}
+		} catch (XmlPullParserException | IOException e) {
+			Log.e("ViewEditor", "Error parsing strings.xml: " + e.getMessage(), e);
+		}
+		
+		return null;
+	}
+	
+	private String getCurrentActivityName() {
+		return (designActivity.activityBean != null)
+		? designActivity.activityBean.getActivityName()
+		: "MainActivity";
+	}
+	
+	private void addAction(EditorAction action) {
+		String activityName = action.activityName;
+		if (!undoStacks.containsKey(activityName)) {
+			undoStacks.put(activityName, new Stack<>());
+			redoStacks.put(activityName, new Stack<>());
+		}
+		undoStacks.get(activityName).push(action);
+		redoStacks.get(activityName).clear(); // Clear redo after new action
+	}
+	
+	public static void saveWidgetInfo(String activityName, String widgetType, String widgetId) {
+		try {
+			String projectPath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + SC_ID;
+			String widgetPath = projectPath + "/widget_info/project_widgets.json";
+			FileUtil.makeDir(projectPath + "/widget_info/");
+			
+			// Read existing widget map
+			Map<String, Map<String, List<String>>> widgetMap = new HashMap<>();
+			if (FileUtil.isExistFile(widgetPath)) {
+				String encodedJson = FileUtil.readFile(widgetPath);
+				String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
+				Type mapType = new TypeToken<Map<String, Map<String, List<String>>>>() {}.getType();
+				widgetMap = new Gson().fromJson(decodedJson, mapType);
+			}
+			
+			// Get activity widget list
+			Map<String, List<String>> activityWidgets = widgetMap.getOrDefault(activityName, new HashMap<>());
+			List<String> widgetIds = activityWidgets.getOrDefault(widgetType, new ArrayList<>());
+			
+			// Avoid duplicate IDs
+			if (!widgetIds.contains(widgetId)) {
+				widgetIds.add(widgetId);
+			}
+			
+			activityWidgets.put(widgetType, widgetIds);
+			widgetMap.put(activityName, activityWidgets);
+			
+			// Save updated map
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String prettyJson = gson.toJson(widgetMap);
+			String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
+			FileUtil.writeFile(widgetPath, encodedJson);
+			
+			Log.d("ViewEditor", "Saved widget: " + activityName + " -> " + widgetType + " -> " + widgetIds);
+			
+		} catch (Exception e) {
+			Log.e("ViewEditor", "Error saving widget info: " + e.getMessage());
+		}
+	}
+	
+	
+	private void removeWidgetInfo(String activityName, String widgetType, String widgetId) {
+		try {
+			String projectPath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + SC_ID;
+			String widgetPath = projectPath + "/widget_info/project_widgets.json";
+			
+			// Load existing widget map
+			Map<String, Map<String, List<String>>> widgetMap = new HashMap<>();
+			if (FileUtil.isExistFile(widgetPath)) {
+				String encodedJson = FileUtil.readFile(widgetPath);
+				String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
+				Type mapType = new TypeToken<Map<String, Map<String, List<String>>>>() {}.getType();
+				widgetMap = new Gson().fromJson(decodedJson, mapType);
+			}
+			
+			Map<String, List<String>> activityWidgets = widgetMap.get(activityName);
+			if (activityWidgets != null) {
+				List<String> widgetIds = activityWidgets.get(widgetType);
+				if (widgetIds != null) {
+					widgetIds.remove(widgetId); // Remove specific widgetId
+					
+					// Remove type if empty
+					if (widgetIds.isEmpty()) {
+						activityWidgets.remove(widgetType);
+					}
+					
+					// Remove activity if empty
+					if (activityWidgets.isEmpty()) {
+						widgetMap.remove(activityName);
+					}
+				}
+			}
+			
+			// Save updated map
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String prettyJson = gson.toJson(widgetMap);
+			String encodedJson = Base64.encodeToString(prettyJson.getBytes(), Base64.DEFAULT);
+			FileUtil.writeFile(widgetPath, encodedJson);
+			
+			Log.d("ViewEditor", "Removed widget info for ID: " + widgetId + " in activity: " + activityName);
+			
+		} catch (Exception e) {
+			Log.e("ViewEditor", "Error removing widget info for " + widgetId, e);
+		}
+	}
+	
+	
+	private String getWidgetTypeName(View view) {
+		String className = view.getClass().getSimpleName();
+		// Convert WidgetTextView -> TextView, WidgetButton -> Button
+		if (className.startsWith("Widget")) {
+			return className.substring(6);  // Remove "Widget" prefix
+		}
+		return className;
+	}
+	
+	public static Map<String, String> getWidgetInfoForActivity(String activityName) {
+		try {
+			String projectPath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + 
+			SC_ID;
+			String widgetPath = projectPath + "/widget_info/project_widgets.json";
+			if (!FileUtil.isExistFile(widgetPath)) return new HashMap<>();
+			
+			String encodedJson = FileUtil.readFile(widgetPath);
+			String decodedJson = new String(Base64.decode(encodedJson, Base64.DEFAULT));
+			Type mapType = new TypeToken<Map<String, Map<String, String>>>() {}.getType();
+			Map<String, Map<String, String>> widgetMap = new Gson().fromJson(decodedJson, mapType);
+			
+			return widgetMap.getOrDefault(activityName, new HashMap<>());
+			
+		} catch (Exception e) {
+			Log.e("ViewEditor", "Error loading widget info: " + e.getMessage());
+			return new HashMap<>();
+		}
+	}
+	
+	private void saveAndGenerateCode(View newView) {
+		String activityName = getCurrentActivityName();
+		String widgetType = getWidgetTypeName(newView);
+		String widgetId = idManager.getId(newView);
+		
+		if (widgetId != null) {
+			ProjectActivityBean.ViewBean bean = new ProjectActivityBean.ViewBean(widgetType, widgetId);
+			bean.setScId(SC_ID);
+			bean.setActivityName(activityName);
+			
+			// Set proper dimensions
+			ViewGroup.LayoutParams params = newView.getLayoutParams();
+			if (params != null) {
+				bean.setWidth(params.width);
+				bean.setHeight(params.height);
+			}
+			
+			// Set margins
+			if (params instanceof ViewGroup.MarginLayoutParams) {
+				ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+				bean.setMarginLeft(marginParams.leftMargin);
+				bean.setMarginTop(marginParams.topMargin);
+				bean.setMarginRight(marginParams.rightMargin);
+				bean.setMarginBottom(marginParams.bottomMargin);
+			}
+			
+			// Set paddings
+			bean.setPaddingLeft(newView.getPaddingLeft());
+			bean.setPaddingTop(newView.getPaddingTop());
+			bean.setPaddingRight(newView.getPaddingRight());
+			bean.setPaddingBottom(newView.getPaddingBottom());
+			
+			// Set common properties
+			bean.setBackgroundColor(newView.getBackground() instanceof ColorDrawable ? ((ColorDrawable) newView.getBackground()).getColor() : Color.TRANSPARENT);
+			bean.setVisibility(newView.getVisibility());
+			bean.setAlpha(newView.getAlpha());
+			bean.setRotation(newView.getRotation());
+			bean.setScaleX(newView.getScaleX());
+			bean.setScaleY(newView.getScaleY());
+			bean.setElevation(newView.getElevation());
+			
+			// Set type-specific properties
+			if (newView instanceof TextView) {
+				TextView tv = (TextView) newView;
+				bean.setText(tv.getText().toString());
+				bean.setTextSize(tv.getTextSize() / getResources().getDisplayMetrics().density);
+				bean.setTextColor(tv.getCurrentTextColor());
+				bean.setGravity(tv.getGravity());
+				bean.setTextAlignment(tv.getTextAlignment());
+				bean.setTextStyle(tv.getTypeface() != null ? (tv.getTypeface().isBold() ? "bold" : (tv.getTypeface().isItalic() ? "italic" : "")) : "");
+				bean.setFontFamily(tv.getTypeface() != null ? tv.getTypeface().toString() : "");
+				bean.setMaxLines(tv.getMaxLines());
+				bean.setLineSpacingMultiplier(tv.getLineSpacingMultiplier());
+				bean.setLineSpacingExtra(tv.getLineSpacingExtra());
+				bean.setSingleLine(tv.isSingleLine());
+				
+				if (newView instanceof EditText) {
+					EditText et = (EditText) newView;
+					bean.setHint(et.getHint() != null ? et.getHint().toString() : "");
+					bean.setInputType(et.getInputType());
+				} else if (newView instanceof Button) {
+					// Button-specific if needed
+				} else if (newView instanceof CheckBox || newView instanceof Switch) {
+					CompoundButton cb = (CompoundButton) newView;
+					bean.setChecked(cb.isChecked());
+				}
+			} else if (newView instanceof ImageView) {
+				ImageView iv = (ImageView) newView;
+				bean.setScaleType(iv.getScaleType().toString());
+				bean.setImagePath(""); // Update if image path is available
+			} else if (newView instanceof ProgressBar) {
+				ProgressBar pb = (ProgressBar) newView;
+				bean.setProgress(pb.getProgress());
+				bean.setMaxProgress(pb.getMax());
+				bean.setProgressType(pb.isIndeterminate() ? "CIRCULAR" : "HORIZONTAL");
+			} else if (newView instanceof SeekBar) {
+				SeekBar sb = (SeekBar) newView;
+				bean.setProgress(sb.getProgress());
+				bean.setMaxProgress(sb.getMax());
+			} else if (newView instanceof ViewGroup) {
+				bean.setChildren(new ArrayList<>());
+			} else {
+				bean.setText(widgetType);
+			}
+			
+			// Save to JSON storage
+			boolean saved = bean.saveToStorage();
+			if (saved) {
+				Log.d("ViewEditor", "Widget saved: " + widgetType + " (" + widgetId + ")");
+			} else {
+				Log.e("ViewEditor", "Failed to save widget: " + widgetId);
+			}
+		}
+		
+		// Generate XML using XmlLayoutGenerator
+		XmlLayoutGenerator xmlGenerator = new XmlLayoutGenerator();
+		String formattedXml = xmlGenerator.generate(designActivity.currentActivityBean);
+		
+		if (formattedXml.isEmpty()) {
+			//	SketchwareUtil.showMessage(getContext(), "Failed to generate XML layout");
+			return;
+		}
+		
+		// Save XML and generate Java code
+		if (designActivity != null && designActivity.complex != null) {
+			String layoutName = (designActivity.currentActivityBean != null)
+			? designActivity.currentActivityBean.getLayoutName()
+			: activityName;
+			designActivity.complex.setXmlCode(layoutName, formattedXml);
+			designActivity.generateJavaCode(activityName, layoutName);
+		} else {
+			Log.w("ViewEditor", "DesignActivity or complex is null, falling back to file-based storage");
+			//	String projectPath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + SC_ID + "/files/";
+			//	FileUtil.writeFile(projectPath + activityName + ".xml", formattedXml);
+		}
+		
+		// Push action to undo stack
+		EditorAction action = new EditorAction(
+		ACTION_ADD_VIEW,
+		newView,
+		(ViewGroup) newView.getParent(),
+		((ViewGroup) newView.getParent()).indexOfChild(newView),
+		null,
+		null,
+		activityName
+		);
+		addAction(action);
+	}
 	
 	@Deprecated
 	public void showMessage(String _s) {
@@ -2499,5 +3332,451 @@ public class ViewEditor extends LinearLayout {
 	@Deprecated
 	public int getDisplayHeightPixels() {
 		return getResources().getDisplayMetrics().heightPixels;
+	}
+	
+	/**
+* Inner class for managing temporary layouts with full ViewEditor access
+*/	
+	public static class TempLayoutManager {
+		
+		// Direct reference to parent ViewEditor
+		private final ViewEditor editor;
+		
+		// Constants
+		private static final String TEMP_DIR = "/.blacklogic/.temp_layouts/";
+		private static final String AES_KEY = "NexusTeamSmartIndia2025LayoutKey"; // Replace with secure key management
+		private static final String AES_IV = "1234567890abcdef"; // 16-byte IV, replace with secure IV
+		private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
+		private static final int[] KEY_PARTS = {78,101,120,117,115,84,101,97,109,83,109,97,114,116,73,110,100,105,97,50,48,50,53,76,97,121,111,117,116};
+		private static final int[] IV_PARTS  = {49,50,51,52,53,54,55,56,57,48,97,98,99,100,101,102};
+		
+		public TempLayoutManager(ViewEditor editor) {
+			this.editor = editor;
+		}
+		
+		/** ---------------- AES ENCRYPTION/DECRYPTION ---------------- **/
+		
+		private SecretKeySpec getKey() {
+			byte[] keyBytes = new byte[KEY_PARTS.length];
+			for (int i = 0; i < KEY_PARTS.length; i++) {
+				keyBytes[i] = (byte) ((KEY_PARTS[i] ^ 0x55) + 3);
+			}
+			return new SecretKeySpec(keyBytes, "AES");
+		}
+		
+		private IvParameterSpec getIV() {
+			byte[] ivBytes = new byte[IV_PARTS.length];
+			for (int i = 0; i < IV_PARTS.length; i++) {
+				ivBytes[i] = (byte) ((IV_PARTS[i] ^ 0x55) + 3);
+			}
+			return new IvParameterSpec(ivBytes);
+		}
+		
+		// Encrypt data
+		private String encrypt(String data) {
+			try {
+				SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
+				IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
+				Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+				cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+				byte[] encrypted = cipher.doFinal(data.getBytes("UTF-8"));
+				return Base64.encodeToString(encrypted, Base64.DEFAULT);
+			} catch (Exception e) {
+				Log.e("ViewEditor", "Encryption failed: " + e.getMessage(), e);
+				return null;
+			}
+		}
+		
+		// Decrypt data
+		private String decrypt(String encryptedData) {
+			try {
+				SecretKeySpec keySpec = new SecretKeySpec(AES_KEY.getBytes("UTF-8"), "AES");
+				IvParameterSpec ivSpec = new IvParameterSpec(AES_IV.getBytes("UTF-8"));
+				Cipher cipher = Cipher.getInstance(AES_ALGORITHM);
+				cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+				byte[] decoded = Base64.decode(encryptedData, Base64.DEFAULT);
+				byte[] decrypted = cipher.doFinal(decoded);
+				return new String(decrypted, "UTF-8");
+			} catch (Exception e) {
+				Log.e("ViewEditor", "Decryption failed: " + e.getMessage(), e);
+				return null;
+			}
+		}
+		
+		
+		/** ---------------- FILE OPERATIONS ---------------- **/
+		
+		private String getTempFilePath(String activityName) {
+			return FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR + "temp_" + activityName + ".json";
+		}
+		
+		private void ensureTempDirExists() {
+			FileUtil.makeDir(FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR);
+		}
+		
+		/** ---------------- SAVE TEMP LAYOUT ---------------- **/
+		
+		public void saveTempLayout(String activityName) {
+			if (activityName == null || activityName.trim().isEmpty()) {
+				activityName = editor.getCurrentActivityName();
+			}
+			
+			try {
+				ensureTempDirExists();
+				
+				if (editor.editorLayout.getChildCount() == 0) {
+					Log.w("TempLayoutManager", "No views to save as temp layout");
+					return;
+				}
+				
+				// Use ViewEditor's existing generateCode method
+				View rootView = editor.editorLayout.getChildAt(0);
+				String xmlCode = editor.generateCode(rootView);
+				
+				// Format XML properly
+				String formattedXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+				xmlCode.substring(0, xmlCode.indexOf("\n")) + "\n" +
+				"xmlns:android=\"http://schemas.android.com/apk/res/android\"" +
+				xmlCode.substring(xmlCode.indexOf("\n"));
+				
+				String encrypted = encrypt(formattedXml);
+				if (encrypted != null) {
+					FileUtil.writeFile(getTempFilePath(activityName), encrypted);
+					Log.d("TempLayoutManager", "Temp layout saved for: " + activityName);
+				} else {
+					SketchwareUtil.showMessage(editor.getContext(), "Failed to encrypt temp layout");
+				}
+				
+			} catch (Exception e) {
+				Log.e("TempLayoutManager", "saveTempLayout failed for " + activityName, e);
+				SketchwareUtil.showMessage(editor.getContext(), "Temp save error: " + e.getMessage());
+			}
+		}
+		
+		/** ---------------- LOAD XML INTO EDITOR (WITH FULL ACCESS) ---------------- **/
+		
+		/**
+* Loads XML into editor using ViewEditor's existing infrastructure
+*/		
+		public void loadXmlIntoEditor(String xmlCode) {
+			try {
+				// Backup current state using ViewEditor's existing backup mechanism
+				editor.oldIdManager = new IdManager();
+				editor.oldAttributesValueMap = new HashMap<>(editor.attributesValueMap);
+				
+				// Clear current layout
+				editor.editorLayout.removeAllViews();
+				editor.idManager = new IdManager();
+				editor.attributesValueMap.clear();
+				
+				XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+				XmlPullParser parser = factory.newPullParser();
+				parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+				parser.setInput(new StringReader(xmlCode));
+				
+				ArrayList<View> viewStack = new ArrayList<>();
+				viewStack.add(editor.editorLayout);
+				
+				// Parse XML using ViewEditor's existing parsing logic
+				int eventType = parser.getEventType();
+				while (eventType != XmlPullParser.END_DOCUMENT) {
+					switch (eventType) {
+						case XmlPullParser.START_TAG:
+						handleXmlStartTag(parser, viewStack);
+						break;
+						
+						case XmlPullParser.END_TAG:
+						handleXmlEndTag(viewStack);
+						break;
+					}
+					eventType = parser.next();
+				}
+				
+				// Apply attributes using ViewEditor's existing method
+				applyAllAttributes();
+				
+				Log.d("TempLayoutManager", "XML loaded successfully with " + editor.attributesValueMap.size() + " views");
+				
+			} catch (Exception e) {
+				Log.e("TempLayoutManager", "loadXmlIntoEditor failed", e);
+				editor.restorePreviousStateOnFailure();
+				SketchwareUtil.showMessage(editor.getContext(), "Failed to load layout: " + e.getMessage());
+			}
+		}
+		
+		/**
+* Handles START_TAG using ViewEditor's infrastructure
+*/		
+		private void handleXmlStartTag(XmlPullParser parser, ArrayList<View> viewStack) 
+		throws XmlPullParserException {
+			
+			String tagName = parser.getName();
+			if (tagName == null || tagName.trim().isEmpty()) return;
+			
+			// Use ViewEditor's existing view creation method
+			View view = editor.createPlaceholderOrStandardView(tagName);
+			if (view == null) {
+				Log.w("TempLayoutManager", "Cannot create view for tag: " + tagName);
+				// Fallback to generic view
+				view = new View(editor.getContext());
+			}
+			
+			// Setup view using ViewEditor's existing method
+			editor.setupImportedView(view);
+			
+			// Create AttributeSet using ViewEditor's existing logic
+			AttributeSet attributeSet = new AttributeSet();
+			int attributeCount = parser.getAttributeCount();
+			
+			for (int i = 0; i < attributeCount; i++) {
+				String attributeName = parser.getAttributeName(i);
+				String attributeValue = parser.getAttributeValue(i);
+				
+				// Skip namespace declarations
+				if (attributeName.startsWith("xmlns")) continue;
+				
+				// Handle ID using ViewEditor's IdManager
+				if ("android:id".equals(attributeName)) {
+					String idName = AttributeUtils.getName(attributeValue);
+					if (idName != null && !idName.trim().isEmpty()) {
+						editor.idManager.addNewId(view, idName);
+					}
+				}
+				
+				// Add to AttributeSet
+				Attribute attr = new Attribute(attributeName, attributeValue);
+				attributeSet.add(attr);
+			}
+			
+			// Store in ViewEditor's attribute map
+			editor.attributesValueMap.put(view, attributeSet);
+			viewStack.add(view);
+			
+			Log.v("TempLayoutManager", "Created view: " + tagName + " with ID: " + editor.idManager.getId(view));
+		}
+		
+		/**
+* Handles END_TAG - builds hierarchy
+*/		
+		private void handleXmlEndTag(ArrayList<View> viewStack) {
+			if (viewStack.size() > 1) {
+				View child = viewStack.remove(viewStack.size() - 1);
+				ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
+				parent.addView(child);
+			}
+		}
+		
+		/**
+* Applies all attributes using ViewEditor's existing applyAttribute method
+*/		
+		private void applyAllAttributes() {
+			for (Map.Entry<View, AttributeSet> entry : editor.attributesValueMap.entrySet()) {
+				View view = entry.getKey();
+				AttributeSet attributeSet = entry.getValue();
+				
+				if (attributeSet == null) continue;
+				
+				for (Attribute attr : attributeSet.getAttributes()) {
+					try {
+						// Use ViewEditor's existing applyAttribute method
+						editor.applyAttribute(view, attr);
+					} catch (Exception e) {
+						Log.w("TempLayoutManager", "Failed to apply attribute: " + attr.getName(), e);
+					}
+				}
+			}
+			
+			Log.d("TempLayoutManager", "Applied " + editor.attributesValueMap.size() + " view attributes");
+		}
+		
+		/** ---------------- RESTORE TEMP LAYOUT ---------------- **/
+		
+		public void restoreTempLayout(String activityName) {
+			if (activityName == null || activityName.trim().isEmpty()) {
+				activityName = editor.getCurrentActivityName();
+			}
+			
+			try {
+				String tempFilePath = getTempFilePath(activityName);
+				if (!FileUtil.isExistFile(tempFilePath)) {
+					Log.w("TempLayoutManager", "No temp layout found for: " + activityName);
+					return;
+				}
+				
+				String encryptedContent = FileUtil.readFile(tempFilePath);
+				String xmlCode = decrypt(encryptedContent);
+				
+				if (xmlCode == null || xmlCode.trim().isEmpty()) {
+					SketchwareUtil.showMessage(editor.getContext(), "Failed to decrypt temp layout");
+					return;
+				}
+				
+				// Use the new load method
+				loadXmlIntoEditor(xmlCode);
+				
+				// Delete temp file after successful restore
+				new File(tempFilePath).delete();
+				
+				// Save to permanent storage using ViewEditor's existing method
+				editor.saveLayout(activityName);
+				
+				Log.d("TempLayoutManager", "Temp layout restored for: " + activityName);
+				SketchwareUtil.showMessage(editor.getContext(), "Layout restored: " + activityName);
+				
+			} catch (Exception e) {
+				Log.e("TempLayoutManager", "restoreTempLayout failed for " + activityName, e);
+				SketchwareUtil.showMessage(editor.getContext(), "Restore error: " + e.getMessage());
+			}
+		}
+		
+		/** ---------------- GLOBAL RESTORE DIALOG ---------------- **/
+		
+		public void showGlobalRestoreDialog() {
+			File dir = new File(FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR);
+			if (!dir.exists()) return;
+			
+			File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
+			if (files == null || files.length == 0) return;
+			
+			ArrayList<String> pendingLayouts = new ArrayList<>();
+			for (File f : files) {
+				String name = f.getName().replace("temp_", "").replace(".json", "");
+				pendingLayouts.add(name);
+			}
+			
+			if (pendingLayouts.isEmpty()) return;
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(editor.getContext());
+			builder.setTitle("Restore Pending Layouts");
+			builder.setMessage("Found " + pendingLayouts.size() + " unsaved layouts:\n\n" + 
+			String.join(", ", pendingLayouts.subList(0, 
+			Math.min(3, pendingLayouts.size()))) + 
+			(pendingLayouts.size() > 3 ? "..." : ""));
+			
+			builder.setPositiveButton("Restore All", (dialog, which) -> {
+				restoreAllTempLayouts(pendingLayouts.size(), new GlobalRestoreCallback() {
+					@Override
+					public void onLayoutRestored(String activityName, String xmlCode) {
+						Log.d("TempLayoutManager", "Restored: " + activityName);
+					}
+					
+					@Override
+					public void onAllRestored() {
+						SketchwareUtil.showMessage(editor.getContext(), 
+						"Successfully restored " + pendingLayouts.size() + " layouts!");
+					}
+				});
+			});
+			
+			builder.setNegativeButton("Later", null);
+			
+			builder.setNeutralButton("View Details", (dialog, which) -> {
+				StringBuilder details = new StringBuilder("Pending Layouts:\n\n");
+				for (String layout : pendingLayouts) {
+					details.append("• ").append(layout).append("\n");
+				}
+				
+				new AlertDialog.Builder(editor.getContext())
+				.setTitle("Pending Layouts (" + pendingLayouts.size() + ")")
+				.setMessage(details.toString())
+				.setPositiveButton("Restore All", (d, w) -> restoreAllTempLayouts(pendingLayouts.size(), null))
+				.setNegativeButton("Cancel", null)
+				.show();
+			});
+			
+			builder.show();
+		}
+		
+		/** ---------------- RESTORE ALL LAYOUTS ---------------- **/
+		
+		private void restoreAllTempLayouts(int totalCount, GlobalRestoreCallback callback) {
+			File dir = new File(FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR);
+			if (!dir.exists()) {
+				if (callback != null) callback.onAllRestored();
+				return;
+			}
+			
+			File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
+			if (files == null || files.length == 0) {
+				if (callback != null) callback.onAllRestored();
+				return;
+			}
+			
+			int restoredCount = 0;
+			for (File f : files) {
+				String layoutName = f.getName().replace("temp_", "").replace(".json", "");
+				
+				try {
+					String encryptedContent = FileUtil.readFile(f.getAbsolutePath());
+					String xmlCode = decrypt(encryptedContent);
+					
+					if (xmlCode != null && !xmlCode.trim().isEmpty()) {
+						// Save to permanent storage using ViewEditor's method
+						editor.saveLayout(layoutName);
+						
+						// Load into current editor if it matches current activity
+						if (editor.getCurrentActivityName().equals(layoutName)) {
+							loadXmlIntoEditor(xmlCode);
+						}
+						
+						restoredCount++;
+						if (callback != null) {
+							callback.onLayoutRestored(layoutName, xmlCode);
+						}
+					}
+					
+				} catch (Exception e) {
+					Log.e("TempLayoutManager", "Failed to restore: " + layoutName, e);
+				}
+				
+				// Delete temp file
+				try {
+					f.delete();
+				} catch (Exception e) {
+					Log.w("TempLayoutManager", "Failed to delete temp file: " + f.getAbsolutePath());
+				}
+			}
+			
+			Log.i("TempLayoutManager", "Restored " + restoredCount + " layouts out of " + totalCount);
+			if (callback != null) callback.onAllRestored();
+		}
+		
+		/** ---------------- UTILITY METHODS ---------------- **/
+		
+		public ArrayList<String> getPendingTempLayouts() {
+			ArrayList<String> pending = new ArrayList<>();
+			File dir = new File(FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR);
+			if (!dir.exists()) return pending;
+			
+			File[] files = dir.listFiles((d, name) -> name.endsWith(".json"));
+			if (files != null) {
+				for (File f : files) {
+					String name = f.getName().replace("temp_", "").replace(".json", "");
+					pending.add(name);
+				}
+			}
+			return pending;
+		}
+		
+		public void clearAllTempLayouts() {
+			File dir = new File(FileUtil.getPackageDataDir(editor.getContext()) + TEMP_DIR);
+			if (!dir.exists()) return;
+			
+			File[] files = dir.listFiles();
+			if (files != null) {
+				for (File f : files) {
+					f.delete();
+				}
+				Log.d("TempLayoutManager", "Cleared all temp layouts");
+				SketchwareUtil.showMessage(editor.getContext(), "Cleared all temporary layouts");
+			}
+		}
+		
+		/** ---------------- CALLBACK INTERFACE ---------------- **/
+		
+		public interface GlobalRestoreCallback {
+			void onLayoutRestored(String activityName, String xmlCode);
+			void onAllRestored();
+		}
 	}
 }

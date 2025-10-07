@@ -27,7 +27,7 @@ public class TheBlockLogicsUtil
 	
 	// Corrected static block
 	static {
-		projectsFile1 = new File(new StringBuffer().append((Object) appFile).append("/data").toString());
+		projectsFile1 = new File(new StringBuffer().append((Object) appFile).append("/projects").toString());
 		binFile = new File("/data/data/com.besome.blacklogics/files/bin");
 	}
 	
@@ -231,32 +231,31 @@ public class TheBlockLogicsUtil
 	public static void dialog() {
 		
 	}
-	public static boolean copyFile(File sourceFile, File destFile) {
-		try {
-			if (!destFile.getParentFile().exists()) {
-				destFile.getParentFile().mkdirs();
-			}
-			
-			FileInputStream in = new FileInputStream(sourceFile);
-			FileOutputStream out = new FileOutputStream(destFile);
-			
-			byte[] buffer = new byte[1024];
-			int length;
-			while ((length = in.read(buffer)) > 0) {
-				out.write(buffer, 0, length);
-			}
-			
-			in.close();
-			out.close();
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 	
 	public static String decodeBase64(String str) {
 		return new String(Base64.decode(str.getBytes(), 0));
 	}
+    
+    public static void copyFile(File source, File destination) {
+        try {
+            if (!destination.getParentFile().exists()) {
+                destination.getParentFile().mkdirs();
+            }
+
+            InputStream in = new FileInputStream(source);
+            OutputStream out = new FileOutputStream(destination);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	
 }

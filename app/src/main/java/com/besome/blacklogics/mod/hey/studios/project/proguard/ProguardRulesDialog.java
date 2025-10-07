@@ -86,6 +86,9 @@ public class ProguardRulesDialog extends Dialog implements View.OnClickListener 
         findViewById(R.id.code_editor_zoomout).setOnClickListener(this);
 
         codeEditor.start(ColorScheme.JAVA());
+        
+      //  codeEditor.setFocusable(true);
+       // codeEditor.setFocusableInTouchMode(true);
 
         codeEditor.onCreateOptionsMenu(findViewById(R.id.codeeditor_more_options));
 

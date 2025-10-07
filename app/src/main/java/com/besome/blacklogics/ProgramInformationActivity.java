@@ -31,7 +31,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -139,39 +138,39 @@ public class ProgramInformationActivity extends AppCompatActivity {
 	public void _a() {
 	}
 	private void showResetDialog() {
-			// Inflate the custom dialog layout
-			LayoutInflater inflater = getLayoutInflater();
-			View dialogView = inflater.inflate(R.layout.dialog_reset, null);
-			
-			// Create the AlertDialog
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setView(dialogView);
-			AlertDialog dialog = builder.create();
-			
-			// Set up the buttons and radio group
-			RadioGroup radioGroup = dialogView.findViewById(R.id.reset_radio_group);
-			Button cancelButton = dialogView.findViewById(R.id.cancel_button);
-			Button yesButton = dialogView.findViewById(R.id.yes_button);
-			
-			// Cancel button listener
-			cancelButton.setOnClickListener(v -> dialog.dismiss());
-			
-			// Yes button listener
-			yesButton.setOnClickListener(v -> {
-					int selectedId = radioGroup.getCheckedRadioButtonId();
-					if (selectedId == R.id.radio_reset_all_data) {
-							if (FileUtil.isExistFile(FileUtil.getExternalStorageDir() + "/.blacklogics/")) {
-									FileUtil.deleteFile(FileUtil.getExternalStorageDir() + "/.blacklogics/");
-							}
-							// Handle reset all settings and data
-					} else if (selectedId == R.id.radio_reset_settings) {
-							// Handle reset settings only
-					}
-					dialog.dismiss();
-			});
-			
-			// Show the dialog
-			dialog.show();
+		// Inflate the custom dialog layout
+		LayoutInflater inflater = getLayoutInflater();
+		View dialogView = inflater.inflate(R.layout.dialog_reset, null);
+		
+		// Create the AlertDialog
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setView(dialogView);
+		AlertDialog dialog = builder.create();
+		
+		// Set up the buttons and radio group
+		RadioGroup radioGroup = dialogView.findViewById(R.id.reset_radio_group);
+		Button cancelButton = dialogView.findViewById(R.id.cancel_button);
+		Button yesButton = dialogView.findViewById(R.id.yes_button);
+		
+		// Cancel button listener
+		cancelButton.setOnClickListener(v -> dialog.dismiss());
+		
+		// Yes button listener
+		yesButton.setOnClickListener(v -> {
+			int selectedId = radioGroup.getCheckedRadioButtonId();
+			if (selectedId == R.id.radio_reset_all_data) {
+				if (FileUtil.isExistFile(FileUtil.getExternalStorageDir() + "/.blacklogics/")) {
+					FileUtil.deleteFile(FileUtil.getExternalStorageDir() + "/.blacklogics/");
+				}
+				// Handle reset all settings and data
+			} else if (selectedId == R.id.radio_reset_settings) {
+				// Handle reset settings only
+			}
+			dialog.dismiss();
+		});
+		
+		// Show the dialog
+		dialog.show();
 	}
 	
 	{

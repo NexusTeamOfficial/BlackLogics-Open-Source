@@ -109,7 +109,7 @@
 						android:padding="8dp"
 						android:text="Local Path"
 						android:textSize="14sp"
-						android:textColor="#000000" />
+						android:textColor="@color/textColor" />
 				</LinearLayout>
 				<LinearLayout
 					android:id="@+id/linear5"

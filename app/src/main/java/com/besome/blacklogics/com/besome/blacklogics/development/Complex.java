@@ -19,47 +19,87 @@
 package com.besome.blacklogics.development;
 
 import android.content.Context;
-import android.os.*;
-import android.view.View;
-import android.widget.Spinner;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.util.Base64;
-import org.json.*;
-import java.io.*;
-import java.nio.*;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.besome.blacklogics.DesignActivity;
+import com.besome.blacklogics.FileUtil;
+import com.besome.blacklogics.R;
+import com.besome.blacklogics.ViewEditorFragmentActivity;
+import com.besome.blacklogics.WidgetAttributesManager;
+import com.besome.blacklogics.beans.ProjectActivityBean;
+import com.besome.blacklogics.file.AssetCopyUtil;
+import com.besome.blacklogics.model.DesignDataManager;
+import com.shapun.layouteditor.ViewEditor.*;
+
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap; // For attributes handling in formatNode
+import org.w3c.dom.Node; // For Node object in formatNode
+import org.w3c.dom.NodeList; //
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import com.besome.blacklogics.R;
-import com.besome.blacklogics.FileUtil;
-import com.besome.blacklogics.DesignActivity;
-import com.besome.blacklogics.model.DesignDataManager;
-import com.besome.blacklogics.ViewEditorFragmentActivity;
-import com.besome.blacklogics.custom.*;
-import com.besome.blacklogics.beans.ProjectActivityBean;
-import com.besome.blacklogics.file.AssetCopyUtil;
-import java.io.File;
-import android.os.Environment;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 
 /**
 * Nexus Open Source Project since 2025© Complex
@@ -72,11 +112,14 @@ public class Complex {
 	public HashMap<String, String> activityLogicMap = new HashMap<>();
 	
 	public String sc_id = "601"; 
+	public String s = "MainActivity";
+	public String scName = "BlackLogicsOpenSourceProject";
 	
 	public Spinner javaSpinner;
 	public Spinner xmlSpinner;
 	
 	public Context context;
+	public ProjectActivityBean currentActivityBean;
 	
 	public JSONObject activityLogicStorage; // Storing arguments in JSON
 	public HashMap<String, String> runtimeLogicCache = new HashMap<>(); // In-memory cache (better name of activityLogicMap)
@@ -119,19 +162,24 @@ public class Complex {
 		loadJson();
 	}
 	/*
-	public Complex(Context context) {
-	this.context = context;
-	loadJson();
-	}
-	*/
+public Complex(Context context) {
+this.context = context;
+loadJson();
+}
+*/	
 	
 	public void setC(Context context) {
 		this.context = context;
 	}
 	
+	public void setActivityName(String s) {
+		this.s = s;
+		tryLoadData();
+	}
+	
 	/************************************
-	* ViewItem class (top-level static) *
-	************************************/
+* ViewItem class (top-level static) *
+************************************/	
 	public static class ViewItem {
 		public String xmlName;  // XML file name (e.g., "activity_main")
 		public String xmlFileName;  // Full XML file name (e.g., "activity_main.xml")
@@ -172,23 +220,142 @@ public class Complex {
 	}
 	
 	/**
-	* Listener for long press events on view items
-	*/
+* Listener for long press events on view items
+*/	
 	public interface OnViewItemLongClickListener {
 		void onItemLongClick(ViewItem item, int position);
 	}
 	
 	/**
-	* Listener for long press events on custom view items
-	*/
+* Listener for long press events on custom view items
+*/	
 	public interface OnCustomViewLongClickListener {
 		void onCustomViewLongClick(String viewName, int position);
 	}
 	
+	/**
+* Interface to handle data synchronization in Activities
+*/	
+	public interface SyncData {
+		// Called when data is refreshed successfully
+		void onDataRefreshed();
+		
+		// Called when data refresh fails
+		void onRefreshFailed(String errorMessage);
+	}
+	
+	/**
+* Method to trigger data refresh and notify listener
+* @param listener The SyncData listener to notify on refresh events
+*/	
+	public void refreshDataWithListener(SyncData listener) {
+		try {
+			// Reload JSON data from disk
+			loadJson();
+			
+			// Clear existing caches
+			runtimeLogicCache.clear();
+			javaItems.clear();
+			xmlItems.clear();
+			xmlToJavaMap.clear();
+			javaToXmlMap.clear();
+			extraResources.clear();
+			extraJavaFiles.clear();
+			
+			// Refresh logic from activityLogicStorage
+			if (activityLogicStorage != null) {
+				Iterator<String> keys = activityLogicStorage.keys();
+				while (keys.hasNext()) {
+					String encodedKey = keys.next();
+					runtimeLogicCache.put(decodeData(encodedKey), decodeData(activityLogicStorage.getString(encodedKey)));
+				}
+			}
+			
+			// Refresh meta data (acName, xName, permissions, etc.)
+			JSONObject meta = jsonData.optJSONObject("meta");
+			if (meta != null) {
+				// Refresh activity and XML names
+				JSONArray acArray = meta.optJSONArray("acName");
+				JSONArray xArray = meta.optJSONArray("xName");
+				if (acArray != null && xArray != null) {
+					int len = Math.min(acArray.length(), xArray.length());
+					for (int i = 0; i < len; i++) {
+						String javaName = decodeData(acArray.getString(i));
+						String xmlName = decodeData(xArray.getString(i));
+						javaItems.add(javaName);
+						xmlItems.add(xmlName);
+						xmlToJavaMap.put(xmlName, javaName);
+						javaToXmlMap.put(javaName, xmlName);
+					}
+				}
+				
+				// Refresh permissions
+				JSONArray permissionArray = meta.optJSONArray("permissions");
+				if (permissionArray != null) {
+					List<String> permissions = new ArrayList<>();
+					for (int i = 0; i < permissionArray.length(); i++) {
+						permissions.add(decodeData(permissionArray.getString(i)));
+					}
+					// Update runtime permissions list if maintained
+					// Example: permissionsList = permissions; (if you maintain a permissions list)
+				}
+				
+				// Refresh other meta data (toolbar, fab, startup, etc.)
+				JSONObject toolbarData = meta.optJSONObject("toolbar");
+				JSONObject fabData = meta.optJSONObject("fab");
+				JSONObject startupData = meta.optJSONObject("startup");
+				// Add logic to handle these if needed (e.g., update UI or internal state)
+			}
+			
+			// Refresh XML and Java data
+			JSONObject xmlData = jsonData.optJSONObject("xml");
+			if (xmlData != null) {
+				Iterator<String> keys = xmlData.keys();
+				while (keys.hasNext()) {
+					String encodedKey = keys.next();
+					String xmlName = decodeData(encodedKey);
+					xmlItems.add(xmlName); // Ensure XML items are updated
+				}
+			}
+			
+			JSONObject javaData = jsonData.optJSONObject("java");
+			if (javaData != null) {
+				Iterator<String> keys = javaData.keys();
+				while (keys.hasNext()) {
+					String encodedKey = keys.next();
+					String javaName = decodeData(encodedKey).replace(".java", "");
+					javaItems.add(javaName); // Ensure Java items are updated
+				}
+			}
+			
+			// Refresh extra resources and Java files
+			String resPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.blacklogics/data/" + sc_id + "/files/resource";
+			String javaPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/.blacklogics/data/" + sc_id + "/files/java";
+			setExtraResources(resPath);
+			setExtraJavaFiles(javaPath);
+			
+			// Refresh UI components
+			if (xmlSpinner != null) setXmlAdapter(xmlSpinner);
+			if (javaSpinner != null) setJavaAdapter(javaSpinner);
+			updateFragmentState();
+			
+			// Notify listener of successful refresh
+			if (listener != null) {
+				listener.onDataRefreshed();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (listener != null) {
+				listener.onRefreshFailed("Failed to refresh data: " + e.getMessage());
+			}
+		}
+	}
+	
 	public void setId(String id) {
 		this.sc_id = id;
-		loadJson(); // Update jsonData according to new sc_id
-	}    
+		loadJson();
+		tryLoadData();
+	}
 	
 	public void loadJson() {
 		File file = new File(getStoragePath());
@@ -308,103 +475,104 @@ public class Complex {
 	
 	public void setLogic(String logic, String activityName) {
 		/*	try {
-		// Store logic mapped to activity name
-		activityLogicMap.put(activityName, logic);
-		runtimeLogicCache.put(activityName, logic);
-		
-		// Update JSON storage
-		JSONObject logicData = jsonData.optJSONObject("logic");
-		if (logicData == null) logicData = new JSONObject();
-		logicData.put(encodeData(activityName), encodeData(logic));
-		jsonData.put("logic", logicData);
-		saveJson();
-		
-		try {
-		if (activityLogicStorage == null) {
-		activityLogicStorage = new JSONObject();
-		}
-		activityLogicStorage.put(encodeData(activityName), encodeData(logic));
-		jsonData.put("logic", activityLogicStorage);
-		saveJson();
-		} catch (JSONException e) {
-		e.printStackTrace();
-		}
-		
-		// Inject into Java code
-		injectLogicToActivity(activityName);
-		} catch (JSONException e) {
-		e.printStackTrace();
-		}*/
+// Store logic mapped to activity name
+activityLogicMap.put(activityName, logic);
+runtimeLogicCache.put(activityName, logic);
+
+// Update JSON storage
+JSONObject logicData = jsonData.optJSONObject("logic");
+if (logicData == null) logicData = new JSONObject();
+logicData.put(encodeData(activityName), encodeData(logic));
+jsonData.put("logic", logicData);
+saveJson();
+
+try {
+if (activityLogicStorage == null) {
+activityLogicStorage = new JSONObject();
+}
+activityLogicStorage.put(encodeData(activityName), encodeData(logic));
+jsonData.put("logic", activityLogicStorage);
+saveJson();
+} catch (JSONException e) {
+e.printStackTrace();
+}
+
+// Inject into Java code
+injectLogicToActivity(activityName);
+} catch (JSONException e) {
+e.printStackTrace();
+}*/		
 	}
 	
 	/**
-	* Получить логику для указанной Activity из JSON-хранилища.
-	*
-	* @param activityName имя Activity, для которой ищем логику (без ".java")
-	* @return логика в виде строки или пустая строка, если не найдена
-	*/
+* Получить логику для указанной Activity из JSON-хранилища.
+*
+* @param activityName имя Activity, для которой ищем логику (без ".java")
+* @return логика в виде строки или пустая строка, если не найдена
+*/	
 	public String getLogicData(String activityName) {
 		/*	try {
-		// Получаем объект "logic" из jsonData
-		JSONObject logicData = jsonData.optJSONObject("logic");
-		if (logicData == null) {
-		return "";
-		}
-		// Кодируем ключ так же, как при сохранении
-		String encodedKey = encodeData(activityName);
-		if (logicData.has(encodedKey)) {
-		// Декодируем и возвращаем сохранённую логику
-		return decodeData(logicData.getString(encodedKey));
-		}
-		} catch (JSONException e) {
-		e.printStackTrace();
-		}*/
+// Получаем объект "logic" из jsonData
+JSONObject logicData = jsonData.optJSONObject("logic");
+if (logicData == null) {
+return "";
+}
+// Кодируем ключ так же, как при сохранении
+String encodedKey = encodeData(activityName);
+if (logicData.has(encodedKey)) {
+// Декодируем и возвращаем сохранённую логику
+return decodeData(logicData.getString(encodedKey));
+}
+} catch (JSONException e) {
+e.printStackTrace();
+}*/		
 		return "";
 	}
 	
 	
 	public void injectLogicToActivity(String activityName) {
 		/*	try {
-		JSONObject javaData = jsonData.optJSONObject("java");
-		if (javaData == null) return;
-		
-		String encodedName = encodeData(activityName + ".java");
-		if (javaData.has(encodedName)) {
-		String javaCode = decodeData(javaData.getString(encodedName));
-		String logic = activityLogicMap.get(activityName);
-		
-		// Add/update initializeLogic()
-		if (javaCode.contains("initializeLogic()")) {
-		// Update existing method
-		javaCode = javaCode.replaceAll(
-		"(?s)public void initializeLogic\\(\\) \\{.*?\\}",
-		"public void initializeLogic() {\n" +
-		"    " + logic.replace("\n", "\n    ") + "\n" +
-		"}"
-		);
-		} else {
-		// Add new method
-		javaCode = javaCode.replaceFirst(
-		"\\{",
-		"{\n" +
-		"    public void initializeLogic() {\n" +
-		"    " + logic.replace("\n", "\n    ") + "\n" +
-		"    }\n"
-		);
-		}
-		
-		// Save updated code
-		javaData.put(encodedName, encodeData(javaCode));
-		saveJson();
-		}
-		} catch (JSONException e) {
-		e.printStackTrace();
-		}*/
+JSONObject javaData = jsonData.optJSONObject("java");
+if (javaData == null) return;
+
+String encodedName = encodeData(activityName + ".java");
+if (javaData.has(encodedName)) {
+String javaCode = decodeData(javaData.getString(encodedName));
+String logic = activityLogicMap.get(activityName);
+
+// Add/update initializeLogic()
+if (javaCode.contains("initializeLogic()")) {
+// Update existing method
+javaCode = javaCode.replaceAll(
+"(?s)public void initializeLogic\\(\\) \\{.*?\\}",
+"public void initializeLogic() {\n" +
+"    " + logic.replace("\n", "\n    ") + "\n" +
+"}"
+);
+} else {
+// Add new method
+javaCode = javaCode.replaceFirst(
+"\\{",
+"{\n" +
+"    public void initializeLogic() {\n" +
+"    " + logic.replace("\n", "\n    ") + "\n" +
+"    }\n"
+);
+}
+
+// Save updated code
+javaData.put(encodedName, encodeData(javaCode));
+saveJson();
+}
+} catch (JSONException e) {
+e.printStackTrace();
+}*/		
 	}
 	
 	
 	public void setXmlCode(String xmlName, String xmlCode) {
 		try {
+			// Fallback to old JSON system if activity not found
 			JSONObject xmlData = jsonData.optJSONObject("xml");
 			if (xmlData == null) xmlData = new JSONObject();
 			
@@ -415,7 +583,8 @@ public class Complex {
 				xmlCode = "<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
 				"    android:layout_width=\"match_parent\"\n" +
 				"    android:layout_height=\"match_parent\"\n" +
-				"    android:orientation=\"vertical\">\n\n" +
+				"    android:orientation=\"vertical\"\n" +
+				"    android:background=\"#FFFFFF\">\n\n" +
 				"</LinearLayout>";
 			}
 			
@@ -423,202 +592,218 @@ public class Complex {
 			xmlData.put(encodedName, encodedData);
 			jsonData.put("xml", xmlData);
 			saveJson();
-		} catch (JSONException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
+	
 	public void setJavaCode(String javaName, String javaCode) {
 		try {
-			JSONObject javaData = jsonData.optJSONObject("java");
-			if (javaData == null) javaData = new JSONObject();
 			
-			String encodedName = encodeData(javaName);
-			String encodedData = encodeData(javaCode);
+			try {
+				JSONObject javaData = jsonData.optJSONObject("java");
+				if (javaData == null) javaData = new JSONObject();
+				
+				String encodedName = encodeData(javaName);
+				String encodedData = encodeData(javaCode);
+				
+				javaData.put(encodedName, encodedData);
+				jsonData.put("java", javaData);
+				saveJson();
+			} catch (JSONException ex) {
+				ex.printStackTrace();
+			}
 			
-			javaData.put(encodedName, encodedData);
-			jsonData.put("java", javaData);
-			saveJson();
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			// Fallback to old JSON system if needed
 		}
 	}
 	
 	public void extractAllXmlCodes(String path) {
 		try {
 			JSONObject xmlData = jsonData.optJSONObject("xml");
-			if (xmlData == null) return;
-			
 			File folder = new File(path);
 			File abcd = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/files/resource");
 			folder.mkdirs();
 			
-			Iterator<String> keys = xmlData.keys();
-			while (keys.hasNext()) {
-				String encodedName = keys.next();
-				String decodedName = decodeData(encodedName);
-				String encodedData = xmlData.getString(encodedName);
-				String decodedData = decodeData(encodedData);
-				
-				File file = new File(folder, decodedName + ".xml");
-				
-				File existingFile = new File(abcd, decodedName + ".xml");
-				
-				if (existingFile.exists()) continue;
-				
-				writeFile(file, decodedData);
+			// Old meta system — directly extract all XMLs from JSON
+			if (xmlData != null) {
+				Iterator<String> keys = xmlData.keys();
+				while (keys.hasNext()) {
+					String encodedName = keys.next();
+					String decodedName = decodeData(encodedName);
+					
+					String encodedData = xmlData.getString(encodedName);
+					String decodedData = decodeData(encodedData);
+					
+					File file = new File(folder, decodedName + ".xml");
+					File existingFile = new File(abcd, decodedName + ".xml");
+					if (existingFile.exists()) continue;
+					writeFile(file, decodedData);
+				}
 			}
-		} catch (JSONException | IOException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	
 	// Original extract method remains unchanged
 	public void extractAllJavaCodes(String path) {
 		try {
+			//first step to extract all logics and variable external codes 
+			generateAllJavaCodes();
+			
+			// Fallback to old JSON system for any remaining activities
 			JSONObject javaData = jsonData.optJSONObject("java");
-			JSONObject logicData = jsonData.optJSONObject("logic"); // Get logic from JSON
+			JSONObject logicData = jsonData.optJSONObject("logic");
 			
-			if (javaData == null) return;
-			
-			File folder = new File(path);
-			File abcd = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/files/java");
-			folder.mkdirs();
-			
-			Iterator<String> keys = javaData.keys();
-			while (keys.hasNext()) {
-				String encodedName = keys.next();
-				String decodedName = decodeData(encodedName);
-				String originalCode = decodeData(javaData.getString(encodedName));
-				
-				String activityName = decodedName.replace(".java", "");
-				
-				// Check logic in JSON instead of activityLogicMap
-				if (logicData != null && logicData.has(encodeData(activityName))) {
-					String logic = decodeData(logicData.getString(encodeData(activityName)));
+			if (javaData != null) {
+				File folder = new File(path);
+				File abcd = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/files/java");
+				folder.mkdirs();
+				Iterator<String> keys = javaData.keys();
+				while (keys.hasNext()) {
+					String encodedName = keys.next();
+					String decodedName = decodeData(encodedName);
+					String originalCode = decodeData(javaData.getString(encodedName));
 					
-					// Inject the logic into the code only if it doesn't already contain the logic
-					String modifiedCode = injectLogic(originalCode, logic, activityName);
+					String activityName = decodedName.replace(".java", "");
 					
-					File file = new File(folder, decodedName + ".java");
-					File existingFile = new File(abcd, decodedName + ".java");
+					//	// Skip if already processed by ProjectActivityBean
+					//	if (activities.contains(activityName)) continue;
 					
-					if (existingFile.exists()) continue;
-					
-					writeFile(file, modifiedCode);
-				} else {
-					File file = new File(folder, decodedName + ".java");
-					writeFile(file, originalCode);
+					// Check logic in JSON instead of activityLogicMap
+					if (logicData != null && logicData.has(encodeData(activityName))) {
+						String logic = decodeData(logicData.getString(encodeData(activityName)));
+						
+						// Inject the logic into the code only if it doesn't already contain the logic
+						String modifiedCode = injectLogic(originalCode, logic, activityName);
+						
+						File file = new File(folder, decodedName + ".java");
+						File existingFile = new File(abcd, decodedName + ".java");
+						
+						if (existingFile.exists()) continue;
+						
+						writeFile(file, modifiedCode);
+					} else {
+						File file = new File(folder, decodedName + ".java");
+						writeFile(file, originalCode);
+					}
 				}
 			}
-		} catch (JSONException | IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	* Injects logic into the activity's Java code, including main logic and widget listeners for onClick, onLongClick, and onTouch.
-	* Uses findViewById directly without widget declarations.
-	* @param javaCode The original Java code
-	* @param logic The main logic to inject
-	* @param activityName The name of the activity
-	* @return The modified Java code
-	*/
+* Injects logic into the activity's Java code, including main logic and widget listeners for onClick, onLongClick, and onTouch.
+* Uses findViewById directly without widget declarations.
+* @param javaCode The original Java code
+* @param logic The main logic to inject
+* @param activityName The name of the activity
+* @return The modified Java code
+*/	
 	public String injectLogic(String javaCode, String logic, String activityName) {
 		/*	// Step 1: Create initializeLogic() method cleanly
-		StringBuilder initializeLogic = new StringBuilder();
-		initializeLogic.append("    public void initializeLogic() {\n");
-		for (String line : logic.split("\n")) {
-		initializeLogic.append("        ").append(line).append("\n");
-		}
-		
-		// Step 2: Add widget listeners if any
-		JSONObject widgetListeners = jsonData.optJSONObject("widgetListeners");
-		if (widgetListeners != null) {
-		JSONObject activityListeners = widgetListeners.optJSONObject(encodeData(activityName));
-		if (activityListeners != null) {
-		Iterator<String> keys = activityListeners.keys();
-		while (keys.hasNext()) {
-		String encodedKey = keys.next();
-		String key = decodeData(encodedKey);
-		String value = decodeData(activityListeners.optString(encodedKey));
-		if (key.endsWith("_onClick")) {
-		String id = key.replace("_onClick", "");
-		initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnClickListener(v -> {\n");
-		for (String line : value.split("\n")) {
-		initializeLogic.append("            ").append(line).append("\n");
-		}
-		initializeLogic.append("        });\n");
-		} else if (key.endsWith("_onLongClick")) {
-		String id = key.replace("_onLongClick", "");
-		initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnLongClickListener(v -> {\n");
-		for (String line : value.split("\n")) {
-		initializeLogic.append("            ").append(line).append("\n");
-		}
-		initializeLogic.append("            return true;\n");
-		initializeLogic.append("        });\n");
-		} else if (key.endsWith("_onTouch")) {
-		String id = key.replace("_onTouch", "");
-		initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnTouchListener((v, event) -> {\n");
-		for (String line : value.split("\n")) {
-		initializeLogic.append("            ").append(line).append("\n");
-		}
-		initializeLogic.append("            return false;\n");
-		initializeLogic.append("        });\n");
-		}
-		}
-		}
-		}
-		
-		initializeLogic.append("    }\n");
-		
-		// Step 3: Add initializeLogic() call in onCreate()
-		Pattern pattern = Pattern.compile("protected void onCreate\\s*\\(\\s*Bundle\\s+savedInstanceState\\s*\\)\\s*\\{", Pattern.DOTALL);
-		Matcher matcher = pattern.matcher(javaCode);
-		if (matcher.find()) {
-		String match = matcher.group(0);
-		if (!javaCode.contains("initializeLogic();")) {
-		javaCode = javaCode.replaceFirst(Pattern.quote(match), match + "\n        initializeLogic();");
-		}
-		} else {
-		// If onCreate doesn't exist, add it
-		String layoutName = camelToSnakeCase(activityName);
-		String onCreateMethod =
-		"    @Override\n" +
-		"    protected void onCreate(Bundle savedInstanceState) {\n" +
-		"        super.onCreate(savedInstanceState);\n" +
-		"        setContentView(R.layout." + layoutName + ");\n" +
-		"        initializeLogic();\n" +
-		"    }\n\n";
-		javaCode = javaCode.replaceFirst(
-		"\\{",
-		"{\n" + onCreateMethod
-		);
-		}
-		
-		// Step 4: Insert or replace initializeLogic() method inside class body
-		if (javaCode.contains("public void initializeLogic()")) {
-		// Replace existing initializeLogic method
-		javaCode = javaCode.replaceAll(
-		"(?s)public void initializeLogic\\(\\) \\{.*?\\}",
-		Matcher.quoteReplacement(initializeLogic.toString())
-		);
-		} else {
-		// Find the last closing brace of the class
-		int lastBraceIndex = javaCode.lastIndexOf("}");
-		if (lastBraceIndex != -1) {
-		// Insert initializeLogic() before the last closing brace
-		javaCode = javaCode.substring(0, lastBraceIndex) +
-		"\n" + initializeLogic.toString() +
-		javaCode.substring(lastBraceIndex);
-		} else {
-		// Fallback: append inside the class if no closing brace found (unlikely)
-		javaCode = javaCode.trim() + "\n" + initializeLogic.toString() + "\n}";
-		}
-		}
-		
-		return javaCode;*/
+StringBuilder initializeLogic = new StringBuilder();
+initializeLogic.append("    public void initializeLogic() {\n");
+for (String line : logic.split("\n")) {
+initializeLogic.append("        ").append(line).append("\n");
+}
+
+// Step 2: Add widget listeners if any
+JSONObject widgetListeners = jsonData.optJSONObject("widgetListeners");
+if (widgetListeners != null) {
+JSONObject activityListeners = widgetListeners.optJSONObject(encodeData(activityName));
+if (activityListeners != null) {
+Iterator<String> keys = activityListeners.keys();
+while (keys.hasNext()) {
+String encodedKey = keys.next();
+String key = decodeData(encodedKey);
+String value = decodeData(activityListeners.optString(encodedKey));
+if (key.endsWith("_onClick")) {
+String id = key.replace("_onClick", "");
+initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnClickListener(v -> {\n");
+for (String line : value.split("\n")) {
+initializeLogic.append("            ").append(line).append("\n");
+}
+initializeLogic.append("        });\n");
+} else if (key.endsWith("_onLongClick")) {
+String id = key.replace("_onLongClick", "");
+initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnLongClickListener(v -> {\n");
+for (String line : value.split("\n")) {
+initializeLogic.append("            ").append(line).append("\n");
+}
+initializeLogic.append("            return true;\n");
+initializeLogic.append("        });\n");
+} else if (key.endsWith("_onTouch")) {
+String id = key.replace("_onTouch", "");
+initializeLogic.append("        findViewById(R.id.").append(id).append(").setOnTouchListener((v, event) -> {\n");
+for (String line : value.split("\n")) {
+initializeLogic.append("            ").append(line).append("\n");
+}
+initializeLogic.append("            return false;\n");
+initializeLogic.append("        });\n");
+}
+}
+}
+}
+
+initializeLogic.append("    }\n");
+
+// Step 3: Add initializeLogic() call in onCreate()
+Pattern pattern = Pattern.compile("protected void onCreate\\s*\\(\\s*Bundle\\s+savedInstanceState\\s*\\)\\s*\\{", Pattern.DOTALL);
+Matcher matcher = pattern.matcher(javaCode);
+if (matcher.find()) {
+String match = matcher.group(0);
+if (!javaCode.contains("initializeLogic();")) {
+javaCode = javaCode.replaceFirst(Pattern.quote(match), match + "\n        initializeLogic();");
+}
+} else {
+// If onCreate doesn't exist, add it
+String layoutName = camelToSnakeCase(activityName);
+String onCreateMethod =
+"    @Override\n" +
+"    protected void onCreate(Bundle savedInstanceState) {\n" +
+"        super.onCreate(savedInstanceState);\n" +
+"        setContentView(R.layout." + layoutName + ");\n" +
+"        initializeLogic();\n" +
+"    }\n\n";
+javaCode = javaCode.replaceFirst(
+"\\{",
+"{\n" + onCreateMethod
+);
+}
+
+// Step 4: Insert or replace initializeLogic() method inside class body
+if (javaCode.contains("public void initializeLogic()")) {
+// Replace existing initializeLogic method
+javaCode = javaCode.replaceAll(
+"(?s)public void initializeLogic\\(\\) \\{.*?\\}",
+Matcher.quoteReplacement(initializeLogic.toString())
+);
+} else {
+// Find the last closing brace of the class
+int lastBraceIndex = javaCode.lastIndexOf("}");
+if (lastBraceIndex != -1) {
+// Insert initializeLogic() before the last closing brace
+javaCode = javaCode.substring(0, lastBraceIndex) +
+"\n" + initializeLogic.toString() +
+javaCode.substring(lastBraceIndex);
+} else {
+// Fallback: append inside the class if no closing brace found (unlikely)
+javaCode = javaCode.trim() + "\n" + initializeLogic.toString() + "\n}";
+}
+}
+
+return javaCode;*/		
 		return "";
 	}
 	
@@ -827,6 +1012,31 @@ public class Complex {
 		return "base.application";
 	}
 	
+	public void setScName(String pkgName) {
+		try {
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData == null) metaData = new JSONObject();
+			
+			metaData.put("scName", encodeData(pkgName));
+			jsonData.put("meta", metaData);
+			saveJson();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String getScName() {
+		try {
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData == null || !metaData.has("scName")) return "BlackLogicsOpenSourceProject";
+			
+			return decodeData(metaData.getString("scName"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return "BlackLogicsOpenSourceProject";
+	}
+	
 	public void setProjectName(String pkgName) {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -931,10 +1141,10 @@ public class Complex {
 	}
 	
 	/**
-	* Set adapter for the Spinner with acName and xName
-	* @param spinner The standard Android Spinner to populate
-	* @param context Context used for ArrayAdapter
-	*/
+* Set adapter for the Spinner with acName and xName
+* @param spinner The standard Android Spinner to populate
+* @param context Context used for ArrayAdapter
+*/	
 	public void setSpinnerAdapter(Spinner spinner) {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -968,14 +1178,13 @@ public class Complex {
 		}
 	}
 	
-	
 	public void setManifest(String manifestCode) {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
 			if (metaData == null) metaData = new JSONObject();
+			
 			String applicationClassName = "BlackApplication";
 			
-			// If manifestCode is empty, set a default AndroidManifest.xml
 			if (manifestCode == null || manifestCode.trim().isEmpty()) {
 				manifestCode =
 				"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -983,37 +1192,39 @@ public class Complex {
 				"    package=\"" + getPkgName() + "\">\n\n" +
 				"    <application\n" +
 				"        android:allowBackup=\"true\"\n" +
+				"        android:icon=\"@mipmap/icon\"\n" +
 				"        android:label=\"" + getProjectName() + "\"\n" +
 				"        android:theme=\"@style/AppTheme\"\n" +
-				"        android:name=\"." + applicationClassName + "\">\n" +
-				"\n" +
+				"        android:name=\"." + applicationClassName + "\">\n\n" +
 				"        <activity android:name=\"." + getAcName() + "\">\n" +
 				"            <intent-filter>\n" +
 				"                <action android:name=\"android.intent.action.MAIN\" />\n" +
 				"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
 				"            </intent-filter>\n" +
-				"        </activity>\n" +
-				"\n" +
+				"        </activity>\n\n" +
 				"        <activity\n" +
 				"            android:name=\".DebugActivity\"\n" +
 				"            android:theme=\"@style/DebugTheme\"\n" +
-				"            android:exported=\"true\" />\n" +
-				"\n" +
+				"            android:exported=\"true\" />\n\n" +
 				"    </application>\n" +
 				"</manifest>";
-				
 			}
 			
-			// Merge stored permissions into the new manifest
+			// Merge user-controlled permissions
 			String mergedManifest = mergePermissionsIntoManifest(manifestCode);
+			mergedManifest = prettyPrintXML(mergedManifest);
 			
 			metaData.put("manifest", encodeData(mergedManifest));
 			jsonData.put("meta", metaData);
 			saveJson();
+			
+			// Fix duplicates and validate
+			/////validateAndFixManifest();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public String getManifest() {
 		try {
@@ -1047,53 +1258,56 @@ public class Complex {
 	}
 	
 	/**
-	* Adds an activity to the AndroidManifest.xml with appropriate theme based on toolbar configuration.
-	* @param activityName The name of the activity to add (e.g., "MainActivity").
-	*/
+* Adds an activity to the manifest if it doesn't already exist.
+* @param activityName The name of the activity to add
+*/	
 	public void addActivityToManifest(String activityName) {
 		try {
 			String manifest = getManifest();
-			if (!manifest.contains("</application>")) return;
+			if (!manifest.contains("</application>")) {
+				Log.w("addActivityToManifest", "No </application> tag found in manifest");
+				return;
+			}
 			
-			// Check toolbar configuration for the activity
+			// Check if activity already exists using isActivityExist
+			if (isActivityExist(activityName)) {
+				Log.d("addActivityToManifest", "Activity " + activityName + " already exists, skipping addition");
+				return; // No need to add if it already exists
+			}
+			
+			// Remove any stale entries (just in case)
+			removeActivityFromManifest(activityName);
+			
 			JSONObject toolbarInfo = getToolbarInfo(activityName);
 			boolean hasToolbar = toolbarInfo != null && toolbarInfo.optBoolean("enabled", true);
 			boolean useAndroidX = toolbarInfo != null ? toolbarInfo.optBoolean("androidX", getAndroidXEnable()) : getAndroidXEnable();
 			
-			// Determine the appropriate theme based on toolbar and AndroidX settings
 			String theme;
 			if (activityName.equals("DebugActivity")) {
-				// Use DebugTheme for DebugActivity
 				theme = "@style/DebugTheme";
 			} else if (hasToolbar) {
-				theme = useAndroidX ?
-				"@style/Theme.AppCompat.DayNight.DarkActionBar" :
-				"@style/AppTheme";
+				theme = useAndroidX ? "@style/Theme.AppCompat.DayNight.DarkActionBar" : "@style/AppTheme";
 			} else {
-				theme = useAndroidX ?
-				"@style/Theme.AppCompat.NoActionBar" :
-				"@style/AppTheme.NoActionBar";
+				theme = useAndroidX ? "@style/Theme.AppCompat.NoActionBar" : "@style/AppTheme.NoActionBar";
 			}
 			
-			// Create the new activity entry
 			String newActivity =
 			"        <activity\n" +
 			"            android:name=\"." + activityName + "\"\n" +
-			"            android:exported=\"true\"\n" +
+			"            android:exported=\"" + (activityName.equals("MainActivity") ? "true" : "false") + "\"\n" +
 			"            android:theme=\"" + theme + "\"\n" +
 			"            android:label=\"" + activityName + "\" />\n";
 			
-			// Update the manifest
-			String updatedManifest = manifest.replace("</application>", newActivity + "</application>");
-			setManifest(updatedManifest);
+			manifest = manifest.replace("</application>", newActivity + "</application>");
+			setManifest(prettyPrintXML(manifest));
 			
-			// Ensure style resources include necessary themes
-			setStyleResources(getStyleResources());
 			
 		} catch (Exception e) {
+			Log.e("addActivityToManifest", "Error adding activity: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
+	
 	
 	
 	// Extract Manifest
@@ -1237,6 +1451,29 @@ public class Complex {
 		}
 	}
 	
+	public void setColorResources(int colorPrimary, int colorPrimaryDark, int colorAccent, int colorPrimaryHighlight, int colorPrimaryNormal) {
+		try {
+			JSONObject resData = jsonData.optJSONObject("res");
+			if (resData == null) resData = new JSONObject();
+			
+			String colorXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+			"<resources>\n" +
+			"    <color name=\"colorPrimary\">#" + Integer.toHexString(colorPrimary).substring(2) + "</color>\n" +
+			"    <color name=\"colorPrimaryDark\">#" + Integer.toHexString(colorPrimaryDark).substring(2) + "</color>\n" +
+			"    <color name=\"colorAccent\">#" + Integer.toHexString(colorAccent).substring(2) + "</color>\n" +
+			"    <color name=\"colorPrimaryHighlight\">#" + Integer.toHexString(colorPrimaryHighlight).substring(2) + "</color>\n" +
+			"    <color name=\"colorPrimaryNormal\">#" + Integer.toHexString(colorPrimaryNormal).substring(2) + "</color>\n" +
+			"</resources>";
+			
+			resData.put("colors", encodeData(colorXml));
+			jsonData.put("res", resData);
+			saveJson();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	// Set Style Resources
 	public void setStyleResources(String styleResources) {
 		try {
@@ -1343,6 +1580,119 @@ public class Complex {
 			e.printStackTrace();
 		}
 	}
+	// Set Style Resources with dynamic colors
+	public void setStyleResources(String styleResources,
+	int colorPrimary,
+	int colorPrimaryDark,
+	int colorAccent,
+	int colorPrimaryHighlight,
+	int colorPrimaryNormal) {
+		try {
+			JSONObject resData = jsonData.optJSONObject("res");
+			if (resData == null) resData = new JSONObject();
+			
+			boolean needsNoActionBar = false;
+			boolean needsDebugTheme = false;
+			
+			// Check toolbar settings for NoActionBar requirement
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData != null && metaData.has("toolbar")) {
+				JSONObject toolbarObject = metaData.getJSONObject("toolbar");
+				Iterator<String> keys = toolbarObject.keys();
+				while (keys.hasNext()) {
+					String encodedActivityName = keys.next();
+					JSONObject entry = toolbarObject.getJSONObject(encodedActivityName);
+					if (!entry.optBoolean("enabled", true)) {
+						needsNoActionBar = true;
+						break;
+					}
+				}
+			}
+			
+			// Check if DebugActivity exists
+			if (metaData != null && metaData.has("acName")) {
+				JSONArray acNameArray = metaData.getJSONArray("acName");
+				for (int i = 0; i < acNameArray.length(); i++) {
+					if ("DebugActivity".equals(decodeData(acNameArray.getString(i)))) {
+						needsDebugTheme = true;
+						break;
+					}
+				}
+			}
+			
+			// Convert colors to hex strings
+			String primaryColor = String.format("#%06X", (0xFFFFFF & colorPrimary));
+			String primaryDarkColor = String.format("#%06X", (0xFFFFFF & colorPrimaryDark));
+			String accentColor = String.format("#%06X", (0xFFFFFF & colorAccent));
+			String highlightColor = String.format("#%06X", (0xFFFFFF & colorPrimaryHighlight));
+			String normalColor = String.format("#%06X", (0xFFFFFF & colorPrimaryNormal));
+			
+			// Build styles XML
+			StringBuilder styles = new StringBuilder();
+			styles.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n");
+			
+			boolean useAndroidX = getAndroidXEnable();
+			
+			// Base AppTheme
+			styles.append("    <style name=\"AppTheme\" parent=\"")
+			.append(useAndroidX ? "Theme.AppCompat.Light" : "android:Theme.Material.Light")
+			.append("\">\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorPrimary" : "android:colorPrimary")
+			.append("\">").append(primaryColor).append("</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorPrimaryDark" : "android:colorPrimaryDark")
+			.append("\">").append(primaryDarkColor).append("</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorAccent" : "android:colorAccent")
+			.append("\">").append(accentColor).append("</item>\n")
+			// custom colors - framework me direct attr nahi hote, fallback karna padega
+			.append("        <item name=\"android:colorForeground\">").append(highlightColor).append("</item>\n")
+			.append("        <item name=\"android:colorBackground\">").append(normalColor).append("</item>\n")
+			.append("    </style>\n");
+			
+			// NoActionBar theme
+			styles.append("    <style name=\"AppTheme.NoActionBar\" parent=\"")
+			.append(useAndroidX ? "Theme.AppCompat.Light.NoActionBar" : "android:Theme.Material.Light.NoActionBar")
+			.append("\">\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorPrimary" : "android:colorPrimary")
+			.append("\">").append(primaryColor).append("</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorPrimaryDark" : "android:colorPrimaryDark")
+			.append("\">").append(primaryDarkColor).append("</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorAccent" : "android:colorAccent")
+			.append("\">").append(accentColor).append("</item>\n")
+			.append("    </style>\n");
+			
+			// DebugTheme
+			styles.append("    <style name=\"DebugTheme\" parent=\"")
+			.append(useAndroidX ? "Theme.AppCompat.Dialog" : "android:Theme.Material.Dialog")
+			.append("\">\n")
+			.append("        <item name=\"android:windowBackground\">@android:color/white</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorPrimary" : "android:colorPrimary")
+			.append("\">").append(primaryColor).append("</item>\n")
+			.append("        <item name=\"").append(useAndroidX ? "colorAccent" : "android:colorAccent")
+			.append("\">").append(accentColor).append("</item>\n")
+			.append("        <item name=\"android:textColorPrimary\">@android:color/black</item>\n")
+			.append("        <item name=\"android:alertDialogTheme\">")
+			.append(useAndroidX ? "@style/ThemeOverlay.AppCompat.Dialog.Alert"
+			: "@android:style/Theme.Material.Dialog.Alert")
+			.append("</item>\n")
+			.append("    </style>\n");
+			
+			styles.append("</resources>");
+			
+			// Use provided styleResources if not empty
+			styleResources = (styleResources == null || styleResources.trim().isEmpty())
+			? styles.toString()
+			: styleResources;
+			
+			resData.put("styles", encodeData(styleResources));
+			jsonData.put("res", resData);
+			saveJson();
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	// Set Dimension Resources
 	public void setDimensionResources(String dimensionResources) {
 		try {
@@ -1481,9 +1831,9 @@ public class Complex {
 	
 	
 	/**
-	* Set Java adapter for the custom spinner
-	* @param spinner The CustomSpinner to populate with Java activity names
-	*/
+* Set Java adapter for the custom spinner
+* @param spinner The CustomSpinner to populate with Java activity names
+*/	
 	public void setJavaAdapter(Spinner spinner) {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -1566,8 +1916,8 @@ public class Complex {
 	}
 	
 	/**
-	* Update fragment state based on selected XML and Java names
-	*/
+* Update fragment state based on selected XML and Java names
+*/	
 	public void updateFragmentState() {
 		if (xmlSpinner != null && xmlSpinner.getContext() instanceof DesignActivity) {
 			DesignActivity activity = (DesignActivity) xmlSpinner.getContext();
@@ -1578,16 +1928,12 @@ public class Complex {
 			// Update layout name only if XML is valid
 			if (!lastSelectedXml.isEmpty()) {
 				ViewEditorFragmentActivity.layoutName = lastSelectedXml.replace(".xml", "");
-				if (ViewEditorFragmentActivity.tv_view_name != null) {
-					activity.currentActivityBean.setLayoutName(lastSelectedXml);
-					ViewEditorFragmentActivity.tv_view_name.setText(activity.currentActivityBean.getLayoutName());
-				}
+				activity.currentActivityBean.setLayoutName(lastSelectedXml);
 			}
 			
 			// Update activity name only if Java is valid
 			if (!lastSelectedJava.isEmpty()) {
-				ViewEditorFragmentActivity.activityName = lastSelectedJava;
-				DesignActivity.currentActivityBean.setActivityName(lastSelectedJava);
+				currentActivityBean.setActivityName(lastSelectedJava);
 				DesignDataManager.setJavaName(lastSelectedJava);
 				activity.currentActivityBean.setActivityName(lastSelectedJava);
 				activity.setCurrentProjectScreen(lastSelectedJava);
@@ -1597,22 +1943,20 @@ public class Complex {
 			if (ViewEditorFragmentActivity.ll != null) {
 				ViewEditorFragmentActivity.ll.invalidate();
 			}
-			activity.startViewAutoLoader();
-			activity.switchActivityLayoutAsync(lastSelectedJava, lastSelectedXml);
 			xmlSpinner.invalidate();
 		}
 	}
 	
 	/*
-	public void setOnSpinnerItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
-	if (javaSpinner != null) {
-	javaSpinner.setOnItemSelectedListener(listener);
-	}
-	if (xmlSpinner != null) {
-	xmlSpinner.setOnItemSelectedListener(listener);
-	}
-	}
-	*/
+public void setOnSpinnerItemSelectedListener(AdapterView.OnItemSelectedListener listener) {
+if (javaSpinner != null) {
+javaSpinner.setOnItemSelectedListener(listener);
+}
+if (xmlSpinner != null) {
+xmlSpinner.setOnItemSelectedListener(listener);
+}
+}
+*/	
 	
 	public String getAllXml() {
 		try {
@@ -1655,10 +1999,10 @@ public class Complex {
 	}
 	
 	/**
-	* Merge permissions into manifest XML
-	* @param manifest The original manifest XML
-	* @return Manifest XML with permissions added
-	*/
+* Merge permissions into manifest XML
+* @param manifest The original manifest XML
+* @return Manifest XML with permissions added
+*/	
 	public String mergePermissionsIntoManifest(String manifest) {
 		ArrayList<String> permissions = getPermissions();
 		if (permissions.isEmpty()) return manifest;
@@ -1687,9 +2031,9 @@ public class Complex {
 	
 	
 	/**
-	* Read permissions from external JSON file and add to storage
-	* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/permissions.json")
-	*/
+* Read permissions from external JSON file and add to storage
+* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/permissions.json")
+*/	
 	public void addPermissionsFromJsonFile(String filePath) {
 		try {
 			File jsonFile = new File(filePath);
@@ -1724,20 +2068,20 @@ public class Complex {
 	}
 	
 	/**
-	* Example JSON file format expected at /storage/emulated/0/permissions.json:
-	* [
-	*     "android.permission.ACCESS_COARSE_LOCATION",
-	*     "android.permission.ACCESS_CHECKIN_PROPERTIES"
-	* ]
-	*/
+* Example JSON file format expected at /storage/emulated/0/permissions.json:
+* [
+*     "android.permission.ACCESS_COARSE_LOCATION",
+*     "android.permission.ACCESS_CHECKIN_PROPERTIES"
+* ]
+*/	
 	
 	
 	// Add these methods to the Complex class
 	
 	/**
-	* Set permissions list in JSON storage
-	* @param permissions ArrayList of permission strings (e.g. "android.permission.INTERNET")
-	*/
+* Set permissions list in JSON storage
+* @param permissions ArrayList of permission strings (e.g. "android.permission.INTERNET")
+*/	
 	public void setPermissions(ArrayList<String> permissions) {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -1757,9 +2101,9 @@ public class Complex {
 	}
 	
 	/**
-	* Get stored permissions list
-	* @return ArrayList of permission strings
-	*/
+* Get stored permissions list
+* @return ArrayList of permission strings
+*/	
 	public ArrayList<String> getPermissions() {
 		ArrayList<String> permissions = new ArrayList<>();
 		try {
@@ -1777,9 +2121,9 @@ public class Complex {
 	}
 	
 	/**
-	* Add a single permission to storage
-	* @param permission Permission string to add
-	*/
+* Add a single permission to storage
+* @param permission Permission string to add
+*/	
 	public void addPermission(String permission) {
 		ArrayList<String> currentPermissions = getPermissions();
 		if (!currentPermissions.contains(permission)) {
@@ -1789,9 +2133,9 @@ public class Complex {
 	}
 	
 	/**
-	* Remove a permission from storage
-	* @param permission Permission string to remove
-	*/
+* Remove a permission from storage
+* @param permission Permission string to remove
+*/	
 	public void removePermission(String permission) {
 		ArrayList<String> currentPermissions = getPermissions();
 		if (currentPermissions.contains(permission)) {
@@ -1801,10 +2145,10 @@ public class Complex {
 	}
 	
 	/**
-	* Check if a Java activity file exists in storage
-	* @param activityName Name of the activity to check (e.g., "MainActivity")
-	* @return boolean indicating if the activity exists
-	*/
+* Check if a Java activity file exists in storage
+* @param activityName Name of the activity to check (e.g., "MainActivity")
+* @return boolean indicating if the activity exists
+*/	
 	public boolean isJavaActivityAvailable(String activityName) {
 		try {
 			JSONObject javaData = jsonData.optJSONObject("java");
@@ -1819,10 +2163,10 @@ public class Complex {
 	}
 	
 	/**
-	* The rails icon set in the manifest.
-	*
-	* @param iconName the name of the icon (e.g., "ic_launcher", "@mipmap/ic_launcher", or a full path like "res/mipmap/ic_launcher.png")
-	*/
+* The rails icon set in the manifest.
+*
+* @param iconName the name of the icon (e.g., "ic_launcher", "@mipmap/ic_launcher", or a full path like "res/mipmap/ic_launcher.png")
+*/	
 	public void setManifestIcon(String iconName) {
 		try {
 			String manifest = getManifest();
@@ -1855,8 +2199,8 @@ public class Complex {
 	}
 	
 	/**
-	* Converts the icon name to the correct format (e.g., "ic_launcher" → "@mipmap/ic_launcher")
-	*/
+* Converts the icon name to the correct format (e.g., "ic_launcher" → "@mipmap/ic_launcher")
+*/	
 	public String formatIconPath(String iconName) {
 		if (iconName == null || iconName.trim().isEmpty()) {
 			return "@mipmap/icon"; // Default
@@ -1890,9 +2234,9 @@ public class Complex {
 	}
 	
 	/**
-	* Adds activities from a JSON file to the manifest
-	* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/activities.json")
-	*/
+* Adds activities from a JSON file to the manifest
+* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/activities.json")
+*/	
 	public void addActivitiesFromJsonFile(String filePath) {
 		try {
 			File jsonFile = new File(filePath);
@@ -1938,8 +2282,8 @@ public class Complex {
 	
 	
 	/**
-	* The activity's manifest is an advanced XML generator (with default attributes).
-	*/
+* The activity's manifest is an advanced XML generator (with default attributes).
+*/	
 	public String generateActivityEntry(String activityPath) {
 		return "\n        <activity\n" +
 		"            android:name=\"" + activityPath + "\"\n" +
@@ -1950,9 +2294,9 @@ public class Complex {
 	}
 	
 	/**
-	* Adds services from a JSON file to the manifest
-	* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/services.json")
-	*/
+* Adds services from a JSON file to the manifest
+* @param filePath Full path to JSON file (e.g. "/storage/emulated/0/services.json")
+*/	
 	public void addServicesFromJsonFile(String filePath) {
 		try {
 			File jsonFile = new File(filePath);
@@ -1996,8 +2340,8 @@ public class Complex {
 	}
 	
 	/**
-	* Generates the service's Many Festive Adventures XML (with default attributes).
-	*/
+* Generates the service's Many Festive Adventures XML (with default attributes).
+*/	
 	public String generateServiceEntry(String servicePath) {
 		return "\n        <service\n" +
 		"            android:name=\"" + servicePath + "\"\n" +
@@ -2009,9 +2353,9 @@ public class Complex {
 	
 	
 	/**
-	* Set custom view name (both XML and Java) with default XML code
-	* @param viewName Name of the custom view (e.g. "CustomButton")
-	*/
+* Set custom view name (both XML and Java) with default XML code
+* @param viewName Name of the custom view (e.g. "CustomButton")
+*/	
 	public void setCustomViewName(String viewName) {
 		try {
 			JSONObject temp = new JSONObject(jsonData.toString());
@@ -2058,9 +2402,9 @@ public class Complex {
 	
 	
 	/**
-	* Get all custom view names
-	* @return List of custom view names
-	*/
+* Get all custom view names
+* @return List of custom view names
+*/	
 	public List<String> getCustomViewNames() {
 		List<String> customViews = new ArrayList<>();
 		try {
@@ -2078,8 +2422,8 @@ public class Complex {
 	}
 	
 	/********************************
-	* CustomViewAdapter static class *
-	********************************/
+* CustomViewAdapter static class *
+********************************/	
 	public static class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.ViewHolder> {
 		public List<String> customViewNames; // Already public
 		public OnItemClickListener clickListener;
@@ -2141,10 +2485,10 @@ public class Complex {
 	}
 	
 	/**
-	* Set up RecyclerView with custom view names
-	* @param recyclerView The RecyclerView to configure
-	* @param listener Click listener for items
-	*/
+* Set up RecyclerView with custom view names
+* @param recyclerView The RecyclerView to configure
+* @param listener Click listener for items
+*/	
 	public void setupCustomViewRecycler(RecyclerView recyclerView, CustomViewAdapter.OnItemClickListener listener) {
 		List<String> customViews = getCustomViewNames();
 		CustomViewAdapter adapter = new CustomViewAdapter(customViews, listener);
@@ -2153,9 +2497,9 @@ public class Complex {
 	}
 	
 	/**
-	* Remove a custom view by name
-	* @param viewName Name of the custom view to remove
-	*/
+* Remove a custom view by name
+* @param viewName Name of the custom view to remove
+*/	
 	public void removeCustomView(String viewName) {
 		try {
 			JSONObject temp = new JSONObject(jsonData.toString());
@@ -2213,17 +2557,17 @@ public class Complex {
 	}
 	
 	/**
-	* Check if a custom view exists
-	* @param viewName Name to check
-	* @return true if exists, false otherwise
-	*/
+* Check if a custom view exists
+* @param viewName Name to check
+* @return true if exists, false otherwise
+*/	
 	public boolean hasCustomView(String viewName) {
 		return getCustomViewNames().contains(viewName);
 	}
 	
 	/**
-	* Get all custom views as comma-separated string
-	*/
+* Get all custom views as comma-separated string
+*/	
 	public String getAllCustomViews() {
 		List<String> views = getCustomViewNames();
 		return String.join(",", views);
@@ -2232,8 +2576,8 @@ public class Complex {
 	
 	
 	/********************************
-	* ViewAdapter static class *
-	********************************/
+* ViewAdapter static class *
+********************************/	
 	public static class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder> {
 		public List<ViewItem> items; // Already public
 		public OnViewItemClickListener clickListener;
@@ -2312,8 +2656,8 @@ public class Complex {
 	}
 	
 	/********************************
-	* setupViewAdapter method *
-	********************************/
+* setupViewAdapter method *
+********************************/	
 	public void setupViewAdapter(RecyclerView recyclerView, OnViewItemClickListener listener) {
 		List<ViewItem> items = new ArrayList<>();
 		
@@ -2380,9 +2724,9 @@ public class Complex {
 	
 	
 	/**
-	* Refresh the RecyclerView data with updated view items
-	* @param recyclerView The RecyclerView to refresh
-	*/
+* Refresh the RecyclerView data with updated view items
+* @param recyclerView The RecyclerView to refresh
+*/	
 	public void refreshViewAdapter(RecyclerView recyclerView) {
 		if (recyclerView.getAdapter() instanceof ViewAdapter) {
 			ViewAdapter adapter = (ViewAdapter) recyclerView.getAdapter();
@@ -2449,72 +2793,106 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves the Java code for the specified Java file.
-	* @param javaFileName The name of the Java file (e.g., "MainActivity.java")
-	* @return The Java code as a String, or empty string if not found
-	*/
-	public String getJavaContent(String javaFileName) {
+* Retrieves Java code content for a given file name.
+* @param javaName The Java file name (e.g., "MainActivity.java")
+* @return The decoded Java code or an empty string if not found
+*/	
+	public String getJavaContent(String javaName) {
+		if (javaName.endsWith(".java")) {
+			javaName = javaName.replace(".java", "");
+		}
 		try {
 			JSONObject javaData = jsonData.optJSONObject("java");
-			if (javaData == null) {
-				//System.err.println("No 'java' data found in JSON for file: " + javaFileName);
-				return "";
-			}
+			if (javaData == null) return "";
 			
-			String encodedJavaName = encodeData(javaFileName);
-			if (!javaData.has(encodedJavaName)) {
-				//System.err.println("Java file not found in JSON: " + javaFileName);
-				return "";
+			String encodedKey = encodeData(javaName);
+			if (javaData.has(encodedKey)) {
+				return decodeData(javaData.getString(encodedKey));
 			}
-			
-			String encodedContent = javaData.getString(encodedJavaName);
-			String decodedContent = decodeData(encodedContent);
-			if (decodedContent.isEmpty()) {
-				//System.err.println("Decoded Java content is empty for file: " + javaFileName);
-			}
-			return decodedContent;
 		} catch (JSONException e) {
-			//System.err.println("Error retrieving Java content for file: " + javaFileName);
 			e.printStackTrace();
-			return "";
 		}
+		return "";
 	}
 	
+	
 	/**
-	* Retrieves the XML code for the specified XML file.
-	* @param xmlFileName The name of the XML file (e.g., "activity_main.xml")
-	* @return The XML code as a String, or empty string if not found
-	*/
-	public String getXmlContent(String xmlFileName) {
+* Retrieves XML code content for a given file name.
+* @param xmlName The XML file name (e.g., "activity_main.xml")
+* @return The decoded XML code or an empty string if not found
+*/	
+	public String getXmlContent(String xmlName) {
+		if (xmlName.endsWith(".xml")) {
+			xmlName = xmlName.replace(".xml", "");
+		}
 		try {
 			JSONObject xmlData = jsonData.optJSONObject("xml");
-			if (xmlData == null) {
-				//System.err.println("No 'xml' data found in JSON for file: " + xmlFileName);
-				return "";
-			}
+			if (xmlData == null) return "";
 			
-			String encodedXmlName = encodeData(xmlFileName);
-			if (!xmlData.has(encodedXmlName)) {
-				//System.err.println("XML file not found in JSON: " + xmlFileName);
-				return "";
+			String encodedKey = encodeData(xmlName);
+			if (xmlData.has(encodedKey)) {
+				return decodeData(xmlData.getString(encodedKey));
 			}
-			
-			String encodedContent = xmlData.getString(encodedXmlName);
-			String decodedContent = decodeData(encodedContent);
-			if (decodedContent.isEmpty()) {
-				//System.err.println("Decoded XML content is empty for file: " + xmlFileName);
-			}
-			return decodedContent;
 		} catch (JSONException e) {
-			//System.err.println("Error retrieving XML content for file: " + xmlFileName);
 			e.printStackTrace();
-			return "";
+		}
+		return "";
+	}
+	
+	
+	/**
+* Helper method to check if a Java file exists in storage
+* @param javaFileName The Java file name to check
+* @return true if exists, false otherwise
+*/	
+	public boolean hasJavaFile(String javaFileName) {
+		if (javaFileName == null || javaFileName.trim().isEmpty()) {
+			return false;
+		}
+		
+		try {
+			if (!javaFileName.endsWith(".java")) {
+				javaFileName = javaFileName + ".java";
+			}
+			
+			JSONObject javaData = jsonData.optJSONObject("java");
+			if (javaData == null) return false;
+			
+			return javaData.has(encodeData(javaFileName));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 	
 	/**
-	* Removes all XML and Java view entries from storage
-	*/
+* Helper method to check if an XML file exists in storage
+* @param xmlFileName The XML file name to check
+* @return true if exists, false otherwise
+*/	
+	public boolean hasXmlFile(String xmlFileName) {
+		if (xmlFileName == null || xmlFileName.trim().isEmpty()) {
+			return false;
+		}
+		
+		try {
+			if (!xmlFileName.endsWith(".xml")) {
+				xmlFileName = xmlFileName + ".xml";
+			}
+			
+			JSONObject xmlData = jsonData.optJSONObject("xml");
+			if (xmlData == null) return false;
+			
+			return xmlData.has(encodeData(xmlFileName));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+* Removes all XML and Java view entries from storage
+*/	
 	public void removeAllViews() {
 		try {
 			JSONObject temp = new JSONObject(jsonData.toString());
@@ -2546,8 +2924,8 @@ public class Complex {
 	}
 	
 	/**
-	* Removes all custom view entries from storage
-	*/
+* Removes all custom view entries from storage
+*/	
 	public void removeAllCustomViews() {
 		try {
 			JSONObject temp = new JSONObject(jsonData.toString());
@@ -2619,10 +2997,10 @@ public class Complex {
 	}
 	
 	/**
-	* Remove a view by XML and Java names
-	* @param xmlName XML file name (e.g. "activity_main.xml")
-	* @param javaName Java file name (e.g. "MainActivity")
-	*/
+* Remove a view by XML and Java names
+* @param xmlName XML file name (e.g. "activity_main.xml")
+* @param javaName Java file name (e.g. "MainActivity")
+*/	
 	public void removeView(String xmlName, String javaName) {
 		try {
 			JSONObject temp = new JSONObject(jsonData.toString());
@@ -2697,8 +3075,8 @@ public class Complex {
 		}
 	}
 	/**
-	* Helper method to check if JSONArray contains a value
-	*/
+* Helper method to check if JSONArray contains a value
+*/	
 	public boolean arrayContains(JSONArray array, String value) {
 		try {
 			for (int i = 0; i < array.length(); i++) {
@@ -2790,9 +3168,9 @@ public class Complex {
 	}
 	
 	/**
-	* Get all activity names from meta.acName for use in UI lists.
-	* @return List of activity names (without .java extension)
-	*/
+* Get all activity names from meta.acName for use in UI lists.
+* @return List of activity names (without .java extension)
+*/	
 	public List<String> getActivityNames() {
 		List<String> activityNames = new ArrayList<>();
 		try {
@@ -2817,12 +3195,12 @@ public class Complex {
 	
 	
 	/**
-	* Associates an onClick listener logic with a specific widget in the given activity.
-	* Supports all clickable widgets without any widget declarations.
-	* @param activityName The name of the activity (e.g., "MainActivity")
-	* @param widgetId The ID of the widget (e.g., "button1")
-	* @param logic The core Java code to execute when the widget is clicked
-	*/
+* Associates an onClick listener logic with a specific widget in the given activity.
+* Supports all clickable widgets without any widget declarations.
+* @param activityName The name of the activity (e.g., "MainActivity")
+* @param widgetId The ID of the widget (e.g., "button1")
+* @param logic The core Java code to execute when the widget is clicked
+*/	
 	public void addWidgetOnClickListener(String activityName, String widgetId, String logic) {
 		try {
 			// Initialize or retrieve widget listeners storage
@@ -2855,11 +3233,11 @@ public class Complex {
 	}
 	
 	/**
-	* Associates an onLongClick listener logic with a specific widget in the given activity.
-	* @param activityName The name of the activity (e.g., "MainActivity")
-	* @param widgetId The ID of the widget (e.g., "button1")
-	* @param logic The core Java code to execute when the widget is long-clicked
-	*/
+* Associates an onLongClick listener logic with a specific widget in the given activity.
+* @param activityName The name of the activity (e.g., "MainActivity")
+* @param widgetId The ID of the widget (e.g., "button1")
+* @param logic The core Java code to execute when the widget is long-clicked
+*/	
 	public void addWidgetOnLongClickListener(String activityName, String widgetId, String logic) {
 		try {
 			JSONObject widgetListeners = jsonData.optJSONObject("widgetListeners");
@@ -2887,11 +3265,11 @@ public class Complex {
 	}
 	
 	/**
-	* Associates an onTouch listener logic with a specific widget in the given activity.
-	* @param activityName The name of the activity (e.g., "MainActivity")
-	* @param widgetId The ID of the widget (e.g., "button1")
-	* @param logic The core Java code to execute when the widget is touched
-	*/
+* Associates an onTouch listener logic with a specific widget in the given activity.
+* @param activityName The name of the activity (e.g., "MainActivity")
+* @param widgetId The ID of the widget (e.g., "button1")
+* @param logic The core Java code to execute when the widget is touched
+*/	
 	public void addWidgetOnTouchListener(String activityName, String widgetId, String logic) {
 		try {
 			JSONObject widgetListeners = jsonData.optJSONObject("widgetListeners");
@@ -2920,10 +3298,10 @@ public class Complex {
 	
 	
 	/**
-	* Retrieves the complete Java code for the specified activity, including initializeLogic and widget click, long click, and touch listeners.
-	* @param activityName The name of the activity (e.g., "MainActivity")
-	* @return The complete Java code as a String, or empty string if not found
-	*/
+* Retrieves the complete Java code for the specified activity, including initializeLogic and widget click, long click, and touch listeners.
+* @param activityName The name of the activity (e.g., "MainActivity")
+* @return The complete Java code as a String, or empty string if not found
+*/	
 	public String getJavaCode(String activityName) {
 		try {
 			JSONObject javaData = jsonData.optJSONObject("java");
@@ -3056,11 +3434,11 @@ public class Complex {
 	}
 	
 	/**
-	* Stores selected widgets and their event types in JSON for a given activity.
-	* @param activityName The name of the activity (e.g., "MainActivity")
-	* @param widgetIds List of selected widget IDs
-	* @param eventType The selected event type (onClick, onLongClick, onTouch)
-	*/
+* Stores selected widgets and their event types in JSON for a given activity.
+* @param activityName The name of the activity (e.g., "MainActivity")
+* @param widgetIds List of selected widget IDs
+* @param eventType The selected event type (onClick, onLongClick, onTouch)
+*/	
 	public void storeWidgetEventSelections(String activityName, List<String> widgetIds, String eventType) {
 		try {
 			JSONObject widgetEventSelections = jsonData.optJSONObject("widgetEventSelections");
@@ -3088,10 +3466,10 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves stored widget event selections for a given activity.
-	* @param activityName The name of the activity
-	* @return Map of widget IDs to their assigned event types
-	*/
+* Retrieves stored widget event selections for a given activity.
+* @param activityName The name of the activity
+* @return Map of widget IDs to their assigned event types
+*/	
 	public Map<String, String> getWidgetEventSelections(String activityName) {
 		Map<String, String> selections = new HashMap<>();
 		try {
@@ -3115,8 +3493,8 @@ public class Complex {
 	}
 	
 	/*
-	* Add this method to the Complex.java file
-	*/
+* Add this method to the Complex.java file
+*/	
 	public void extractAllLogicsFromJson(String jsonFilePath) {
 		try {
 			File jsonFile = new File(jsonFilePath);
@@ -3147,9 +3525,9 @@ public class Complex {
 	}
 	
 	/**
-	* Updates the project name across all relevant configurations.
-	* @param newProjectName The new project name to set
-	*/
+* Updates the project name across all relevant configurations.
+* @param newProjectName The new project name to set
+*/	
 	public void updateProjectName(String newProjectName) {
 		if (newProjectName == null || newProjectName.trim().isEmpty()) {
 			return; // Prevent setting empty or null project name
@@ -3186,9 +3564,9 @@ public class Complex {
 	}
 	
 	/**
-	* Updates the package name across all relevant configurations.
-	* @param newPackageName The new package name to set
-	*/
+* Updates the package name across all relevant configurations.
+* @param newPackageName The new package name to set
+*/	
 	public void updatePackageName(String newPackageName) {
 		if (newPackageName == null || newPackageName.trim().isEmpty() || !newPackageName.matches("^[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)+$")) {
 			return; // Prevent invalid package names
@@ -3243,9 +3621,9 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves the Gradle build file content.
-	* @return The Gradle build file content as a String
-	*/
+* Retrieves the Gradle build file content.
+* @return The Gradle build file content as a String
+*/	
 	public String getGradleBuild() {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -3260,9 +3638,9 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves the Gradle build configuration content.
-	* @return The Gradle build configuration content as a String
-	*/
+* Retrieves the Gradle build configuration content.
+* @return The Gradle build configuration content as a String
+*/	
 	public String getGradleBuildConfig() {
 		try {
 			JSONObject metaData = jsonData.optJSONObject("meta");
@@ -3277,9 +3655,9 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves a combined list of all Java activity names and XML file names.
-	* @return List of all Java and XML names
-	*/
+* Retrieves a combined list of all Java activity names and XML file names.
+* @return List of all Java and XML names
+*/	
 	public List<String> getAllJavaAndXmlNames() {
 		List<String> allNames = new ArrayList<>();
 		try {
@@ -3682,9 +4060,9 @@ public class Complex {
 		}
 	}
 	/*
-	public boolean isFabEnabled(String javaName) {
-	return getFeatureFlag(javaName, "fab");
-	}*/
+public boolean isFabEnabled(String javaName) {
+return getFeatureFlag(javaName, "fab");
+}*/	
 	
 	public boolean isDrawerEnabled(String javaName) {
 		return getFeatureFlag(javaName, "drawer");
@@ -3713,11 +4091,11 @@ public class Complex {
 	}
 	
 	/**
-	* Retrieves the properties of an activity from the JSON data.
-	* @param activityName The name of the activity (e.g., "MainActivity").
-	* @return A JSONObject containing the activity's properties, or null if not found.
-	* @throws JSONException If JSON parsing fails.
-	*/
+* Retrieves the properties of an activity from the JSON data.
+* @param activityName The name of the activity (e.g., "MainActivity").
+* @return A JSONObject containing the activity's properties, or null if not found.
+* @throws JSONException If JSON parsing fails.
+*/	
 	public JSONObject getActivityData(String activityName) throws JSONException {
 		JSONObject metaData = jsonData.optJSONObject("meta");
 		if (metaData == null) {
@@ -3762,83 +4140,78 @@ public class Complex {
 	}
 	
 	/**
-	* Updates an existing activity's properties.
-	* @param oldName The original activity name.
-	* @param newName The new activity name (may be the same as oldName).
-	* @param xmlName The XML file name for the activity.
-	* @param hasFab Whether the FAB is enabled.
-	* @param hasToolbar Whether the toolbar is enabled.
-	* @param useAndroidX Whether AndroidX is enabled.
-	* @param hasDrawer Whether the navigation drawer is enabled.
-	* @param type The activity type (Activity, Fragment, DialogFragment).
-	* @param orientation The orientation (Portrait, Landscape, Both).
-	* @param hasStatusBar Whether the status bar is enabled.
-	* @throws JSONException If JSON manipulation fails.
-	*/
-	public void updateActivity(String oldName, String newName, String xmlName, boolean hasFab, boolean hasToolbar,
-	boolean useAndroidX, boolean hasDrawer, String type, String orientation, boolean hasStatusBar) throws JSONException {
-		// Remove old activity data from manifest and JSON
-		removeActivityFromManifest(oldName);
-		
-		// Update JSON metadata
-		JSONObject metaData = jsonData.optJSONObject("meta");
-		if (metaData == null) {
-			metaData = new JSONObject();
-			jsonData.put("meta", metaData);
+* Updates an existing activity's properties.
+* @param oldName The original activity name.
+* @param newName The new activity name (may be the same as oldName).
+* @param xmlName The XML file name for the activity.
+* @param hasFab Whether the FAB is enabled.
+* @param hasToolbar Whether the toolbar is enabled.
+* @param useAndroidX Whether AndroidX is enabled.
+* @param hasDrawer Whether the navigation drawer is enabled.
+* @param type The activity type (Activity, Fragment, DialogFragment).
+* @param orientation The orientation (Portrait, Landscape, Both).
+* @param hasStatusBar Whether the status bar is enabled.
+* @throws JSONException If JSON manipulation fails.
+*/	
+	public void updateActivity(
+	String oldActivityName,
+	String newJavaName,
+	String newXmlName,
+	boolean hasFab,
+	boolean hasToolbar,
+	boolean androidX,
+	boolean hasDrawer,
+	String type,
+	String orientation,
+	boolean hasStatusBar
+	) throws JSONException {
+		// pura JSON lo
+		JSONObject activities = jsonData.optJSONObject("activities");
+		if (activities == null) {
+			throw new JSONException("No activities data found");
 		}
 		
-		// Update toolbar settings
-		JSONObject toolbarObject = metaData.optJSONObject("toolbar");
-		if (toolbarObject == null) {
-			toolbarObject = new JSONObject();
-			metaData.put("toolbar", toolbarObject);
+		// purana data lo
+		JSONObject activityData = activities.optJSONObject(oldActivityName);
+		if (activityData == null) {
+			throw new JSONException("Activity not found: " + oldActivityName);
 		}
-		JSONObject toolbarEntry = new JSONObject();
-		toolbarEntry.put("enabled", hasToolbar);
-		toolbarEntry.put("androidX", useAndroidX);
-		toolbarObject.put(encodeData(newName), toolbarEntry);
 		
-		// Update activity properties
-		JSONObject activityData = new JSONObject();
+		// agar naam change hua hai to purana remove karo
+		if (!oldActivityName.equals(newJavaName)) {
+			activities.remove(oldActivityName);
+		}
+		
+		// update fields
+		activityData.put("xmlName", newXmlName);
 		activityData.put("fab", hasFab);
+		activityData.put("toolbar", hasToolbar);
 		activityData.put("drawer", hasDrawer);
 		activityData.put("statusBar", hasStatusBar);
 		activityData.put("type", type);
 		activityData.put("orientation", orientation);
-		metaData.put(encodeData(newName), activityData);
 		
-		jsonData.put("meta", metaData);
+		// naye naam pe wapas daalo
+		activities.put(newJavaName, activityData);
 		
-		// Update manifest and resources
-		setAcName(newName);
-		setXName(xmlName);
-		addActivityToManifest(newName);
-		enableFab(newName, hasFab);
-		enableToolBar(newName, useAndroidX, hasToolbar);
-		addActivity(newName, xmlName, hasFab, false, hasDrawer);
-		
-		// Update style resources to handle toolbar (e.g., NoActionBar theme)
-		setStyleResources(getStyleResources());
-		
-		// Save changes
-		saveJson();
+		// manifest update
+		removeActivityFromManifest(oldActivityName);
+		addActivityToManifest(newJavaName);
 	}
 	
-	/**
-	* Removes an activity from the manifest.
-	* @param activityName The name of the activity to remove.
-	*/
+	
+	
 	private void removeActivityFromManifest(String activityName) {
 		String manifest = getManifest();
-		String activityEntry = "<activity[^>]*android:name=\"\\." + activityName + "\"[^>]*>[\\s\\S]*?</activity>";
+		String activityEntry = "(?s)<activity\\s+[^>]*android:name\\s*=\\s*\"\\." + Pattern.quote(activityName) + "\"[^>]*>[\\s\\S]*?</activity>|<activity\\s+[^>]*android:name\\s*=\\s*\"\\." + Pattern.quote(activityName) + "\"[^>]*\\/>";
 		manifest = manifest.replaceAll(activityEntry, "");
-		setManifest(manifest);
+		setManifest(prettyPrintXML(manifest)); // Pretty-print for readability
 	}
 	
 	/**
-	* Placeholder for getXName (retrieve XML name for an activity).
-	* Implement based on your JSON structure if needed.
-	*/
+* Placeholder for getXName (retrieve XML name for an activity).
+* Implement based on your JSON structure if needed.
+*/	
 	private String getXName(String activityName) {
 		try {
 			JSONObject resData = jsonData.optJSONObject("res");
@@ -3857,67 +4230,77 @@ public class Complex {
 		return "";
 	}
 	
-	/**
-	* Sets the specified activity as the launcher activity in the AndroidManifest.xml.
-	* Removes the launcher intent-filter from other activities and adds it to the specified activity.
-	* @param activityName The name of the activity to set as the launcher (e.g., "MainActivity").
-	*/
 	public void setLauncherActivity(String activityName) {
 		try {
 			String manifest = getManifest();
 			if (manifest.isEmpty() || !manifest.contains("</application>")) return;
 			
-			// Remove existing launcher intent-filters from all activities
-			String updatedManifest = manifest.replaceAll(
-			"(?s)(\\s*<activity[^>]*>.*?)<intent-filter>\\s*" +
-			"<action android:name=\"android.intent.action.MAIN\"\\s*/>\\s*" +
-			"<category android:name=\"android.intent.category.LAUNCHER\"\\s*/>\\s*" +
-			"</intent-filter>(.*?)</activity>",
-			"$1$2</activity>"
-			);
-			
-			// Add launcher intent-filter to the specified activity
-			String activityEntry = "<activity[^>]*android:name=\"\\." + activityName + "\"[^>]*>";
-			if (updatedManifest.contains(activityEntry)) {
-				// Check if the activity already has an intent-filter
-				if (updatedManifest.contains(activityEntry + "\n            <intent-filter>")) {
-					// Replace existing intent-filter
-					updatedManifest = updatedManifest.replaceAll(
-					"(?s)(" + activityEntry + ".*?)<intent-filter>.*?</intent-filter>(.*?)</activity>",
-					"$1\n            <intent-filter>\n" +
-					"                <action android:name=\"android.intent.action.MAIN\" />\n" +
-					"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
-					"            </intent-filter>$2</activity>"
-					);
+			if (!hasDuplicateLauncher()) {
+				
+				// Remove existing launcher intent-filters
+				String updatedManifest = manifest.replaceAll(
+				"(?s)(\\s*<activity[^>]*>.*?)<intent-filter>\\s*" +
+				"<action android:name=\"android.intent.action.MAIN\"\\s*/>\\s*" +
+				"<category android:name=\"android.intent.category.LAUNCHER\"\\s*/>\\s*" +
+				"</intent-filter>(.*?)</activity>",
+				"$1$2</activity>"
+				);
+				
+				// Remove duplicates first
+				removeDuplicateActivities();
+				
+				// Find or add the target activity
+				String activityEntry = "<activity[^>]*android:name=\"\\." + Pattern.quote(activityName) + "\"[^>]*>";
+				Pattern activityPattern = Pattern.compile(activityEntry, Pattern.CASE_INSENSITIVE);
+				Matcher activityMatcher = activityPattern.matcher(updatedManifest);
+				
+				if (activityMatcher.find()) {
+					String fullActivityPattern = "(<activity[^>]*android:name=\"\\." + Pattern.quote(activityName) + "\"[^>]*>)(.*?)(</activity>)";
+					Pattern fullPattern = Pattern.compile(fullActivityPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+					Matcher fullMatcher = fullPattern.matcher(updatedManifest);
+					
+					if (fullMatcher.find()) {
+						String activityStart = fullMatcher.group(1);
+						String activityContent = fullMatcher.group(2);
+						String activityEnd = fullMatcher.group(3);
+						
+						String newActivityContent = activityStart +
+						activityContent +
+						"\n            <intent-filter>\n" +
+						"                <action android:name=\"android.intent.action.MAIN\" />\n" +
+						"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
+						"            </intent-filter>\n" +
+						activityEnd;
+						
+						updatedManifest = fullMatcher.replaceFirst(Matcher.quoteReplacement(newActivityContent));
+					}
 				} else {
-					// Add new intent-filter
-					updatedManifest = updatedManifest.replaceFirst(
-					activityEntry,
-					"$0\n            <intent-filter>\n" +
-					"                <action android:name=\"android.intent.action.MAIN\" />\n" +
-					"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
-					"            </intent-filter>"
-					);
+					addActivityToManifest(activityName); // Add if not exists
+					updatedManifest = getManifest(); // Refresh manifest
+					String fullActivityPattern = "(<activity[^>]*android:name=\"\\." + Pattern.quote(activityName) + "\"[^>]*>)(.*?)(</activity>)";
+					Pattern fullPattern = Pattern.compile(fullActivityPattern, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+					Matcher fullMatcher = fullPattern.matcher(updatedManifest);
+					
+					if (fullMatcher.find()) {
+						String activityStart = fullMatcher.group(1);
+						String activityContent = fullMatcher.group(2);
+						String activityEnd = fullMatcher.group(3);
+						
+						String newActivityContent = activityStart +
+						activityContent +
+						"\n            <intent-filter>\n" +
+						"                <action android:name=\"android.intent.action.MAIN\" />\n" +
+						"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
+						"            </intent-filter>\n" +
+						activityEnd;
+						
+						updatedManifest = fullMatcher.replaceFirst(Matcher.quoteReplacement(newActivityContent));
+					}
 				}
-			} else {
-				// If the activity doesn't exist, add it with the launcher intent-filter
-				String newActivity =
-				"        <activity\n" +
-				"            android:name=\"." + activityName + "\"\n" +
-				"            android:exported=\"true\"\n" +
-				"            android:theme=\"@style/AppTheme\"\n" +
-				"            android:label=\"" + activityName + "\">\n" +
-				"            <intent-filter>\n" +
-				"                <action android:name=\"android.intent.action.MAIN\" />\n" +
-				"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
-				"            </intent-filter>\n" +
-				"        </activity>\n";
-				updatedManifest = updatedManifest.replace("</application>", newActivity + "</application>");
+				
+				setManifest(prettyPrintXML(updatedManifest));
+				validateAndFixManifest(); // Ensure no duplicates
 			}
-			
-			// Save the updated manifest
-			setManifest(updatedManifest);
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -3946,14 +4329,14 @@ public class Complex {
 			} else {
 				try {
 					String relativePath = rootPrefix + "/" + getRelativePath(baseDir, file);
-					String content = readFile(file);
-					map.put(relativePath, content);
-				} catch (IOException e) {
+					map.put(relativePath, file.getAbsolutePath()); // ✅ Path save kar
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	}
+	
 	private String getRelativePath(File baseDir, File file) {
 		String basePath = baseDir.getAbsolutePath();
 		String filePath = file.getAbsolutePath();
@@ -4095,13 +4478,11 @@ public class Complex {
 			}
 			for (Map.Entry<String, String> entry : extraResources.entrySet()) {
 				String relativePath = entry.getKey();
-				String sourcePath = entry.getValue();
+				String sourcePath = entry.getValue(); // ✅ Yeh ab actual path hoga
 				String destPath = mainPath + File.separator + relativePath.replace("/", File.separator);
-				copyFile(sourcePath, destPath);
-				if (progressListener != null) {
-					progressListener.onProgress(++progress * 100 / totalSteps, "Exported resource: " + relativePath);
-				}
+				copyFile(sourcePath, destPath); // ✅ Ab sahi chalega
 			}
+			
 			
 			if (progressListener != null) {
 				progressListener.onProgress(++progress * 100 / totalSteps, "Exporting Gradle files...");
@@ -4286,7 +4667,7 @@ public class Complex {
 		"}";
 		
 		setJavaCode("DebugActivity", debugActivityCode);
-		addActivityToManifest("DebugActivity");
+		//	addActivityToManifest("DebugActivity");
 	}
 	
 	public void addBlackApplication() {
@@ -4519,5 +4900,984 @@ public class Complex {
 		}
 	}
 	
+	// Add helper method to find activity by XML name
+	private String findActivityByXmlName(String xmlName) {
+		try {
+			// Check old JSON system as fallback
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData != null && metaData.has("acName") && metaData.has("xName")) {
+				JSONArray acNameArray = metaData.getJSONArray("acName");
+				JSONArray xNameArray = metaData.getJSONArray("xName");
+				
+				for (int i = 0; i < Math.min(acNameArray.length(), xNameArray.length()); i++) {
+					String storedXmlName = decodeData(xNameArray.getString(i));
+					if (xmlName.equals(storedXmlName)) {
+						return decodeData(acNameArray.getString(i)).replace(".java", "");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// Add helper method to get XML name for activity
+	private String getXmlNameForActivity(String activityName) {
+		try {
+			// Fallback to old JSON system
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData != null && metaData.has("acName") && metaData.has("xName")) {
+				JSONArray acNameArray = metaData.getJSONArray("acName");
+				JSONArray xNameArray = metaData.getJSONArray("xName");
+				
+				for (int i = 0; i < Math.min(acNameArray.length(), xNameArray.length()); i++) {
+					String storedActivityName = decodeData(acNameArray.getString(i)).replace(".java", "");
+					if (activityName.equals(storedActivityName)) {
+						return decodeData(xNameArray.getString(i)).replace(".xml", "");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return activityName;
+	}
+	
+	public void dataMathodLoad() {
+		currentActivityBean = new ProjectActivityBean(
+		s, // activityName
+		"",         // layoutName
+		"", // packageName
+		true,           // isMainActivity
+		sc_id,
+		""     // projectName
+		);
+	}
+	
+	private void tryLoadData() {
+		if (s != null && sc_id != null) {
+			dataMathodLoad();
+		}
+	}
+	
+	/**
+* Correct way to update project - SAME sc_id rakhte huye
+*/	
+	public boolean updateProject(String newProjectName, String newPackageName) {
+		try {
+			// ✅ SAME sc_id use karo, naya nahi banayo
+			String currentScId = this.sc_id;
+			
+			// Validate inputs
+			if (newProjectName == null || newProjectName.trim().isEmpty()) {
+				//Toast.makeText(context, "Project name cannot be empty", Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			
+			if (newPackageName == null || newPackageName.trim().isEmpty()) {
+				//Toast.makeText(context, "Package name cannot be empty", Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			
+			// ✅ Existing project data ko hi update karo
+			updateProjectName(newProjectName);
+			updatePackageName(newPackageName);
+			
+			// ✅ Manifest update karo
+			updateManifestForRename(newProjectName, newPackageName);
+			
+			// ✅ Save all changes
+			saveJson();
+			
+			//Toast.makeText(context, "Project updated successfully!", Toast.LENGTH_SHORT).show();
+			return true;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			// Toast.makeText(context, "Error updating project: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			return false;
+		}
+	}
+	
+	/**
+* Manifest ko bhi update karo new name/package ke saath
+*/	
+	private void updateManifestForRename(String newProjectName, String newPackageName) {
+		try {
+			String manifest = getManifest();
+			
+			// Update package name in manifest
+			if (manifest.contains("package=\"")) {
+				String oldPackage = getPkgName();
+				manifest = manifest.replace(
+				"package=\"" + oldPackage + "\"", 
+				"package=\"" + newPackageName + "\""
+				);
+			}
+			
+			// Update app label in manifest
+			if (manifest.contains("android:label=\"")) {
+				String oldName = getProjectName();
+				manifest = manifest.replace(
+				"android:label=\"" + oldName + "\"",
+				"android:label=\"" + newProjectName + "\""
+				);
+			}
+			
+			setManifest(manifest);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Deletes the physical XML and Java files for a view.
+* @param xmlName The XML name (e.g., "activity_main")
+* @param javaName The Java name (e.g., "MainActivity")
+*/	
+	public void deleteViewFiles(String xmlName, String javaName) {
+		try {
+			// Delete Java file
+			File javaFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + 
+			"/.blacklogics/data/" + sc_id + "/files/java/" + javaName + ".java");
+			if (javaFile.exists()) {
+				javaFile.delete();
+			}
+			
+			// Remove from JSON
+			JSONObject xmlData = jsonData.optJSONObject("xml");
+			if (xmlData != null) {
+				xmlData.remove(encodeData(xmlName));
+				jsonData.put("xml", xmlData);
+			}
+			
+			JSONObject javaData = jsonData.optJSONObject("java");
+			if (javaData != null) {
+				javaData.remove(encodeData(javaName + ".java"));
+				jsonData.put("java", javaData);
+			}
+			
+			saveJson();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Deletes the physical file for a custom view and removes it from JSON.
+* @param viewName The name of the custom view
+*/	
+	public void deleteCustomViewFile(String viewName) {
+		try {
+			// Remove from JSON
+			JSONObject xmlData = jsonData.optJSONObject("xml");
+			if (xmlData != null) {
+				xmlData.remove(encodeData(viewName));
+				jsonData.put("xml", xmlData);
+			}
+			
+			saveJson();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// 1. Sab XML names (xName) निकालने का method
+	public List<String> getAllXNames() {
+		List<String> names = new ArrayList<>();
+		try {
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData != null && metaData.has("xName")) {
+				JSONArray xNameArray = metaData.getJSONArray("xName");
+				for (int i = 0; i < xNameArray.length(); i++) {
+					names.add(decodeData(xNameArray.getString(i)));
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return names;
+	}
+	
+	// 2. JSON → XML में बदलने वाला recursive helper
+	private String generateXmlFromJson(JSONObject view, int indent) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			String tag = view.optString("type", "View");
+			String id = view.optString("id", null);
+			JSONObject attrs = view.optJSONObject("attributes");
+			JSONArray children = view.optJSONArray("children");
+			
+			String pad = " ".repeat(indent);
+			
+			sb.append(pad).append("<").append(tag);
+			
+			// id हमेशा डालो
+			if (id != null && !id.isEmpty()) {
+				sb.append("\n").append(pad).append("    android:id=\"@+id/").append(id).append("\"");
+			}
+			
+			if (attrs != null) {
+				for (Iterator<String> it = attrs.keys(); it.hasNext();) {
+					String key = it.next();
+					String value = attrs.getString(key);
+					sb.append("\n")
+					.append(pad).append("    ")
+					.append(key).append("=\"").append(value).append("\"");
+				}
+			}
+			
+			if (children != null && children.length() > 0) {
+				sb.append(">\n");
+				for (int i = 0; i < children.length(); i++) {
+					sb.append(generateXmlFromJson(children.getJSONObject(i), indent + 4));
+				}
+				sb.append(pad).append("</").append(tag).append(">\n");
+			} else {
+				sb.append(" />\n");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+	
+	// 3. ProjectLayoutData से सारे layouts का XML generate करना
+	public Map<String, String> generateAllXmlFromLayouts(Context context) {
+		Map<String, String> xmlMap = new HashMap<>();
+		/*try {
+String filePath = FileUtil.getPackageDataDir(context) + "/layouts/project_layouts.json";
+ProjectLayoutData projectData = ProjectLayoutData.loadFromFile(filePath);
+if (projectData == null) return xmlMap;
+
+List<String> layoutNames = getAllXNames();
+
+for (String layoutName : layoutNames) {
+ViewData viewData = projectData.getViewData(layoutName);
+if (viewData != null) {
+// Root LinearLayout banayenge
+StringBuilder sb = new StringBuilder();
+sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+sb.append("<LinearLayout\n")
+.append("    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n")
+.append("    android:layout_width=\"match_parent\"\n")
+.append("    android:layout_height=\"match_parent\"\n")
+.append("    android:orientation=\"vertical\">\n\n");
+
+// Child views (recursive)
+JSONObject rootView = new JSONObject(viewData.toJson());
+sb.append(generateXmlFromJson(rootView, 4));
+
+// Root close tag
+sb.append("</LinearLayout>\n");
+
+xmlMap.put(layoutName, sb.toString());
+}
+}
+} catch (Exception e) {
+e.printStackTrace();
+}*/		
+		return xmlMap;
+	}
+	
+	// 4. extractAllXmlCodes → सब XMLs को files में save करना
+	public void extractAllXmlCodes(Context context, File outDir) {
+		Map<String, String> xmls = generateAllXmlFromLayouts(context);
+		for (Map.Entry<String, String> entry : xmls.entrySet()) {
+			File outFile = new File(outDir, entry.getKey());
+			FileUtil.writeFile(outFile.getAbsolutePath(), entry.getValue());
+		}
+	}
+	
+	/**
+* Generates Java code for all activities by iterating over acName and xName arrays
+* in the JSON meta data, calling DesignActivity.generateJavaCode for each activity-layout pair.
+*/	
+	public void generateAllJavaCodes() {
+		try {
+			JSONObject metaData = jsonData.optJSONObject("meta");
+			if (metaData == null) {
+				// System.err.println("No meta data found in JSON");
+				return;
+			}
+			
+			JSONArray acNameArray = metaData.optJSONArray("acName");
+			JSONArray xNameArray = metaData.optJSONArray("xName");
+			if (acNameArray == null || xNameArray == null) {
+				// System.err.println("acName or xName array not found in meta data");
+				return;
+			}
+			
+			int len = Math.min(acNameArray.length(), xNameArray.length());
+			for (int i = 0; i < len; i++) {
+				String encodedAcName = acNameArray.getString(i);
+				String encodedXName = xNameArray.getString(i);
+				String acName = decodeData(encodedAcName).replace(".java", "");
+				String layoutName = decodeData(encodedXName).replace(".xml", "");
+				
+				if (!acName.isEmpty() && !layoutName.isEmpty()) {
+					try {
+						// Call DesignActivity.generateJavaCode with activity and layout names
+						if (context instanceof DesignActivity) {
+							((DesignActivity) context).generateJavaCode(acName, layoutName);
+						} else {
+							// System.err.println("Context is not an instance of DesignActivity");
+						}
+					} catch (Exception e) {
+						// System.err.println("Error generating Java code for activity: " + acName + ", layout: " + layoutName);
+						e.printStackTrace();
+					}
+				} else {
+					// System.err.println("Invalid activity or layout name at index " + i);
+				}
+			}
+		} catch (JSONException e) {
+			// System.err.println("Error parsing JSON meta data for generating Java codes");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Clears all runtime caches and temporary data
+* Useful for freeing memory and resetting state
+*/	
+	public void clearCache() {
+		try {
+			// Clear runtime logic cache
+			if (runtimeLogicCache != null) {
+				runtimeLogicCache.clear();
+			}
+			
+			// Clear activity logic map
+			if (activityLogicMap != null) {
+				activityLogicMap.clear();
+			}
+			
+			// Clear cached logic
+			if (cachedLogic != null) {
+				cachedLogic.clear();
+			}
+			
+			// Clear lists
+			if (items != null) {
+				items.clear();
+			}
+			
+			if (xmlItems != null) {
+				xmlItems.clear();
+			}
+			
+			if (javaItems != null) {
+				javaItems.clear();
+			}
+			
+			// Clear maps
+			if (xmlToJavaMap != null) {
+				xmlToJavaMap.clear();
+			}
+			
+			if (javaToXmlMap != null) {
+				javaToXmlMap.clear();
+			}
+			
+			// Clear extra resources and Java files
+			if (extraResources != null) {
+				extraResources.clear();
+			}
+			
+			if (extraJavaFiles != null) {
+				extraJavaFiles.clear();
+			}
+			
+			// Reset selection trackers
+			lastSelectedXml = "";
+			lastSelectedJava = "";
+			
+			// Clear spinner references
+			javaSpinner = null;
+			xmlSpinner = null;
+			
+			// Clear context reference
+			context = null;
+			
+			// Clear current activity bean
+			currentActivityBean = null;
+			
+			//System.out.println("All caches cleared successfully");
+			
+		} catch (Exception e) {
+			//System.err.println("Error clearing cache: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Comprehensive cleanup method that clears cache and performs additional cleanup tasks
+* Use this when the Complex instance is no longer needed or when switching projects
+*/	
+	public void cleanup() {
+		try {
+			// First clear all caches
+			clearCache();
+			
+			// Additional cleanup tasks
+			
+			// Clear JSON data references (but don't delete the actual files)
+			if (jsonData != null) {
+				// We don't set to null as it might be needed, but we can clear specific sections
+				// if they're taking too much memory
+				if (jsonData.has("logic")) {
+					// Clear logic cache from JSON but keep the structure
+					JSONObject logicData = jsonData.optJSONObject("logic");
+					if (logicData != null) {
+						Iterator<String> keys = logicData.keys();
+						while (keys.hasNext()) {
+							keys.next();
+							// We keep the data but you could remove it here if needed
+						}
+					}
+				}
+			}
+			
+			// Clear activity logic storage reference
+			activityLogicStorage = null;
+			
+			// Clear project data reference
+			projectData = null;
+			
+			// Force garbage collection (suggestion only, JVM will decide)
+			System.gc();
+			
+			//System.out.println("Cleanup completed successfully");
+			
+		} catch (Exception e) {
+			//System.err.println("Error during cleanup: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Light cleanup - clears only the most memory-intensive caches
+* Use this for frequent cleanup during normal operation
+*/	
+	public void lightCleanup() {
+		try {
+			// Clear only the largest caches
+			if (runtimeLogicCache != null) {
+				runtimeLogicCache.clear();
+			}
+			
+			if (extraResources != null) {
+				extraResources.clear();
+			}
+			
+			if (extraJavaFiles != null) {
+				extraJavaFiles.clear();
+			}
+			
+			// Clear lists
+			if (items != null) {
+				items.clear();
+			}
+			
+			//System.out.println("Light cleanup completed");
+			
+		} catch (Exception e) {
+			//System.err.println("Error during light cleanup: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Project-specific cleanup - clears data related to current project
+* Use this when switching between projects
+*/	
+	public void cleanupProjectData() {
+		try {
+			// Clear project-specific data
+			if (runtimeLogicCache != null) {
+				runtimeLogicCache.clear();
+			}
+			
+			if (activityLogicMap != null) {
+				activityLogicMap.clear();
+			}
+			
+			// Clear project lists and mappings
+			if (xmlItems != null) {
+				xmlItems.clear();
+			}
+			
+			if (javaItems != null) {
+				javaItems.clear();
+			}
+			
+			if (xmlToJavaMap != null) {
+				xmlToJavaMap.clear();
+			}
+			
+			if (javaToXmlMap != null) {
+				javaToXmlMap.clear();
+			}
+			
+			// Reset current activity
+			s = "MainActivity";
+			currentActivityBean = null;
+			
+			// Reset selection trackers
+			lastSelectedXml = "";
+			lastSelectedJava = "";
+			
+			//System.out.println("Project data cleaned up");
+			
+		} catch (Exception e) {
+			//System.err.println("Error cleaning up project data: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	private String getProjectPath() {
+		return Environment.getExternalStorageDirectory().getAbsolutePath() + "/.blacklogics/data/" + sc_id;
+	}
+	
+	// New method to generate virtual XML from WidgetAttributesManager attributes
+	public String getXmlAndExtract(String activityName) {
+		WidgetAttributesManager am = new WidgetAttributesManager(context, getProjectPath(), getScName(), sc_id, getPkgName());
+		Map<String, Map<String, String>> widgets = am.getWidgetsForActivity(activityName);
+		if (widgets == null || widgets.isEmpty()) {
+			return "";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+		sb.append("<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n");
+		sb.append("    android:layout_width=\"match_parent\"\n");
+		sb.append("    android:layout_height=\"match_parent\"\n");
+		sb.append("    android:orientation=\"vertical\">\n\n");
+		
+		for (Map.Entry<String, Map<String, String>> widgetEntry : widgets.entrySet()) {
+			String widgetId = widgetEntry.getKey();
+			Map<String, String> attrs = widgetEntry.getValue();
+			String type = attrs.get("type");
+			if (type == null) continue;
+			
+			sb.append("    <").append(type);
+			sb.append(" android:id=\"@+id/").append(widgetId).append("\"");
+			
+			for (Map.Entry<String, String> attrEntry : attrs.entrySet()) {
+				String attrName = attrEntry.getKey();
+				if (attrName.equals("type")) continue;
+				String attrValue = attrEntry.getValue();
+				sb.append("\n        android:").append(attrName).append("=\"").append(attrValue).append("\"");
+			}
+			
+			sb.append(" />\n\n");
+		}
+		
+		sb.append("</LinearLayout>\n");
+		return sb.toString();
+	}
+	
+	/**
+* Removes duplicate activity entries from the manifest, merging attributes logically.
+* Ensures the output is pretty-printed for readability.
+*/	
+	public void removeDuplicateActivities() {
+		try {
+			String manifest = getManifest();
+			if (manifest == null || manifest.trim().isEmpty()) {
+				Log.w("ManifestFix", "Manifest is empty or null, skipping duplicate removal");
+				return;
+			}
+			
+			Set<String> seenActivities = new HashSet<>();
+			StringBuilder cleanedActivities = new StringBuilder();
+			
+			// Match both multi-line and self-closing <activity> tags
+			Pattern activityPattern = Pattern.compile(
+			"(<activity\\s+[^>]*>.*?</activity>|<activity\\s+[^>]*/>)",
+			Pattern.DOTALL | Pattern.CASE_INSENSITIVE
+			);
+			Matcher matcher = activityPattern.matcher(manifest);
+			
+			// Collect cleaned activities, merging attributes for duplicates
+			while (matcher.find()) {
+				String activityTag = matcher.group(1);
+				
+				// Extract activity name
+				Pattern namePattern = Pattern.compile("android:name\\s*=\\s*\"\\.([^\"]+)\"", Pattern.CASE_INSENSITIVE);
+				Matcher nameMatcher = namePattern.matcher(activityTag);
+				
+				if (nameMatcher.find()) {
+					String activityName = nameMatcher.group(1);
+					
+					if (!seenActivities.contains(activityName)) {
+						seenActivities.add(activityName);
+						
+						// Merge attributes if needed (e.g., check toolbar settings)
+						String finalActivityTag = activityTag;
+						if (activityName.equals("MainActivity") || activityName.equals("Hwkd")) {
+							JSONObject toolbarInfo = getToolbarInfo(activityName);
+							boolean hasToolbar = toolbarInfo != null && toolbarInfo.optBoolean("enabled", true);
+							boolean useAndroidX = toolbarInfo != null ? toolbarInfo.optBoolean("androidX", getAndroidXEnable()) : getAndroidXEnable();
+							
+							String theme = activityName.equals("DebugActivity") ? "@style/DebugTheme" :
+							hasToolbar ? (useAndroidX ? "@style/Theme.AppCompat.DayNight.DarkActionBar" : "@style/AppTheme") :
+							(useAndroidX ? "@style/Theme.AppCompat.NoActionBar" : "@style/AppTheme.NoActionBar");
+							
+							// Update theme and exported attributes
+							finalActivityTag = activityTag.replaceAll(
+							"android:theme\\s*=\\s*\"[^\"]*\"",
+							"android:theme=\"" + theme + "\""
+							);
+							finalActivityTag = finalActivityTag.replaceAll(
+							"android:exported\\s*=\\s*\"[^\"]*\"",
+							"android:exported=\"" + (activityName.equals("MainActivity") ? "true" : "false") + "\""
+							);
+						}
+						
+						cleanedActivities.append(finalActivityTag);
+					} else {
+						Log.d("ManifestFix", "Removed duplicate activity: " + activityName);
+					}
+				} else {
+					// Keep activities with no name (unlikely, but just in case)
+					cleanedActivities.append(activityTag);
+				}
+			}
+			
+			// Replace old activities in <application> with cleaned ones
+			Pattern appPattern = Pattern.compile(
+			"(<application\\s+[^>]*>)(.*?)(</application>)",
+			Pattern.DOTALL | Pattern.CASE_INSENSITIVE
+			);
+			Matcher appMatcher = appPattern.matcher(manifest);
+			
+			if (appMatcher.find()) {
+				String applicationStart = appMatcher.group(1);
+				String applicationContent = appMatcher.group(2);
+				String applicationEnd = appMatcher.group(3);
+				
+				// Remove all activity tags
+				String cleanedContent = applicationContent.replaceAll(
+				"(<activity\\s+[^>]*>.*?</activity>|<activity\\s+[^>]*/>)",
+				""
+				);
+				
+				// Append cleaned activities
+				String newApplicationContent = cleanedContent.trim() + "\n" + cleanedActivities.toString().trim();
+				
+				// Rebuild and format manifest
+				String newManifest = manifest.replace(
+				appMatcher.group(0),
+				applicationStart + "\n" + newApplicationContent + "\n    " + applicationEnd
+				);
+				
+				// Pretty-print the result
+				String formattedManifest = prettyPrintXML(newManifest);
+				setManifest(formattedManifest);
+				Log.d("ManifestFix", "Successfully removed duplicates and formatted manifest");
+			} else {
+				Log.w("ManifestFix", "No <application> tag found in manifest");
+			}
+		} catch (Exception e) {
+			Log.e("ManifestFix", "Error removing duplicate activities: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+* Validates the manifest and fixes common issues like duplicate activities and multiple launchers.
+* Ensures the output is pretty-printed and valid.
+*/	
+	public void validateAndFixManifest() {
+		try {
+			String manifest = getManifest();
+			if (manifest == null || manifest.trim().isEmpty()) {
+				Log.w("ManifestFix", "Manifest is empty or null, initializing default");
+				setManifest(createDefaultManifest());
+				return;
+			}
+			
+			// Check for valid XML structure
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			try {
+				builder.parse(new InputSource(new StringReader(manifest)));
+			} catch (Exception e) {
+				Log.w("ManifestFix", "Invalid XML structure, resetting to default manifest");
+				setManifest(createDefaultManifest());
+				return;
+			}
+			
+			// Remove duplicate activities
+			removeDuplicateActivities();
+			manifest = getManifest();
+			
+			// Ensure only one launcher activity
+			Pattern launcherPattern = Pattern.compile(
+			"<category\\s+android:name\\s*=\\s*\"android.intent.category.LAUNCHER\"\\s*/>",
+			Pattern.CASE_INSENSITIVE
+			);
+			Matcher launcherMatcher = launcherPattern.matcher(manifest);
+			int launcherCount = 0;
+			while (launcherMatcher.find()) {
+				launcherCount++;
+			}
+			
+			if (launcherCount > 1) {
+				Log.w("ManifestFix", "Multiple launcher activities found: " + launcherCount + ", setting MainActivity as launcher");
+				setLauncherActivity("MainActivity");
+				manifest = getManifest();
+			} else if (launcherCount == 0) {
+				Log.w("ManifestFix", "No launcher activity found, setting MainActivity as launcher");
+				setLauncherActivity("MainActivity");
+				manifest = getManifest();
+			}
+			
+			// Ensure android:exported is set for activities with intent-filters (Android 12+ requirement)
+			Pattern activityPattern = Pattern.compile(
+			"(<activity\\s+[^>]*>)(.*?)(</activity>|<activity\\s+[^>]*/>)",
+			Pattern.DOTALL | Pattern.CASE_INSENSITIVE
+			);
+			Matcher activityMatcher = activityPattern.matcher(manifest);
+			StringBuilder updatedManifest = new StringBuilder();
+			
+			int lastEnd = 0;
+			while (activityMatcher.find()) {
+				String activityStart = activityMatcher.group(1);
+				String activityContent = activityMatcher.group(2);
+				String activityEnd = activityMatcher.group(3);
+				
+				// Check if activity has intent-filter
+				boolean hasIntentFilter = activityContent.contains("<intent-filter");
+				if (hasIntentFilter && !activityStart.contains("android:exported")) {
+					Log.d("ManifestFix", "Adding android:exported to activity with intent-filter");
+					activityStart = activityStart.replace("<activity", "<activity android:exported=\"true\"");
+				}
+				
+				updatedManifest.append(manifest.substring(lastEnd, activityMatcher.start()));
+				updatedManifest.append(activityStart).append(activityContent).append(activityEnd);
+				lastEnd = activityMatcher.end();
+			}
+			updatedManifest.append(manifest.substring(lastEnd));
+			
+			// Pretty-print the final manifest
+			String finalManifest = prettyPrintXML(updatedManifest.toString());
+			setManifest(finalManifest);
+			Log.d("ManifestFix", "Manifest validated and fixed successfully");
+			
+		} catch (Exception e) {
+			Log.e("ManifestFix", "Error validating manifest: " + e.getMessage());
+			e.printStackTrace();
+			// Fallback to default manifest
+			setManifest(createDefaultManifest());
+		}
+	}
+	
+	/**
+* Creates a default manifest if the current one is invalid or empty.
+* @return A default manifest string
+*/	
+	private String createDefaultManifest() {
+		String defaultManifest =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+		"<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n" +
+		"    package=\"" + getPkgName() + "\">\n" +
+		"    <application\n" +
+		"        android:allowBackup=\"true\"\n" +
+		"        android:icon=\"@mipmap/icon\"\n" +
+		"        android:label=\"" + getProjectName() + "\"\n" +
+		"        android:theme=\"@style/AppTheme\"\n" +
+		"        android:name=\".BlackApplication\">\n" +
+		"        <activity\n" +
+		"            android:name=\".MainActivity\"\n" +
+		"            android:exported=\"true\"\n" +
+		"            android:theme=\"@style/AppTheme\"\n" +
+		"            android:label=\"MainActivity\">\n" +
+		"            <intent-filter>\n" +
+		"                <action android:name=\"android.intent.action.MAIN\" />\n" +
+		"                <category android:name=\"android.intent.category.LAUNCHER\" />\n" +
+		"            </intent-filter>\n" +
+		"        </activity>\n" +
+		"        <activity\n" +
+		"            android:name=\".DebugActivity\"\n" +
+		"            android:theme=\"@style/DebugTheme\"\n" +
+		"            android:exported=\"true\" />\n" +
+		"    </application>\n" +
+		"</manifest>";
+		return prettyPrintXML(defaultManifest);
+	}
+	/**
+* Pretty prints an XML string with consistent, clean indentation (4 spaces).
+* Ensures elements are properly aligned one below the other, attributes are sorted,
+* and no extra blank lines or whitespace remain.
+* @param xml The input XML string to format
+* @return The formatted XML string, or the original string if formatting fails
+*/	
+	public String prettyPrintXML(String xml) {
+		try {
+			if (xml == null || xml.trim().isEmpty()) {
+				Log.w("PrettyPrint", "XML is empty or null, returning empty string");
+				return "";
+			}
+			
+			// Parse XML into DOM
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setIgnoringComments(true);
+			factory.setNamespaceAware(true);
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(new InputSource(new StringReader(xml)));
+			document.getDocumentElement().normalize();
+			
+			// StringBuilder for manual formatting
+			StringBuilder formattedXml = new StringBuilder();
+			formattedXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			
+			// Recursively format the DOM tree
+			formatNode(document.getDocumentElement(), 0, formattedXml);
+			
+			// Ensure Unix-style line endings
+			String result = formattedXml.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+			
+			// Remove any trailing blank lines
+			result = result.replaceAll("(?m)^[ \t]*\r?\n", "").trim() + "\n";
+			
+			return result;
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			Log.e("PrettyPrint", "Error formatting XML: " + e.getMessage());
+			e.printStackTrace();
+			return xml; // Return original XML if formatting fails
+		}
+	}
+	
+	/**
+* Helper method to recursively format DOM nodes with proper indentation.
+* @param node The current DOM node
+* @param level The indentation level (number of 4-space indents)
+* @param sb The StringBuilder to append formatted XML to
+*/	
+	private void formatNode(Node node, int level, StringBuilder sb) {
+		if (node.getNodeType() != Node.ELEMENT_NODE) return;
+		
+		String indent = " ".repeat(level * 4);
+		
+		// Start tag
+		sb.append(indent).append("<").append(node.getNodeName());
+		
+		// Sort and add attributes
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes != null && attributes.getLength() > 0) {
+			List<String> attrList = new ArrayList<>();
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Node attr = attributes.item(i);
+				attrList.add(attr.getNodeName() + "=\"" + escapeXml(attr.getNodeValue()) + "\"");
+			}
+			Collections.sort(attrList); // Sort attributes alphabetically
+			for (String attr : attrList) {
+				sb.append("\n").append(indent).append("    ").append(attr);
+			}
+		}
+		
+		NodeList children = node.getChildNodes();
+		boolean hasElementChildren = false;
+		for (int i = 0; i < children.getLength(); i++) {
+			if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				hasElementChildren = true;
+				break;
+			}
+		}
+		
+		if (hasElementChildren) {
+			sb.append(">\n");
+			// Process child nodes
+			for (int i = 0; i < children.getLength(); i++) {
+				formatNode(children.item(i), level + 1, sb);
+			}
+			sb.append(indent).append("</").append(node.getNodeName()).append(">\n");
+		} else if (node.getTextContent().trim().isEmpty()) {
+			sb.append(" />\n");
+		} else {
+			// Handle text content (rare in Android manifests, but included for completeness)
+			sb.append(">").append(escapeXml(node.getTextContent().trim())).append("</").append(node.getNodeName()).append(">\n");
+		}
+	}
+	
+	/**
+* Escapes special characters in XML attribute values or text content.
+* @param value The string to escape
+* @return Escaped string
+*/	
+	private String escapeXml(String value) {
+		if (value == null) return "";
+		return value.replace("&", "&amp;")
+		.replace("<", "&lt;")
+		.replace(">", "&gt;")
+		.replace("\"", "&quot;")
+		.replace("'", "&apos;");
+	}
+	
+	private boolean hasActivityInManifest(String activityName) {
+		String manifest = getManifest();
+		return manifest != null && 
+		manifest.contains("android:name=\"." + activityName + "\"");
+	}
+	/**
+* Checks if there are multiple launcher activities in the manifest
+* @return true if multiple launchers found, false otherwise
+*/	
+	public boolean hasDuplicateLauncher() {
+		try {
+			String manifest = getManifest();
+			if (manifest == null || manifest.trim().isEmpty()) {
+				return false;
+			}
+			
+			Pattern launcherPattern = Pattern.compile(
+			"<category\\s+android:name\\s*=\\s*\"android.intent.category.LAUNCHER\"\\s*/>",
+			Pattern.CASE_INSENSITIVE
+			);
+			
+			Matcher matcher = launcherPattern.matcher(manifest);
+			int launcherCount = 0;
+			while (matcher.find()) {
+				launcherCount++;
+			}
+			
+			return launcherCount > 1;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+* Checks if an activity exists in the manifest by its name.
+* @param activityName The name of the activity to check (e.g., "MainActivity")
+* @return true if the activity exists in the manifest, false otherwise
+*/	
+	public boolean isActivityExist(String activityName) {
+		try {
+			String manifest = getManifest();
+			if (manifest == null || manifest.trim().isEmpty()) {
+				return false;
+			}
+			
+			// Use regex to find activity with given android:name
+			String patternString = "<activity\\s+[^>]*android:name\\s*=\\s*\"\\." + Pattern.quote(activityName) + "\"";
+			Pattern activityPattern = Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
+			Matcher matcher = activityPattern.matcher(manifest);
+			
+			return matcher.find();
+		} catch (Exception e) {
+			Log.e("isActivityExist", "Error checking activity existence: " + e.getMessage());
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 }

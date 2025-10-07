@@ -3,6 +3,7 @@ package com.nexusteam.internal.os.layouteditor;
 import android.app.*;
 import android.content.*;
 import java.io.*;
+import com.besome.blacklogics.R;
 import com.besome.blacklogics.*;
 
 public class TheBlockLogicsApplication extends Application {

@@ -26,14 +26,14 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:orientation="horizontal">
-				<com.google.android.material.navigation.NavigationView
-					android:id="@+id/side_nav"
-					android:layout_width="120dp"
+				<com.besome.blacklogics.custom.SideBarVertical
+					android:id="@+id/sidebar"
+					android:layout_width="80dp"
 					android:layout_height="match_parent"
-					android:layout_gravity="start"
-					app:menu="@menu/menu_vertical"
-					app:itemIconTint="?attr/colorControlNormal"
-					app:itemTextColor="?attr/colorOnSurface" />
+					app:iconSize="30dp"
+					app:selectedBackgroundColor="#CCCCCC"
+					app:nexusShowDividers="true"
+					app:darkTheme="false" />
 				<LinearLayout
 					android:id="@+id/linear11"
 					android:layout_width="match_parent"
@@ -91,8 +91,14 @@
 						android:id="@+id/viewLifeCycle"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
-						android:padding="8dp"
-						android:orientation="horizontal" />
+						android:orientation="horizontal">
+						<androidx.recyclerview.widget.RecyclerView
+							android:id="@+id/viewsList"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:padding="8dp"
+							tools:listitem="@layout/views_click_item" />
+					</LinearLayout>
 					<LinearLayout
 						android:id="@+id/moreBlockLifeCycle"
 						android:layout_width="match_parent"

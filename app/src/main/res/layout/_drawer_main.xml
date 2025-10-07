@@ -75,7 +75,7 @@
 							android:layout_height="wrap_content"
 							android:padding="8dp"
 							android:background="#008DCD"
-							android:text="About Modders"
+							android:text="About Team"
 							android:textSize="14sp"
 							android:textColor="#FFFFFF"
 							android:layout_weight="1" />
@@ -226,9 +226,37 @@
 							android:layout_weight="1" />
 					</LinearLayout>
 					<LinearLayout
+						android:id="@+id/webtoapktool"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="5dp"
+						android:background="#008DCD"
+						android:orientation="horizontal">
+						<ImageView
+							android:id="@+id/imagevieejw16"
+							android:layout_width="29dp"
+							android:layout_height="29dp"
+							android:layout_marginLeft="8dp"
+							android:padding="2dp"
+							android:background="#008DCD"
+							android:src="@drawable/icon_android_round"
+							android:scaleType="fitCenter"
+							android:layout_gravity="center_horizontal|center_vertical" />
+						<TextView
+							android:id="@+id/textviesw25"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:padding="8dp"
+							android:background="#008DCD"
+							android:text="Web to apk (Beta)"
+							android:textSize="14sp"
+							android:textColor="#FFFFFF"
+							android:layout_weight="1" />
+					</LinearLayout>
+					<LinearLayout
 						android:id="@+id/linear36"
 						android:layout_width="match_parent"
-						android:layout_height="190dp"
+						android:layout_height="124dp"
 						android:padding="8dp"
 						android:background="#008DCD"
 						android:orientation="vertical" />

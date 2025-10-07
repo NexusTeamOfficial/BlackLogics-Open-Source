@@ -5,6 +5,9 @@ import com.apk.builder.model.Library;
 import com.tyron.compiler.exception.*;
 
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,93 +18,125 @@ public class D8Compiler extends Compiler {
 	private static final String TAG = "D8";
 	
 	private Project mProject;
+	private List<String> classpath;
 	
 	public D8Compiler(Project project) {
 		mProject = project;
 	}
 	
 	@Override
-	public void prepare() {
-		
+	public void prepare() throws CompilerException {
+		mProject.getLogger().d(TAG, "Preparing D8 compiler");
+		System.gc(); // Force garbage collection before heavy DEXing
+		mProject.getLogger().d(TAG, "Heap free before prepare: " + (Runtime.getRuntime().freeMemory() / (1024 * 1024)) + "MB");
 	}
 	
 	@Override
 	public void run() throws CompilerException {
-		onProgressUpdate("D8 > Running...");
-		mProject.getLogger().d(TAG, "Running...");
+		onProgressUpdate("D8 > Compiling to DEX...");
+		mProject.getLogger().d(TAG, "Running D8 compilation...");
+		mProject.getLogger().d(TAG, "Heap free before run: " + (Runtime.getRuntime().freeMemory() / (1024 * 1024)) + "MB");
 		
 		List<String> args = new ArrayList<>();
-		
 		args.add("--release");
-		args.add("--min-api"); 
+		args.add("--min-api");
 		args.add(String.valueOf(mProject.getMinSdk()));
 		args.add("--lib");
 		args.add(getAndroidJarFile().getAbsolutePath());
 		args.add("--output");
 		args.add(mProject.getOutputFile() + "/bin/");
+		args.add("--debug"); // Enable debug output
+		args.add("--verbose"); // Enable verbose D8 logging
 		
+		// Add project class files
 		List<File> classes = getClassFiles(new File(mProject.getOutputFile() + "/bin/classes/"));
+		mProject.getLogger().d(TAG, "Found " + classes.size() + " class files");
 		for (File file : classes) {
 			args.add(file.getAbsolutePath());
+			mProject.getLogger().d(TAG, "Added class file: " + file.getAbsolutePath());
 		}
 		
+		// Add library DEX/JAR files
 		for (Library library : mProject.getLibraries()) {
-			
 			if (library.getDexFiles().isEmpty()) {
 				try {
+					mProject.getLogger().d(TAG, "Generating DEX for library: " + library.getName());
 					dexLibrary(library);
 				} catch (Exception e) {
-					throw new CompilerException(e.getMessage());
+					mProject.getLogger().e(TAG, "Failed to DEX library " + library.getName());
+					throw new CompilerException("Failed to DEX library " + library.getName() + ": " + e.getMessage());
 				}
 			}
 			for (File dexFile : library.getDexFiles()) {
 				args.add(dexFile.getAbsolutePath());
+				mProject.getLogger().d(TAG, "Added DEX/JAR file: " + dexFile.getAbsolutePath());
 			}
 		}
 		
+		// Add classpath for libraries
+		args.addAll(classpath());
+		
+		mProject.getLogger().d(TAG, "D8 command: " + args);
 		try {
 			D8.main(args.toArray(new String[0]));
 		} catch (Exception e) {
-			throw new CompilerException(e.getMessage());
+			mProject.getLogger().e(TAG, "D8 compilation failed");
+			throw new CompilerException("D8 compilation failed: " + e.getMessage());
 		}
-        
-        /*
 		
+		// Merge DEX files
+		onProgressUpdate("D8 > Merging DEX files...");
+		mProject.getLogger().d(TAG, "Merging DEX files...");
 		args.clear();
-		onProgressUpdate("D8 > Merging dex files");
-		List<String> mergeArgs = new ArrayList<>();
-		
-		for (File file : getDexFiles()) {
-			mergeArgs.add(file.getAbsolutePath());
+		List<File> dexFiles = getDexFiles();
+		mProject.getLogger().d(TAG, "Found " + dexFiles.size() + " DEX files");
+		for (File file : dexFiles) {
+			args.add(file.getAbsolutePath());
+			mProject.getLogger().d(TAG, "Added DEX file for merging: " + file.getAbsolutePath());
 		}
-		mergeArgs.add("--output");
+		args.add("--output");
 		File dexPath = new File(mProject.getWorkingDirectory() + "/bin/dex/");
 		dexPath.mkdirs();
-		mergeArgs.add(dexPath.getAbsolutePath());
-		
+		args.add(dexPath.getAbsolutePath());
 		for (Library library : mProject.getLibraries()) {
 			for (File dexFile : library.getDexFiles()) {
-				mergeArgs.add(dexFile.getAbsolutePath());
+				args.add(dexFile.getAbsolutePath());
+				mProject.getLogger().d(TAG, "Added library DEX/JAR file for merging: " + dexFile.getAbsolutePath());
 			}
 		}
 		
-		D8.main(mergeArgs.toArray(new String[0]));
+		if (!dexFiles.isEmpty()) {
+			args.add("--debug");
+			args.add("--verbose");
+			mProject.getLogger().d(TAG, "DEX merge command: " + args);
+			try {
+				D8.main(args.toArray(new String[0]));
+			} catch (Exception e) {
+				mProject.getLogger().e(TAG, "DEX merging failed");
+				throw new CompilerException("DEX merging failed: " + e.getMessage());
+			}
+		} else {
+			mProject.getLogger().w(TAG, "No DEX files found for merging");
+		}
 		
-		*/
+		
+		mProject.getLogger().d(TAG, "D8 compilation completed");
+		mProject.getLogger().d(TAG, "Heap free after run: " + (Runtime.getRuntime().freeMemory() / (1024 * 1024)) + "MB");
 	}
 	
 	public List<File> getDexFiles() {
 		List<File> files = new ArrayList<>();
-		
 		File[] fileArr = new File(mProject.getOutputFile(), "/bin/classes/").listFiles();
 		
 		if (fileArr == null) {
+			mProject.getLogger().w(TAG, "No files found in bin/classes directory");
 			return files;
 		}
 		
 		for (File file : fileArr) {
 			if (file.getName().startsWith("classes") && file.getName().endsWith(".dex")) {
 				files.add(file);
+				mProject.getLogger().d(TAG, "Found DEX file: " + file.getAbsolutePath());
 			}
 		}
 		
@@ -109,43 +144,79 @@ public class D8Compiler extends Compiler {
 	}
 	
 	private List<File> getClassFiles(File dir) {
-		File proguardDir = new File(mProject.getOutputFile(), "bin/classes_proguard");
-		if (proguardDir.exists() && proguardDir.isDirectory() && proguardDir.listFiles().length > 0) {
-			dir = proguardDir; // Use ProGuard-optimized classes if available
-			mProject.getLogger().d(TAG, "Using ProGuard-optimized classes from: " + dir.getAbsolutePath());
-		} else {
-			mProject.getLogger().d(TAG, "Using unoptimized classes from: " + dir.getAbsolutePath());
-		}
 		List<File> files = new ArrayList<>();
 		File[] fileArr = dir.listFiles();
 		if (fileArr == null) {
+			mProject.getLogger().w(TAG, "No files found in directory: " + dir.getAbsolutePath());
 			return files;
 		}
+		
 		for (File file : fileArr) {
 			if (file.isDirectory()) {
 				files.addAll(getClassFiles(file));
-			} else {
+			} else if (file.getName().endsWith(".class")) {
 				files.add(file);
+				mProject.getLogger().d(TAG, "Found class file: " + file.getAbsolutePath());
 			}
 		}
+		
 		return files;
 	}
 	
 	private void dexLibrary(Library library) throws Exception {
-		
-		mProject.getLogger().d(TAG, "Library " + library.getName() + " does not have a dex file, generating one");
-		
+		mProject.getLogger().d(TAG, "DEXing library " + library.getName() + ", Heap free: " + (Runtime.getRuntime().freeMemory() / (1024 * 1024)) + "MB");
 		List<String> args = new ArrayList<>();
+		args.add("java");
+		args.add("-Xmx2g"); // 2GB heap
+		args.add("-jar");
+		args.add(new File(mProject.getWorkingDirectory(), "d8.jar").getAbsolutePath());
+		args.add(library.getClassJarFile().getAbsolutePath());
 		args.add("--release");
-		args.add("--min-api"); 
+		args.add("--min-api");
 		args.add(String.valueOf(mProject.getMinSdk()));
 		args.add("--lib");
 		args.add(getAndroidJarFile().getAbsolutePath());
 		args.add("--output");
 		args.add(library.getPath().getAbsolutePath());
-		args.add(library.getClassJarFile().getAbsolutePath());
+		args.addAll(classpath());
+		args.add("--debug");
+		args.add("--verbose");
 		
-		D8.main(args.toArray(new String[0]));
+		ProcessBuilder pb = new ProcessBuilder(args);
+		pb.redirectErrorStream(true);
+		Process process = pb.start();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		StringBuilder output = new StringBuilder();
+		String line;
+		while ((line = reader.readLine()) != null) {
+			output.append(line).append("\n");
+			mProject.getLogger().d(TAG, line);
+		}
+		int exitCode = process.waitFor();
+		if (exitCode != 0) {
+			mProject.getLogger().e(TAG, "Failed to DEX library " + library.getName() + ": " + output);
+			throw new CompilerException("Failed to DEX library " + library.getName() + ": " + output);
+		}
+		mProject.getLogger().d(TAG, "DEXed library: " + library.getName());
+	}
+	
+	public List<String> classpath() {
+		if (classpath != null) {
+			return classpath;
+		}
 		
+		classpath = new ArrayList<>();
+		for (Library library : mProject.getLibraries()) {
+			File classJar = library.getClassJarFile();
+			if (classJar.exists()) {
+				classpath.add("--classpath");
+				classpath.add(classJar.getAbsolutePath());
+				mProject.getLogger().d(TAG, "Added to classpath: " + classJar.getAbsolutePath());
+			} else {
+				mProject.getLogger().w(TAG, "Class JAR not found for library " + library.getName() + ": " + classJar.getAbsolutePath());
+			}
+		}
+		
+		return classpath;
 	}
 }

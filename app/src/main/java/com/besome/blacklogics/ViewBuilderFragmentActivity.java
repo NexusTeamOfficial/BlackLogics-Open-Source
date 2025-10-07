@@ -31,7 +31,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -60,7 +59,8 @@ import org.eclipse.jdt.*;
 import org.json.*;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.shapun.layouteditor.ViewEditor;
+import com.shapun.layouteditor.ViewEditor;
+import com.besome.blacklogics.development.Complex;
 
 public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.OnWidgetAdd {
 	
@@ -98,11 +98,11 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	private void initialize(Bundle _savedInstanceState, View _view) {
 		instance = this;
 		try{
-				projectPath = requireActivity().getIntent().getStringExtra("projectPath");
-				sc_id = requireActivity().getIntent().getStringExtra("sc_id");
-				scName = requireActivity().getIntent().getStringExtra("scName");
+			projectPath = requireActivity().getIntent().getStringExtra("projectPath");
+			sc_id = requireActivity().getIntent().getStringExtra("sc_id");
+			scName = requireActivity().getIntent().getStringExtra("scName");
 		}catch(Exception e){
-				SketchwareUtil.showMessage(getContext().getApplicationContext(), e.toString());
+			SketchwareUtil.showMessage(getContext().getApplicationContext(), e.toString());
 		}
 		lin_toolbar = _view.findViewById(R.id.lin_toolbar);
 		viewEditor = _view.findViewById(R.id.viewEditor);
@@ -122,9 +122,11 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 		}catch(Exception e){
 			SketchwareUtil.showMessage(getContext().getApplicationContext(), e.toString());
 		}
-		viewEditor.tv_view_name.setText(DesignActivity.currentActivityBean.getLayoutName() + ".xml");
+		viewEditor.tv_view_name.setText(DesignActivity.abc.currentActivityBean.getLayoutName() + ".xml");
 		viewEditor.setPath(projectPath);
+		viewEditor.setScId(sc_id);
 		viewEditor.a(DesignActivity.ll_properties);
+		viewEditor.setDesignActivity(DesignActivity.abc);
 		u();
 		loadLayout();
 	}
@@ -132,89 +134,92 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	public void _set_up() {
 	}
 	public void u() {
-			boolean isToolbarEnable = DesignActivity.isToolbarEnabled(activityName);
-			if (isToolbarEnable) {
-					viewEditor.phone_action_bar.setVisibility(View.VISIBLE);
-			} else {
-					viewEditor.phone_action_bar.setVisibility(View.GONE);
-			}
-			boolean isFabEnable = DesignActivity.isEnableFab(activityName);
-			if (isFabEnable) {
-					enableFAB(true);
-			} else {
-					enableFAB(false);
-			}
+		Complex c= new Complex();
+		//c.setC(DesignActivity.abc);
+		c.setId(sc_id);
+		boolean isToolbarEnable = c.isToolbarEnabled(activityName);
+		if (isToolbarEnable) {
+			viewEditor.phone_action_bar.setVisibility(View.VISIBLE);
+		} else {
+			viewEditor.phone_action_bar.setVisibility(View.GONE);
+		}
+		boolean isFabEnable = c.getEnableFabBoolean(activityName);
+		if (isFabEnable) {
+			enableFAB(true);
+		} else {
+			enableFAB(false);
+		}
 	}
 	
 	public void enableFAB(boolean enable) {
-		    if (fab == null) {
-			        fab = new LinearLayout(getContext());
-			        fab.setId(R.id._fab);
-			        fab.setBackgroundResource(R.drawable.circle_background);
-			        fab.setGravity(Gravity.CENTER);
-			        fab.setOrientation(LinearLayout.VERTICAL);
+		if (fab == null) {
+			fab = new LinearLayout(getContext());
+			fab.setId(R.id._fab);
+			fab.setBackgroundResource(R.drawable.circle_background);
+			fab.setGravity(Gravity.CENTER);
+			fab.setOrientation(LinearLayout.VERTICAL);
 			
-			        // Set size manually
-			        int size = getDp(35);
-			        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-			        fab.setLayoutParams(params);
+			// Set size manually
+			int size = getDp(35);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
+			fab.setLayoutParams(params);
 			
-			        ImageView plusIcon = new ImageView(getContext());
-			        plusIcon.setImageResource(R.drawable.ic_plus);
-			        plusIcon.setLayoutParams(new LinearLayout.LayoutParams(
-			            getDp(24),
-			           getDp(24)
-			        ));
-			        plusIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.white));
-			        fab.addView(plusIcon);
+			ImageView plusIcon = new ImageView(getContext());
+			plusIcon.setImageResource(R.drawable.ic_plus);
+			plusIcon.setLayoutParams(new LinearLayout.LayoutParams(
+			getDp(24),
+			getDp(24)
+			));
+			plusIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.white));
+			fab.addView(plusIcon);
 			
-			        // Add to root layout
-			        viewEditor.editorLayout.addView(fab);
+			// Add to root layout
+			viewEditor.editorLayout.addView(fab);
 			
-			        // Wait until layout is ready, then move it
-			        viewEditor.editorLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-				            int parentWidth = viewEditor.editorLayout.getWidth();
-				            int parentHeight = viewEditor.editorLayout.getHeight();
-				            int margin = getDp(16);
+			// Wait until layout is ready, then move it
+			viewEditor.editorLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+				int parentWidth = viewEditor.editorLayout.getWidth();
+				int parentHeight = viewEditor.editorLayout.getHeight();
+				int margin = getDp(16);
 				
-				            fab.setX(parentWidth - size - margin);
-				            fab.setY(parentHeight - size - margin);
-				        });
-			    }
+				fab.setX(parentWidth - size - margin);
+				fab.setY(parentHeight - size - margin);
+			});
+		}
 		
-		    fab.setVisibility(enable ? View.VISIBLE : View.GONE);
+		fab.setVisibility(enable ? View.VISIBLE : View.GONE);
 	}
 	
 	public int getDp(float dp) {
-		    Context context = getContext(); // use getActivity() if you're in a Fragment
-		    if (context == null) return (int) dp; // fallback or skip
-		    return (int) TypedValue.applyDimension(
-		        TypedValue.COMPLEX_UNIT_DIP,
-		        dp,
-		        context.getResources().getDisplayMetrics()
-		    );
+		Context context = getContext(); // use getActivity() if you're in a Fragment
+		if (context == null) return (int) dp; // fallback or skip
+		return (int) TypedValue.applyDimension(
+		TypedValue.COMPLEX_UNIT_DIP,
+		dp,
+		context.getResources().getDisplayMetrics()
+		);
 	}
 	/**
  * Saves the current layout to a file in internal storage
  */
 	public void saveLayout() {
-		    viewEditor.saveLayout(activityName);
+		viewEditor.saveLayout(activityName);
 	}
 	
 	/**
  * Loads a layout from a file and applies it to the editorLayout.
 */ 
 	public void loadLayout() {
-		   viewEditor.loadLayout(activityName);
+		viewEditor.loadLayout(activityName);
 	}
-	 @Override
+	@Override
 	public void onWidgetAdded(View widget, ViewGroup parent) {
-			if (DesignActivity.abc != null) {
-					String javaCode = DesignActivity.abc.getJavaCode();
-					String xmlCode = DesignActivity.abc.getXmlCode();
-					DesignActivity.abc.complex.setXmlCode(DesignActivity.abc.currentActivityBean.getLayoutName(), xmlCode);
-					DesignActivity.abc.complex.setJavaCode(DesignActivity.abc.currentActivityBean.getActivityName(), javaCode);
-			}
+		if (DesignActivity.abc != null) {
+			String javaCode = DesignActivity.abc.getJavaCode();
+			String xmlCode = DesignActivity.abc.getXmlCode();
+			DesignActivity.abc.complex.setXmlCode(DesignActivity.abc.currentActivityBean.getLayoutName(), xmlCode);
+			DesignActivity.abc.complex.setJavaCode(DesignActivity.abc.currentActivityBean.getActivityName(), javaCode);
+		}
 	}
 	public void showMessage(String a) {
 		

@@ -48,6 +48,11 @@ public  class IdManager {
 		return mViewIdMap.get(view);
 	}
 	
+	public void setId(View view, String id) {
+		addNewId(view, id);
+	}
+	
+	
 	
 	public void addNewId(View view,String s){
 		if(isIdUsed(s))throw new IllegalArgumentException(s+" is already in use"); 

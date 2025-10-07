@@ -261,6 +261,8 @@ public class CodeEditorLayout extends LinearLayout implements TextWatcher {
 
         //hide suggestions in edittext
         editText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        editText.setFocusable(true);
+        editText.setFocusableInTouchMode(true);
 
         //hide keyboard
         if (context instanceof Activity) {

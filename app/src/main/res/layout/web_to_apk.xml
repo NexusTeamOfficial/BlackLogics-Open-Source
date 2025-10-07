@@ -1,0 +1,187 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
+	<include layout="@layout/toolbar_improved" />
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fillViewport="true">
+		<LinearLayout
+			android:id="@+id/linear1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="16dp"
+			android:orientation="vertical">
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout8"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/appName"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="16sp"
+					android:hint="Application name" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout9"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/pkgName"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="16sp"
+					android:hint="Package name" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout10"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/edittext3"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="16sp"
+					android:hint="Version code"
+					android:inputType="number" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout11"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/edittext4"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="16sp"
+					android:hint="Version name" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout12"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/edittext5"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="12sp"
+					android:hint="App URL (optional)"
+					android:inputType="textUri" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<TextView
+				android:id="@+id/textview2"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingTop="20dp"
+				android:text="Developer Options"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+			<com.google.android.material.switchmaterial.SwitchMaterial
+				android:id="@+id/switch_splash"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				android:layout_marginBottom="6dp" />
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout13"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/minSdkInput"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="12sp"
+					android:hint="Minimum SDK (e.g. 21)"
+					android:inputType="number" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<com.google.android.material.textfield.TextInputLayout
+				android:id="@+id/textinputlayout14"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:layout_marginBottom="8dp"
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/targetSdkInput"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="12sp"
+					android:hint="Target SDK (e.g. 34)"
+					android:inputType="number" />
+			</com.google.android.material.textfield.TextInputLayout>
+			<TextView
+				android:id="@+id/textview3"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingTop="20dp"
+				android:text="All unavailable switches"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+			<com.google.android.material.switchmaterial.SwitchMaterial
+				android:id="@+id/switch_debuggable"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				android:layout_marginBottom="6dp" />
+			<com.google.android.material.switchmaterial.SwitchMaterial
+				android:id="@+id/switch_proguard"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				android:layout_marginBottom="6dp" />
+			<com.google.android.material.switchmaterial.SwitchMaterial
+				android:id="@+id/switch_cleartext"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				android:layout_marginBottom="6dp" />
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/recyclerview1"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp" />
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/btn_build_apk"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="24dp"
+				android:text="Build APK"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textAllCaps="false"
+				style="@style/Widget.MaterialComponents.Button"
+				app:cornerRadius="12dp"
+				app:icon="@drawable/ic_build"
+				app:iconPadding="8dp"
+				app:iconGravity="textStart"
+				app:backgroundTint="?attr/colorPrimary" />
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

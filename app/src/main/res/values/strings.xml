@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">BlackLogics</string>
     <string name="import_icon_title">Import Icon</string>
     <string name="select">Select</string>
     <string name="cancel">Cancel</string>
@@ -26,13 +26,9 @@
     <string name="view">View</string>
     <string name="design">Design</string>
     <string name="blueprint">Blueprint</string>
+    <string name="sidebar_item_title">Item 1</string>
     <string name="block_manager_title">Block manager</string>
     <string name="block_manager_sub_title">Manage your own block in logic editor.</string>
-    <string-array name="event_types">
-        <item>onClick</item>
-        <item>onLongClick</item>
-        <item>onTouch</item>
-    </string-array>
     <string name="back_button_description">Back</string>
     <string name="undo_button_description">Undo</string>
     <string name="redo_button_description">Redo</string>

@@ -30,7 +30,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -149,10 +148,10 @@ public class CreateProjectActivity extends AppCompatActivity {
 	
 	private void initialize(Bundle _savedInstanceState) {
 		if (getIntent().hasExtra("update") && getIntent().getBooleanExtra("update", false)) {
-				        isUpdateMode = true;
-				        projectToUpdate = (ProjectAdapter.ProjectItem) getIntent().getSerializableExtra("project");
-				        originalProjectDir = projectToUpdate.projectDir.getAbsolutePath();
-				    }
+			isUpdateMode = true;
+			projectToUpdate = (ProjectAdapter.ProjectItem) getIntent().getSerializableExtra("project");
+			originalProjectDir = projectToUpdate.projectDir.getAbsolutePath();
+		}
 		linear4 = findViewById(R.id.linear4);
 		textview9 = findViewById(R.id.textview9);
 		view5 = findViewById(R.id.view5);
@@ -203,426 +202,432 @@ public class CreateProjectActivity extends AppCompatActivity {
 		sc_id = String.valueOf(projectId);
 		int nameCounter = getNextNameCounter();
 		projectName.setText("NewProject" + nameCounter);
-		    prgPkgName.setText("com.example.project" + nameCounter);
+		prgPkgName.setText("com.example.project" + nameCounter);
 		
 		versionCode.setText("1");
-		        versionName.setText("1.0");
-		        
-		        // Set initial colors
-		        updateColorViews();
-		        
-		        // Set click listeners for color selection
-		        colorAccent.setOnClickListener(v -> showColorPicker("Accent Color", selectedColorAccent, color -> {
-			            selectedColorAccent = color;
-			            updateColorViews();
-			        }));
-		        
-		        cP.setOnClickListener(v -> showColorPicker("Primary Color", selectedColorPrimary, color -> {
-			            selectedColorPrimary = color;
-			            updateColorViews();
-			        }));
-		        
-		        cAD.setOnClickListener(v -> showColorPicker("Primary Dark", selectedColorPrimaryDark, color -> {
-			            selectedColorPrimaryDark = color;
-			            updateColorViews();
-			        }));
-		        
-		        cPH.setOnClickListener(v -> showColorPicker("Primary Highlight", selectedColorPrimaryHighlight, color -> {
-			            selectedColorPrimaryHighlight = color;
-			            updateColorViews();
-			        }));
-		        
-		        cPN.setOnClickListener(v -> showColorPicker("Primary Normal", selectedColorPrimaryNormal, color -> {
-			            selectedColorPrimaryNormal = color;
-			            updateColorViews();
-			        }));
-		        
-		        // Set click listeners for buttons
-		        cancelProject.setOnClickListener(v -> finish());
-		        
-		        createProject.setOnClickListener(v -> attemptCreateProject());
+		versionName.setText("1.0");
+		
+		// Set initial colors
+		updateColorViews();
+		
+		// Set click listeners for color selection
+		colorAccent.setOnClickListener(v -> showColorPicker("Accent Color", selectedColorAccent, color -> {
+			selectedColorAccent = color;
+			updateColorViews();
+		}));
+		
+		cP.setOnClickListener(v -> showColorPicker("Primary Color", selectedColorPrimary, color -> {
+			selectedColorPrimary = color;
+			updateColorViews();
+		}));
+		
+		cAD.setOnClickListener(v -> showColorPicker("Primary Dark", selectedColorPrimaryDark, color -> {
+			selectedColorPrimaryDark = color;
+			updateColorViews();
+		}));
+		
+		cPH.setOnClickListener(v -> showColorPicker("Primary Highlight", selectedColorPrimaryHighlight, color -> {
+			selectedColorPrimaryHighlight = color;
+			updateColorViews();
+		}));
+		
+		cPN.setOnClickListener(v -> showColorPicker("Primary Normal", selectedColorPrimaryNormal, color -> {
+			selectedColorPrimaryNormal = color;
+			updateColorViews();
+		}));
+		
+		// Set click listeners for buttons
+		cancelProject.setOnClickListener(v -> finish());
+		
+		createProject.setOnClickListener(v -> attemptCreateProject());
 		scIcon.setOnClickListener(v -> {
-			    // Open gallery to select an image
-			    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-			    intent.setType("image/*");
-			    startActivityForResult(intent, PICK_IMAGE_REQUEST);
+			// Open gallery to select an image
+			Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("image/*");
+			startActivityForResult(intent, PICK_IMAGE_REQUEST);
 		});
 		if (isUpdateMode && projectToUpdate != null) {
-			        // Set title to indicate update mode
-			        textview9.setText("Update Project");
-			        
-			        // Fill fields with existing project data
-			        projectName.setText(projectToUpdate.projectName);
-			        prgPkgName.setText(projectToUpdate.packageName);
-			        versionCode.setText(projectToUpdate.versionCode);
-			        versionName.setText(projectToUpdate.versionName);
-			        
-			        // Try to load the project icon
-			        File iconFile = new File(projectToUpdate.projectDir, "icon.png");
-			        if (iconFile.exists()) {
-				            selectedIconPath = iconFile.getAbsolutePath();
-				            scIcon.setImageDrawable(Drawable.createFromPath(selectedIconPath));
-				        }
-			        
-			        // Load colors from config
-			        try {
-				            File configFile = new File(projectToUpdate.projectDir, "config");
-				            if (configFile.exists()) {
-					                JSONObject config = TheBlockLogicsUtil.getProjectConfig(configFile);
-					                if (config != null) {
-						                    selectedColorAccent = Color.parseColor(config.optString("colorAccent", "#FF4081"));
-						                    selectedColorPrimary = Color.parseColor(config.optString("colorPrimary", "#3F51B5"));
-						                    selectedColorPrimaryDark = Color.parseColor(config.optString("colorPrimaryDark", "#303F9F"));
-						                    selectedColorPrimaryHighlight = Color.parseColor(config.optString("colorPrimaryHighlight", "#FF9800"));
-						                    selectedColorPrimaryNormal = Color.parseColor(config.optString("colorPrimaryNormal", "#2196F3"));
-						                }
-					            }
-				        } catch (Exception e) {
-				            e.printStackTrace();
-				        }
-			        
-			        // Update button text
-			        createProject.setText("Update Project");
-			    } else {
-			        // New project mode
-			        int projectIdq = 601 + getNextProjectNumber();
-			        complex = new Complex();
-			        complex.setId(String.valueOf(projectIdq));
-			        versionCode.setText("1");
-			        versionName.setText("1.0");
-			    }
-		    
-		    // Set initial colors
-		    updateColorViews();
+			// Set title to indicate update mode
+			textview9.setText("Update Project");
+			
+			// Fill fields with existing project data
+			projectName.setText(projectToUpdate.projectName);
+			prgPkgName.setText(projectToUpdate.packageName);
+			versionCode.setText(projectToUpdate.versionCode);
+			versionName.setText(projectToUpdate.versionName);
+			
+			// Try to load the project icon
+			File iconFile = new File(projectToUpdate.projectDir, "icon.png");
+			if (iconFile.exists()) {
+				selectedIconPath = iconFile.getAbsolutePath();
+				scIcon.setImageDrawable(Drawable.createFromPath(selectedIconPath));
+			}
+			
+			// Load colors from config
+			try {
+				File configFile = new File(projectToUpdate.projectDir, "config");
+				if (configFile.exists()) {
+					JSONObject config = TheBlockLogicsUtil.getProjectConfig(configFile);
+					if (config != null) {
+						selectedColorAccent = Color.parseColor(config.optString("colorAccent", "#FF4081"));
+						selectedColorPrimary = Color.parseColor(config.optString("colorPrimary", "#3F51B5"));
+						selectedColorPrimaryDark = Color.parseColor(config.optString("colorPrimaryDark", "#303F9F"));
+						selectedColorPrimaryHighlight = Color.parseColor(config.optString("colorPrimaryHighlight", "#FF9800"));
+						selectedColorPrimaryNormal = Color.parseColor(config.optString("colorPrimaryNormal", "#2196F3"));
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			// Update button text
+			createProject.setText("Update Project");
+		} else {
+		}
+		
+		// Set initial colors
+		updateColorViews();
 		
 		
 	}
 	
 	private void updateColorViews() {
-			colorAccent.setBackgroundColor(selectedColorAccent);
-			cP.setBackgroundColor(selectedColorPrimary);
-			cAD.setBackgroundColor(selectedColorPrimaryDark);
-			cPH.setBackgroundColor(selectedColorPrimaryHighlight);
-			cPN.setBackgroundColor(selectedColorPrimaryNormal);
+		colorAccent.setBackgroundColor(selectedColorAccent);
+		cP.setBackgroundColor(selectedColorPrimary);
+		cAD.setBackgroundColor(selectedColorPrimaryDark);
+		cPH.setBackgroundColor(selectedColorPrimaryHighlight);
+		cPN.setBackgroundColor(selectedColorPrimaryNormal);
 	}
 	
 	private void showColorPicker(String title, int initialColor, ColorPickerDialog.OnColorSelectedListener listener) {
-			ColorPickerDialog dialog = new ColorPickerDialog(this, initialColor);
-			dialog.setTitle(title);
-			dialog.setOnColorSelectedListener(listener);
-			dialog.show();
+		ColorPickerDialog dialog = new ColorPickerDialog(this, initialColor);
+		dialog.setTitle(title);
+		dialog.setOnColorSelectedListener(listener);
+		dialog.show();
 	}
 	
 	private void attemptCreateProject() {
-			// Reset errors
-			projectName.setError(null);
-			prgPkgName.setError(null);
-			srcName.setError(null);
-			versionCode.setError(null);
-			versionName.setError(null);
-			
-			// Get values
-			String pName = projectName.getText().toString().trim();
-			String pkgName = prgPkgName.getText().toString().trim();
-			String srcDir = srcName.getText().toString().trim();
-			String vCode = versionCode.getText().toString().trim();
-			String vName = versionName.getText().toString().trim();
-			
-			boolean cancel = false;
-			View focusView = null;
-			
-			// Validate project name
-			if (TextUtils.isEmpty(pName)) {
-					projectName.setError("Project name is required");
-					focusView = projectName;
-					cancel = true;
-			}
-			
-			// Validate package name
-			if (TextUtils.isEmpty(pkgName)) {
-					prgPkgName.setError("Package name is required");
-					focusView = prgPkgName;
-					cancel = true;
-			} else if (!isValidPackageName(pkgName)) {
-					prgPkgName.setError("Invalid package name");
-					focusView = prgPkgName;
-					cancel = true;
-			}
-			
-			// Validate source directory
-			if (TextUtils.isEmpty(srcDir)) {
-					srcName.setError("Source directory is required");
-					focusView = srcName;
-					cancel = true;
-			} else if (!srcDir.matches("[a-zA-Z0-9_ ]+")) {
-					srcName.setError("Only letters, numbers, underscore and spaces allowed");
-					focusView = srcName;
-					cancel = true;
-			}
-			
-			// Validate version code
-			if (TextUtils.isEmpty(vCode)) {
-					versionCode.setError("Version code is required");
-					focusView = versionCode;
-					cancel = true;
-			} else if (!vCode.matches("\\d+")) {
-					versionCode.setError("Must be a number");
-					focusView = versionCode;
-					cancel = true;
-			}
-			
-			// Validate version name
-			if (TextUtils.isEmpty(vName)) {
-					versionName.setError("Version name is required");
-					focusView = versionName;
-					cancel = true;
-			} else if (!vName.matches("[0-9]+(\\.[0-9]+)*")) {
-					versionName.setError("Invalid version format (e.g. 1.0.0)");
-					focusView = versionName;
-					cancel = true;
-			}
-			
-			if (cancel) {
-					focusView.requestFocus();
-			} else {
-					createProject(pName, pkgName, srcDir, vCode, vName);
-			}
+		// Reset errors
+		projectName.setError(null);
+		prgPkgName.setError(null);
+		srcName.setError(null);
+		versionCode.setError(null);
+		versionName.setError(null);
+		
+		// Get values
+		String pName = projectName.getText().toString().trim();
+		String pkgName = prgPkgName.getText().toString().trim();
+		String srcDir = srcName.getText().toString().trim();
+		String vCode = versionCode.getText().toString().trim();
+		String vName = versionName.getText().toString().trim();
+		
+		boolean cancel = false;
+		View focusView = null;
+		
+		// Validate project name
+		if (TextUtils.isEmpty(pName)) {
+			projectName.setError("Project name is required");
+			focusView = projectName;
+			cancel = true;
+		}
+		
+		// Validate package name
+		if (TextUtils.isEmpty(pkgName)) {
+			prgPkgName.setError("Package name is required");
+			focusView = prgPkgName;
+			cancel = true;
+		} else if (!isValidPackageName(pkgName)) {
+			prgPkgName.setError("Invalid package name");
+			focusView = prgPkgName;
+			cancel = true;
+		}
+		
+		// Validate source directory
+		if (TextUtils.isEmpty(srcDir)) {
+			srcName.setError("Source directory is required");
+			focusView = srcName;
+			cancel = true;
+		} else if (!srcDir.matches("[a-zA-Z0-9_ ]+")) {
+			srcName.setError("Only letters, numbers, underscore and spaces allowed");
+			focusView = srcName;
+			cancel = true;
+		}
+		
+		// Validate version code
+		if (TextUtils.isEmpty(vCode)) {
+			versionCode.setError("Version code is required");
+			focusView = versionCode;
+			cancel = true;
+		} else if (!vCode.matches("\\d+")) {
+			versionCode.setError("Must be a number");
+			focusView = versionCode;
+			cancel = true;
+		}
+		
+		// Validate version name
+		if (TextUtils.isEmpty(vName)) {
+			versionName.setError("Version name is required");
+			focusView = versionName;
+			cancel = true;
+		} else if (!vName.matches("[0-9]+(\\.[0-9]+)*")) {
+			versionName.setError("Invalid version format (e.g. 1.0.0)");
+			focusView = versionName;
+			cancel = true;
+		}
+		
+		if (cancel) {
+			focusView.requestFocus();
+		} else {
+			createProject(pName, pkgName, srcDir, vCode, vName);
+		}
 	}
 	
 	private boolean isValidPackageName(String packageName) {
-			return packageName.matches("^([a-zA-Z_][a-zA-Z0-9_]*\\.)+([a-zA-Z_][a-zA-Z0-9_]*)$");
+		return packageName.matches("^([a-zA-Z_][a-zA-Z0-9_]*\\.)+([a-zA-Z_][a-zA-Z0-9_]*)$");
 	}
-	
 	private void createProject(String projectName, String packageName, String srcDir, 
 	String versionCode, String versionName) {
-			try {
-					String projectDirPath;
-					String projectId;
-					
-					if (isUpdateMode && projectToUpdate != null) {
-							// Update existing project
-							projectDirPath = originalProjectDir;
-							projectId = projectToUpdate.scId;
-				            complex.updateProjectName(projectName);
-				            complex.updatePackageName(packageName);
-					} else {
-							// Create new project
-							int newProjectId = 601 + getNextProjectNumber();
-				            int nameCounter = getNextNameCounter();
-							projectId = String.valueOf(newProjectId);
-							projectDirPath = TheBlockLogicsUtil.projects + projectId;
-							
-							// Create project directory structure
-							File projectDir = new File(projectDirPath);
-							if (!projectDir.exists()) {
-									projectDir.mkdirs();
-							}
-							
-							_createProjectJson(packageName);
-							
-							// Create subdirectories if they don't exist
-							/* new File(projectDir, "/files/resource/java").mkdirs();
-			new File(projectDir, "/files/resource/assets").mkdirs();
-			new File(projectDir, "/files/resource/res").mkdirs();
-			*/
-							complex.setPkgName(packageName);
-							complex.setProjectName(projectName);
-							complex.setGradleBuildConfig(null);
-							complex.setProGuardRules(null);
-							complex.setGradleBuild(null);
-							/*complex.setAcName("MainActivity");
-			complex.setXName("main");*/
-							complex.setManifest(null);
-							complex.setStringResources(null);
-							complex.setColorResources(null);
-							complex.setStyleResources(null);
-							complex.setDimensionResources(null);
-							complex.setValuesV21Resources(null);
-							complex.setJavaCode("FileUtil", Lx.e(packageName));
-							complex.setJavaCode("BlackLogicsUtil", Lx.i(packageName));
-				            complex.addDebugActivity();
-				            complex.addBlackApplication();
-				            complex.addBlackLogger();
-				            complex.addActivityToManifest("DebugActivity");
-					}
-					
-					File projectDir = new File(projectDirPath);
-					
-					// Create/update config file
-					JSONObject config = new JSONObject();
-					config.put("projectName", projectName);
-					config.put("packageName", packageName);
-					config.put("srcDir", srcDir);
-					config.put("sc_id", projectId);
-					config.put("versionCode", versionCode);
-					config.put("versionName", versionName);
-					config.put("colorAccent", String.format("#%06X", (0xFFFFFF & selectedColorAccent)));
-					config.put("colorPrimary", String.format("#%06X", (0xFFFFFF & selectedColorPrimary)));
-					config.put("colorPrimaryDark", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryDark)));
-					config.put("colorPrimaryHighlight", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryHighlight)));
-					config.put("colorPrimaryNormal", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryNormal)));
-					
-					// Handle icon
-					if (!TextUtils.isEmpty(selectedIconPath)) {
-							File iconFile = new File(projectDir, "icon.png");
-							TheBlockLogicsUtil.copyFile(new File(selectedIconPath), iconFile);
-							config.put("iconPath", "icon.png");
-					} else if (isUpdateMode) {
-							// Keep existing icon if no new one was selected
-							File existingIcon = new File(projectDir, "icon.png");
-							if (existingIcon.exists()) {
-									config.put("iconPath", "icon.png");
-							} else {
-									config.put("iconPath", "default_icon.png");
-							}
-					} else {
-							// New project with no icon selected
-							config.put("iconPath", "default_icon.png");
-					}
-					
-					// Save config
-					TheBlockLogicsUtil.writeFile(projectDir.getAbsolutePath() + "/config", config.toString());
-					
-					// Update complex object
-					complex.setPkgName(packageName);
-					complex.setProjectName(projectName);
-					complex.setGradleBuildConfig(null);
-					complex.setProGuardRules(null);
-					complex.setGradleBuild(null);
-					complex.setAcName("MainActivity");
-			        complex.setLauncherActivity("MainActivity");
-			        complex.enableToolBar("MainActivity", false, true);
-			        complex.setLogic("//TUDO : AUTOMATICALLY ADDED", "MainActivity");
-					complex.setXName("main");
-					complex.setManifest(null);
-					complex.setStringResources(null);
-					complex.setColorResources(null);
-					complex.setStyleResources(null);
-					complex.setDimensionResources(null);
-					complex.setValuesV21Resources(null);
-					complex.setJavaCode("FileUtil", Lx.e(packageName));
-					complex.setJavaCode("BlackLogicsUtil", Lx.i(packageName));
-			        if (FileUtil.isExistFile(projectDir.getAbsolutePath() + "/icon.png")) {
-				            complex.setManifestIcon(FileUtil.readFile(projectDir.getAbsolutePath() + "/icon.png"));
-				        } else {
-				            complex.setManifestIcon("");
-				        }
-					// Show success message
-					TheBlockLogicsUtil.showToast(this, isUpdateMode ? "Project updated successfully!" : "Project created successfully!");
-					
-					// Return to previous activity with result
-					Intent resultIntent = new Intent();
-					resultIntent.putExtra("projectPath", projectDir.getAbsolutePath());
-					resultIntent.putExtra("isUpdate", isUpdateMode);
-					setResult(Activity.RESULT_OK, resultIntent);
-					finish();
-			} catch (JSONException e) {
-					TheBlockLogicsUtil.showToast(this, "Error: " + e.getMessage());
-			} catch (Exception e) {
-					TheBlockLogicsUtil.showToast(this, "Error: " + e.getMessage());
+		try {
+			String projectDirPath;
+			String projectId;
+			
+			if (isUpdateMode && projectToUpdate != null) {
+				// Update existing project
+				projectDirPath = originalProjectDir;
+				projectId = projectToUpdate.scId;
+				complex.updateProjectName(projectName);
+				complex.updatePackageName(packageName);
+			} else {
+				// Create new project
+				int newProjectId = 601 + getNextProjectNumber();
+				int nameCounter = getNextNameCounter();
+				projectId = String.valueOf(newProjectId);
+				projectDirPath = TheBlockLogicsUtil.projects + projectId;
+				
+				// Create project directory structure
+				File projectDir = new File(projectDirPath);
+				if (!projectDir.exists()) {
+					projectDir.mkdirs();
+				}
+				
+				_createProjectJson(packageName);
+				
+				// Create subdirectories if they don't exist
+				/* new File(projectDir, "/files/resource/java").mkdirs();
+new File(projectDir, "/files/resource/assets").mkdirs();
+new File(projectDir, "/files/resource/res").mkdirs();
+*/			
+				complex.setPkgName(packageName);
+				complex.setProjectName(projectName);
+				complex.setGradleBuildConfig(null);
+				complex.setProGuardRules(null);
+				complex.setGradleBuild(null);
+				/*complex.setAcName("MainActivity");
+complex.setXName("main");*/			
+				complex.setManifest(null);
+				complex.setStringResources(null);
+				complex.setColorResources(
+				selectedColorPrimary,
+				selectedColorPrimaryDark,
+				selectedColorAccent,
+				selectedColorPrimaryHighlight,
+				selectedColorPrimaryNormal
+				);
+				complex.setStyleResources(null, selectedColorPrimary, selectedColorPrimaryDark,
+				selectedColorAccent, selectedColorPrimaryHighlight, selectedColorPrimaryNormal);
+				complex.setDimensionResources(null);
+				complex.setValuesV21Resources(null);
+				complex.setJavaCode("FileUtil", Lx.e(packageName));
+				complex.setJavaCode("BlackLogicsUtil", Lx.i(packageName));
+				complex.addDebugActivity();
+				complex.addBlackApplication();
+				complex.addBlackLogger();
+				complex.addActivityToManifest("DebugActivity");
 			}
+			
+			File projectDir = new File(projectDirPath);
+			
+			// Create/update config file
+			JSONObject config = new JSONObject();
+			config.put("projectName", projectName);
+			config.put("packageName", packageName);
+			config.put("srcDir", srcDir);
+			config.put("sc_id", projectId);
+			config.put("versionCode", versionCode);
+			config.put("versionName", versionName);
+			config.put("colorAccent", String.format("#%06X", (0xFFFFFF & selectedColorAccent)));
+			config.put("colorPrimary", String.format("#%06X", (0xFFFFFF & selectedColorPrimary)));
+			config.put("colorPrimaryDark", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryDark)));
+			config.put("colorPrimaryHighlight", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryHighlight)));
+			config.put("colorPrimaryNormal", String.format("#%06X", (0xFFFFFF & selectedColorPrimaryNormal)));
+			
+			// Handle icon
+			if (!TextUtils.isEmpty(selectedIconPath)) {
+				File iconFile = new File(projectDir, "icon.png");
+				TheBlockLogicsUtil.copyFile(new File(selectedIconPath), iconFile);
+				config.put("iconPath", "icon.png");
+			} else if (isUpdateMode) {
+				// Keep existing icon if no new one was selected
+				File existingIcon = new File(projectDir, "icon.png");
+				if (existingIcon.exists()) {
+					config.put("iconPath", "icon.png");
+				} else {
+					config.put("iconPath", "default_icon.png");
+				}
+			} else {
+				// New project with no icon selected
+				config.put("iconPath", "default_icon.png");
+			}
+			
+			// Save config
+			TheBlockLogicsUtil.writeFile(projectDir.getAbsolutePath() + "/config", config.toString());
+			
+			// Update complex object
+			complex.setPkgName(packageName);
+			complex.setProjectName(projectName);
+			complex.setGradleBuildConfig(null);
+			complex.setProGuardRules(null);
+			complex.setGradleBuild(null);
+			complex.setAcName("MainActivity");
+			//complex.setLauncherActivity("MainActivity");
+			complex.enableToolBar("MainActivity", false, true);
+			complex.setLogic("//TUDO : AUTOMATICALLY ADDED", "MainActivity");
+			complex.setXName("main");
+			complex.setManifest(null);
+			complex.setStringResources(null);
+			complex.setColorResources(
+			selectedColorPrimary,
+			selectedColorPrimaryDark,
+			selectedColorAccent,
+			selectedColorPrimaryHighlight,
+			selectedColorPrimaryNormal
+			);
+			complex.setStyleResources(null, selectedColorPrimary, selectedColorPrimaryDark,
+			selectedColorAccent, selectedColorPrimaryHighlight, selectedColorPrimaryNormal);
+			complex.setDimensionResources(null);
+			complex.setValuesV21Resources(null);
+			complex.setJavaCode("FileUtil", Lx.e(packageName));
+			complex.setJavaCode("BlackLogicsUtil", Lx.i(packageName));
+			if (FileUtil.isExistFile(projectDir.getAbsolutePath() + "/icon.png")) {
+				complex.setManifestIcon(FileUtil.readFile(projectDir.getAbsolutePath() + "/icon.png"));
+			} else {
+				complex.setManifestIcon("");
+			}
+			// Show success message
+			TheBlockLogicsUtil.showToast(this, isUpdateMode ? "Project updated successfully!" : "Project created successfully!");
+			
+			// Return to previous activity with result
+			Intent resultIntent = new Intent();
+			resultIntent.putExtra("projectPath", projectDir.getAbsolutePath());
+			resultIntent.putExtra("isUpdate", isUpdateMode);
+			setResult(Activity.RESULT_OK, resultIntent);
+			finish();
+		} catch (JSONException e) {
+			TheBlockLogicsUtil.showToast(this, "Error: " + e.getMessage());
+		} catch (Exception e) {
+			TheBlockLogicsUtil.showToast(this, "Error: " + e.getMessage());
+		}
 	}
 	
+	
 	private int getNextProjectNumber() {
-			File projectsDir = new File(TheBlockLogicsUtil.projects);
-			if (!projectsDir.exists()) {
-					return 0;
-			}
-			
-			File[] projectDirs = projectsDir.listFiles();
-			if (projectDirs == null || projectDirs.length == 0) {
-					return 0;
-			}
-			
-			return projectDirs.length;
+		File projectsDir = new File(TheBlockLogicsUtil.projects);
+		if (!projectsDir.exists()) {
+			return 0;
+		}
+		
+		File[] projectDirs = projectsDir.listFiles();
+		if (projectDirs == null || projectDirs.length == 0) {
+			return 0;
+		}
+		
+		return projectDirs.length;
 	}
 	
 	private int getNextNameCounter() {
-		    File projectsDir = new File(TheBlockLogicsUtil.projects);
-		    if (!projectsDir.exists()) {
-			        return 1; // Start with 1 if no projects exist
-			    }
+		File projectsDir = new File(TheBlockLogicsUtil.projects);
+		if (!projectsDir.exists()) {
+			return 1; // Start with 1 if no projects exist
+		}
 		
-		    File[] projectDirs = projectsDir.listFiles();
-		    if (projectDirs == null || projectDirs.length == 0) {
-			        return 1; // Start with 1 if no projects exist
-			    }
+		File[] projectDirs = projectsDir.listFiles();
+		if (projectDirs == null || projectDirs.length == 0) {
+			return 1; // Start with 1 if no projects exist
+		}
 		
-		    return projectDirs.length + 1; // Start from 1 and increment based on existing projects
+		return projectDirs.length + 1; // Start from 1 and increment based on existing projects
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-			super.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+			Uri imageUri = data.getData();
 			
-			if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-					Uri imageUri = data.getData();
-					
-					try {
-							// Create a temporary file for the icon
-							File iconFile = new File(getCacheDir(), "temp_icon.png");
-							selectedIconPath = iconFile.getAbsolutePath();
-							
-							// Copy the selected image to our temporary file
-							InputStream inputStream = getContentResolver().openInputStream(imageUri);
-							OutputStream outputStream = new FileOutputStream(iconFile);
-							
-							byte[] buffer = new byte[1024];
-							int length;
-							while ((length = inputStream.read(buffer)) > 0) {
-									outputStream.write(buffer, 0, length);
-							}
-							
-							inputStream.close();
-							outputStream.close();
-							
-							// Display the selected icon
-							Bitmap bitmap = BitmapFactory.decodeFile(selectedIconPath);
-							scIcon.setImageBitmap(bitmap);
-							
-					} catch (IOException e) {
-							e.printStackTrace();
-							TheBlockLogicsUtil.showToast(this, "Error loading image");
-					}
+			try {
+				// Create a temporary file for the icon
+				File iconFile = new File(getCacheDir(), "temp_icon.png");
+				selectedIconPath = iconFile.getAbsolutePath();
+				
+				// Copy the selected image to our temporary file
+				InputStream inputStream = getContentResolver().openInputStream(imageUri);
+				OutputStream outputStream = new FileOutputStream(iconFile);
+				
+				byte[] buffer = new byte[1024];
+				int length;
+				while ((length = inputStream.read(buffer)) > 0) {
+					outputStream.write(buffer, 0, length);
+				}
+				
+				inputStream.close();
+				outputStream.close();
+				
+				// Display the selected icon
+				Bitmap bitmap = BitmapFactory.decodeFile(selectedIconPath);
+				scIcon.setImageBitmap(bitmap);
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+				TheBlockLogicsUtil.showToast(this, "Error loading image");
 			}
+		}
 	}
 	
 	public void _createProjectJson(String pkgName) {
-		    Map<String, Object> pathMap = new HashMap<>();
-		    String base = FileUtil.getExternalStorageDir();
+		Map<String, Object> pathMap = new HashMap<>();
+		String base = FileUtil.getExternalStorageDir();
 		
-		    // Resource files as plain strings
-		    List<String> resourceFiles = new ArrayList<>();
-		    resourceFiles.add(base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/");
-		    resourceFiles.add(base + "/.blacklogics/data/" + sc_id + "/files/resource/");
-		    resourceFiles.add(base + "/.blacklogics/resources/images/" + sc_id + "/");
-		    pathMap.put("resourceFiles", resourceFiles);
+		// Resource files as plain strings
+		List<String> resourceFiles = new ArrayList<>();
+		resourceFiles.add(base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/");
+		resourceFiles.add(base + "/.blacklogics/data/" + sc_id + "/files/resource/");
+		resourceFiles.add(base + "/.blacklogics/resources/images/" + sc_id + "/");
+		pathMap.put("resourceFiles", resourceFiles);
 		
-		    // Java files as plain strings
-		    List<String> javaFiles = new ArrayList<>();
-		    javaFiles.add(base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/java/" + pkgName.replace(".", "/") + "/");
-		    pathMap.put("javaFiles", javaFiles);
+		// Java files as plain strings
+		List<String> javaFiles = new ArrayList<>();
+		javaFiles.add(base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/java/" + pkgName.replace(".", "/") + "/");
+		pathMap.put("javaFiles", javaFiles);
 		
-		    // Manifest file as object with "path"
-		    Map<String, String> manifestMap = new HashMap<>();
-		    manifestMap.put("path", base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/AndroidManifest.xml");
-		    pathMap.put("manifestFile", manifestMap);
+		// Manifest file as object with "path"
+		Map<String, String> manifestMap = new HashMap<>();
+		manifestMap.put("path", base + "/.blacklogics/mysc/" + sc_id + "/app/src/main/AndroidManifest.xml");
+		pathMap.put("manifestFile", manifestMap);
 		
-		    // Assets file as string path
-		    pathMap.put("assetsFile", base + "/.blacklogics/data/" + sc_id + "/files/assets/");
+		// Assets file as string path
+		pathMap.put("assetsFile", base + "/.blacklogics/data/" + sc_id + "/files/assets/");
 		
-		    // Proguard file as string path
-		    pathMap.put("proguardFile", base + "/.blacklogics/data/" + sc_id + "/files/proguard-rules.pro");
+		// Proguard file as string path
+		pathMap.put("proguardFile", base + "/.blacklogics/data/" + sc_id + "/files/proguard-rules.pro");
 		
-		    // Write JSON to file
-		    String json = new Gson().toJson(pathMap);
-		    FileUtil.writeFile(base + "/.blacklogics/data/" + sc_id + "/project.json", json);
+		// Write JSON to file
+		String json = new Gson().toJson(pathMap);
+		FileUtil.writeFile(base + "/.blacklogics/data/" + sc_id + "/project.json", json);
 	}
 	
-	// ... (keep all other existing methods)
 	{
-			// Add this ColorPickerDialog class in the same package
-			
+		
 	}
 	
 	

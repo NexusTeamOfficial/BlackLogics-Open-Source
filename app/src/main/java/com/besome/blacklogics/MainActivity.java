@@ -43,7 +43,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.recyclerview.widget.*;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
@@ -156,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 	private LinearLayout _drawer_Programs;
 	private LinearLayout _drawer_developer;
 	private LinearLayout _drawer_Create;
+	private LinearLayout _drawer_webtoapktool;
 	private LinearLayout _drawer_linear36;
 	private LinearLayout _drawer_linear13;
 	private ImageView _drawer_imageview10;
@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
 	private TextView _drawer_textview24;
 	private ImageView _drawer_imageview16;
 	private TextView _drawer_textview25;
+	private ImageView _drawer_imagevieejw16;
+	private TextView _drawer_textviesw25;
 	private ImageView _drawer_facebook;
 	private ImageView _drawer_Program;
 	private ImageView _drawer_youtube;
@@ -234,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
 		_drawer_Programs = _nav_view.findViewById(R.id.Programs);
 		_drawer_developer = _nav_view.findViewById(R.id.developer);
 		_drawer_Create = _nav_view.findViewById(R.id.Create);
+		_drawer_webtoapktool = _nav_view.findViewById(R.id.webtoapktool);
 		_drawer_linear36 = _nav_view.findViewById(R.id.linear36);
 		_drawer_linear13 = _nav_view.findViewById(R.id.linear13);
 		_drawer_imageview10 = _nav_view.findViewById(R.id.imageview10);
@@ -248,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
 		_drawer_textview24 = _nav_view.findViewById(R.id.textview24);
 		_drawer_imageview16 = _nav_view.findViewById(R.id.imageview16);
 		_drawer_textview25 = _nav_view.findViewById(R.id.textview25);
+		_drawer_imagevieejw16 = _nav_view.findViewById(R.id.imagevieejw16);
+		_drawer_textviesw25 = _nav_view.findViewById(R.id.textviesw25);
 		_drawer_facebook = _nav_view.findViewById(R.id.facebook);
 		_drawer_Program = _nav_view.findViewById(R.id.Program);
 		_drawer_youtube = _nav_view.findViewById(R.id.youtube);
@@ -327,6 +332,15 @@ public class MainActivity extends AppCompatActivity {
 				startActivity(intent);
 			}
 		});
+		
+		_drawer_webtoapktool.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				Intent intent = new Intent(getApplicationContext(), WebToApkActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				startActivity(intent);
+			}
+		});
 	}
 	
 	private void initializeLogic() {
@@ -340,60 +354,60 @@ public class MainActivity extends AppCompatActivity {
 		baseRecycler.setAdapter(adapter);
 		// Initialize RecyclerView
 		adapter.setOnItemClickListener(new ProjectAdapter.OnItemClickListener() {
-			    @Override
-			    public void onItemClick(int position, ProjectAdapter.ProjectItem project) {
-				        // Handle item click
-				        com.besome.blacklogics.model.DesignDataManager.setJavaName("MainActivity");
-				       // DesignActivity.currentActivityBean.setLayoutName("main");
-				        //DesignActivity.currentActivityBean.setActivityName("MainActivity");
-				        Intent intent = new Intent(MainActivity.this, DesignActivity.class);
-				        intent.putExtra("projectPath", project.projectDir.getAbsolutePath());
-				        intent.putExtra("sc_id", String.valueOf(project.projectId));
-				        intent.putExtra("pkgName", project.packageName);
-				        intent.putExtra("varName", project.versionName);
-				        intent.putExtra("varCode", project.versionCode);
-				        intent.putExtra("scName", project.projectName);
-				        startActivity(intent);
-				    }
+			@Override
+			public void onItemClick(int position, ProjectAdapter.ProjectItem project) {
+				// Handle item click
+				com.besome.blacklogics.model.DesignDataManager.setJavaName("MainActivity");
+				// DesignActivity.currentActivityBean.setLayoutName("main");
+				//DesignActivity.currentActivityBean.setActivityName("MainActivity");
+				Intent intent = new Intent(MainActivity.this, DesignActivity.class);
+				intent.putExtra("projectPath", project.projectDir.getAbsolutePath());
+				intent.putExtra("sc_id", String.valueOf(project.projectId));
+				intent.putExtra("pkgName", project.packageName);
+				intent.putExtra("varName", project.versionName);
+				intent.putExtra("varCode", project.versionCode);
+				intent.putExtra("scName", project.projectName);
+				startActivity(intent);
+			}
 			
-			    @Override
-			    public void onItemLongClick(int position, ProjectAdapter.ProjectItem project) {
-				        // Handle long click (e.g., show delete dialog)
-				        showDeleteDialog(position, project);
-				    }
-			    
-			    @Override
-			    public void onEditClick(int position, ProjectAdapter.ProjectItem project) {
-				        // Handle edit click
-				        Intent intent = new Intent(MainActivity.this, CreateProjectActivity.class);
-				        intent.putExtra("update", true);
-				        intent.putExtra("project", (Serializable)project);
-				       // intent.putExtra("project", project);
-				        startActivity(intent);
-				    }
+			@Override
+			public void onItemLongClick(int position, ProjectAdapter.ProjectItem project) {
+				// Handle long click (e.g., show delete dialog)
+				showDeleteDialog(position, project);
+			}
 			
-			    @Override
-			    public void onBackupClick(int position, ProjectAdapter.ProjectItem project) {
-				        // Handle backup click
-				        backUpRestore.backup(String.valueOf(project.projectId), project.projectName);
-				    }
-			    
-			    @Override
-			    public void onDeleteClick(int position, ProjectAdapter.ProjectItem project) {
-				        showDeleteDialog(position, project);
-				    } 
-			    @Override
-			    public void onExportClick(int position, ProjectAdapter.ProjectItem project) {
-				        Intent intent = new Intent(MainActivity.this, ExportProjectActivity.class);
-				        intent.putExtra("sc_id", String.valueOf(project.projectId));
-				        startActivity(intent);
-				    }     
+			@Override
+			public void onEditClick(int position, ProjectAdapter.ProjectItem project) {
+				// Handle edit click
+				Intent intent = new Intent(MainActivity.this, CreateProjectActivity.class);
+				intent.putExtra("update", true);
+				intent.putExtra("project", (Serializable)project);
+				// intent.putExtra("project", project);
+				startActivity(intent);
+			}
+			
+			@Override
+			public void onBackupClick(int position, ProjectAdapter.ProjectItem project) {
+				// Handle backup click
+				backUpRestore.backup(String.valueOf(project.projectId), project.projectName);
+			}
+			
+			@Override
+			public void onDeleteClick(int position, ProjectAdapter.ProjectItem project) {
+				showDeleteDialog(position, project);
+			} 
+			@Override
+			public void onExportClick(int position, ProjectAdapter.ProjectItem project) {
+				Intent intent = new Intent(MainActivity.this, ExportProjectActivity.class);
+				intent.putExtra("sc_id", String.valueOf(project.projectId));
+				startActivity(intent);
+			}     
 		});
 		
 		// Refresh when needed
 		swipeRefresh.setOnRefreshListener(() -> {
-						refreshProjects();
-				});
+			refreshProjects();
+		});
 		baseSearch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
@@ -401,30 +415,30 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 		searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-			            @Override
-			            public boolean onQueryTextSubmit(String query) {
-				                filterProjects(query);
-				                return false;
-				            }
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				filterProjects(query);
+				return false;
+			}
 			
-			            @Override
-			            public boolean onQueryTextChange(String newText) {
-				                filterProjects(newText);
-				                return false;
-				            }
-			        });
-		        
-		        // Close search when back button is pressed
-		        searchBar.setOnCloseListener(new SearchView.OnCloseListener() {
-			            @Override
-			            public boolean onClose() {
-				                if (isSearchVisible) {
-					                    _toggleSearchBar();
-					                    return true;
-					                }
-				                return false;
-				            }
-			        });
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				filterProjects(newText);
+				return false;
+			}
+		});
+		
+		// Close search when back button is pressed
+		searchBar.setOnCloseListener(new SearchView.OnCloseListener() {
+			@Override
+			public boolean onClose() {
+				if (isSearchVisible) {
+					_toggleSearchBar();
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 	
 	
@@ -432,100 +446,106 @@ public class MainActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		finishAffinity();
 	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+	}
 	public void _b() {
 	}
 	// Add this method to MainActivity.java
 	private void showDeleteDialog(int position, ProjectAdapter.ProjectItem project) {
-		    new MaterialAlertDialogBuilder(this)
-		        .setTitle("Delete Project")
-		        .setMessage("Are you sure you want to delete \"" + project.projectName + "\"? This action cannot be undone.")
-		        .setPositiveButton("Delete", (dialog, which) -> {
-			            // Delete the project directory
-			            if (deleteProjectDirectory(project.projectDir)) {
-				                // Remove from adapter
-				                ProjectAdapter adapter = (ProjectAdapter) baseRecycler.getAdapter();
-				                if (adapter != null) {
-					                    adapter.removeProject(position);
-					                }
-				                showMessage("Project deleted successfully");
-				            } else {
-				                showMessage("Failed to delete project");
-				            }
-			        })
-		        .setNegativeButton("Cancel", null)
-		        .show();
+		new MaterialAlertDialogBuilder(this)
+		.setTitle("Delete Project")
+		.setMessage("Are you sure you want to delete \"" + project.projectName + "\"? This action cannot be undone.")
+		.setPositiveButton("Delete", (dialog, which) -> {
+			// Delete the project directory
+			if (deleteProjectDirectory(project.projectDir)) {
+				// Remove from adapter
+				ProjectAdapter adapter = (ProjectAdapter) baseRecycler.getAdapter();
+				if (adapter != null) {
+					adapter.removeProject(position);
+				}
+				showMessage("Project deleted successfully");
+			} else {
+				showMessage("Failed to delete project");
+			}
+		})
+		.setNegativeButton("Cancel", null)
+		.show();
 	}
 	
 	private boolean deleteProjectDirectory(File projectDir) {
-		    if (projectDir.exists() && projectDir.isDirectory()) {
-			        // Recursively delete directory
-			        File[] files = projectDir.listFiles();
-			        if (files != null) {
-				            for (File file : files) {
-					                if (file.isDirectory()) {
-						                    deleteProjectDirectory(file);
-						                } else {
-						                    file.delete();
-						                }
-					            }
-				        }
-			        return projectDir.delete();
-			    }
-		    return false;
+		if (projectDir.exists() && projectDir.isDirectory()) {
+			// Recursively delete directory
+			File[] files = projectDir.listFiles();
+			if (files != null) {
+				for (File file : files) {
+					if (file.isDirectory()) {
+						deleteProjectDirectory(file);
+					} else {
+						file.delete();
+					}
+				}
+			}
+			return projectDir.delete();
+		}
+		return false;
 	}
 	
 	// Update the initializeLogic method to uncomment and use the showDeleteDialog
 	private void refreshProjects() {
-		    if (checkPermission()) {
-			        if (adapter != null) {
-				            adapter.refresh();
-				        }
-			    } else {
-			      //  requestPermission();
-			        Snackbar.make(swipeRefresh, "Storage permission is required to refresh projects.", Snackbar.LENGTH_LONG)
-			                .setAction("Grant", v -> requestPermission())
-			                .show();
-			    }
+		if (checkPermission()) {
+			if (adapter != null) {
+				adapter.refresh();
+			}
+		} else {
+			//  requestPermission();
+			Snackbar.make(swipeRefresh, "Storage permission is required to refresh projects.", Snackbar.LENGTH_LONG)
+			.setAction("Grant", v -> requestPermission())
+			.show();
+		}
 		
-		    // Stop the refreshing animation
-		    swipeRefresh.setRefreshing(false);
+		// Stop the refreshing animation
+		swipeRefresh.setRefreshing(false);
 	}
 	
 	private boolean checkPermission() {
-		    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
-			        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED &&
-			               ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED &&
-			               ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
-			    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 - 12
-			        return Environment.isExternalStorageManager();
-			    } else { // Android 10 and below
-			        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-			               ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-			    }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+			return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED &&
+			ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED &&
+			ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED;
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 - 12
+			return Environment.isExternalStorageManager();
+		} else { // Android 10 and below
+			return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+			ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+		}
 	}
 	
 	private void requestPermission() {
-		    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
-			        ActivityCompat.requestPermissions(this, new String[]{
-				                Manifest.permission.READ_MEDIA_IMAGES,
-				                Manifest.permission.READ_MEDIA_VIDEO,
-				                Manifest.permission.READ_MEDIA_AUDIO
-				        }, 100);
-			    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 - 12
-			        try {
-				            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-				            intent.setData(Uri.parse("package:" + getPackageName()));
-				            startActivity(intent);
-				        } catch (Exception e) {
-				            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-				            startActivity(intent);
-				        }
-			    } else { // Android 10 and below
-			        ActivityCompat.requestPermissions(this, new String[]{
-				                Manifest.permission.READ_EXTERNAL_STORAGE,
-				                Manifest.permission.WRITE_EXTERNAL_STORAGE
-				        }, 100);
-			    }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+			ActivityCompat.requestPermissions(this, new String[]{
+				Manifest.permission.READ_MEDIA_IMAGES,
+				Manifest.permission.READ_MEDIA_VIDEO,
+				Manifest.permission.READ_MEDIA_AUDIO
+			}, 100);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // Android 11 - 12
+			try {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivity(intent);
+			} catch (Exception e) {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+				startActivity(intent);
+			}
+		} else { // Android 10 and below
+			ActivityCompat.requestPermissions(this, new String[]{
+				Manifest.permission.READ_EXTERNAL_STORAGE,
+				Manifest.permission.WRITE_EXTERNAL_STORAGE
+			}, 100);
+		}
 	}
 	
 	{
@@ -534,29 +554,29 @@ public class MainActivity extends AppCompatActivity {
 	
 	public void _toggleSearchBar() {
 		isSearchVisible = !isSearchVisible;
-		        
-		        if (isSearchVisible) {
-			            searchBarLayout.setVisibility(View.VISIBLE);
-			            searchBar.requestFocus();
-			            // Show keyboard
-			            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			            imm.showSoftInput(searchBar, InputMethodManager.SHOW_IMPLICIT);
-			        } else {
-			            searchBarLayout.setVisibility(View.GONE);
-			            searchBar.setQuery("", false);
-			            // Hide keyboard
-			            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			            imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
-			            // Reset filter
-			            filterProjects("");
-			        }
-		    }
-	    
-	    private void filterProjects(String query) {
-		        if (adapter != null) {
-			            adapter.getFilter().filter(query);
-			        }
-		    }
+		
+		if (isSearchVisible) {
+			searchBarLayout.setVisibility(View.VISIBLE);
+			searchBar.requestFocus();
+			// Show keyboard
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.showSoftInput(searchBar, InputMethodManager.SHOW_IMPLICIT);
+		} else {
+			searchBarLayout.setVisibility(View.GONE);
+			searchBar.setQuery("", false);
+			// Hide keyboard
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+			// Reset filter
+			filterProjects("");
+		}
+	}
+	
+	private void filterProjects(String query) {
+		if (adapter != null) {
+			adapter.getFilter().filter(query);
+		}
+	}
 	{
 	}
 	

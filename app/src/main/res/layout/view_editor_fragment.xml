@@ -16,218 +16,86 @@
 			android:layout_height="match_parent"
 			android:orientation="horizontal"
 			android:layout_weight="1.0">
-			<ScrollView
-				android:id="@+id/vscroll3"
+			<RelativeLayout
+				android:id="@+id/relativelayout2"
 				android:layout_width="wrap_content"
-				android:layout_height="match_parent"
-				android:fillViewport="true">
+				android:layout_height="match_parent">
 				<LinearLayout
-					android:id="@+id/linear3"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
+					android:id="@+id/widgets"
+					android:layout_width="120dp"
+					android:layout_height="match_parent"
+					android:padding="2dp"
 					android:orientation="vertical">
-					<RelativeLayout
-						android:id="@+id/relativelayout2"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content">
-						<LinearLayout
-							android:id="@+id/widgets"
-							android:layout_width="120dp"
-							android:layout_height="wrap_content"
-							android:padding="2dp"
-							android:orientation="vertical">
-							<TextView
-								android:id="@+id/textview4"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="1dp"
-								android:layout_marginBottom="1dp"
-								android:text="Widgets"
-								android:textColor="#068775"
-								android:padding="4.0dip"
-								android:textSize="14.0sp"
-								android:layout_marginEnd="3dp"
-								android:layout_marginStart="3dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_linear"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_frame"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_scrollview"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_horizontalscrollview"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_textview"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_edit_text"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_checkbox"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_switch"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_button"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_image_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_circle_image_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_radio_button"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_seek_bar"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_progress_bar"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_rating_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_search_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_video_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_web_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_list_view"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/viewpager"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_digital_clock"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-							<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
-								android:id="@+id/widget_time_picker"
-								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:layout_marginTop="2dp"
-								android:layout_marginBottom="2dp"
-								android:layout_marginEnd="5dp"
-								android:layout_marginStart="5dp" />
-						</LinearLayout>
-					</RelativeLayout>
+					<TextView
+						android:id="@+id/textview4"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="1dp"
+						android:layout_marginBottom="1dp"
+						android:text="Widgets"
+						android:textColor="#068775"
+						android:padding="4.0dip"
+						android:textSize="14.0sp"
+						android:layout_marginEnd="3dp"
+						android:layout_marginStart="3dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_textview"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_button"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_image_view"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_video_view"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_linear"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_web_view"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
+					<com.nexusteam.internal.os.layouteditor.custom.MyDragWidget
+						android:id="@+id/widget_list_view"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginTop="2dp"
+						android:layout_marginBottom="2dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginStart="5dp" />
 				</LinearLayout>
-			</ScrollView>
+			</RelativeLayout>
 			<View
 				android:id="@+id/view9"
 				android:layout_height="match_parent"
@@ -258,13 +126,14 @@
 								android:id="@+id/linear13"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
+								android:background="?colorPrimaryDark"
 								android:gravity="center_vertical"
 								android:orientation="horizontal"
-								android:padding="2.0dip"
-								android:background="?colorPrimaryDark">
+								android:padding="2.0dip">
 								<TextView
 									android:id="@+id/tv_view_name"
 									android:layout_height="wrap_content"
+									android:text="main.xml"
 									android:textColor="#FFFFFF"
 									android:singleLine="true"
 									android:layout_width="0.0dip"
@@ -314,9 +183,9 @@
 								android:id="@+id/phone_action_bar"
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
+								android:background="?colorPrimary"
 								android:orientation="horizontal"
 								android:padding="4.0dip"
-								android:background="?colorPrimary"
 								android:elevation="3dp">
 								<TextView
 									android:id="@+id/textview6"

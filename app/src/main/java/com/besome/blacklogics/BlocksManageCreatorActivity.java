@@ -35,7 +35,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -245,16 +244,16 @@ public class BlocksManageCreatorActivity extends AppCompatActivity {
 			public void onClick(View _view) {
 				ColorPicker colorPicker = new ColorPicker(BlocksManageCreatorActivity.this, false); // pipEnabled = false
 				colorPicker.setOnColorPickedListener(new OnColorPickedListener() {
-						@Override
-						public void onColorPicked(String str) {
-								try {
-										// Ensure color is in 0xFF format
-										color.setText(str);
-								} catch (Exception e) {
-										// Handle invalid color
-										Toast.makeText(BlocksManageCreatorActivity.this, "Invalid color selected", Toast.LENGTH_SHORT).show();
-								}
+					@Override
+					public void onColorPicked(String str) {
+						try {
+							// Ensure color is in 0xFF format
+							color.setText(str);
+						} catch (Exception e) {
+							// Handle invalid color
+							Toast.makeText(BlocksManageCreatorActivity.this, "Invalid color selected", Toast.LENGTH_SHORT).show();
 						}
+					}
 				});
 				
 				// Launch color picker
@@ -274,34 +273,34 @@ public class BlocksManageCreatorActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View _view) {
 				if (name.getText().toString().isEmpty()) {
-						name.setError("Name is null.");
+					name.setError("Name is null.");
 				} else if (type.getText().toString().isEmpty()) {
-						type.setError("Type is null.");
+					type.setError("Type is null.");
 				} else if (color.getText().toString().isEmpty()) {
-						color.setError("Color is empty.");
+					color.setError("Color is empty.");
 				} else {
-						BlockMaker maker = new BlockMaker("/storage/emulated/0/.blacklogics/resources/block/My Block/block.json");
-						JSONObject block = new JSONObject();
-						try {
-								block.put("code", code.getText().toString());
-								block.put("name", name.getText().toString());
-								block.put("palette", paletteId);
-								block.put("type", type.getText().toString());
-								block.put("typeName", type_name.getText().toString());
-								block.put("spec", spec.getText().toString());
-								block.put("color", color.getText().toString());
-								if (isUpdateMode) {
-										maker.updateBlock(blockCode, block);
-										Toast.makeText(BlocksManageCreatorActivity.this, "Block updated", Toast.LENGTH_SHORT).show();
-								} else {
-										maker.addBlock(block);
-										Toast.makeText(BlocksManageCreatorActivity.this, "Block added", Toast.LENGTH_SHORT).show();
-								}
-								finish();
-						} catch (JSONException e) {
-								e.printStackTrace();
-								Toast.makeText(BlocksManageCreatorActivity.this, "Error saving block", Toast.LENGTH_SHORT).show();
+					BlockMaker maker = new BlockMaker("/storage/emulated/0/.blacklogics/resources/block/My Block/block.json");
+					JSONObject block = new JSONObject();
+					try {
+						block.put("code", code.getText().toString());
+						block.put("name", name.getText().toString());
+						block.put("palette", paletteId);
+						block.put("type", type.getText().toString());
+						block.put("typeName", type_name.getText().toString());
+						block.put("spec", spec.getText().toString());
+						block.put("color", color.getText().toString());
+						if (isUpdateMode) {
+							maker.updateBlock(blockCode, block);
+							//	Toast.makeText(BlocksManageCreatorActivity.this, "Block updated", Toast.LENGTH_SHORT).show();
+						} else {
+							maker.addBlock(block);
+							//	Toast.makeText(BlocksManageCreatorActivity.this, "Block added", Toast.LENGTH_SHORT).show();
 						}
+						finish();
+					} catch (JSONException e) {
+						e.printStackTrace();
+						Toast.makeText(BlocksManageCreatorActivity.this, "Error saving block", Toast.LENGTH_SHORT).show();
+					}
 				}
 				
 			}
@@ -327,22 +326,42 @@ public class BlocksManageCreatorActivity extends AppCompatActivity {
 			paletteId = getIntent().getStringExtra("index");
 		}
 		if (getIntent().hasExtra("isUpdateMode") && getIntent().getBooleanExtra("isUpdateMode", false)) {
-				isUpdateMode = true;
-				blockCode = getIntent().getStringExtra("blockCode");
-				loadBlockData();
+			isUpdateMode = true;
+			blockCode = getIntent().getStringExtra("blockCode");
+			loadBlockData();
 		}
 		
-		TextWatcher previewWatcher = new TextWatcher() {
-				@Override
-				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+		type.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				String typeText = s.toString().trim();
 				
-				@Override
-				public void onTextChanged(CharSequence s, int start, int before, int count) {}
-				
-				@Override
-				public void afterTextChanged(Editable s) {
-						updateBlockPreview();
+				if ("e".equals(typeText)) {
+					spec_2lay.setVisibility(View.VISIBLE);
+				} else {
+					spec_2lay.setVisibility(View.GONE);
 				}
+				
+				updateBlockPreview();
+			}
+		});
+		TextWatcher previewWatcher = new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				updateBlockPreview();
+			}
 		};
 		
 		spec.addTextChangedListener(previewWatcher);
@@ -353,92 +372,97 @@ public class BlocksManageCreatorActivity extends AppCompatActivity {
 		// Initial preview update
 		updateBlockPreview();
 		
+		if ("e".equals(type.getText().toString().trim())) {
+			spec_2lay.setVisibility(View.VISIBLE);
+		} else {
+			spec_2lay.setVisibility(View.GONE);
+		}
 	}
 	
 	public void _a() {
 	}
 	private View addBlockMenu(final String menu, String name) {
-			TextView textView = new TextView(this);
-			textView.setLayoutParams(new LinearLayout.LayoutParams(
-			ViewGroup.LayoutParams.WRAP_CONTENT,
-			ViewGroup.LayoutParams.MATCH_PARENT));
-			textView.setPadding(
-			(int) SketchwareUtil.getDip(this, 8),
-			0,
-			(int) SketchwareUtil.getDip(this, 8),
-			0
-			);
-			textView.setTextColor(0xff006064);
-			textView.setText(name);
-			textView.setTextSize(14.0f);
-			textView.setTypeface(Typeface.DEFAULT_BOLD);
-			textView.setOnClickListener(v -> {
-					StringBuilder sb = new StringBuilder(spec.getText().toString());
-					int selectionStart = spec.getSelectionStart();
-					sb.insert(selectionStart, menu);
-					spec.setText(sb);
-					spec.setSelection(selectionStart + menu.length());
-			});
-			return textView;
+		TextView textView = new TextView(this);
+		textView.setLayoutParams(new LinearLayout.LayoutParams(
+		ViewGroup.LayoutParams.WRAP_CONTENT,
+		ViewGroup.LayoutParams.MATCH_PARENT));
+		textView.setPadding(
+		(int) SketchwareUtil.getDip(this, 8),
+		0,
+		(int) SketchwareUtil.getDip(this, 8),
+		0
+		);
+		textView.setTextColor(0xff006064);
+		textView.setText(name);
+		textView.setTextSize(14.0f);
+		textView.setTypeface(Typeface.DEFAULT_BOLD);
+		textView.setOnClickListener(v -> {
+			StringBuilder sb = new StringBuilder(spec.getText().toString());
+			int selectionStart = spec.getSelectionStart();
+			sb.insert(selectionStart, menu);
+			spec.setText(sb);
+			spec.setSelection(selectionStart + menu.length());
+		});
+		return textView;
 	}
 	
 	private void addParameters() {
-			parametersHolder.addView(addBlockMenu("%s.inputOnly ", "inputOnly"));
-			parametersHolder.addView(addBlockMenu("%s ", "string"));
-			parametersHolder.addView(addBlockMenu("%b ", "boolean"));
-			parametersHolder.addView(addBlockMenu("%d ", "number"));
-			parametersHolder.addView(addBlockMenu("%m.varMap ", "map"));
-			parametersHolder.addView(addBlockMenu("%m.view ", "view"));
-			parametersHolder.addView(addBlockMenu("%m.textview ", "textView"));
-			parametersHolder.addView(addBlockMenu("%m.edittext ", "editText"));
-			parametersHolder.addView(addBlockMenu("%m.imageview ", "ImageView"));
-			parametersHolder.addView(addBlockMenu("%m.listview ", "listView"));
-			parametersHolder.addView(addBlockMenu("%m.list ", "list"));
-			parametersHolder.addView(addBlockMenu("%m.listMap ", "listMap"));
-			parametersHolder.addView(addBlockMenu("%m.listStr ", "listString"));
-			parametersHolder.addView(addBlockMenu("%m.listInt ", "listNumber"));
-			parametersHolder.addView(addBlockMenu("%m.intent ", "intent"));
-			parametersHolder.addView(addBlockMenu("%m.color ", "color"));
-			parametersHolder.addView(addBlockMenu("%m.activity ", "activity"));
-			parametersHolder.addView(addBlockMenu("%m.resource ", "resource"));
-			parametersHolder.addView(addBlockMenu("%m.customViews ", "custom views"));
-			parametersHolder.addView(addBlockMenu("%m.layout ", "layout"));
-			parametersHolder.addView(addBlockMenu("%m.anim ", "anim"));
-			parametersHolder.addView(addBlockMenu("%m.drawable ", "drawable"));
+		parametersHolder.addView(addBlockMenu("%s.inputOnly ", "inputOnly"));
+		parametersHolder.addView(addBlockMenu("%s ", "string"));
+		parametersHolder.addView(addBlockMenu("%b ", "boolean"));
+		parametersHolder.addView(addBlockMenu("%d ", "number"));
+		parametersHolder.addView(addBlockMenu("%m.varMap ", "map"));
+		parametersHolder.addView(addBlockMenu("%m.view ", "view"));
+		parametersHolder.addView(addBlockMenu("%m.textview ", "textView"));
+		parametersHolder.addView(addBlockMenu("%m.edittext ", "editText"));
+		parametersHolder.addView(addBlockMenu("%m.imageview ", "ImageView"));
+		parametersHolder.addView(addBlockMenu("%m.listview ", "listView"));
+		parametersHolder.addView(addBlockMenu("%m.list ", "list"));
+		parametersHolder.addView(addBlockMenu("%m.listMap ", "listMap"));
+		parametersHolder.addView(addBlockMenu("%m.listStr ", "listString"));
+		parametersHolder.addView(addBlockMenu("%m.listInt ", "listNumber"));
+		parametersHolder.addView(addBlockMenu("%m.intent ", "intent"));
+		parametersHolder.addView(addBlockMenu("%m.color ", "color"));
+		parametersHolder.addView(addBlockMenu("%m.activity ", "activity"));
+		parametersHolder.addView(addBlockMenu("%m.resource ", "resource"));
+		parametersHolder.addView(addBlockMenu("%m.customViews ", "custom views"));
+		parametersHolder.addView(addBlockMenu("%m.layout ", "layout"));
+		parametersHolder.addView(addBlockMenu("%m.anim ", "anim"));
+		parametersHolder.addView(addBlockMenu("%m.drawable ", "drawable"));
 	}
 	
 	interface OnColorPickedListener {
-			void onColorPicked(String str);
+		void onColorPicked(String str);
 	}
 	
 	class ColorPicker {
-			private OnColorPickedListener listener;
-			private Context context;
-			private boolean pipEnabled;
-			
-			ColorPicker(Context context, boolean pipEnabled) {
-					this.context = context;
-					this.pipEnabled = pipEnabled;
-			}
-			
-			public void setOnColorPickedListener(OnColorPickedListener onColorPickedListener) {
-					this.listener = onColorPickedListener;
-			}
-			
-			public void pick() {
-					Intent intent = new Intent(context, ColorPickerActivity.class);
-					intent.putExtra("pip", pipEnabled);
-					LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
-							@Override
-							public void onReceive(Context context, Intent intent) {
-									LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
-									if (listener != null && intent.hasExtra(TypedValues.Custom.S_COLOR)) {
-											listener.onColorPicked(intent.getStringExtra(TypedValues.Custom.S_COLOR));
-									}
-							}
-					}, new IntentFilter("data"));
-					context.startActivity(intent);
-			}
+		private OnColorPickedListener listener;
+		private Context context;
+		private boolean pipEnabled;
+		
+		ColorPicker(Context context, boolean pipEnabled) {
+			this.context = context;
+			this.pipEnabled = pipEnabled;
+		}
+		
+		public void setOnColorPickedListener(OnColorPickedListener onColorPickedListener) {
+			this.listener = onColorPickedListener;
+		}
+		
+		public void pick() {
+			Intent intent = new Intent(context, ColorPickerActivity.class);
+			intent.putExtra("pip", pipEnabled);
+			LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+					if (listener != null && intent.hasExtra(TypedValues.Custom.S_COLOR)) {
+						listener.onColorPicked(intent.getStringExtra(TypedValues.Custom.S_COLOR));
+					}
+				}
+			}, new IntentFilter("data"));
+			context.startActivity(intent);
+		}
 	}
 	
 	{
@@ -448,86 +472,90 @@ public class BlocksManageCreatorActivity extends AppCompatActivity {
 	public void _b() {
 	}
 	private void addBlockToPalette(RelativeLayout blockBuilder, String str, String str2, String str3, int i, Object... objArr) {
-			BlockBase addBlock = addBlock(blockBuilder, str, str2, str3, i, objArr);
-			addBlock.setClickable(false);
-			//	addBlock.setOnTouchListener(this);
+		BlockBase addBlock = addBlock(blockBuilder, str, str2, str3, i, objArr);
+		addBlock.setClickable(false);
+		//	addBlock.setOnTouchListener(this);
 	}
 	
 	public BlockBase addBlock(RelativeLayout blockBuilder, String str, String str2, String str3, int i, Object... objArr) {
-			View view = new View(this);
-			view.setLayoutParams(new RelativeLayout.LayoutParams(-1, (int) (8.0f * this.dip)));
-			blockBuilder.addView(view);
-			Block block = new Block(this, -1, str, str2, str3, new Object[]{Integer.valueOf(i), objArr});
-			block.setBlockType(1);
-			blockBuilder.addView(block);
-			return block;
+		View view = new View(this);
+		view.setLayoutParams(new RelativeLayout.LayoutParams(-1, (int) (8.0f * this.dip)));
+		blockBuilder.addView(view);
+		Block block = new Block(this, -1, str, str2, str3, new Object[]{Integer.valueOf(i), objArr});
+		if (i != 0xFF000000 && i != 0x30000000) {
+			block.setBlockColor(i);
+		}
+		block.setBlockType(1);
+		blockBuilder.addView(block);
+		return block;
 	}
 	
 	private void updateBlockPreview() {
-			// Clear existing views in blockPreview
-			blockPreview.removeAllViews();
-			
-			// Get current values from EditText fields
-			String specText = spec.getText().toString();
-			String typeText = type.getText().toString();
-			String colorText = color.getText().toString();
-			String codeText = code.getText().toString(); // Optional, depending on whether code affects preview
-			String typeNameText = type_name.getText().toString();
-			
-			// Default values to avoid crashes
-			if (specText.isEmpty()) specText = " "; // Default spec
-			if (typeText.isEmpty()) typeText = " "; // Default to regular block type (" ")
-			if (codeText.isEmpty()) codeText = "";
-			if (typeNameText.isEmpty()) typeNameText = "";
-			
-			// Parse color, default to a fallback if invalid
-			// Normalize input
-			String colorTextBASE = color.getText() != null ? color.getText().toString().trim() : "";
-			
-			// Now check and parse
-			int colorValue;
-			if (colorText.isEmpty()) {
-					colorValue = Color.GRAY;
-			} else {
-					try {
-							colorValue = Color.parseColor(colorTextBASE);
-					} catch (IllegalArgumentException e) {
-							colorValue = Color.GRAY;
-					}
+		// Clear existing views in blockPreview
+		blockPreview.removeAllViews();
+		
+		// Get current values from EditText fields
+		String specText = spec.getText().toString();
+		String typeText = type.getText().toString();
+		String colorText = color.getText().toString();
+		String codeText = code.getText().toString(); // Optional, depending on whether code affects preview
+		String typeNameText = type_name.getText().toString();
+		
+		// Default values to avoid crashes
+		if (specText.isEmpty()) specText = " "; // Default spec
+		if (typeText.isEmpty()) typeText = " "; // Default to regular block type (" ")
+		if (codeText.isEmpty()) codeText = "";
+		if (typeNameText.isEmpty()) typeNameText = "";
+		
+		// Parse color, default to a fallback if invalid
+		// Normalize input
+		String colorTextBASE = color.getText() != null ? color.getText().toString().trim() : "";
+		
+		// Now check and parse
+		int colorValue;
+		if (colorText.isEmpty()) {
+			colorValue = Color.GRAY;
+		} else {
+			try {
+				colorValue = Color.parseColor(colorTextBASE);
+			} catch (IllegalArgumentException e) {
+				colorValue = Color.GRAY;
 			}
-			
-			
-			
-			// Add block to preview
-			addBlockToPalette(blockPreview, specText, typeText, codeText, colorValue, new Object[]{specText});
+		}
+		
+		
+		
+		// Add block to preview
+		addBlockToPalette(blockPreview, specText, typeText, codeText, colorValue, new Object[]{specText});
 	}
 	
 	private void loadBlockData() {
-			BlockMaker maker = new BlockMaker("/storage/emulated/0/.blacklogics/resources/block/My Block/block.json");
-			JSONObject block = maker.getBlockByCode(blockCode);
-			if (block != null) {
-					try {
-							name.setText(block.getString("name"));
-							type.setText(block.getString("type"));
-							type_name.setText(block.getString("typeName"));
-							spec.setText(block.getString("spec"));
-							color.setText(block.getString("color"));
-							code.setText(block.getString("code"));
-					} catch (JSONException e) {
-							e.printStackTrace();
-							Toast.makeText(this, "Error loading block data", Toast.LENGTH_SHORT).show();
-					}
-			} else {
-					Toast.makeText(this, "Block not found", Toast.LENGTH_SHORT).show();
-					finish();
+		BlockMaker maker = new BlockMaker("/storage/emulated/0/.blacklogics/resources/block/My Block/block.json");
+		JSONObject block = maker.getBlockByCode(blockCode);
+		if (block != null) {
+			try {
+				name.setText(block.getString("name"));
+				type.setText(block.getString("type"));
+				type_name.setText(block.getString("typeName"));
+				spec.setText(block.getString("spec"));
+				color.setText(block.getString("color"));
+				code.setText(block.getString("code"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+				Toast.makeText(this, "Error loading block data", Toast.LENGTH_SHORT).show();
 			}
+		} else {
+			Toast.makeText(this, "Block not found", Toast.LENGTH_SHORT).show();
+			finish();
+		}
 	}
 	
 	{
-			
-			
-			
-			
+		
+		
+		
+		
+		
 	}
 	
 	

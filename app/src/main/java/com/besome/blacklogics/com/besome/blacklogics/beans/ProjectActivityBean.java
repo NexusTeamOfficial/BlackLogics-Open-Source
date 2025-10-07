@@ -1,53 +1,123 @@
 package com.besome.blacklogics.beans;
 
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.Expose;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.text.InputType;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.View;
+import android.text.InputType;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.lang.reflect.Type;
 
 public class ProjectActivityBean implements Parcelable {
-	@Expose
-	private String activityName = "MainActivity"; // Name of the activity (e.g., MainActivity)
-	@Expose
-	private String layoutName = "main"; // Associated layout name (e.g., main)
-	@Expose
-	private String packageName; // Package name of the project
-	@Expose
-	private boolean isMainActivity = true; // Flag to indicate if this is the main activity
-	@Expose
-	private String scId; // Project-specific ID
-	@Expose
-	private String projectName; // Name of the project
-	@Expose
-	private List<ViewBean> widgets; // List of widgets in the layout
-	@Expose
-	private String javaCode; // Generated Java code for the activity
-	@Expose
-	private String xmlCode; // Generated XML code for the layout
-	@Expose
-	private boolean useAndroidX; // Flag to indicate if AndroidX is used
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Map<String, ProjectActivityBean> beanMap = new HashMap<>();
+    private static final Map<String, Map<String, ProjectActivityBean>> activitiesCache = new HashMap<>();
+    private static ScheduledExecutorService syncExecutor;
+    private static final int SYNC_INTERVAL = 3000; // 3 seconds
+    private boolean isDirty = false;
+
+    @Expose
+    private String activityName = "MainActivity";
+    @Expose
+    private String layoutName = "main";
+    @Expose
+    private String packageName;
+    @Expose
+    private boolean isMainActivity = true;
+    @Expose
+    private String scId;
+    @Expose
+    private String projectName;
+    @Expose
+    private List<ViewBean> widgets;
+    @Expose
+    private String javaCode;
+    @Expose
+    private String xmlCode;
+    @Expose
+    private boolean useAndroidX;
+
+    public ProjectActivityBean() {
+        this.widgets = new ArrayList<>();
+    }
 	
-	// Default constructor
-	public ProjectActivityBean() {
-		this.widgets = new ArrayList<>();
-	}
+	public ProjectActivityBean(String activityName, String layoutName, String packageName, 
+                              boolean isMainActivity, String scId, String projectName) {
+        if (scId == null || scId.isEmpty() || activityName == null || activityName.isEmpty()) {
+            throw new IllegalArgumentException("scId and activityName must not be null or empty");
+        }
+        this.activityName = activityName;
+        this.layoutName = layoutName;
+        this.packageName = packageName;
+        this.isMainActivity = isMainActivity;
+        this.scId = scId;
+        this.projectName = projectName;
+        this.widgets = new ArrayList<>();
+        this.useAndroidX = true;
+
+        beanMap.put(getMapKey(), this);
+        autoLoadFromStorage();
+        // startBackgroundSync();
+    }
+
+    private String getMapKey() {
+        return scId + "_" + activityName;
+    }
+
+    private static void startBackgroundSync() {
+        if (syncExecutor == null) {
+            syncExecutor = Executors.newSingleThreadScheduledExecutor();
+            syncExecutor.scheduleAtFixedRate(() -> {
+                synchronized (beanMap) {
+                    for (ProjectActivityBean bean : beanMap.values()) {
+                        bean.saveToStorage();
+                    }
+                }
+            }, SYNC_INTERVAL, SYNC_INTERVAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public static void stopBackgroundSync() {
+        if (syncExecutor != null) {
+            syncExecutor.shutdown();
+            syncExecutor = null;
+        }
+    }
 	
-	// Constructor with basic fields
-	public ProjectActivityBean(String activityName, String layoutName, String packageName, boolean isMainActivity, String scId, String projectName) {
-		this.activityName = activityName;
-		this.layoutName = layoutName;
-		this.packageName = packageName;
-		this.isMainActivity = isMainActivity;
-		this.scId = scId;
-		this.projectName = projectName;
-		this.widgets = new ArrayList<>();
-		this.useAndroidX = true; // Default to AndroidX
-	}
+	// Auto-load method
+	private void autoLoadFromStorage() {
+        if (scId != null && !scId.isEmpty() && activityName != null && !activityName.isEmpty()) {
+            ProjectActivityBean loadedBean = loadFromStorage(scId, activityName);
+            if (loadedBean != null) {
+                this.layoutName = this.layoutName != null ? this.layoutName : loadedBean.layoutName;
+                this.packageName = this.packageName != null ? this.packageName : loadedBean.packageName;
+                this.isMainActivity = this.isMainActivity || loadedBean.isMainActivity;
+                this.projectName = this.projectName != null ? this.projectName : loadedBean.projectName;
+                this.widgets = this.widgets.isEmpty() ? loadedBean.widgets : this.widgets;
+                this.javaCode = this.javaCode != null ? this.javaCode : loadedBean.javaCode;
+                this.xmlCode = this.xmlCode != null ? this.xmlCode : loadedBean.xmlCode;
+                this.useAndroidX = this.useAndroidX || loadedBean.useAndroidX;
+            }
+        }
+    }
 	
 	// Getters and Setters
 	public String getActivityName() {
@@ -55,16 +125,20 @@ public class ProjectActivityBean implements Parcelable {
 	}
 	
 	public void setActivityName(String activityName) {
-		this.activityName = activityName;
-	}
-	
+        this.activityName = activityName;
+        this.isDirty = true;
+        saveToStorage();
+    }
+
 	public String getLayoutName() {
 		return layoutName;
 	}
 	
 	public void setLayoutName(String layoutName) {
-		this.layoutName = layoutName;
-	}
+        this.layoutName = layoutName;
+        this.isDirty = true;
+        saveToStorage();
+    }
 	
 	public String getPackageName() {
 		return packageName;
@@ -72,6 +146,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+		saveToStorage();
 	}
 	
 	public boolean isMainActivity() {
@@ -80,6 +155,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setMainActivity(boolean mainActivity) {
 		isMainActivity = mainActivity;
+		saveToStorage();
 	}
 	
 	public String getScId() {
@@ -88,6 +164,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setScId(String scId) {
 		this.scId = scId;
+		saveToStorage();
 	}
 	
 	public String getProjectName() {
@@ -96,6 +173,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+		saveToStorage();
 	}
 	
 	public List<ViewBean> getWidgets() {
@@ -112,6 +190,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setJavaCode(String javaCode) {
 		this.javaCode = javaCode;
+		saveToStorage();
 	}
 	
 	public String getXmlCode() {
@@ -120,6 +199,7 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setXmlCode(String xmlCode) {
 		this.xmlCode = xmlCode;
+		saveToStorage();
 	}
 	
 	public boolean isUseAndroidX() {
@@ -128,6 +208,170 @@ public class ProjectActivityBean implements Parcelable {
 	
 	public void setUseAndroidX(boolean useAndroidX) {
 		this.useAndroidX = useAndroidX;
+		saveToStorage();
+	}
+	
+	public boolean saveToStorage() {
+        if (!isDirty || scId == null || scId.isEmpty()) {
+            Log.d("ProjectActivityBean", "Skipping save for " + activityName + ": not dirty or invalid scId");
+            return false;
+        }
+
+        try {
+            File baseDir = new File(Environment.getExternalStorageDirectory(), ".blacklogics/data/" + scId);
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
+
+            Map<String, ProjectActivityBean> allActivities = activitiesCache.computeIfAbsent(
+                scId, k -> loadAllActivitiesFromStorage(scId));
+            allActivities.put(activityName, this);
+
+            String json = GSON.toJson(allActivities);
+            File activitiesFile = new File(baseDir, "root_activities.json");
+            try (FileOutputStream fos = new FileOutputStream(activitiesFile)) {
+                fos.write(json.getBytes(StandardCharsets.UTF_8));
+                Log.d("ProjectActivityBean", "Saved activity " + activityName + " for scId " + scId);
+            }
+
+            isDirty = false;
+            return true;
+        } catch (IOException e) {
+            Log.e("ProjectActivityBean", "Failed to save activity " + activityName + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static ProjectActivityBean loadFromStorage(String scId, String activityName) {
+        if (scId == null || scId.isEmpty() || activityName == null || activityName.isEmpty()) {
+            Log.e("ProjectActivityBean", "Cannot load: scId or activityName is null or empty");
+            return null;
+        }
+
+        Map<String, ProjectActivityBean> allActivities = activitiesCache.computeIfAbsent(
+            scId, k -> loadAllActivitiesFromStorage(scId));
+        return allActivities.get(activityName);
+    }
+
+    private static Map<String, ProjectActivityBean> loadAllActivitiesFromStorage(String scId) {
+        Map<String, ProjectActivityBean> activitiesMap = new HashMap<>();
+        try {
+            File activitiesFile = new File(
+                Environment.getExternalStorageDirectory(),
+                ".blacklogics/data/" + scId + "/root_activities.json"
+            );
+
+            if (!activitiesFile.exists()) {
+                return activitiesMap;
+            }
+
+            try (FileInputStream fis = new FileInputStream(activitiesFile)) {
+                byte[] data = new byte[(int) activitiesFile.length()];
+                fis.read(data);
+                String json = new String(data, StandardCharsets.UTF_8);
+
+                Type type = new TypeToken<Map<String, ProjectActivityBean>>(){}.getType();
+                Map<String, ProjectActivityBean> loadedActivities = GSON.fromJson(json, type);
+
+                if (loadedActivities != null) {
+                    activitiesMap = loadedActivities;
+                }
+            }
+        } catch (IOException e) {
+            Log.e("ProjectActivityBean", "Failed to load activities for scId " + scId + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return activitiesMap;
+    }
+	
+	public boolean deleteFromStorage() {
+		if (scId == null || scId.isEmpty()) {
+			return false;
+		}
+		
+		try {
+			Map<String, ProjectActivityBean> allActivities = loadAllActivitiesFromStorage(scId);
+			
+			if (allActivities.containsKey(activityName)) {
+				allActivities.remove(activityName);
+				
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				String json = gson.toJson(allActivities);
+				
+				File activitiesFile = new File(
+				Environment.getExternalStorageDirectory(), 
+				".blacklogics/data/" + scId + "/root_activities.json"
+				);
+				
+				FileOutputStream fos = new FileOutputStream(activitiesFile);
+				fos.write(json.getBytes(StandardCharsets.UTF_8));
+				fos.close();
+				
+				return true;
+			}
+			
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean existsInStorage(String scId, String activityName) {
+		if (scId == null || scId.isEmpty() || activityName == null || activityName.isEmpty()) {
+			return false;
+		}
+		
+		Map<String, ProjectActivityBean> allActivities = loadAllActivitiesFromStorage(scId);
+		return allActivities.containsKey(activityName);
+	}
+	
+	public static List<String> getAllActivities(String scId) {
+		List<String> activities = new ArrayList<>();
+		
+		if (scId == null || scId.isEmpty()) {
+			return activities;
+		}
+		
+		Map<String, ProjectActivityBean> allActivities = loadAllActivitiesFromStorage(scId);
+		activities.addAll(allActivities.keySet());
+		
+		return activities;
+	}
+	
+	public static Map<String, ProjectActivityBean> getAllActivityBeans(String scId) {
+		if (scId == null || scId.isEmpty()) {
+			return new HashMap<>();
+		}
+		
+		return loadAllActivitiesFromStorage(scId);
+	}
+	
+	public static boolean saveAllActivitiesToStorage(String scId, Map<String, ProjectActivityBean> activities) {
+		if (scId == null || scId.isEmpty()) {
+			return false;
+		}
+		
+		try {
+			File baseDir = new File(Environment.getExternalStorageDirectory(), ".blacklogics/data/" + scId);
+			if (!baseDir.exists()) {
+				baseDir.mkdirs();
+			}
+			
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(activities);
+			
+			File activitiesFile = new File(baseDir, "root_activities.json");
+			FileOutputStream fos = new FileOutputStream(activitiesFile);
+			fos.write(json.getBytes(StandardCharsets.UTF_8));
+			fos.close();
+			
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	// Parcelable implementation
@@ -264,14 +508,40 @@ public class ProjectActivityBean implements Parcelable {
 		private String parentId; // Add parent ID
 		@Expose
 		private List<ViewBean> children; // Add children list
+		// Add visibility constants to ViewBean class
+		@Expose
+		public static final int VISIBLE = View.VISIBLE;
+		@Expose
+		public static final int INVISIBLE = View.INVISIBLE;
+		@Expose
+		public static final int GONE = View.GONE;
+		
+		// Add text alignment constants
+		@Expose
+		public static final int TEXT_ALIGNMENT_GRAVITY = View.TEXT_ALIGNMENT_GRAVITY;
+		@Expose
+		public static final int TEXT_ALIGNMENT_CENTER = View.TEXT_ALIGNMENT_CENTER;
+		@Expose
+		public static final int TEXT_ALIGNMENT_TEXT_START = View.TEXT_ALIGNMENT_TEXT_START;
+		@Expose
+		public static final int TEXT_ALIGNMENT_TEXT_END = View.TEXT_ALIGNMENT_TEXT_END;
+		
+		@Expose
+		private String scId; // Project ID
+		@Expose
+		private String activityName; // Activity name
 		
 		public ViewBean() {
 			this.children = new ArrayList<>();
+			this.scId = "";
+			this.activityName = "";
 		}
 		
 		public ViewBean(String widgetType, String widgetId) {
 			this.widgetType = widgetType;
 			this.widgetId = widgetId;
+			this.scId = "";
+			this.activityName = "";
 		}
 		
 		// Getters and Setters
@@ -595,8 +865,83 @@ public class ProjectActivityBean implements Parcelable {
 			return children;
 		}
 		
+		// Add these getter/setter methods to ViewBean class
+		public void setTextAlignment(int textAlignment) {
+			this.textAlignment = textAlignment;
+		}
+		
+		public void setFontFamily(String fontFamily) {
+			this.fontFamily = fontFamily;
+		}
+		
+		public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
+			this.lineSpacingMultiplier = lineSpacingMultiplier;
+		}
+		
+		public void setLineSpacingExtra(float lineSpacingExtra) {
+			this.lineSpacingExtra = lineSpacingExtra;
+		}
+		
+		public void setSingleLine(boolean singleLine) {
+			this.singleLine = singleLine;
+		}
+		
 		public void setChildren(List<ViewBean> children) {
 			this.children = children;
+		}
+		
+		public boolean saveToStorage() {
+            if (scId == null || scId.isEmpty() || activityName == null || activityName.isEmpty()) {
+                Log.e("ViewBean", "Cannot save: scId or activityName is null or empty");
+                return false;
+            }
+
+            try {
+                String mapKey = scId + "_" + activityName;
+                ProjectActivityBean parent = beanMap.get(mapKey);
+                if (parent == null) {
+                    parent = ProjectActivityBean.loadFromStorage(scId, activityName);
+                    if (parent == null) {
+                        parent = new ProjectActivityBean(activityName, "main", "", false, scId, "");
+                    }
+                }
+
+                boolean updated = false;
+                for (int i = 0; i < parent.getWidgets().size(); i++) {
+                    ViewBean vb = parent.getWidgets().get(i);
+                    if (vb.getWidgetId().equals(this.getWidgetId())) {
+                        parent.getWidgets().set(i, this);
+                        updated = true;
+                        break;
+                    }
+                }
+                if (!updated) {
+                    parent.getWidgets().add(this);
+                }
+
+                return parent.saveToStorage();
+            } catch (Exception e) {
+                Log.e("ViewBean", "Failed to save widget " + widgetId + ": " + e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+		
+		
+		public String getScId() {
+			return scId;
+		}
+		
+		public void setScId(String scId) {
+			this.scId = scId;
+		}
+		
+		public String getActivityName() {
+			return activityName;
+		}
+		
+		public void setActivityName(String activityName) {
+			this.activityName = activityName;
 		}
 		
 		// Parcelable implementation
@@ -643,6 +988,8 @@ public class ProjectActivityBean implements Parcelable {
 			progress = in.readInt();
 			maxProgress = in.readInt();
 			progressType = in.readString();
+			scId = in.readString();
+			activityName = in.readString();
 			parentId = in.readString();
 			children = in.createTypedArrayList(ViewBean.CREATOR);
 		}
@@ -693,6 +1040,8 @@ public class ProjectActivityBean implements Parcelable {
 			dest.writeString(progressType);
 			dest.writeString(parentId);
 			dest.writeTypedList(children);
+			dest.writeString(scId);
+			dest.writeString(activityName);
 		}
 		
 		@Override
@@ -711,5 +1060,16 @@ public class ProjectActivityBean implements Parcelable {
 				return new ViewBean[size];
 			}
 		};
+	}
+	
+	// Add gravity constants
+	public static class Gravity {
+		public static final int CENTER = android.view.Gravity.CENTER;
+		public static final int CENTER_HORIZONTAL = android.view.Gravity.CENTER_HORIZONTAL;
+		public static final int CENTER_VERTICAL = android.view.Gravity.CENTER_VERTICAL;
+		public static final int START = android.view.Gravity.START;
+		public static final int END = android.view.Gravity.END;
+		public static final int TOP = android.view.Gravity.TOP;
+		public static final int BOTTOM = android.view.Gravity.BOTTOM;
 	}
 }

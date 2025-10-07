@@ -187,6 +187,7 @@ public class BlockPane extends RelativeLayout {
       Block var5 = var1;
       if(!var4) {
          var5 = this.addBlock(var1, var2, var3);
+         var5.setBlockColor(var1.getBlockColor());
       } else {
          var1.setX((float)(var2 - this.posArea[0] - this.getPaddingLeft()));
          var1.setY((float)(var3 - this.posArea[1] - this.getPaddingTop()));

@@ -681,6 +681,7 @@ public class DesignDataManager {
 			Map map = (Map) mapBlocks.get(str);
 			if (map != null && map.containsKey(str2)) {
 				map.remove(str2);
+                saveBlocksToFile(null, "data", "", null, sc_id); // Save changes
 			}
 		}
 	}
@@ -694,6 +695,7 @@ public class DesignDataManager {
 					Pair pair = (Pair) it.next();
 					if (((String) pair.first).equals(str2)) {
 						arrayList.remove(pair);
+                        saveBlocksToFile(null, "data", "", null, sc_id); // Save changes
 						break;
 					}
 				}
@@ -713,6 +715,7 @@ public class DesignDataManager {
 					Pair pair = (Pair) it.next();
 					if (((String) pair.second).equals(str2)) {
 						arrayList.remove(pair);
+                        saveBlocksToFile(null, "data", "", null, sc_id); // Save changes
 						return;
 					}
 				}
@@ -729,6 +732,7 @@ public class DesignDataManager {
 					Pair pair = (Pair) it.next();
 					if (((String) pair.second).equals(str2)) {
 						arrayList.remove(pair);
+                        saveBlocksToFile(null, "data", "", null, sc_id); // Save changes
 						return;
 					}
 				}

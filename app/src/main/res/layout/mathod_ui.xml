@@ -1,0 +1,46 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:padding="8dp"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/imageview1"
+			android:layout_width="38dp"
+			android:layout_height="35dp"
+			android:src="@drawable/widget_source"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/eventName"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:text="onCreate"
+				android:textSize="14sp"
+				android:focusable="false" />
+			<TextView
+				android:id="@+id/eventDescription"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:text="On activity create"
+				android:textSize="12sp"
+				android:focusable="false" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

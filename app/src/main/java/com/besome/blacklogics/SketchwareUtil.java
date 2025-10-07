@@ -139,7 +139,7 @@ public class SketchwareUtil {
             _inputStream.close();
         } catch (IOException _e) {
         }
-        
+
         return _outputStream.toString();
     }
 
@@ -147,16 +147,15 @@ public class SketchwareUtil {
         InputMethodManager _inputMethodManager = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
         _inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
-    
+
     public static void showKeyboard(Context _context) {
         InputMethodManager _inputMethodManager = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
         _inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
-    
+
     public static void showMessage(Context _context, String _s) {
         Toast.makeText(_context, _s, Toast.LENGTH_SHORT).show();
     }
-
     public static int getLocationX(View _view) {
         int _location[] = new int[2];
         _view.getLocationInWindow(_location);

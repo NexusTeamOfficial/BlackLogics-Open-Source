@@ -117,11 +117,19 @@ public class ManageViewActivity extends AppCompatActivity {
             selectedViewPositions.clear();
             isDeleteMode = false;
             deleteButton.setVisibility(View.GONE);
+            // Refresh Complex data and notify adapters
+            complex.refreshData();
             fragment.notifyAdapter();
+            // Update CustomViewFragment if needed
+            CustomViewFragment customFragment = (CustomViewFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.view_pager + ":1");
+            if (customFragment != null) {
+                customFragment.notifyAdapter();
+            }
         }
     }
 
-    private void deleteSelectedCustomViews() {
+   private void deleteSelectedCustomViews() {
         CustomViewFragment fragment = (CustomViewFragment) getSupportFragmentManager()
                 .findFragmentByTag("android:switcher:" + R.id.view_pager + ":1");
         if (fragment != null) {
@@ -129,7 +137,15 @@ public class ManageViewActivity extends AppCompatActivity {
             selectedCustomViewPositions.clear();
             isDeleteMode = false;
             deleteButton.setVisibility(View.GONE);
+            // Refresh Complex data and notify adapters
+            complex.refreshData();
             fragment.notifyAdapter();
+            // Update ViewFragment if needed
+            ViewFragment viewFragment = (ViewFragment) getSupportFragmentManager()
+                    .findFragmentByTag("android:switcher:" + R.id.view_pager + ":0");
+            if (viewFragment != null) {
+                viewFragment.notifyAdapter();
+            }
         }
     }
 
@@ -203,7 +219,7 @@ public class ManageViewActivity extends AppCompatActivity {
 
         public void deleteSelectedItems(Set<Integer> positions) {
             if (positions.isEmpty()) {
-                showMessage("No views selected for deletion");
+              //  showMessage("No views selected for deletion");
                 return;
             }
 
@@ -224,17 +240,20 @@ public class ManageViewActivity extends AppCompatActivity {
             }
 
             if (itemsToRemove.isEmpty()) {
-                showMessage("No valid views selected for deletion");
+                //showMessage("No valid views selected for deletion");
                 return;
             }
 
-            // Remove items from Complex storage
+            // Remove items from Complex storage and file system
             for (Complex.ViewItem item : itemsToRemove) {
-                String xmlName = item.getXmlFileName();
-                String javaName = item.getJavaFileName().replace(".java", "");
-                activity.complex.removeView(xmlName, javaName);
-                activity.complex.removeXmlName(javaName);
-                activity.complex.removeJavaName(xmlName);
+                String xmlName = item.getXmlName();
+                String javaName = item.getJavaName();
+                activity.complex.removeView(xmlName, javaName); // Remove from JSON
+                // Delete physical files
+                activity.complex.deleteViewFiles(xmlName, javaName);
+                // Update mappings
+                activity.complex.removeXmlName(xmlName);
+                activity.complex.removeJavaName(javaName);
                 items.remove(item);
             }
 
@@ -302,22 +321,37 @@ public class ManageViewActivity extends AppCompatActivity {
             });
         }
 
-        public void deleteSelectedItems(Set<Integer> positions) {
+       public void deleteSelectedItems(Set<Integer> positions) {
             if (positions.isEmpty()) {
+              //  showMessage("No custom views selected for deletion");
                 ((ManageViewActivity) getActivity()).complex.removeAllCustomViews();
-                showMessage("All custom views deleted");
-            } else {
-                List<String> viewsToRemove = new ArrayList<>();
-                for (int pos : positions) {
+                customViews.clear();
+              //  showMessage("All custom views deleted");
+                notifyAdapter();
+                return;
+            }
+
+            List<String> viewsToRemove = new ArrayList<>();
+            for (int pos : positions) {
+                if (pos >= 0 && pos < customViews.size()) {
                     viewsToRemove.add(customViews.get(pos));
                 }
-                for (String viewName : viewsToRemove) {
-                    ((ManageViewActivity) getActivity()).complex.removeCustomView(viewName);
-                    ((ManageViewActivity) getActivity()).complex.removeXmlName(viewName);
-                }
-                customViews.removeAll(viewsToRemove);
-                showMessage("Deleted " + viewsToRemove.size() + " custom views");
             }
+
+            if (viewsToRemove.isEmpty()) {
+               // showMessage("No valid custom views selected for deletion");
+                return;
+            }
+
+            ManageViewActivity activity = (ManageViewActivity) getActivity();
+            for (String viewName : viewsToRemove) {
+                activity.complex.removeCustomView(viewName); // Remove from JSON
+                activity.complex.deleteCustomViewFile(viewName); // Delete physical file
+                activity.complex.removeXmlName(viewName); // Update mappings
+                customViews.remove(viewName);
+            }
+
+            showMessage("Deleted " + viewsToRemove.size() + " custom views");
             notifyAdapter();
         }
 

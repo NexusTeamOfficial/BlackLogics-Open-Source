@@ -4,18 +4,19 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
 	<include layout="@layout/toolbar_improved" />
 	<LinearLayout
 		android:id="@+id/linear1"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
+		android:padding="8dp"
 		android:orientation="vertical">
 		<LinearLayout
 			android:id="@+id/linear2"
 			android:layout_width="match_parent"
 			android:layout_height="125dp"
-			android:padding="8dp"
 			android:gravity="center_horizontal|center_vertical"
 			android:orientation="vertical">
 			<ImageView
@@ -31,57 +32,52 @@
 				android:layout_height="wrap_content"
 				android:gravity="center_horizontal|center_vertical"
 				android:text="@string/app_name"
-				android:textSize="18sp"
-				android:textColor="@color/textColor" />
+				android:textSize="18sp" />
 			<TextView
 				android:id="@+id/textview2"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="0.0.2 alpha02 (1134)"
-				android:textSize="14sp"
-				android:textColor="#607D8B" />
+				android:text="0.0.4 alpha4 (1369)"
+				android:textSize="14sp" />
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear3"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:gravity="center_horizontal|center_vertical"
 			android:orientation="horizontal"
 			android:layout_gravity="center_horizontal|center_vertical">
 			<com.google.android.material.button.MaterialButton
 				android:id="@+id/materialbutton1"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:gravity="center_horizontal|center_vertical"
 				android:text="Reset settings"
 				android:textSize="12sp"
-				android:textColor="#FFFFFF"
 				android:layout_weight="1"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-				app:backgroundTint="@color/colorPrimary"
-				app:cornerRadius="8dp"
-				style="@style/Widget.MaterialComponents.Button" />
+				style="@style/Widget.MaterialComponents.Button"
+				app:backgroundTint="?attr/colorPrimary"
+				app:cornerRadius="8dp" />
 			<com.google.android.material.button.MaterialButton
 				android:id="@+id/materialbutton2"
-				android:layout_width="wrap_content"
+				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:gravity="center_horizontal|center_vertical"
 				android:text="Check for updates"
 				android:textSize="12sp"
-				android:textColor="#FFFFFF"
 				android:layout_weight="1"
-				android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-				app:backgroundTint="@color/colorPrimary"
-				app:cornerRadius="8dp"
-				style="@style/Widget.MaterialComponents.Button" />
+				style="@style/Widget.MaterialComponents.Button"
+				app:backgroundTint="?attr/colorPrimary"
+				app:cornerRadius="8dp" />
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear4"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="5dp"
+			android:background="?attr/colorSurface"
 			android:orientation="vertical"
 			android:elevation="4dp">
 			<TextView
@@ -98,14 +94,15 @@
 				android:layout_height="wrap_content"
 				android:padding="5dp"
 				android:text="Not available..."
-				android:textSize="14sp"
-				android:textColor="#607D8B" />
+				android:textSize="14sp" />
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear5"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="5dp"
+			android:background="?attr/colorSurface"
 			android:orientation="vertical"
 			android:elevation="4dp">
 			<TextView
@@ -115,21 +112,22 @@
 				android:padding="5dp"
 				android:text="Suggest ideas"
 				android:textSize="16sp"
-				android:textColor="@color/text_color" />
+				android:textColor="@color/textColor" />
 			<TextView
 				android:id="@+id/textview6"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="5dp"
 				android:text="Not available..."
-				android:textSize="14sp"
-				android:textColor="#607D8B" />
+				android:textSize="14sp" />
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear6"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="5dp"
+			android:background="?attr/colorSurface"
 			android:orientation="vertical"
 			android:elevation="4dp">
 			<TextView
@@ -145,15 +143,16 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="5dp"
-				android:text="https://t.me/blacklogics"
-				android:textSize="14sp"
-				android:textColor="#607D8B" />
+				android:text="https://t.me/blacklogics_official"
+				android:textSize="14sp" />
 		</LinearLayout>
 		<LinearLayout
 			android:id="@+id/linear7"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="5dp"
+			android:background="?attr/colorSurface"
 			android:orientation="vertical"
 			android:elevation="4dp">
 			<TextView
@@ -169,7 +168,9 @@
 			android:id="@+id/linear8"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:padding="5dp"
+			android:background="?attr/colorSurface"
 			android:orientation="vertical"
 			android:elevation="4dp">
 			<TextView

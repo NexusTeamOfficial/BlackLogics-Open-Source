@@ -4,20 +4,18 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.graphics.Paint;
 import android.media.ExifInterface;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.besome.blacklogics.R;
+import com.besome.blacklogics.*;
 import com.nexusteam.internal.os.layouteditor.util.WidgetUtil;
 import java.io.File;
 import java.io.IOException;
 
-public class WidgetImageView extends ImageView implements WidgetContract {
-    private String mWidgetId;
-    private String mWidgetName;
-    private boolean isSelected = false;
-    private Paint widgetPaint = new Paint();
+public class WidgetImageView extends Widget {
+    private ImageView mImageView;
     private String mImagePath;
     private ImageView.ScaleType scaleType = ImageView.ScaleType.CENTER_CROP;
 
@@ -34,66 +32,22 @@ public class WidgetImageView extends ImageView implements WidgetContract {
         init();
     }
 
-   // @Override
-    public void init() {
-        //super.init();
-        setPadding(8, 8, 8, 8);
-        setScaleType(ImageView.ScaleType.CENTER_CROP);
-        setImageResource(R.drawable.default_image);
-        setEnabled(false);
-    }
-
-    @Override
-    public void setWidgetId(String id) {
-        this.mWidgetId = id;
-    }
-
-    @Override
-    public String getWidgetId() {
-        return mWidgetId;
-    }
-
-    @Override
-    public void setWidgetName(String name) {
-        this.mWidgetName = name;
-    }
-
-    @Override
-    public String getWidgetName() {
-        return mWidgetName;
-    }
-
-    @Override
-    public Paint getWidgetPaint() {
-        return widgetPaint;
-    }
-
-    @Override
-    public void select() {
-        isSelected = true;
-        widgetPaint.setColor(getResources().getColor(R.color.widget_selection_color));
-        invalidate();
-    }
-
-    @Override
-    public void unselect() {
-        isSelected = false;
-        widgetPaint.setColor(0);
-        invalidate();
-    }
-
-    @Override
-    protected void onDraw(android.graphics.Canvas canvas) {
-        super.onDraw(canvas);
-        if (isSelected) {
-            canvas.drawRect(0, 0, getWidth(), getHeight(), widgetPaint);
-        }
+    private void init() {
+        this.mImageView = new ImageView(getContext());
+        this.mImageView.setPadding(8, 8, 8, 8);
+        this.mImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        this.mImageView.setImageResource(R.drawable.default_image);
+        addView(this.mImageView, new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT));
+        //addView(this.mImageView);
     }
 
     public void setImagePath(String path) {
         if (path == null || path.equals(mImagePath)) {
             return;
         }
+        
         this.mImagePath = path;
         loadImage(path);
     }
@@ -101,42 +55,32 @@ public class WidgetImageView extends ImageView implements WidgetContract {
     public String getImagePath() {
         return mImagePath;
     }
-
-    @Override
-    public void setImageResource(int resourceId) {
-        super.setImageResource(resourceId);
-    }
-
-    @Override
-    public void setImageDrawable(Drawable drawable) {
-        super.setImageDrawable(drawable);
-    }
-
-    @Override
+    
     public void setImageBitmap(Bitmap bitmap) {
-        if (bitmap != null) {
-            super.setImageBitmap(bitmap);
+        if (mImageView != null && bitmap != null) {
+            mImageView.setImageBitmap(bitmap);
         }
     }
 
     public Drawable getDrawable() {
-        return super.getDrawable();
+        return mImageView != null ? mImageView.getDrawable() : null;
     }
 
     public void clearImage() {
-        setImageDrawable(null);
+        if (mImageView != null) {
+            mImageView.setImageDrawable(null);
+        }
     }
-
-    @Override
-    public void setScaleType(ImageView.ScaleType scaleType) {
-        this.scaleType = scaleType;
-        super.setScaleType(scaleType);
-    }
-
-    @Override
+    
     public ImageView.ScaleType getScaleType() {
         return scaleType;
     }
+
+    public void setScaleType(ImageView.ScaleType scaleType) {
+        this.scaleType = scaleType;
+        mImageView.setScaleType(scaleType);
+    }
+    
 
     private void loadImage(String path) {
         new Thread(() -> {
@@ -146,30 +90,34 @@ public class WidgetImageView extends ImageView implements WidgetContract {
                     throw new IOException("File not found");
                 }
 
+                // First decode with bounds to check dimensions
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(path, options);
 
+                // Calculate sample size
                 int reqWidth = getWidth() > 0 ? getWidth() : 1000;
                 int reqHeight = getHeight() > 0 ? getHeight() : 1000;
                 options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
+                // Decode actual bitmap
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
                 Bitmap bitmap = BitmapFactory.decodeFile(path, options);
 
+                // Correct orientation
                 bitmap = rotateBitmapIfRequired(bitmap, path);
 
                 final Bitmap finalBitmap = bitmap;
                 post(() -> {
                     if (finalBitmap != null) {
-                        setImageBitmap(finalBitmap);
+                        mImageView.setImageBitmap(finalBitmap);
                     } else {
-                        setImageResource(R.drawable.ic_broken_image);
+                        mImageView.setImageResource(R.drawable.ic_broken_image);
                     }
                 });
             } catch (Exception e) {
-                post(() -> setImageResource(R.drawable.ic_broken_image));
+                post(() -> mImageView.setImageResource(R.drawable.ic_broken_image));
             }
         }).start();
     }
@@ -214,7 +162,14 @@ public class WidgetImageView extends ImageView implements WidgetContract {
     }
 
     @Override
-    public String newWidgetId() {
+    public void setLayoutParams(ViewGroup.LayoutParams layoutParams) {
+        super.setLayoutParams(layoutParams);
+        if (mImageView != null) {
+            mImageView.setLayoutParams(layoutParams);
+        }
+    }
+
+    public static String newWidgetId() {
         int i = 1;
         while (WidgetUtil.isWidgetIdExist("imageview" + i)) {
             i++;
@@ -225,6 +180,8 @@ public class WidgetImageView extends ImageView implements WidgetContract {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        setImageDrawable(null);
+        if (mImageView != null) {
+            mImageView.setImageDrawable(null);
+        }
     }
 }

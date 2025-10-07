@@ -1,15 +1,25 @@
 package com.tyron.compiler;
 
-import com.apk.builder.model.Project;
+import android.content.Context;
+
+import com.apk.builder.ApplicationLoader;
 import com.apk.builder.model.Library;
+import com.apk.builder.model.Project;
 import com.tyron.compiler.exception.CompilerException;
 
-import proguard.ProGuard;
+import dalvik.system.DexClassLoader;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ProGuard Compiler wrapper that dynamically loads proguard.jar
+ * from assets instead of direct import.
+ *
+ * Developer: NexusTeam
+ */
 public class ProguardCompiler extends Compiler {
 
     private static final String TAG = "Proguard";
@@ -21,15 +31,11 @@ public class ProguardCompiler extends Compiler {
 
     public ProguardCompiler(Project project) {
         this.mProject = project;
-        // Default ProGuard rules file in the project root
         this.rulesFile = new File(project.getProguardFile());
-        // Input: .class files from ECJCompiler
         this.inputDir = new File(project.getOutputFile(), "bin/classes");
-        // Output: optimized .class files
         this.outputDir = new File(project.getOutputFile(), "bin/classes_proguard");
     }
 
-    // Allow custom rules file if provided
     public void setRulesFile(File file) {
         if (file != null && file.exists()) {
             this.rulesFile = file;
@@ -41,18 +47,15 @@ public class ProguardCompiler extends Compiler {
         onProgressUpdate("ProGuard > Preparing...");
         mProject.getLogger().d(TAG, "Preparing ProGuard");
 
-        // Ensure input directory exists (should contain .class files from ECJCompiler)
         if (!inputDir.exists() || !inputDir.isDirectory()) {
             throw new IllegalStateException("Input directory " + inputDir.getAbsolutePath() + " does not exist or is not a directory");
         }
 
-        // Create output directory if it doesn’t exist
         if (!outputDir.exists()) {
             outputDir.mkdirs();
             mProject.getLogger().d(TAG, "Created output directory: " + outputDir.getAbsolutePath());
         }
 
-        // Verify rules file exists
         if (!rulesFile.exists()) {
             throw new IllegalStateException("ProGuard rules file not found at: " + rulesFile.getAbsolutePath());
         }
@@ -63,22 +66,14 @@ public class ProguardCompiler extends Compiler {
         onProgressUpdate("ProGuard > Optimizing and obfuscating...");
         mProject.getLogger().d(TAG, "Running ProGuard on " + inputDir.getAbsolutePath());
 
-        // Build ProGuard command-line arguments
         List<String> args = new ArrayList<>();
-
-        // Input JARs or directories containing .class files
         args.add("-injars");
         args.add(inputDir.getAbsolutePath());
-
-        // Output directory for optimized .class files
         args.add("-outjars");
         args.add(outputDir.getAbsolutePath());
-
-        // Library JARs (dependencies not to be optimized/obfuscated)
         args.add("-libraryjars");
         args.add(getAndroidJarFile().getAbsolutePath());
 
-        // Add library dependencies (e.g., classes.jar from libraries)
         for (Library lib : mProject.getLibraries()) {
             File jar = lib.getClassJarFile();
             if (jar.exists()) {
@@ -90,25 +85,48 @@ public class ProguardCompiler extends Compiler {
             }
         }
 
-        // Include the ProGuard rules file
         args.add("@" + rulesFile.getAbsolutePath());
         mProject.getLogger().d(TAG, "Using rules file: " + rulesFile.getAbsolutePath());
-
-        // Optional: Add common ProGuard flags (can be customized via rules file)
-        args.add("-dontwarn"); // Suppress warnings (useful for missing classes)
-        args.add("-verbose");  // Detailed logging for debugging
+        args.add("-dontwarn");
+        args.add("-verbose");
 
         try {
-            // Execute ProGuard with the arguments
-            ProGuard.main(args.toArray(new String[0]));
+            // Load ProGuard.jar dynamically from assets
+            Context context = ApplicationLoader.applicationContext;
+            File filesDir = context.getFilesDir();
+            File proguardJar = new File(filesDir, "proguard.jar");
+
+            // Agar pehle se extract nahi hua hai to assets se extract karo
+            if (!proguardJar.exists()) {
+                com.apk.builder.util.Decompress.copyAsset(context, "proguard.jar", proguardJar.getAbsolutePath());
+                mProject.getLogger().d(TAG, "Extracted proguard.jar to: " + proguardJar.getAbsolutePath());
+            }
+
+            // DexClassLoader se load karo
+            DexClassLoader dexLoader = new DexClassLoader(
+                    proguardJar.getAbsolutePath(),
+                    context.getCacheDir().getAbsolutePath(),
+                    null,
+                    getClass().getClassLoader()
+            );
+
+            // proguard.ProGuard class load karo
+            Class<?> proguardClass = dexLoader.loadClass("proguard.ProGuard");
+            Method mainMethod = proguardClass.getMethod("main", String[].class);
+
+            mProject.getLogger().d(TAG, "Executing ProGuard with args: " + args);
+
+            // ProGuard run karo
+            mainMethod.invoke(null, (Object) args.toArray(new String[0]));
+
             mProject.getLogger().d(TAG, "ProGuard completed successfully");
             onProgressUpdate("ProGuard > Optimization complete");
+
         } catch (Exception e) {
             mProject.getLogger().e(TAG, "ProGuard failed: " + e.getMessage());
             throw new CompilerException("ProGuard error: " + e.getMessage());
         }
 
-        // Verify output directory has content
         if (outputDir.listFiles() == null || outputDir.listFiles().length == 0) {
             throw new CompilerException("ProGuard produced no output in " + outputDir.getAbsolutePath());
         }

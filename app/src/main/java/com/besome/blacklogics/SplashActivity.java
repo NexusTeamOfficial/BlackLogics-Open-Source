@@ -39,7 +39,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -132,9 +131,9 @@ public class SplashActivity extends AppCompatActivity {
 		
 		// Bounce Icon
 		ScaleAnimation scale = new ScaleAnimation(
-		    0.8f, 1f, 0.8f, 1f,
-		    Animation.RELATIVE_TO_SELF, 0.5f,
-		    Animation.RELATIVE_TO_SELF, 0.5f
+		0.8f, 1f, 0.8f, 1f,
+		Animation.RELATIVE_TO_SELF, 0.5f,
+		Animation.RELATIVE_TO_SELF, 0.5f
 		);
 		scale.setDuration(700);
 		//scale.setRepeatCount(Animation.INFINITE);
@@ -143,12 +142,12 @@ public class SplashActivity extends AppCompatActivity {
 		
 		// Color Filter Animation (icon color change)
 		ObjectAnimator colorAnim = ObjectAnimator.ofArgb(
-		    baseIcon,
-		    "colorFilter",
-		    Color.parseColor("#FF4081"),
-		    Color.parseColor("#448AFF"),
-		    Color.parseColor("#00E676"),
-		    Color.parseColor("#FFD600")
+		baseIcon,
+		"colorFilter",
+		Color.parseColor("#FF4081"),
+		Color.parseColor("#448AFF"),
+		Color.parseColor("#00E676"),
+		Color.parseColor("#FFD600")
 		);
 		colorAnim.setDuration(4000);
 		colorAnim.setEvaluator(new ArgbEvaluator());
@@ -160,10 +159,10 @@ public class SplashActivity extends AppCompatActivity {
 		baseTag.setAlpha(0f);
 		baseTag.setVisibility(View.VISIBLE);
 		baseTag.animate()
-		    .alpha(1f)
-		    .setDuration(2000)
-		    .setStartDelay(1500)
-		    .start();
+		.alpha(1f)
+		.setDuration(2000)
+		.setStartDelay(1500)
+		.start();
 		
 	}
 	

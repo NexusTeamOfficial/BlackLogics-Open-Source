@@ -17,6 +17,7 @@ import com.android.sdklib.build.ApkBuilder;
 import com.apk.builder.FileUtil;
 import com.besome.blacklogics.interfaces.CompilerLogListener;
 import com.besome.blacklogics.R;
+import com.besome.blacklogics.development.Complex;
 import com.besome.blacklogics.DesignActivity;
 import com.besome.blacklogics.parser.JsonParser;
 import com.besome.blacklogics.parser.ProjectParser;
@@ -55,10 +56,13 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 	private CompilerLogListener logListener;
 	
 	private ProjectParser parser;
+	private Complex complex;
 	
 	public CompilerAsyncTask(Context context) {
 		this.context = context;
 		mContext = new WeakReference<>(context);
+		complex = new Complex();
+		complex.setC(context);
 	}
 	
 	public void setProject(Project project) {
@@ -79,6 +83,9 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 	
 	public void setScId(String sc_id) {
 		this.sc_id = sc_id;
+		if (complex != null) {
+			complex.setId(sc_id);
+		}
 	}
 	
 	public void setLogListener(CompilerLogListener listener) {
@@ -95,6 +102,9 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			dialog.setContentView(R.layout.build_dialog);
 			dialog.setCancelable(false);
 			dialog.getWindow().setBackgroundDrawableResource(R.color.white);
+			if (dialog.getWindow() != null) {
+				dialog.getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			}
 			progress = dialog.findViewById(R.id.buildText);
 			quizContainer = dialog.findViewById(R.id.quizContainer);
 			QuizBoard mQuizBoard = new QuizBoard(context);
@@ -143,8 +153,7 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			// Parse library JSON
 			if (jsonPath != null && !jsonPath.trim().isEmpty()) {
 				try {
-					String jsonInput = readJsonFromFile(jsonPath);
-					
+					String jsonInput = FileUtil.readFile(jsonPath);
 					if (jsonInput == null || jsonInput.trim().isEmpty()) {
 						project.getLogger().e("JsonParser", "Library JSON file is empty or invalid: " + jsonPath);
 						return new CompilerResult("Library JSON file is empty or invalid: " + jsonPath, true);
@@ -152,47 +161,55 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 					
 					try {
 						List<Library> libraries = JsonParser.parseLibrariesFromJson(jsonInput);
-						/*
 						if (libraries == null || libraries.isEmpty()) {
-						project.getLogger().e("JsonParser", "No libraries found in JSON file: " + jsonPath);
-						return new CompilerResult("No libraries found in JSON file: " + jsonPath, true);
+							project.getLogger().w("JsonParser", "No libraries found in JSON file: " + jsonPath);
 						}
-						*/
 						project.setLibraries(libraries);
+						project.getLogger().d("JsonParser", "Loaded " + libraries.size() + " libraries from JSON");
 					} catch (JSONException e) {
 						project.getLogger().e("JsonParser", "Failed to parse library JSON: " + e.getMessage());
 						return new CompilerResult("Failed to parse JSON libraries: " + e.getMessage(), true);
 					}
 				} catch (Exception e) {
-					project.getLogger().e("JsonParser", "Unexpected error processing JSON file: " + e.getMessage());
-					return new CompilerResult("Unexpected error processing JSON file: " + e.getMessage(), true);
+					project.getLogger().e("JsonParser", "Failed to read JSON file: " + e.getMessage());
+					return new CompilerResult("Failed to read JSON file: " + e.getMessage(), true);
 				}
-			}/*else {
-			project.getLogger().e("JsonParser", "JSON path is null or empty.");
-			return new CompilerResult("JSON path is null or empty.", true);
-			}*/
-			
-			
-			if (FileUtil.isExistFile(FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/icon.png")) {
-				String source = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/icon.png";
-				String destination = FileUtil.getExternalStorageDir() + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/mipmap-xhdpi/icon.png";
-				
-				FileUtil.copyFile(source, destination);
 			}
 			
-			if (FileUtil.isExistFile(FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + sc_id + "/")) {
-				File req = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + sc_id + "/");
-				File urj = new File(FileUtil.getExternalStorageDir() + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/drawable-xhdpi");
-				
-				FileUtil.copyDirectory(req, urj);
+			// Copy icon.png
+			String iconSource = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + sc_id + "/icon.png";
+			String iconDest = FileUtil.getExternalStorageDir() + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/mipmap-xhdpi/icon.png";
+			if (FileUtil.isExistFile(iconSource)) {
+				try {
+					FileUtil.makeDir(new File(iconDest).getParent());
+					FileUtil.copyFile(iconSource, iconDest);
+					project.getLogger().d("CompilerAsyncTask", "Copied icon.png to " + iconDest);
+				} catch (Exception e) {
+					project.getLogger().e("CompilerAsyncTask", "Failed to copy icon.png: " + e.getMessage());
+					return new CompilerResult("Failed to copy icon.png: " + e.getMessage(), true);
+				}
 			}
 			
+			// Copy drawable resources
+			String drawableSource = FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + sc_id + "/";
+			String drawableDest = FileUtil.getExternalStorageDir() + "/.blacklogics/mysc/" + sc_id + "/app/src/main/res/drawable-xhdpi";
+			if (FileUtil.isExistFile(drawableSource)) {
+				try {
+					FileUtil.makeDir(drawableDest);
+					FileUtil.copyDirectory(new File(drawableSource), new File(drawableDest));
+					project.getLogger().d("CompilerAsyncTask", "Copied drawable resources to " + drawableDest);
+				} catch (Exception e) {
+					project.getLogger().e("CompilerAsyncTask", "Failed to copy drawable resources: " + e.getMessage());
+					return new CompilerResult("Failed to copy drawable resources: " + e.getMessage(), true);
+				}
+			}
 			
 			// AAPT2 compilation
+			publishProgress("Compiling resources with AAPT2...");
 			Compiler aapt2Compiler = new AAPT2Compiler(project);
 			aapt2Compiler.setProject(project);
 			aapt2Compiler.setProgressListener(this::publishProgress);
-			if (DesignActivity.complex.getAndroidXEnable()) {
+			if (complex.getAndroidXEnable()) {
 				aapt2Compiler.enableAndroidX();
 			}
 			aapt2Compiler.prepare();
@@ -200,40 +217,73 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			aapt2Compiler.run();
 			
 			// ECJ compilation
+			publishProgress("Compiling Java sources with ECJ...");
 			Compiler ecjCompiler = new ECJCompiler(project);
+			ecjCompiler.setProject(project);
 			ecjCompiler.setProgressListener(this::publishProgress);
 			ecjCompiler.prepare();
 			if (isCancelled()) return null;
 			ecjCompiler.run();
 			
-			// DEX compilation (Dynamic selection of D8 or R8)
-			Compiler dexCompiler;
-			DexCompilerType dexCompilerType = project.getBuildSettings().getDexCompilerType();
-			
-			// Always run D8Compiler first to generate DEX files
-			project.getLogger().d("CompilerAsyncTask", "Using D8 Compiler to generate DEX files");
-			dexCompiler = new D8Compiler(project);
-			dexCompiler.setProgressListener(this::publishProgress);
-			dexCompiler.prepare();
-			if (isCancelled()) return null;
-			dexCompiler.run();
-			
-			// If R8 is selected, run R8Compiler to optimize and encrypt DEX files
-			if (DexCompilerType.R8.equals(dexCompilerType)) {
-				project.getLogger().d("CompilerAsyncTask", "Using R8 Compiler for optimization and encryption");
-				Compiler r8Compiler = new R8Compiler(project);
-				r8Compiler.setProgressListener(this::publishProgress);
-				r8Compiler.prepare();
+			// ProGuard compilation (before R8)
+			// ProGuard compilation (before R8)
+			BuildSettings.DexCompilerType dexCompilerType = project.getBuildSettings().getDexCompilerType();
+			if (dexCompilerType == BuildSettings.DexCompilerType.R8) {
+				publishProgress("Optimizing with ProGuard...");
+				project.getLogger().d("CompilerAsyncTask", "Running ProGuard before R8");
+				Compiler proguardCompiler = new ProguardCompiler(project);
+				proguardCompiler.setProject(project);
+				proguardCompiler.setProgressListener(this::publishProgress);
+				proguardCompiler.prepare();
 				if (isCancelled()) return null;
-				r8Compiler.run();
+				try {
+					proguardCompiler.run();
+				} catch (CompilerException e) {
+					project.getLogger().e("CompilerAsyncTask", "ProGuard failed: " + e.getMessage());
+					return new CompilerResult("ProGuard error: " + e.getMessage(), true);
+				}
+			} else if (dexCompilerType == BuildSettings.DexCompilerType.DX) {
+				publishProgress("Using DX Compiler...");
+				project.getLogger().d("CompilerAsyncTask", "Running DX compiler (legacy)");
+				Compiler dxCompiler = new DXCompiler(project);
+				dxCompiler.setProject(project);
+				dxCompiler.setProgressListener(this::publishProgress);
+				dxCompiler.prepare();
+				if (isCancelled()) return null;
+				try {
+					dxCompiler.run();
+				} catch (CompilerException e) {
+					project.getLogger().e("CompilerAsyncTask", "DX compiler failed: " + e.getMessage());
+					return new CompilerResult("DX compiler error: " + e.getMessage(), true);
+				}
+			}
+			
+			// DEX compilation (D8 or R8)
+			publishProgress("Generating DEX files...");
+			Compiler dexCompiler = null;
+			if (dexCompilerType == BuildSettings.DexCompilerType.R8) {
+				dexCompiler = new R8Compiler(project);
+			} else if (dexCompilerType == BuildSettings.DexCompilerType.D8) {
+				dexCompiler = new D8Compiler(project);
+			}
+		
+			if (dexCompiler != null) {
+				dexCompiler.setProject(project);
+				dexCompiler.setProgressListener(this::publishProgress);
+				dexCompiler.prepare();
+				if (isCancelled()) return null;
+				dexCompiler.run();
 			}
 			
 			
 			// APK packaging
 			publishProgress("Packaging APK...");
 			project.getLogger().d("APK Builder", "Packaging APK");
+			
 			File binDir = new File(project.getOutputFile(), "bin");
+			File dexDir = new File(binDir, "dex");
 			File apkPath = new File(binDir, "gen.apk");
+			
 			try {
 				if (!binDir.exists() && !binDir.mkdirs()) {
 					return new CompilerResult("Failed to create bin directory: " + binDir.getAbsolutePath(), true);
@@ -242,7 +292,6 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 					return new CompilerResult("Failed to create APK file: " + apkPath.getAbsolutePath(), true);
 				}
 			} catch (IOException e) {
-				project.getLogger().e("APK Builder", "IO error during file creation: " + e.getMessage());
 				return new CompilerResult("IO error during file creation: " + e.getMessage(), true);
 			}
 			
@@ -250,24 +299,27 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			if (!resPath.exists()) {
 				return new CompilerResult("Resource file not found: " + resPath.getAbsolutePath(), true);
 			}
-			File dexFile = new File(binDir, "classes.dex");
-			if (!dexFile.exists()) {
-				return new CompilerResult("Dex file not found: " + dexFile.getAbsolutePath(), true);
+			
+			List<File> dexFiles = dexCompiler instanceof D8Compiler
+			? ((D8Compiler) dexCompiler).getDexFiles()
+			: new ArrayList<>();
+			if (dexFiles.isEmpty()) {
+				File r8Dex = new File(binDir, "classes.dex");
+				if (r8Dex.exists()) {
+					dexFiles.add(r8Dex);
+				} else {
+					return new CompilerResult("DEX files not found in: " + dexDir.getAbsolutePath(), true);
+				}
 			}
 			
-			ApkBuilder builder = new ApkBuilder(apkPath, resPath, dexFile, null, null);
-			File[] binFiles = binDir.listFiles();
-			if (binFiles != null) {
-				for (File file : binFiles) {
-					if (!file.getName().equals("classes.dex") && file.getName().endsWith(".dex")) {
-						try {
-							builder.addFile(file, Uri.parse(file.getAbsolutePath()).getLastPathSegment());
-							project.getLogger().d("APK Builder", "Added dex file: " + file.getName());
-						} catch (Exception e) {
-							project.getLogger().e("APK Builder", "Error adding dex file: " + e.getMessage());
-							return new CompilerResult("Error adding dex file: " + e.getMessage(), true);
-						}
-					}
+			ApkBuilder builder = new ApkBuilder(apkPath, resPath, dexFiles.get(0), null, null);
+			for (int i = 1; i < dexFiles.size(); i++) {
+				File extra = dexFiles.get(i);
+				try {
+					builder.addFile(extra, extra.getName());
+					project.getLogger().d("APK Builder", "Added dex file: " + extra.getName());
+				} catch (Exception e) {
+					return new CompilerResult("Error adding dex file: " + e.getMessage(), true);
 				}
 			}
 			
@@ -276,27 +328,25 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 				if (classesJar.exists()) {
 					try {
 						builder.addResourcesFromJar(classesJar);
-						project.getLogger().d("APK Builder", "Added resources from library: " + library.getName());
 					} catch (Exception e) {
-						project.getLogger().e("APK Builder", "Error adding library resources: " + e.getMessage());
 						return new CompilerResult("Error adding library resources: " + e.getMessage(), true);
 					}
 				}
 			}
+			
 			builder.setDebugMode(false);
 			if (isCancelled()) return null;
 			try {
 				builder.sealApk();
 			} catch (Exception e) {
-				project.getLogger().e("APK Builder", "APK packaging error: " + e.getMessage());
 				return new CompilerResult("APK packaging error: " + e.getMessage(), true);
 			}
 			
-			// Signing APK
 			publishProgress("Signing APK...");
 			project.getLogger().d("APK Signer", "Signing APK");
 			String unsignedApk = apkPath.getAbsolutePath();
 			String signedApk = project.getOutputFile() + "/bin/" + project.getProjectName() + ".apk";
+			
 			try {
 				apksigner.Main.sign(new File(unsignedApk), signedApk);
 			} catch (Exception e) {
@@ -304,13 +354,7 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 				return new CompilerResult("Signing error: " + e.getMessage(), true);
 			}
 			
-			File unsignedApkFile = new File(unsignedApk);
-			if (unsignedApkFile.exists()) {
-				if (!unsignedApkFile.delete()) {
-					project.getLogger().w("APK Signer", "Failed to delete temporary unsigned APK: " + unsignedApk);
-				}
-			}
-			
+			new File(unsignedApk).delete();
 			long time = System.currentTimeMillis() - startTime;
 			project.getLogger().d("CompilerAsyncTask", "Build completed successfully in " + time + "ms");
 			return new CompilerResult("Success", false);
@@ -375,6 +419,10 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			a.setVisibility(View.GONE);
 		}
 		if (dialog != null && dialog.isShowing()) {
+			// ⚡ Remove keep screen on flag
+			if (dialog.getWindow() != null) {
+				dialog.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			}
 			dialog.dismiss();
 		}
 		if (result != null && result.isError()) {
@@ -396,7 +444,10 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			a.setVisibility(View.GONE);
 		}
 		if (dialog != null && dialog.isShowing()) {
-			Toast.makeText(mContext.get(), "Cancel success", Toast.LENGTH_SHORT).show();
+			// ⚡ Remove keep screen on flag
+			if (dialog.getWindow() != null) {
+				dialog.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+			}
 			dialog.dismiss();
 		}
 	}
@@ -427,8 +478,8 @@ public class CompilerAsyncTask extends AsyncTask<Project, String, CompilerResult
 			return Uri.fromFile(file);
 		}
 	}
-    
-    public void initlizeLibs() {
-        
-    }
+	
+	public void initlizeLibs() {
+		
+	}
 }

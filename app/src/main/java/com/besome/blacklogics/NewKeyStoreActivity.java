@@ -13,6 +13,7 @@ import android.text.*;
 import android.text.style.*;
 import android.util.*;
 import android.view.*;
+import android.view.View;
 import android.view.View.*;
 import android.view.animation.*;
 import android.webkit.*;
@@ -31,7 +32,6 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
-import androidx.recyclerview.*;
 import androidx.viewpager.*;
 import androidx.viewpager2.*;
 import com.besome.sketch.*;
@@ -57,36 +57,34 @@ import org.antlr.v4.runtime.*;
 import org.benf.cfr.reader.*;
 import org.eclipse.jdt.*;
 import org.json.*;
+import com.droiddevcoach.tools.KeyStoreHelper;
 
 public class NewKeyStoreActivity extends AppCompatActivity {
 	
-	private LinearLayout linear6;
-	private LinearLayout bottom;
-	private LinearLayout nav;
 	private ScrollView vscroll;
-	private LinearLayout linear2;
-	private LinearLayout linear3;
+	private LinearLayout bottom;
+	private LinearLayout container;
+	private TextView title;
+	private TextView export_path;
 	private TextView textview5;
-	private TextInputLayout textinputlayout4;
-	private TextInputLayout textinputlayout2;
-	private TextInputLayout textinputlayout1;
-	private TextInputLayout textinputlayout3;
-	private TextView textview3;
+	private TextInputLayout textinputlayout19;
+	private TextInputLayout textinputlayout20;
+	private TextInputLayout textinputlayout21;
+	private TextInputLayout textinputlayout22;
+	private TextView textview6;
+	private LinearLayout linear6;
 	private LinearLayout linear7;
-	private LinearLayout linear8;
-	private TextInputLayout textinputlayout9;
-	private TextView textview1;
-	private TextView textview4;
+	private TextInputLayout textinputlayout27;
 	private EditText edittext_name;
 	private EditText edittext_password;
 	private EditText edittext_alias;
 	private EditText edittext_validity;
-	private TextInputLayout textinputlayout6;
-	private TextInputLayout textinputlayout5;
+	private TextInputLayout textinputlayout23;
+	private TextInputLayout textinputlayout24;
 	private EditText edittext_org;
 	private EditText edittext_orgunit;
-	private LinearLayout linear9;
-	private LinearLayout linear10;
+	private TextInputLayout textinputlayout25;
+	private TextInputLayout textinputlayout26;
 	private EditText edittext_city;
 	private EditText edittext_state;
 	private EditText edittext_country;
@@ -102,41 +100,105 @@ public class NewKeyStoreActivity extends AppCompatActivity {
 	}
 	
 	private void initialize(Bundle _savedInstanceState) {
-		linear6 = findViewById(R.id.linear6);
-		bottom = findViewById(R.id.bottom);
-		nav = findViewById(R.id.nav);
 		vscroll = findViewById(R.id.vscroll);
-		linear2 = findViewById(R.id.linear2);
-		linear3 = findViewById(R.id.linear3);
+		bottom = findViewById(R.id.bottom);
+		container = findViewById(R.id.container);
+		title = findViewById(R.id.title);
+		export_path = findViewById(R.id.export_path);
 		textview5 = findViewById(R.id.textview5);
-		textinputlayout4 = findViewById(R.id.textinputlayout4);
-		textinputlayout2 = findViewById(R.id.textinputlayout2);
-		textinputlayout1 = findViewById(R.id.textinputlayout1);
-		textinputlayout3 = findViewById(R.id.textinputlayout3);
-		textview3 = findViewById(R.id.textview3);
+		textinputlayout19 = findViewById(R.id.textinputlayout19);
+		textinputlayout20 = findViewById(R.id.textinputlayout20);
+		textinputlayout21 = findViewById(R.id.textinputlayout21);
+		textinputlayout22 = findViewById(R.id.textinputlayout22);
+		textview6 = findViewById(R.id.textview6);
+		linear6 = findViewById(R.id.linear6);
 		linear7 = findViewById(R.id.linear7);
-		linear8 = findViewById(R.id.linear8);
-		textinputlayout9 = findViewById(R.id.textinputlayout9);
-		textview1 = findViewById(R.id.textview1);
-		textview4 = findViewById(R.id.textview4);
+		textinputlayout27 = findViewById(R.id.textinputlayout27);
 		edittext_name = findViewById(R.id.edittext_name);
 		edittext_password = findViewById(R.id.edittext_password);
 		edittext_alias = findViewById(R.id.edittext_alias);
 		edittext_validity = findViewById(R.id.edittext_validity);
-		textinputlayout6 = findViewById(R.id.textinputlayout6);
-		textinputlayout5 = findViewById(R.id.textinputlayout5);
+		textinputlayout23 = findViewById(R.id.textinputlayout23);
+		textinputlayout24 = findViewById(R.id.textinputlayout24);
 		edittext_org = findViewById(R.id.edittext_org);
 		edittext_orgunit = findViewById(R.id.edittext_orgunit);
-		linear9 = findViewById(R.id.linear9);
-		linear10 = findViewById(R.id.linear10);
+		textinputlayout25 = findViewById(R.id.textinputlayout25);
+		textinputlayout26 = findViewById(R.id.textinputlayout26);
 		edittext_city = findViewById(R.id.edittext_city);
 		edittext_state = findViewById(R.id.edittext_state);
 		edittext_country = findViewById(R.id.edittext_country);
 		cancel = findViewById(R.id.cancel);
 		create = findViewById(R.id.create);
+		
+		cancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				finish();
+			}
+		});
 	}
 	
 	private void initializeLogic() {
+		create.setOnClickListener(v -> {
+			
+			String commonName = edittext_name.getText().toString().trim();
+			String keyPassword = edittext_password.getText().toString().trim();
+			String alias = edittext_alias.getText().toString().trim();
+			String validityStr = edittext_validity.getText().toString().trim();
+			String org = edittext_org.getText().toString().trim();
+			String orgUnit = edittext_orgunit.getText().toString().trim();
+			String city = edittext_city.getText().toString().trim();
+			String state = edittext_state.getText().toString().trim();
+			String country = edittext_country.getText().toString().trim();
+			
+			if (commonName.isEmpty() || keyPassword.isEmpty() || alias.isEmpty() || validityStr.isEmpty()) {
+				showMessage("Please fill all required fields!");
+				return;
+			}
+			
+			int validity = 365;
+			try { validity = Integer.parseInt(validityStr); } 
+			catch (NumberFormatException e) { showMessage("Invalid validity!"); return; }
+			
+			try {
+				// ⚡ Define the keystore file path here
+				File keystoreDir = new File(Environment.getExternalStorageDirectory(), "blacklogics/keystore");
+				if (!keystoreDir.exists()) keystoreDir.mkdirs(); // create dirs if not exist
+				
+				File keystoreFile = new File(keystoreDir, "release.jks"); // <- now keystoreFile exists
+				
+				KeyStoreHelper.Builder builder = new KeyStoreHelper.Builder()
+				.setAlg(KeyStoreHelper.Algorithm.RSA)
+				.setSize(KeyStoreHelper.Size.SIZE_2048)
+				.setSigAlg(KeyStoreHelper.SigAlgorithm.SHA256withRSA)
+				.setType(KeyStoreHelper.Type.JKS)
+				.setAlias(alias)
+				.setKeypass(keyPassword)
+				.setStorepass(keyPassword)
+				.setCommonName(commonName)
+				.setOrganizationName(org)
+				.setOrganizationUnit(orgUnit)
+				.setCityOrLocality(city)
+				.setStateName(state)
+				.setCountryCode(country)
+				.setValidity(validity)
+				.setOutputFile(keystoreFile); // ✅ now this works
+				
+				KeyStoreHelper.generate(builder);
+				
+				// Show Material Dialog when created
+				new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+				.setTitle("Certificate Created!")
+				.setMessage("Your keystore has been successfully created at:\n" + keystoreFile.getAbsolutePath())
+				.setPositiveButton("OK", null)
+				.show();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				showMessage("Error creating keystore: " + e.getMessage());
+			}
+		});
+		
 	}
 	
 	

@@ -40,6 +40,7 @@ import com.github.angads25.filepicker.*;
 import com.google.android.material.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
+import com.shapun.layouteditor.ViewEditor;
 import com.larswerkman.holocolorpicker.*;
 import coyamo.visualxml.ViewActivity;
 import coyamo.visualxml.lib.proxy.ProxyResources;
@@ -88,6 +89,7 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 	}
 	private ProjectActivityBean activityBean;
+    private ViewEditor viewEditor;
 	private CodeEditor editor;
 	private LinearLayout toolbar;
 	private LinearLayout linear9;
@@ -123,8 +125,11 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
 		acName = findViewById(R.id.acName);
 		
 		// Initialize Complex and retrieve intent data
+        viewEditor = new ViewEditor(this);
 		complex = new Complex();
 		sc_id = getIntent().getStringExtra("sc_id");
+        viewEditor.setScId(getIntent().getStringExtra("sc_id"));
+        viewEditor.setPath(getIntent().getStringExtra("projectPath"));
 		layoutName = getIntent().getStringExtra("layoutName");
 		pkgName = getIntent().getStringExtra("pkgName");
 		complex.setId(sc_id);
@@ -237,15 +242,7 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
 			// Save XML content to Complex
 			complex.setXmlCode(layoutName, xmlContent);
 			
-			// Save to layouts.json
-			String filePath = new File(ViewEditorFragmentActivity.projectPath, "layouts.json").getAbsolutePath();
-			JSONObject layoutJson = new JSONObject();
-			layoutJson.put("layoutName", layoutName);
-			layoutJson.put("xml", xmlContent);
-			layoutJson.put("timestamp", System.currentTimeMillis());
-			
-			FileUtil.writeFile(filePath, layoutJson.toString(2));
-			showMessage("XML saved successfully!");
+		//	viewEditor.saveLayout(layoutName, xmlContent);
 			
 			// Notify DesignActivity of the save
 			Intent result = new Intent();

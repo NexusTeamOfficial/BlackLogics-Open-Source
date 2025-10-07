@@ -51,6 +51,9 @@ public class CodeEditorEditText extends EditText {
         lineBounds = new Rect();
         highlightPaint = new Paint();
         highlightPaint.setColor(HIGHLIGHTER_COLOR);
+        
+        setFocusable(true);
+        setFocusableInTouchMode(true);
 
 
         rect = new Rect();
