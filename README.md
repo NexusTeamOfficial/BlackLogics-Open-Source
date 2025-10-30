@@ -42,11 +42,25 @@
     </td>
     <td align="center">
       <img src="screenshots/s1.png.png" width="100%" height="auto"/><br/>
-      <sub>Create Project</sub>
+      <sub>Project List UI</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/ss7.png" width="100%" height="auto"/><br/>
+      <sub>Creating a New Project</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="screenshots/ss9.png" width="100%" height="auto"/><br/>
+      <sub>Project SDK Configuration</sub>
     </td>
     <td align="center">
       <img src="screenshots/s3.png.png" width="100%" height="auto"/><br/>
-      <sub>Design Activity</sub>
+      <sub>Design Activity (Visual UI Editor)</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/ss8.png" width="100%" height="auto"/><br/>
+      <sub>Adding a Custom Widget</sub>
     </td>
   </tr>
 </table>
@@ -54,12 +68,15 @@
 ### **Logic Editor**
 ![Logic Editor](screenshots/s4.png.png)
 
+### **Resource Encryption**
+![Resource Encryption](screenshots/ss10.png)
+> **Warning:** Encrypting resources secures XML, assets, and drawables, requiring manual decryption before modification.
+
 ### **Permission Manager**
 ![Permission Manager](screenshots/ss1.png)
 
-### **Import icons**
+### **Import Icons**
 ![Import Icons](screenshots/Screenshot_2025-06-08-23-24-23-11.png)
-
 ---
 
 ## ⚙️ Installation Guide
