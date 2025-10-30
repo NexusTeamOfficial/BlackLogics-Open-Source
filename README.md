@@ -34,17 +34,31 @@
 
 ## 📸 Screenshots
 
-### **Main UI**
-![Main Screen](screenshots/s.png.png)
-
-### **Create Project**
-![Create Project](screenshots/s1.png.png)
-
-### **Design Activity**
-![Design Activity](screenshots/s3.png.png)
-
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/s.png.png" width="100%" height="auto"/><br/>
+      <sub>Main UI</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/s1.png.png" width="100%" height="auto"/><br/>
+      <sub>Create Project</sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/s3.png.png" width="100%" height="auto"/><br/>
+      <sub>Design Activity</sub>
+    </td>
+  </tr>
+</table>
+  
 ### **Logic Editor**
 ![Logic Editor](screenshots/s4.png.png)
+
+### **Permission Manager**
+![Permission Manager](screenshots/ss1.png)
+
+### **Import icons**
+![Import Icons](screenshots/Screenshot_2025-06-08-23-24-23-11.png)
 
 ---
 
@@ -101,7 +115,44 @@ We welcome all contributions to make BlackLogics even better!
 
 6. **Submit a Pull Request**
 
-All contributors will be listed in the `CONTRIBUTORS.md` file.
+## 🙌 Contributors
+
+We thank all contributors who made BlackLogics possible.
+
+
+## Core Developers
+
+- **NexusTeam**  
+  Lead development, architecture, and UI system.
+
+- **SmartIndiaGaming**  
+  Firebase integration, multimedia features, and testing.
+
+---
+
+## Special Thanks
+
+- **Sketchware Pro Community**  
+  Inspiration and continued support for open-source visual coding.
+
+- **Material Design Contributors**  
+  For providing resources and guidelines.
+
+---
+
+## Want to Contribute?
+
+Your name will be added here when you submit your first **pull request** or contribute significantly to:
+
+- UI/UX improvements  
+- Bug fixes  
+- Feature additions  
+- Translations  
+- Documentation updates
+
+> Thank you for making BlackLogics better for everyone!
+
+
 
 
 ## 📄 License
@@ -131,6 +182,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 ## 🔗 Stay Connected
 
 * **Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
+* * **YouTube:** [@BlackLogics](https://youtube.com/@blacklogics?si=D2CFbND9d2ivbA_7)
 * **GitHub:** [NexusTeamOfficial/BlackLogics-Open-Source](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 
 > Made with passion by **NexusTeam** & **SmartIndiaGaming**
