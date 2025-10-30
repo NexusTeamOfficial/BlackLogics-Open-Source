@@ -1,0 +1,95 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp">
+	<LinearLayout
+		android:id="@+id/linear8"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<ImageView
+			android:id="@+id/title_icon"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
+			android:src="@drawable/text_size"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/textview3"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Create a new palette"
+			android:textSize="18sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:focusable="false"
+			android:layout_marginStart="8dp" />
+	</LinearLayout>
+	<EditText
+		android:id="@+id/palette_name_input"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:textSize="12sp"
+		android:textColor="@color/textColor"
+		android:hint="Palette name"
+		android:textColorHint="#607D8B"
+		android:focusable="false"
+		android:focusableInTouchMode="true" />
+	<LinearLayout
+		android:id="@+id/linear9"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<EditText
+			android:id="@+id/color_hex_input"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:hint="# Color hex code"
+			android:textColorHint="#607D8B"
+			android:layout_weight="1"
+			android:focusable="false"
+			android:focusableInTouchMode="true" />
+		<ImageView
+			android:id="@+id/color_picker_icon"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
+			android:src="@drawable/color_palette_48"
+			android:scaleType="fitCenter"
+			android:focusable="false"
+			android:layout_marginStart="8dp" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear10"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal"
+		android:gravity="end">
+		<Button
+			android:id="@+id/cancel_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textColor="#1E88E5" />
+		<Button
+			android:id="@+id/save_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:text="Save"
+			android:textSize="12sp"
+			android:textColor="#1E88E5" />
+	</LinearLayout>
+</LinearLayout>

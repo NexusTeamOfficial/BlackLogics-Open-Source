@@ -1,0 +1,26 @@
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/spinner_background_new"
+	android:padding="12dp">
+	<TextView
+		android:id="@+id/tv_selected_item"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Select an item"
+		android:textSize="16sp"
+		android:textColor="@color/textColor"
+		android:focusable="false" />
+	<ImageView
+		android:id="@+id/iv_dropdown_arrow"
+		android:layout_width="24dp"
+		android:layout_height="24dp"
+		android:src="@drawable/ic_arrow_drop_down_grey600_24dp"
+		android:scaleType="fitCenter"
+		android:focusable="false"
+		android:layout_alignParentEnd="true"
+		android:layout_centerVertical="true" />
+</RelativeLayout>

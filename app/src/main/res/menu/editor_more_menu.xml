@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?><menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_format" android:title="Format Code"/>
+    <item android:id="@+id/action_undo_all" android:title="Undo All"/>
+    <item android:id="@+id/action_redo_all" android:title="Redo All"/>
+    <item android:id="@+id/action_layout_view" android:title="Layout preview"/>
+</menu>

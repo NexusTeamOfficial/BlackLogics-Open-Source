@@ -1,0 +1,123 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp"
+	android:background="@android:color/white">
+	<TextView
+		android:id="@+id/textview3"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="16dp"
+		android:text="Block type"
+		android:textSize="18sp"
+		android:textStyle="bold"
+		android:textColor="@color/textColor" />
+	<RadioGroup
+		android:id="@+id/radioGroupBlockType"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<RadioButton
+			android:id="@+id/radioRegular"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="Regular block (regular)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioIf"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="if block (c)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioIfElse"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="if-else block (e)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioString"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="String (s)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioBoolean"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="Boolean (b)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioNumber"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="Number (d)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioVariable"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="Variable (v)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<RadioButton
+			android:id="@+id/radioMap"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="8dp"
+			android:text="Map (a)"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+	</RadioGroup>
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal"
+		android:gravity="end">
+		<Button
+			android:id="@+id/btnCancel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@android:color/transparent"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textColor="#666666"
+			android:layout_marginEnd="8dp" />
+		<Button
+			android:id="@+id/btnSave"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Save"
+			android:textSize="12sp"
+			android:textColor="@android:color/white"
+			android:backgroundTint="#1E88E5" />
+	</LinearLayout>
+</LinearLayout>

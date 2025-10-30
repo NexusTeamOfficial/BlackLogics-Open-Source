@@ -1,0 +1,68 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<include layout="@layout/toolbar_improved" />
+	<LinearLayout
+		android:id="@+id/linear5"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#FFFFFF"
+		android:orientation="vertical">
+		<TextView
+			android:id="@+id/textview1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Appearance Settings"
+			android:textSize="16sp"
+			android:textColor="#000000" />
+		<LinearLayout
+			android:id="@+id/linear6"
+			android:layout_width="match_parent"
+			android:layout_height="125dp"
+			android:padding="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal">
+			<LinearLayout
+				android:id="@+id/linear7"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:padding="8dp"
+				android:background="#FFFFFF"
+				android:gravity="center_horizontal|center_vertical"
+				android:orientation="horizontal"
+				android:layout_gravity="center_horizontal|center_vertical"
+				android:layout_weight="1">
+				<ImageView
+					android:id="@+id/imageview1"
+					android:layout_width="42dp"
+					android:layout_height="35dp"
+					android:src="@drawable/icon_light_mode_round"
+					android:scaleType="fitCenter" />
+			</LinearLayout>
+			<LinearLayout
+				android:id="@+id/linear8"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:padding="8dp"
+				android:background="#000000"
+				android:gravity="center_horizontal|center_vertical"
+				android:orientation="horizontal"
+				android:layout_gravity="center_horizontal|center_vertical"
+				android:layout_weight="1">
+				<ImageView
+					android:id="@+id/imageview2"
+					android:layout_width="42dp"
+					android:layout_height="35dp"
+					android:src="@drawable/icon_dark_mode_round_white"
+					android:scaleType="fitCenter" />
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

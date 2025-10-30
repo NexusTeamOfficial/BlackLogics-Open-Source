@@ -1,0 +1,49 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<include layout="@layout/toolbar_improved" />
+	<RelativeLayout
+		android:id="@+id/relativelayout3"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center_horizontal|center_vertical">
+		<GridView
+			android:id="@+id/list_file"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="5dp"
+			android:horizontalSpacing="5sp"
+			android:numColumns="3"
+			android:stretchMode="columnWidth"
+			android:verticalSpacing="5sp" />
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/fab_plus"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="15dp"
+			android:backgroundTint="#ffffffff"
+			app:borderWidth="0dp"
+			app:elevation="6dp"
+			app:fabSize="normal"
+			app:rippleColor="#ff0000ff"
+			android:focusable="true"
+			android:layout_alignParentRight="true"
+			android:layout_alignParentBottom="true" />
+		<TextView
+			android:id="@+id/text_info"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="15dp"
+			android:layout_marginRight="15dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Add java files to your project."
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:layout_centerInParent="true" />
+	</RelativeLayout>
+</LinearLayout>
