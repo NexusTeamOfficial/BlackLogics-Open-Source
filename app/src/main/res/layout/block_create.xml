@@ -1,0 +1,277 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<ScrollView
+		android:id="@+id/vscroll1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1">
+		<LinearLayout
+			android:id="@+id/main"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:orientation="vertical">
+			<EditText
+				android:id="@+id/id"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="15dp"
+				android:gravity="top"
+				android:textSize="12sp"
+				android:textColor="#000000"
+				android:hint="id (not important recently)"
+				android:textColorHint="#607D8B"
+				android:focusable="true" />
+			<HorizontalScrollView
+				android:id="@+id/hscroll2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+				<LinearLayout
+					android:id="@+id/suggestions"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal|center_vertical"
+					android:orientation="horizontal">
+					<TextView
+						android:id="@+id/textview1"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.e"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview7"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%image."
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview2"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.n"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview5"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.b"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="#000000"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview4"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.io"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview3"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.View"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<TextView
+						android:id="@+id/textview6"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="%m.TextView"
+						android:textSize="12sp"
+						android:textStyle="bold"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+				</LinearLayout>
+			</HorizontalScrollView>
+			<EditText
+				android:id="@+id/views"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="15dp"
+				android:gravity="top"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:hint="views"
+				android:textColorHint="#607D8B"
+				android:singleLine="true"
+				android:focusable="true" />
+			<HorizontalScrollView
+				android:id="@+id/hscroll1"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+				<RadioGroup
+					android:id="@+id/types"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="3dp">
+					<RadioButton
+						android:id="@+id/radiobutton1"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="if"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton6"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="regular"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton2"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="p (String)"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton7"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="header"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton3"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="b (boolean)"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton4"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="d (number)"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+					<RadioButton
+						android:id="@+id/radiobutton5"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:padding="8dp"
+						android:text="custom"
+						android:textSize="12sp"
+						android:textColor="@color/textColor"
+						android:focusable="false" />
+				</RadioGroup>
+			</HorizontalScrollView>
+			<EditText
+				android:id="@+id/type"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="15dp"
+				android:gravity="top"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:hint="type"
+				android:textColorHint="#607D8B"
+				android:focusable="true" />
+			<LinearLayout
+				android:id="@+id/linear3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:gravity="center_vertical"
+				android:orientation="horizontal">
+				<EditText
+					android:id="@+id/bcolor"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="#2195f3"
+					android:textSize="12sp"
+					android:textColor="@color/textColor"
+					android:hint="color"
+					android:textColorHint="#607D8B"
+					android:enabled="false"
+					android:layout_weight="1"
+					android:focusable="false" />
+				<ImageView
+					android:id="@+id/pick"
+					android:layout_width="35dp"
+					android:layout_height="match_parent"
+					android:src="@drawable/ic_expand_more_black"
+					android:scaleType="fitCenter"
+					android:focusable="false" />
+			</LinearLayout>
+			<EditText
+				android:id="@+id/code"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:padding="15dp"
+				android:gravity="top"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:hint="Code"
+				android:textColorHint="#607D8B"
+				android:focusable="true" />
+		</LinearLayout>
+	</ScrollView>
+	<LinearLayout
+		android:id="@+id/linear2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="2dp"
+		android:orientation="horizontal">
+		<Button
+			android:id="@+id/cancel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:layout_weight="1" />
+		<Button
+			android:id="@+id/save"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Save"
+			android:textSize="12sp"
+			android:textStyle="bold"
+			android:textColor="@color/textColor"
+			android:layout_weight="1" />
+	</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,46 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout
+		android:id="@+id/linear8"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:paddingLeft="10.0dip"
+		android:paddingTop="8.0dip"
+		android:paddingRight="4.0dip"
+		android:paddingBottom="8.0dip">
+		<ImageView
+			android:id="@+id/icon"
+			android:src="@drawable/default_image"
+			android:scaleType="fitCenter"
+			android:layout_width="40.0dip"
+			android:layout_height="40.0dip"
+			android:padding="5.0dip"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="MainActivity.java"
+			android:textColor="@color/textColor"
+			android:layout_weight="1.0"
+			android:padding="8.0dip"
+			android:layout_marginLeft="8.0dip"
+			android:textSize="16.0sp"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/more"
+			android:src="@drawable/ic_more_vert_grey600_24dp"
+			android:scaleType="fitCenter"
+			android:layout_width="38.0dip"
+			android:layout_height="38.0dip"
+			android:padding="8.0dip"
+			android:focusable="false" />
+	</LinearLayout>
+</LinearLayout>

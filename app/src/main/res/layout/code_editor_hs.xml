@@ -1,0 +1,84 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="56dp"
+		android:paddingLeft="4dp"
+		android:paddingRight="4dp"
+		android:background="#303030"
+		android:gravity="center_vertical"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/linear9"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:paddingLeft="12dp"
+			android:gravity="center_vertical"
+			android:orientation="vertical"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/textview9"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Code Editor"
+				android:textSize="16sp"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF"
+				android:focusable="false" />
+			<TextView
+				android:id="@+id/textview10"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="UTF-8"
+				android:textSize="11sp"
+				android:textColor="#BDBDBD"
+				android:focusable="false" />
+		</LinearLayout>
+		<ImageView
+			android:id="@+id/menu_view_undo"
+			android:layout_width="38dp"
+			android:layout_height="38dp"
+			android:padding="6dp"
+			android:src="@drawable/ic_undo_white_48dp"
+			android:scaleType="centerInside"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/menu_view_redo"
+			android:layout_width="38dp"
+			android:layout_height="38dp"
+			android:layout_marginLeft="8dp"
+			android:padding="6dp"
+			android:src="@drawable/ic_redo_white_48dp"
+			android:scaleType="centerInside"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/save"
+			android:layout_width="38dp"
+			android:layout_height="38dp"
+			android:layout_marginLeft="8dp"
+			android:padding="6dp"
+			android:src="@drawable/save_white_48"
+			android:scaleType="centerInside"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/more"
+			android:layout_width="38dp"
+			android:layout_height="38dp"
+			android:layout_marginLeft="8dp"
+			android:padding="6dp"
+			android:src="@drawable/ic_more_vert_white_24dp"
+			android:scaleType="centerInside"
+			android:focusable="false" />
+	</LinearLayout>
+	<io.github.rosemoe.sora.widget.CodeEditor
+		android:id="@+id/editor"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		style="@style/AppTheme.Et" />
+</LinearLayout>
