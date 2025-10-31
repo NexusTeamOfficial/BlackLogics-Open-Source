@@ -16,8 +16,9 @@
 - **Dark & Light Theme Support**  
   One-tap switch between light and dark mode.
 
-- **Multi-Language Support**  
-  Build apps in English, Hindi, and more with easy language switching.
+- **String References in Layout Editor**  
+  You can use `@string/your_string` in the visual UI editor, and the actual value from `strings.xml` **will be displayed live** in the editor as well as at runtime.
+  
 
 - **Advanced Resource Managers**
   - **Assets Manager** – Manage fonts, audio, raw files
