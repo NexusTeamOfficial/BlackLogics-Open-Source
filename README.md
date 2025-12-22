@@ -2,6 +2,15 @@
 
 **BlackLogics** is a powerful open-source Android app builder with full **AndroidX support**. It allows anyone to build modern apps visually — without writing traditional code — using a logic-based system, drag-and-drop UI editor, and full resource management.
 
+## Important notic
+- **Ownership**
+NexusTeam (Smart India Gaming) developed, fully custom architecture, independent project
+
+## Reference
+- **Package name mismatch**
+Just used com.besome.blacklogics but project are created toatlly original and project owner is nexusteam its not used sketchware base.
+
+
 ## ✨ Features
 
 - **AndroidX Support**  
