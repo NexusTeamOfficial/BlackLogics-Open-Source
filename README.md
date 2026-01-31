@@ -47,7 +47,7 @@
     <td align="center"><b>SDK Configuration</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/s3.png.png" width="100%"/></td>
+    <td><img src="screenshots/upgraded.jpg.png" width="100%"/></td>
     <td><img src="screenshots/ss8.png" width="100%"/></td>
     <td><img src="screenshots/ss9.png" width="100%"/></td>
   </tr>
