@@ -58,6 +58,23 @@
 
 ---
 
+---
+
+## 🌙 Optimized for the Dark Side
+We know developers live in the dark. That’s why **BlackLogics** comes with a meticulously crafted Dark Mode that’s more than just a color swap—it's an experience.
+
+### Why you'll love it:
+* **True Black UI:** Optimized for AMOLED screens to save battery and look sleek. 🔋
+* **Eye Comfort:** Reduced blue light exposure for those long late-night coding sessions. 🦉
+* **High-Contrast Blocks:** Logic blocks and code syntax remain sharp and easy to read. 💻
+* **System Integration:** Automatically follows your device's theme settings.
+
+| Light Mode (Classic) | Dark Mode (Pro) |
+|---|---|
+| ![Light Preview](https://via.placeholder.com/300x600?text=Light+UI+Screenshot) | ![Dark Preview](https://via.placeholder.com/300x600?text=Dark+UI+Screenshot) |
+
+> **Pro Tip:** You can toggle between themes instantly in the settings without restarting the app!
+
 ## ⚙️ Technical Requirements & Installation
 
 ### Environment
