@@ -33,12 +33,12 @@
 <table>
   <tr>
     <td align="center"><b>Dashboard</b></td>
-    <td align="center"><b>Project Management</b></td>
+    <td align="center"><b>Source Code Management</b></td>
     <td align="center"><b>Workspace Setup</b></td>
   </tr>
   <tr>
     <td><img src="screenshots/s.png.png" width="100%"/></td>
-    <td><img src="screenshots/s1.png.png" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_2026-01-31-22-58-12-96.png" width="100%"/></td>
     <td><img src="screenshots/ss7.png" width="100%"/></td>
   </tr>
   <tr>
