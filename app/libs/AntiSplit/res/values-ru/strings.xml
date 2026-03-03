@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="fnAntiSplit">О нас</string>
+<string name="dup_0x7f060002">Выберите файл</string>
+<string name="dup_0x7f060003">Отмена</string>
+<string name="dup_0x7f060004">Файл (*.apks *.zip *.xapk)</string>
+<string name="dup_0x7f060005">Помощь</string>
+<string name="dup_0x7f060006">Объединить</string>
+<string name="dup_0x7f060007">ApkMirror модуль установлен</string>
+<string name="dup_0x7f060009">ApkMirror модуль не установлен</string>
+<string name="dup_0x7f06000a">Сжатие нативных библиотек</string>
+<string name="dup_0x7f06000b">Сжатие выключено</string>
+<string name="dup_0x7f06000c">Сжатие включено</string>
+<string name="dup_0x7f06000d">Сжатие</string>
+<string name="dup_0x7f06000e">Язык</string>
+<string name="dup_0x7f06000f">Скопировать только язык (экспериментально)</string>
+<string name="dup_0x7f060010">Только язык</string>
+<string name="dup_0x7f060011">Anti Split</string>
+<string name="dup_0x7f060012">Код языка</string>
+<string name="dup_0x7f060013">Код языка</string>
+<string name="dup_0x7f060014">Несовпадающие пакеты или версии</string>
+<string name="dup_0x7f060015">Запретить</string>
+<string name="dup_0x7f060016">Разрешить</string>
+<string name="dup_0x7f060017">Собирать из разных пакетов или версий</string>
+<string name="dup_0x7f060018">Дополнительный Модуль</string>
+<string name="dup_0x7f060019">Пропустить файлы модуля, если они есть</string>
+<string name="dup_0x7f06001a">Добавить файлы модуля в apk, если они есть</string>
+<string name="dup_0x7f06001b">Добавить Модуль</string>
+<string name="dup_0x7f06001c">Подпись APK</string>
+<string name="dup_0x7f06001d">Подпись выключена</string>
+<string name="dup_0x7f06001e">Подпись включена</string>
+<string name="dup_0x7f06001f">Подписать тестовой подписью</string>
+<string name="dup_0x7f060020">Настройки</string>
+<string name="dup_0x7f060021">Лог</string>
+<string name="dup_0x7f060022">Расшифровка ApkMirror</string>
+<string name="dup_0x7f060023">Выбор</string>
+</resources>

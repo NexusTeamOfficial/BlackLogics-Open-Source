@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" android:id="@+id/toolbar" android:background="?attr/colorPrimary" android:layout_width="match_parent" android:layout_height="@dimen/action_bar_height" app:titleTextAppearance="@style/ToolbarTextAppearance">
+    <RelativeLayout android:id="@+id/layout_main_logo" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <ImageView android:id="@+id/img_title_logo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/top_title_logo" android:layout_centerInParent="true"/>
+    </RelativeLayout>
+</androidx.appcompat.widget.Toolbar>

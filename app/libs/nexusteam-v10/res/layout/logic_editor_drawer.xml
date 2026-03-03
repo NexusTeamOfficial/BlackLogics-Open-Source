@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:id="@+id/layout_drawer" android:background="#f5f5f5" android:layout_width="150dp" android:layout_height="match_parent" android:layout_marginTop="@dimen/action_bar_height">
+    <TextView android:textSize="12sp" android:textColor="@color/scolor_red_02" android:gravity="center" android:id="@+id/tv_block_collection" android:paddingTop="4dp" android:paddingBottom="4dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    <View android:background="@color/scolor_light_grey" android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginLeft="2dp" android:layout_marginRight="2dp"/>
+    <androidx.cardview.widget.CardView android:id="@+id/cv_shared_blocks" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="8dp" app:cardElevation="4dp">
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:padding="8dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_marginBottom="4dp" android:src="@drawable/globe_96"/>
+            <TextView android:textSize="12sp" android:textColor="@color/color_primary" android:id="@+id/tv_shared_blocks" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+    <com.nexusteam.internal.lib.ui.CustomScrollView android:id="@+id/scv" android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:orientation="vertical" android:id="@+id/layout_favorite" android:padding="12dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    </com.nexusteam.internal.lib.ui.CustomScrollView>
+</LinearLayout>

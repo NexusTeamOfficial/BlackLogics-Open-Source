@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:gravity="center" android:id="@+id/icon_bg" android:background="@drawable/circle_bg_white_outline_gray" android:padding="2dp" android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <ImageView android:id="@+id/icon" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/android_icon"/>
+</LinearLayout>

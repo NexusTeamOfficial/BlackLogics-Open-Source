@@ -1,0 +1,55 @@
+Copyright ⓒ Sketchware. All Rights Reserved.
+
+This application uses Open Source Software(OSS). You can find the source code of these open source projects, along with applicable license information below.
+We are deeply grateful to these developers for their work and contributions.
+
+* Scratch
+
+	This software is based on part of Scratch(scratch.mit.edu)
+	http://opensource.org/licenses/MIT
+
+* Spring Framework
+
+	http://spring.io
+	Copyright (c) 2013-2014 Pivotal Software, Inc
+
+* Eclipse
+
+	http://www.eclipse.org
+	Eclipse Public License Version 1.0
+
+
+* Android Open Source Project
+
+	https://source.android.com
+	Apache License Version 2.0
+
+* The Bouncy Castle
+
+	http://www.bouncycastle.org
+	Copyright (c) 2000-2012 The Legion Of The Bouncy Castle
+
+* GSon
+
+	https://github.com/google/gson
+	Apache License Version 2.0
+
+* Jackson-annotations
+* Jackson-core
+
+ 	http://wiki.fasterxml.com/JacksonHome
+ 	Apache License Version 2.0
+
+* kellinwood
+
+	http://code.google.com/p/zip-signer
+
+
+* icons8
+	http://icons8.com
+
+* Cute Blue Teddy Bear Clipart
+    clipartfox.com
+    by mr jorge cruz from cary
+
+

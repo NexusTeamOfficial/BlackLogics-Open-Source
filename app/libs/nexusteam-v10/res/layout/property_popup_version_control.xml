@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:gravity="center" android:orientation="horizontal" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:orientation="vertical" android:background="@drawable/bg_outline" android:padding="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="16dp">
+        <TextView android:textSize="12dp" android:textColor="@color/scolor_blue_01" android:layout_gravity="center_horizontal" android:id="@+id/tv_code" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <NumberPicker android:theme="@style/NumberPickerText" android:id="@+id/version_code" android:focusable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:background="@drawable/bg_outline" android:padding="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <TextView android:textSize="12dp" android:textColor="@color/scolor_blue_01" android:layout_gravity="center_horizontal" android:id="@+id/tv_name" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <NumberPicker android:theme="@style/NumberPickerText" android:id="@+id/version_name1" android:focusable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:textSize="18dp" android:textColor="#757575" android:layout_gravity="center_vertical" android:layout_width="8dp" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="."/>
+            <NumberPicker android:theme="@style/NumberPickerText" android:id="@+id/version_name2" android:focusable="false" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

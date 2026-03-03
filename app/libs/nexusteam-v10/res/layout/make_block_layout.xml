@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:theme="@style/AppTheme" android:orientation="vertical" android:background="#fff" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <HorizontalScrollView android:background="#f5f5f5" android:paddingLeft="8dp" android:paddingRight="8dp" android:layout_width="match_parent" android:layout_height="80dp">
+        <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_margin="8dp">
+            <LinearLayout android:orientation="horizontal" android:id="@+id/remove_area" android:layout_width="match_parent" android:layout_height="24dp"/>
+            <RelativeLayout android:id="@+id/block_area" android:layout_width="match_parent" android:layout_height="match_parent"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+    <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary" android:id="@+id/tv_title_blockname" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginTop="16dp"/>
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginRight="16dp">
+                <EditText android:textSize="13sp" android:id="@+id/ed_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:lines="1" android:inputType="text" android:imeOptions="actionNext"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout android:orientation="vertical" android:background="@drawable/bg_rectangle_white" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                <TextView android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary" android:id="@+id/tv_title_add_variable" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginTop="4dp" android:layout_marginRight="8dp"/>
+                <LinearLayout android:orientation="vertical" android:paddingLeft="16dp" android:paddingRight="16dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                    <LinearLayout android:orientation="vertical" android:id="@+id/var_type_spinner" android:background="@drawable/bg_outline" android:paddingLeft="8dp" android:paddingRight="8dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+                        <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_variable_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginRight="8dp" android:layout_weight="1">
+                            <EditText android:textSize="13sp" android:id="@+id/ed_variable_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:lines="1" android:inputType="text" android:imeOptions="actionNext"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <Button android:theme="@style/AppTheme.Button.Blue" android:textSize="12sp" android:textColor="#ffffff" android:gravity="center" android:id="@+id/add_variable" android:padding="8dp" android:layout_width="48dp" android:layout_height="48dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:gravity="center_vertical" android:orientation="vertical" android:background="@drawable/bg_rectangle_white" android:paddingBottom="8dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:layout_marginBottom="8dp">
+                <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginTop="8dp" android:layout_marginRight="16dp">
+                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_label" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginRight="8dp" android:layout_weight="1">
+                        <EditText android:textSize="13sp" android:id="@+id/ed_label" android:layout_width="match_parent" android:layout_height="wrap_content" android:lines="1" android:inputType="text" android:imeOptions="actionDone"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button android:theme="@style/AppTheme.Button.Blue" android:textSize="12sp" android:textColor="#ffffff" android:gravity="center" android:id="@+id/add_label" android:padding="8dp" android:layout_width="48dp" android:layout_height="48dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

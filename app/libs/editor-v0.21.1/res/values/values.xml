@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="reference" name="codeEditorStyle"/>
+    <color name="defaultSymbolInputBackgroundColor">@android:color/background_light</color>
+    <color name="defaultSymbolInputTextColor">@android:color/black</color>
+    <color name="textActionNameColor">@android:color/tertiary_text_light</color>
+    <string name="clip_text_length_too_large">Text is too large to copy</string>
+    <string name="diagnostics_more_actions">More Actions...</string>
+    <string name="editor_formatting">Formatting your code…</string>
+    <string name="editor_search_busy">Editor is still preparing…</string>
+    <string name="editor_search_replacing">Replacing texts…</string>
+    <string name="last">Last</string>
+    <string name="more">More</string>
+    <string name="next">Next</string>
+    <string name="replace">Replace</string>
+    <string name="replaceAll">Replace All</string>
+    <string name="replacement">Replacement</string>
+    <string name="text_to_search">Text to search</string>
+    <style name="diagnostic_popup_animation">
+        <item name="android:windowEnterAnimation">@anim/anim_diagnostic_tooltip_window_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_diagnostic_tooltip_window_exit</item>
+    </style>
+    <style name="text_action_popup_animation">
+        <item name="android:windowEnterAnimation">@anim/anim_text_action_popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_text_action_popup_exit</item>
+    </style>
+    <declare-styleable name="CodeEditor">
+        <attr name="android:scrollbarTrackHorizontal"/>
+        <attr name="android:scrollbarThumbHorizontal"/>
+        <attr name="android:scrollbarTrackVertical"/>
+        <attr name="android:scrollbarThumbVertical"/>
+
+        <attr name="lnPanelPositionMode">
+            <enum name="fixed" value="0"/>
+            <enum name="follow" value="1"/>
+        </attr>
+        <attr name="lnPanelPosition">
+            <flag name="left" value="1"/>
+            <flag name="top" value="2"/>
+            <flag name="right" value="4"/>
+            <flag name="bottom" value="8"/>
+            <flag name="center" value="15"/>
+        </attr>
+
+        <attr format="string" name="text"/>
+        <attr format="dimension" name="textSize"/>
+        <attr format="dimension" name="dividerWidth"/>
+        <attr format="boolean" name="lineNumberVisible"/>
+        <attr format="boolean" name="autoCompleteEnabled"/>
+        <attr format="boolean" name="symbolCompletionEnabled"/>
+        <attr format="integer" name="cursorBlinkPeriod"/>
+        <attr format="boolean" name="scrollbarsEnabled"/>
+        <attr format="boolean" name="verticalScrollbarEnabled"/>
+        <attr format="boolean" name="horizontalScrollbarEnabled"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_gravity="center" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="16dp">
+        <ProgressBar android:id="@+id/prog_box" android:layout_width="wrap_content" android:layout_height="wrap_content" android:contentDescription="@null"/>
+        <TextView android:textColor="#535353" android:gravity="left|center_vertical|center_horizontal|center|start" android:id="@+id/tv_progress" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:text="@string/common_message_loading" android:layout_marginStart="16dp"/>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@+id/layout_ads" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp"/>
+</LinearLayout>
