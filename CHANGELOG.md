@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+
+---
+
+## 🏷 v0.0.6 — Stability, Security & Compatibility Upgrade 🚀  
+**Release Date:** 03 Mar  
+**Highlights:**
+
+- 🌍 **Android 7 – Android 15 full compatibility**
+- 🔐 Integrated **Dex Encryption (AiJiaMi Enterprise)** with runtime protection
+- 📦 Advanced **Package Refactor Tool** (auto import updates + directory restructuring)
+- 🧾 Built-in **Real-time Logcat Viewer** with filtering & regex support
+- ✨ Added **Batch Replace tool** for multi-file editing
+- ⚡ Improved SDK handling & API-level stability
+- 🛠 Multiple internal optimizations & crash fixes
+
 ## 🏷 v0.0.5 — Released: Resource Encryption & Architectural Overhaul
 **Release Date:** 30 Oct  
 **Highlights:** :contentReference[oaicite:1]{index=1}
