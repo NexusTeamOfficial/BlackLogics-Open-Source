@@ -77,6 +77,19 @@ Protect your APK from reverse engineering and code theft with enterprise-grade D
 
 ![Dex Encryption](screenshots/Screenshot_20260303_125654.jpg)
 
+### 🧾 Built-in Logcat Viewer
+
+Monitor real-time application logs directly inside the editor.
+
+**Features:**
+• Show time & TAG support  
+• Log level filtering (Verbose, Debug, Error, etc.)  
+• Search & Regex filtering  
+• Wrap log toggle  
+• Clean and responsive UI  
+
+![Logcat Viewer](screenshots/Screenshot_20260303_130141.jpg)
+
 ---
 
 ## 🌙 Optimized for the Dark Side
