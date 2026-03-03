@@ -62,6 +62,21 @@ Safely rename package with automatic import updates and directory restructuring.
 
 ![Refactor Package](screenshots/Screenshot_20260303_124642.jpg)
 
+### 🔐 Advanced Dex Encryption (AiJiaMi Enterprise)
+
+Protect your APK from reverse engineering and code theft with enterprise-grade Dex encryption and runtime protection.
+
+**Features:**
+• Prevents Dex decompilation  
+• Encrypts classes and strings  
+• Anti-debug & anti-tamper protection  
+• Configurable encryption settings  
+• Dry-run safe integration  
+
+⚠ Note: Enabling this may increase APK size and make debugging harder.
+
+![Dex Encryption](screenshots/Screenshot_20260303_125253.jpg)
+
 ---
 
 ## 🌙 Optimized for the Dark Side
