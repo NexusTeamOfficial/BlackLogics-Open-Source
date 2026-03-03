@@ -120,7 +120,7 @@ This project integrates selected components from the following open-source repos
 
 ### 🔹 Logcat Integration Module
 
-- **Repository:** [YuriyTaras/logcat](https://github.com/YuriyTaras/logcat)  
+- **Repository:** [YurkivTaras/logcat](https://github.com/YurkivTaras/logcat)  
 - **License:** Apache License 2.0  
 
 Portions of this software are derived from the above project.  
