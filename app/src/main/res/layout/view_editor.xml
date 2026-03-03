@@ -1,4 +1,4 @@
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
@@ -64,10 +64,17 @@
 		android:orientation="horizontal">
 		<LinearLayout
 			android:id="@+id/linear8"
-			android:layout_width="115dp"
+			android:layout_width="112dp"
 			android:layout_height="match_parent"
-			android:orientation="vertical"
-			android:background="?attr/colorSurface">
+			android:background="?attr/colorSurface"
+			android:orientation="vertical">
+			<com.nexusteam.blacklogics.custom.NavBar
+				android:id="@+id/customNav"
+				android:layout_width="match_parent"
+				android:layout_height="40dp"
+				android:background="#F5F5F5"
+				app:active_color="#006080"
+				app:inactive_color="#8E8E8E" />
 			<ImageView
 				android:id="@+id/img_add_view"
 				android:layout_width="34dp"
@@ -108,13 +115,12 @@
 					android:id="@+id/tv_view_name"
 					android:layout_height="wrap_content"
 					android:background="?colorPrimaryDark"
-					android:textColor="@color/toolText"
 					android:singleLine="true"
-					android:focusable="false"
 					android:layout_width="0.0dip"
 					android:layout_weight="1.0"
 					android:padding="2.0dip"
-					android:textSize="8.0sp" />
+					android:textSize="8.0sp"
+					android:focusable="false" />
 				<LinearLayout
 					android:id="@+id/linear14"
 					android:layout_width="wrap_content"
@@ -127,26 +133,26 @@
 						android:id="@+id/imageview4"
 						android:src="@drawable/ic_signal_wifi_statusbar_4_bar_white"
 						android:scaleType="fitCenter"
-						android:focusable="false"
 						android:layout_width="16.0dip"
 						android:layout_height="16.0dip"
-						android:padding="1.0dip" />
+						android:padding="1.0dip"
+						android:focusable="false" />
 					<ImageView
 						android:id="@+id/imageview5"
 						android:src="@drawable/ic_signal_cellular_4_bar_white"
 						android:scaleType="fitCenter"
-						android:focusable="false"
 						android:layout_width="16.0dip"
 						android:layout_height="16.0dip"
-						android:padding="1.0dip" />
+						android:padding="1.0dip"
+						android:focusable="false" />
 					<ImageView
 						android:id="@+id/imageview6"
 						android:src="@drawable/ic_battery_full_white"
 						android:scaleType="fitCenter"
-						android:focusable="false"
 						android:layout_width="16.0dip"
 						android:layout_height="16.0dip"
-						android:padding="1.0dip" />
+						android:padding="1.0dip"
+						android:focusable="false" />
 					<TextView
 						android:id="@+id/textview5"
 						android:layout_width="wrap_content"
@@ -154,9 +160,8 @@
 						android:padding="1dp"
 						android:text="10:44"
 						android:textStyle="bold"
-						android:textColor="@color/toolText"
-						android:focusable="false"
-						android:textSize="8.0sp" />
+						android:textSize="8.0sp"
+						android:focusable="false" />
 				</LinearLayout>
 			</LinearLayout>
 			<LinearLayout
@@ -172,13 +177,12 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:background="?colorPrimary"
-					android:text="Toolbar"
+					android:text="@string/app_editor_toolbar_title"
 					android:textStyle="bold"
-					android:textColor="@color/toolText"
 					android:singleLine="true"
-					android:focusable="false"
 					android:padding="4.0dip"
-					android:textSize="10.0sp" />
+					android:textSize="10.0sp"
+					android:focusable="false" />
 			</LinearLayout>
 			<LinearLayout
 				android:id="@+id/editorLayout"
@@ -191,8 +195,19 @@
 				android:id="@+id/linear15"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:background="?attr/colorSurface" />
+				android:background="?attr/colorSurface"
+				android:orientation="horizontal" />
 		</LinearLayout>
 	</LinearLayout>
-</LinearLayout>
+	<LinearLayout
+		android:id="@+id/lixeira"
+		android:layout_marginTop="30dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/icon_delete"
+		android:orientation="vertical"
+		android:layout_width="60dip"
+		android:layout_height="60dip"
+		android:visibility="gone"
+		android:layout_marginStart="25dp"
+		android:layout_alignParentBottom="true" />
+</RelativeLayout>

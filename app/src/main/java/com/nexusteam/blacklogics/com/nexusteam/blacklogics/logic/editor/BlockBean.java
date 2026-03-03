@@ -1,0 +1,165 @@
+package com.besome.blacklogics.logic.editor;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.os.Parcelable.Creator;
+
+import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
+
+public class BlockBean extends BaseBean implements Parcelable {
+    public static final Creator<BlockBean> CREATOR = new Creator<BlockBean>() {
+
+        public BlockBean createFromParcel(Parcel parcel) {
+            return new BlockBean(parcel);
+        }
+
+        public BlockBean[] newArray(int i) {
+            return new BlockBean[i];
+        }
+    };
+    public int color;
+    public String id;
+    public int nextBlock;
+    public String opCode;
+    public ArrayList<String> paramTypes;
+    public ArrayList<String> parameters;
+    public String spec;
+    public int subStack1;
+    public int subStack2;
+    public String type;
+
+    public BlockBean() {
+        this.parameters = new ArrayList();
+        this.paramTypes = new ArrayList();
+        this.subStack1 = -1;
+        this.subStack2 = -1;
+        this.nextBlock = -1;
+    }
+
+    public BlockBean(Parcel parcel) {
+        this.id = parcel.readString();
+        this.spec = parcel.readString();
+        this.type = parcel.readString();
+        this.opCode = parcel.readString();
+        this.color = parcel.readInt();
+        this.parameters = (ArrayList) parcel.readSerializable();
+        this.paramTypes = (ArrayList) parcel.readSerializable();
+        this.subStack1 = parcel.readInt();
+        this.subStack2 = parcel.readInt();
+        this.nextBlock = parcel.readInt();
+    }
+
+    public BlockBean(String str, String str2, String str3, String str4) {
+        this.id = str;
+        this.spec = str2;
+        this.type = str3;
+        this.opCode = str4;
+        this.parameters = new ArrayList();
+        this.paramTypes = new ArrayList();
+        this.subStack1 = -1;
+        this.subStack2 = -1;
+        this.nextBlock = -1;
+    }
+
+    public static Creator<BlockBean> getCreator() {
+        return CREATOR;
+    }
+    
+    // Add these methods to BlockBean class
+
+public JSONObject toJson() throws JSONException {
+    JSONObject json = new JSONObject();
+    json.put("id", id);
+    json.put("spec", spec);
+    json.put("type", type);
+    json.put("opCode", opCode);
+    json.put("color", color);
+    json.put("subStack1", subStack1);
+    json.put("subStack2", subStack2);
+    json.put("nextBlock", nextBlock);
+    
+    JSONArray paramsArray = new JSONArray();
+    if (parameters != null) {
+        for (String param : parameters) {
+            paramsArray.put(param);
+        }
+    }
+    json.put("parameters", paramsArray);
+    
+    JSONArray paramTypesArray = new JSONArray();
+    if (paramTypes != null) {
+        for (String paramType : paramTypes) {
+            paramTypesArray.put(paramType);
+        }
+    }
+    json.put("paramTypes", paramTypesArray);
+    
+    return json;
+}
+
+public static BlockBean fromJson(JSONObject json) throws JSONException {
+    BlockBean bean = new BlockBean();
+    bean.id = json.optString("id", "");
+    bean.spec = json.optString("spec", "");
+    bean.type = json.optString("type", "");
+    bean.opCode = json.optString("opCode", "");
+    bean.color = json.optInt("color", -7711273);
+    bean.subStack1 = json.optInt("subStack1", -1);
+    bean.subStack2 = json.optInt("subStack2", -1);
+    bean.nextBlock = json.optInt("nextBlock", -1);
+    
+    bean.parameters = new ArrayList<>();
+    JSONArray paramsArray = json.optJSONArray("parameters");
+    if (paramsArray != null) {
+        for (int i = 0; i < paramsArray.length(); i++) {
+            bean.parameters.add(paramsArray.optString(i, ""));
+        }
+    }
+    
+    bean.paramTypes = new ArrayList<>();
+    JSONArray paramTypesArray = json.optJSONArray("paramTypes");
+    if (paramTypesArray != null) {
+        for (int i = 0; i < paramTypesArray.length(); i++) {
+            bean.paramTypes.add(paramTypesArray.optString(i, ""));
+        }
+    }
+    
+    return bean;
+}
+
+    public void copy(BlockBean blockBean) {
+        this.id = blockBean.id;
+        this.spec = blockBean.spec;
+        this.type = blockBean.type;
+        this.opCode = blockBean.opCode;
+        this.color = blockBean.color;
+        this.parameters = new ArrayList(blockBean.parameters);
+        this.paramTypes = new ArrayList(blockBean.paramTypes);
+        this.subStack1 = blockBean.subStack1;
+        this.subStack2 = blockBean.subStack2;
+        this.nextBlock = blockBean.nextBlock;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void print() {
+    }
+
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(this.id);
+        parcel.writeString(this.spec);
+        parcel.writeString(this.type);
+        parcel.writeString(this.opCode);
+        parcel.writeInt(this.color);
+        parcel.writeSerializable(this.parameters);
+        parcel.writeSerializable(this.paramTypes);
+        parcel.writeInt(this.subStack1);
+        parcel.writeInt(this.subStack2);
+        parcel.writeInt(this.nextBlock);
+    }
+}

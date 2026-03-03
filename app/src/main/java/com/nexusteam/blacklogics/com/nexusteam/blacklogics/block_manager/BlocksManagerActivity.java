@@ -1,0 +1,415 @@
+package com.besome.blacklogics.block_manager;
+
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.Context;
+import android.graphics.PorterDuff;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.text.TextWatcher;
+import android.text.Editable;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.nexusteam.blacklogics.R;
+import com.nexusteam.blacklogics.BlocksManagerDetailsActivity;
+import com.besome.blacklogics.file.PaletteMaker;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
+import com.nexusteam.internal.os.layouteditor.color.ColorPickerActivity;
+import androidx.constraintlayout.core.motion.utils.TypedValues;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import com.nexusteam.blacklogics.utils.Helper;
+import com.google.android.material.*;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class BlocksManagerActivity extends AppCompatActivity {
+    
+    public interface OnItemClickListener {
+        void onItemClick(int position, HashMap<String, Object> item);
+    }
+    
+    private RecyclerView paletteView;
+    private TextView paletteCounter;
+    private ArrayList<HashMap<String, Object>> paletteList = new ArrayList<>();
+    private PaletteViewAdapter adapter;
+    private FloatingActionButton add_palette;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.blocks_manager);
+        initialize();
+        initializeLogic();
+    }
+    
+    private void initialize() {
+        paletteView = findViewById(R.id.paletteView);
+        paletteCounter = findViewById(R.id.paletteCounter);
+        add_palette = findViewById(R.id.add_palette);
+    }
+    
+    private void initializeLogic() {
+        ImageView back = findViewById(R.id.ig_toolbar_back);
+        TextView title = findViewById(R.id.tx_toolbar_title);
+        ImageView loadFile = findViewById(R.id.ig_toolbar_load_file);
+        
+        Helper.applyRippleToToolbarView(back);
+        back.setOnClickListener(Helper.getBackPressedClickListener(this));
+        title.setText("Block Manager");
+        loadFile.setColorFilter(0xFFFFFFFF, PorterDuff.Mode.MULTIPLY);
+        loadFile.setImageResource(R.drawable.ic_more_vert_black);
+        loadFile.setVisibility(View.GONE);
+        Helper.applyRippleToToolbarView(loadFile);
+        
+
+        paletteView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new PaletteViewAdapter(paletteList);
+        paletteView.setAdapter(adapter);
+        
+        adapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, HashMap<String, Object> item) {
+                Intent intent = new Intent(BlocksManagerActivity.this, BlocksManagerDetailsActivity.class);
+
+                intent.putExtra("paletteIndex", String.valueOf(position + 6));
+                startActivity(intent);
+            }
+        });
+        
+        add_palette.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View _view) {
+                final Dialog dialog = new Dialog(BlocksManagerActivity.this);
+                dialog.setContentView(R.layout.dialog_create_palette);
+                
+                final EditText paletteNameInput = dialog.findViewById(R.id.palette_name_input);
+                final EditText colorHexInput = dialog.findViewById(R.id.color_hex_input);
+                ImageView colorPickerIcon = dialog.findViewById(R.id.color_picker_icon);
+                Button cancelButton = dialog.findViewById(R.id.cancel_button);
+                Button saveButton = dialog.findViewById(R.id.save_button);
+                
+
+                paletteNameInput.setEnabled(true);
+                paletteNameInput.setFocusable(true);
+                paletteNameInput.setFocusableInTouchMode(true);
+                
+                colorHexInput.setEnabled(true);
+                colorHexInput.setFocusable(true);
+                colorHexInput.setFocusableInTouchMode(true);
+                
+
+                colorHexInput.addTextChangedListener(new TextWatcher() {
+                    private boolean isUpdating = false; // Prevent infinite loop
+                    
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+                    
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (isUpdating) return; // prevent recursion
+                        isUpdating = true;
+                        
+                        String input = s.toString();
+                        
+
+                        if (!input.startsWith("#")) {
+                            input = "#" + input;
+                        }
+                        
+
+                        if (input.length() > 7) {
+                            input = input.substring(0, 7);
+                        }
+                        
+
+                        String hexPart = input.substring(1);
+                        hexPart = hexPart.replaceAll("[^0-9A-Fa-f]", ""); // only allow hex digits
+                        
+
+                        input = "#" + hexPart;
+                        
+                        colorHexInput.setText(input);
+                        colorHexInput.setSelection(input.length()); // move cursor to end
+                        
+                        isUpdating = false;
+                    }
+                });
+                
+                
+
+                paletteNameInput.requestFocus();
+                
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                
+                colorPickerIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ColorPicker colorPicker = new ColorPicker(BlocksManagerActivity.this, false); // pipEnabled = false
+                        colorPicker.setOnColorPickedListener(new OnColorPickedListener() {
+                            @Override
+                            public void onColorPicked(String str) {
+                                if (str != null) {
+
+                                    if (str.length() > 7) {
+                                        str = str.substring(0, 7);
+                                    }
+                                    colorHexInput.setText(str.toUpperCase());
+                                }
+                            }
+                            
+                        });
+                        
+
+                        colorPicker.pick();
+                        
+                    }
+                });
+                
+                saveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String paletteName = paletteNameInput.getText().toString();
+                        String colorHex = colorHexInput.getText().toString();
+                        
+
+                        if (colorHex.length() != 4 && colorHex.length() != 7) { // #FFF (4 chars) or #FFFFFF (7 chars)
+                            colorHexInput.setError("Hex code must be 3 or 6 characters long!");
+                            return;
+                        }
+                        
+                        PaletteMaker maker = new PaletteMaker("/storage/emulated/0/.blacklogics/resources/block/My Block/palette.json");
+                        maker.addPalette(paletteName, colorHex);
+                        
+                        dialog.dismiss();
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                
+                dialog.show();
+            }
+        });
+        
+        loadPalettesFromJson();
+    }
+    
+    private void loadPalettesFromJson() {
+        String palettePath = "/storage/emulated/0/.blacklogics/resources/block/My Block/palette.json";
+        String blockPath = "/storage/emulated/0/.blacklogics/resources/block/My Block/block.json";
+        File paletteFile = new File(palettePath);
+        File blockFile = new File(blockPath);
+        
+
+        HashMap<String, Integer> blockCounts = new HashMap<>();
+        if (blockFile.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(blockFile));
+                StringBuilder jsonString = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonString.append(line);
+                }
+                reader.close();
+                
+                JSONArray jsonArray = new JSONArray(jsonString.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject blockObj = jsonArray.getJSONObject(i);
+                    String paletteId = blockObj.getString("palette");
+                    blockCounts.put(paletteId, blockCounts.getOrDefault(paletteId, 0) + 1);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        } else {
+
+        }
+        
+
+        if (paletteFile.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(paletteFile));
+                StringBuilder jsonString = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonString.append(line);
+                }
+                reader.close();
+                
+                JSONArray jsonArray = new JSONArray(jsonString.toString());
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject paletteObj = jsonArray.getJSONObject(i);
+                    
+                    HashMap<String, Object> paletteMap = new HashMap<>();
+                    paletteMap.put("name", paletteObj.getString("name"));
+                    paletteMap.put("color", paletteObj.getString("color"));
+
+                    String paletteId = String.valueOf(i + 6);
+
+                    int count = blockCounts.getOrDefault(paletteId, 0);
+                    paletteMap.put("count", count);
+                    
+                    paletteList.add(paletteMap);
+                }
+                
+
+                paletteCounter.setText(paletteList.size() + " palettes");
+                adapter.notifyDataSetChanged();
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+        } else {
+
+        }
+    }
+    
+    public class PaletteViewAdapter extends RecyclerView.Adapter<PaletteViewAdapter.ViewHolder> {
+        
+        ArrayList<HashMap<String, Object>> data;
+        private OnItemClickListener listener;
+        
+        public PaletteViewAdapter(ArrayList<HashMap<String, Object>> arr) {
+            data = arr;
+        }
+        
+        public void setOnItemClickListener(OnItemClickListener listener) {
+            this.listener = listener;
+        }
+        
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = getLayoutInflater();
+            View view = inflater.inflate(R.layout.block_manager_view, parent, false);
+            return new ViewHolder(view);
+        }
+        
+        @Override
+public void onBindViewHolder(ViewHolder holder, int position) {
+
+    final int pos = position;
+    final HashMap<String, Object> item = data.get(position);
+
+    holder.paletteName.setText(item.get("name").toString());
+    holder.paletteCounter.setText(item.get("count").toString() + " blocks");
+
+    try {
+        int color = android.graphics.Color.parseColor(item.get("color").toString());
+        holder.paletteColor.setBackgroundColor(color);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    holder.itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View _view) {
+            if (listener != null) {
+                listener.onItemClick(pos, item);
+            }
+        }
+    });
+}
+
+        
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+        
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            final LinearLayout linear1, linear3;
+            final TextView paletteName, paletteCounter;
+            View paletteColor;
+            
+            public ViewHolder(View itemView) {
+                super(itemView);
+                linear1 = itemView.findViewById(R.id.linear1);
+                paletteColor = itemView.findViewById(R.id.paletteColor);
+                linear3 = itemView.findViewById(R.id.linear3);
+                paletteName = itemView.findViewById(R.id.paletteName);
+                paletteCounter = itemView.findViewById(R.id.paletteCounter);
+            }
+        }
+    }
+    
+    @Deprecated
+    public void showMessage(String _s) {
+        Toast.makeText(getApplicationContext(), _s, Toast.LENGTH_SHORT).show();
+    }
+    
+    interface OnColorPickedListener {
+        void onColorPicked(String str);
+    }
+    
+    class ColorPicker {
+        private OnColorPickedListener listener;
+        private Context context;
+        private boolean pipEnabled;
+        
+        ColorPicker(Context context, boolean pipEnabled) {
+            this.context = context;
+            this.pipEnabled = pipEnabled;
+        }
+        
+        public void setOnColorPickedListener(OnColorPickedListener onColorPickedListener) {
+            this.listener = onColorPickedListener;
+        }
+        
+        public void pick() {
+            Intent intent = new Intent(context, ColorPickerActivity.class);
+            intent.putExtra("pip", pipEnabled);
+            
+            LocalBroadcastManager.getInstance(context).registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+                    
+                    if (listener != null && intent.hasExtra(TypedValues.Custom.S_COLOR)) {
+                        String picked = intent.getStringExtra(TypedValues.Custom.S_COLOR);
+                        
+                        if (picked != null) {
+
+                            if (picked.length() == 9 && picked.startsWith("#")) {
+                                picked = "#" + picked.substring(3);
+                            }
+                            
+
+                            picked = picked.toUpperCase();
+                            
+                            listener.onColorPicked(picked);
+                        }
+                    }
+                }
+            }, new IntentFilter("data"));
+            
+            context.startActivity(intent);
+        }
+    }
+    
+    
+}

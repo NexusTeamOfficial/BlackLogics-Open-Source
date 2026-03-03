@@ -85,7 +85,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:padding="5dp"
-					android:text="Environment Evaluation"
+					android:text="@string/about_app_title"
 					android:textSize="12sp"
 					android:textColor="@color/textColor" />
 				<TextView
@@ -93,7 +93,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:padding="3dp"
-					android:text="Check your current environment evaluation"
+					android:text="@string/application_environment_desc"
 					android:textSize="12sp" />
 			</LinearLayout>
 		</LinearLayout>
@@ -102,7 +102,14 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
-			android:text="Dark Light "
+			android:text="@string/app_dark_mode_title"
+			android:textSize="12sp" />
+		<Switch
+			android:id="@+id/switch2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="English/Hindi"
 			android:textSize="12sp" />
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/materialbutton1"

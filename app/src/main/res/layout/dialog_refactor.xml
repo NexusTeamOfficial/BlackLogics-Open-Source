@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@android:color/white">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Old Package:"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_old_package"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:hint="com.example.oldpackage"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Package:"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_new_package"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="16dp"
+        android:hint="com.example.newpackage"
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:textSize="14sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E0E0E0"
+        android:layout_marginVertical="10dp" />
+
+    <CheckBox
+        android:id="@+id/cb_dry_run"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dry Run (Preview only)"
+        android:checked="true"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <CheckBox
+        android:id="@+id/cb_update_imports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update import statements"
+        android:checked="true"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <CheckBox
+        android:id="@+id/cb_move_files"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Move files to new directory structure"
+        android:checked="true"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/btn_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="🔍 Preview Changes"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#FF9800"
+        android:textSize="14sp"
+        android:padding="10dp" />
+
+    <ScrollView
+        android:id="@+id/preview_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        android:background="#F5F5F5"
+        android:padding="8dp"
+        android:scrollbars="vertical">
+
+        <TextView
+            android:id="@+id/tv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textColor="#333333"
+            android:lineSpacingExtra="2dp" />
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_execute"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="✅ Execute"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#4CAF50"
+            android:textSize="14sp"
+            android:padding="10dp" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="❌ Cancel"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#F44336"
+            android:textSize="14sp"
+            android:padding="10dp" />
+    </LinearLayout>
+
+</LinearLayout>

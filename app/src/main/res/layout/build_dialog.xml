@@ -9,7 +9,7 @@
 		android:id="@+id/linear4"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="#FFFFFF"
+		android:background="?attr/colorSurface"
 		android:orientation="vertical">
 		<FrameLayout
 			android:id="@+id/quizContainer"
@@ -23,9 +23,9 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="4dp"
+			android:background="?attr/colorSurface"
 			android:gravity="center_vertical"
-			android:orientation="horizontal"
-			android:background="?attr/colorSurface">
+			android:orientation="horizontal">
 			<ImageView
 				android:id="@+id/imageview1"
 				android:layout_width="45dp"
@@ -40,7 +40,6 @@
 				android:padding="8dp"
 				android:text="Apk building..."
 				android:textSize="12sp"
-				android:textColor="@color/textColor"
 				android:translationX="5.0dp"
 				android:focusable="false" />
 		</LinearLayout>

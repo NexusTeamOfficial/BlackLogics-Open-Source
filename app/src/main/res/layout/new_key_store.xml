@@ -32,7 +32,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:paddingBottom="16dp"
-				android:text="Export path: blacklogics/keystore/release.jks"
+				android:text="@string/app_export_path_desc"
 				android:textSize="14sp"
 				android:textColor="#607D8B" />
 			<TextView
@@ -212,7 +212,7 @@
 			android:id="@+id/create"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Create"
+			android:text="@string/common_word_create"
 			android:textSize="12sp"
 			android:layout_marginStart="12dp"
 			style="@style/Widget.MaterialComponents.Button" />

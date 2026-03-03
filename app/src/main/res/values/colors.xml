@@ -107,4 +107,15 @@
     <color name="rippleColor">#33000000</color>
     <color name="colorWidget">#444444</color>
     <color name="color_dark_light">#666666</color>
+    
+    <color name="status_bar_color">#14000000</color>
+
+	<color name="log_error_color">#C20009</color>
+	<color name="selected_log_color">#8A5C9ABB</color>
+
+	<color name="dark">#282b3c</color>
+	<color name="gunmetal">#454f5b</color>
+
+	<color name="default_ripple">#bddbdbdb</color>
+	<color name="nav_bar_divider">#dadada</color>
 </resources>

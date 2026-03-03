@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:id="@+id/log_cat_toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@color/white"
+		android:padding="@dimen/offset_8dp"
+		android:elevation="@dimen/def_elevation"
+		android:orientation="horizontal"
+		tools:targetApi="lollipop">
+
+		<androidx.appcompat.widget.AppCompatCheckBox
+			android:id="@+id/cb_log_cat_time"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:saveEnabled="false"
+			android:text="@string/title_show_time"/>
+
+		<androidx.appcompat.widget.AppCompatCheckBox
+			android:id="@+id/cb_log_cat_tag"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:checked="true"
+			android:saveEnabled="false"
+			android:text="@string/title_show_tag"/>
+
+		<androidx.appcompat.widget.AppCompatCheckBox
+			android:id="@+id/cb_log_cat_wrap_log"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:saveEnabled="false"
+			android:text="@string/title_wrap_log"/>
+	</LinearLayout>
+
+	<HorizontalScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@+id/search_container"
+		android:layout_below="@+id/log_cat_toolbar"
+		android:background="@color/white"
+		android:overScrollMode="never">
+
+		<androidx.recyclerview.widget.RecyclerView
+			android:id="@+id/rv_log_cat"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:overScrollMode="never"
+			app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+			tools:listitem="@layout/item_log" />
+	</HorizontalScrollView>
+
+	<ProgressBar
+		android:id="@+id/pw_log_cat"
+		android:layout_width="@dimen/progress_size"
+		android:layout_height="@dimen/progress_size"
+		android:layout_centerInParent="true"
+		android:layout_gravity="center"
+		android:indeterminate="true"
+		tools:ignore="UnusedAttribute" />
+
+	<ImageView
+		android:id="@+id/fab_log_cat"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_above="@+id/search_container"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentRight="true"
+		android:elevation="@dimen/def_elevation"
+		tools:targetApi="lollipop"
+		android:layout_margin="@dimen/offset_16dp"
+		android:background="@drawable/bg_btn_floating"
+		app:srcCompat="@drawable/ic_arrow_down"
+		android:padding="@dimen/offset_8dp" />
+
+	<LinearLayout
+		android:id="@+id/search_container"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/filter_container_height"
+		android:layout_alignParentBottom="true"
+		android:background="@color/white"
+		android:gravity="center_vertical"
+		tools:targetApi="lollipop"
+		android:elevation="@dimen/filter_elevation"
+		android:orientation="horizontal"
+		android:padding="@dimen/offset_8dp">
+
+		<TextView
+			android:id="@+id/txt_log_cat_trace_level"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			tools:text="Verbose"
+			android:layout_marginEnd="@dimen/offset_8dp"
+			android:gravity="center"
+			android:drawablePadding="@dimen/offset_4dp"
+			android:paddingEnd="@dimen/offset_8dp"
+			android:paddingStart="@dimen/offset_4dp"
+			android:background="@drawable/bg_search"
+			android:drawableStart="@drawable/ic_gray_arrow_down"
+			android:layout_marginRight="@dimen/offset_8dp"
+			android:paddingLeft="@dimen/offset_4dp"
+			android:paddingRight="@dimen/offset_8dp"
+			android:drawableLeft="@drawable/ic_gray_arrow_down" />
+
+		<LinearLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:background="@drawable/bg_search"
+			android:gravity="center_vertical">
+
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_vertical"
+				android:layout_margin="@dimen/offset_12dp"
+				app:srcCompat="@drawable/ic_bar_search_gray"/>
+
+			<EditText
+				android:id="@+id/etxt_log_cat_filter"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				android:background="@null"
+				android:ellipsize="end"
+				android:hint="@string/title_filter"
+				android:imeOptions="flagNoExtractUi"
+				android:maxLines="1"
+				android:saveEnabled="false"
+				android:singleLine="true"
+				android:textColor="@color/gunmetal"
+				android:textColorHint="@color/hint_color"
+				android:textSize="@dimen/text_14sp"
+				tools:ignore="NestedWeights"/>
+
+			<ImageView
+				android:id="@+id/btn_log_cat_clear_filter_field"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="@dimen/offset_4dp"
+				app:srcCompat="@drawable/ic_clear_search_field"/>
+		</LinearLayout>
+
+		<androidx.appcompat.widget.AppCompatCheckBox
+			android:id="@+id/cb_log_cat_regex"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:gravity="center"
+			android:saveEnabled="false"
+			android:text="@string/title_regex"/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/log_cat_share_container"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/filter_container_height"
+		android:layout_alignParentBottom="true"
+		android:background="@color/white"
+		android:translationY="@dimen/filter_container_height"
+		android:elevation="@dimen/filter_elevation"
+		tools:targetApi="lollipop"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:paddingEnd="@dimen/offset_16dp"
+		android:paddingStart="@dimen/offset_16dp">
+
+		<ImageView
+			android:id="@+id/btn_log_cat_share"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="@dimen/offset_8dp"
+			android:background="@drawable/bg_icon_ripple"
+			android:padding="@dimen/offset_12dp"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_share"
+			android:layout_marginRight="@dimen/offset_8dp" />
+
+		<ImageView
+			android:id="@+id/btn_log_cat_copy"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="@dimen/offset_8dp"
+			android:background="@drawable/bg_icon_ripple"
+			android:padding="@dimen/offset_12dp"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_content_copy"
+			android:layout_marginRight="@dimen/offset_8dp" />
+
+		<ImageView
+			android:id="@+id/btn_log_cat_select_all_between"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/bg_icon_ripple"
+			android:padding="@dimen/offset_12dp"
+			android:clickable="false"
+			android:alpha="0"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_format_indent_increase"/>
+
+		<Space
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1"/>
+
+		<ImageView
+			android:id="@+id/btn_log_cat_close_select"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/bg_icon_ripple"
+			android:padding="@dimen/offset_12dp"
+			android:scaleType="centerInside"
+			app:srcCompat="@drawable/ic_close_black"/>
+	</LinearLayout>
+</RelativeLayout>

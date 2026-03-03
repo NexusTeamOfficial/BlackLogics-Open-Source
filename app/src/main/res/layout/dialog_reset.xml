@@ -15,20 +15,20 @@
 		android:orientation="horizontal">
 		<ImageView
 			android:id="@+id/reset_icon"
-			android:focusable="false"
 			android:layout_width="24dp"
 			android:layout_height="24dp"
 			android:src="@drawable/default_image"
-			android:scaleType="center" />
+			android:scaleType="center"
+			android:focusable="false" />
 		<TextView
 			android:id="@+id/textview2"
-			android:focusable="false"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Reset"
+			android:text="@string/common_reset_word"
 			android:textSize="18sp"
 			android:textStyle="bold"
 			android:textColor="@android:color/black"
+			android:focusable="false"
 			android:layout_marginStart="8dp" />
 	</LinearLayout>
 	<RadioGroup
@@ -39,21 +39,21 @@
 		android:orientation="vertical">
 		<RadioButton
 			android:id="@+id/radio_reset_all_data"
-			android:focusable="false"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Reset all settings and data"
+			android:text="@string/app_reset_all_settings_and_data"
 			android:textSize="12sp"
-			android:textColor="@android:color/black" />
+			android:textColor="@android:color/black"
+			android:focusable="false" />
 		<RadioButton
 			android:id="@+id/radio_reset_settings"
-			android:focusable="false"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Reset all settings"
+			android:text="@string/app_reset_all_settings"
 			android:textSize="12sp"
 			android:checked="true"
-			android:textColor="@android:color/black" />
+			android:textColor="@android:color/black"
+			android:focusable="false" />
 	</RadioGroup>
 	<LinearLayout
 		android:id="@+id/linear4"
@@ -67,7 +67,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:background="@android:color/transparent"
-			android:text="Cancel"
+			android:text="@string/cancel"
 			android:textSize="12sp"
 			android:textColor="@android:color/holo_blue_dark" />
 		<Button
@@ -75,7 +75,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:background="@android:color/transparent"
-			android:text="Yes"
+			android:text="@string/common_word_yes"
 			android:textSize="12sp"
 			android:textColor="@android:color/holo_blue_dark"
 			android:layout_marginStart="16dp" />

@@ -1,0 +1,600 @@
+package com.nexusteam.internal.editor;
+
+import b.b.b.*;
+import com.nexusteam.internal.ex;
+import com.nexusteam.internal.fh;
+import com.nexusteam.internal.fi;
+import com.nexusteam.internal.fj;
+import com.nexusteam.internal.kd;
+import com.nexusteam.internal.ke;
+import com.nexusteam.internal.kf;
+import com.nexusteam.internal.ki;
+import com.nexusteam.internal.kp;
+import com.nexusteam.internal.kq;
+import com.nexusteam.internal.ma;
+import com.nexusteam.blacklogics.logic.ProjectLogicRepository;
+import com.nexusteam.internal.BlockStorage;
+import com.nexusteam.internal.ma;
+import com.nexusteam.internal.model.ComponentData;
+import com.nexusteam.internal.beans.ProjectFileBean;
+import android.animation.Animator;
+import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.os.Bundle;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.android.dx.io.Opcodes;
+import com.nexusteam.blacklogics.R;
+import com.nexusteam.internal.beans.ComponentBean;
+import com.nexusteam.internal.beans.EventBean;
+import com.nexusteam.internal.beans.ProjectFileBean;
+import com.nexusteam.internal.editor.component.ComponentAddActivity;
+import com.nexusteam.internal.lib.base.BaseFragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+
+public class ComponentListFragment extends BaseFragment implements View.OnClickListener {
+	
+	/* renamed from: a  reason: collision with root package name */
+	ArrayList<ComponentBean> componentList = new ArrayList<>();
+	TextView emptyMessageTextView;
+	RecyclerView componentRecyclerView;
+	/* access modifiers changed from: private */
+	public ProjectFileBean projectFile;
+	private ComponentAdapter componentAdapter;
+	private boolean isDataLoaded = false;
+	private final String componentTag = "component";
+	private final int deleteMenuItemId = 4;
+	/* access modifiers changed from: private */
+	public FloatingActionButton fabAddComponent;
+	/* access modifiers changed from: private */
+	public String screenId;
+	
+	public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
+		ViewGroup viewGroup2 = (ViewGroup) layoutInflater.inflate(R.layout.fr_component_list, viewGroup, false);
+		initializeViews(viewGroup2);
+		setHasOptionsMenu(true);
+		if (bundle != null) {
+			this.screenId = bundle.getString("sc_id");
+		} else {
+			this.screenId = getActivity().getIntent().getStringExtra("sc_id");
+		}
+		return viewGroup2;
+	}
+	
+	private void initializeViews(ViewGroup viewGroup) {
+		this.emptyMessageTextView = (TextView) viewGroup.findViewById(R.id.empty_message);
+		this.componentRecyclerView = (RecyclerView) viewGroup.findViewById(R.id.component_list);
+		this.componentRecyclerView.setHasFixedSize(true);
+		this.emptyMessageTextView.setVisibility(8);
+		this.emptyMessageTextView.setText(kq.a().a(getContext(), (int) R.string.component_message_no_components));
+		this.componentRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), 1, false));
+		this.componentAdapter = new ComponentAdapter(this.componentRecyclerView);
+		this.componentRecyclerView.setAdapter(this.componentAdapter);
+		this.fabAddComponent = (FloatingActionButton) viewGroup.findViewById(R.id.fab);
+		this.fabAddComponent.setOnClickListener(this);
+		initializeBean();
+        loadComponenetsIntoMemory();
+	}
+	
+	public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+		super.onCreateOptionsMenu(menu, menuInflater);
+	}
+	
+	public void refreshComponentList() {
+		if (this.projectFile != null && this.componentAdapter != null) {
+			this.componentList = ma.a(this.screenId).k(this.projectFile.getJavaName());
+			this.componentAdapter.notifyDataSetChanged();
+		}
+	}
+	
+	public void resetComponentValues() {
+		if (this.projectFile != null) {
+			Iterator<ComponentBean> it = ma.a(this.screenId).k(this.projectFile.getJavaName()).iterator();
+			while (it.hasNext()) {
+				it.next().initValue();
+			}
+			this.componentAdapter.notifyDataSetChanged();
+		}
+	}
+	
+	public void onSaveInstanceState(Bundle bundle) {
+		bundle.putString("sc_id", this.screenId);
+		super.onSaveInstanceState(bundle);
+	}
+	
+	public void setProjectFile(ProjectFileBean projectFileBean) {
+		this.projectFile = projectFileBean;
+	}
+	
+	public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+		super.onCreateContextMenu(contextMenu, view, contextMenuInfo);
+		if (view.getTag().equals("component")) {
+			contextMenu.setHeaderTitle(kq.a().a(getContext(), (int) R.string.component_context_menu_title));
+			contextMenu.add(0, 4, 0, kq.a().a(getContext(), (int) R.string.component_context_menu_title_delete_component));
+		}
+	}
+	
+	public void onClick(View view) {
+		if (!ki.a() && view.getId() == R.id.fab) {
+			Intent intent = new Intent(getContext(), ComponentAddActivity.class);
+			intent.putExtra("sc_id", this.screenId);
+			intent.putExtra("project_file", this.projectFile);
+			intent.putExtra("qm_session", getSession());
+			startActivityForResult(intent, Opcodes.SHL_INT_LIT8);
+		}
+	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent);
+		if (requestCode == 224 && resultCode == -1) {
+			refreshComponentList();
+		}
+	}
+	
+	public boolean onContextItemSelected(MenuItem menuItem) {
+		if (!getUserVisibleHint()) {
+			return false;
+		}
+		if (menuItem.getItemId() != 4) {
+			return true;
+		}
+		showDeleteConfirmationDialog(this.componentAdapter.currentSelectedPosition);
+		return true;
+	}
+	
+	private void showDeleteConfirmationDialog(final int position) {
+		final kd dialog = new kd(this.m);
+		dialog.a(kq.a().a(getContext(), (int) R.string.component_context_menu_title_delete_component));
+		dialog.a((int) R.drawable.delete_96);
+		dialog.b(kq.a().a(getContext(), (int) R.string.event_dialog_confirm_delete_component));
+		dialog.a(kq.a().a(getContext(), (int) R.string.common_word_delete), new View.OnClickListener() {
+			public void onClick(View view) {
+				ComponentBean componentToDelete = ma.a(ComponentListFragment.this.screenId).d(ComponentListFragment.this.projectFile.getJavaName(), position);
+				ma.a(ComponentListFragment.this.screenId).b(ComponentListFragment.this.projectFile.getJavaName(), componentToDelete);
+				ComponentListFragment.this.sendComponentAnalytics("Remove", componentToDelete.type, 0);
+				ComponentListFragment.this.refreshComponentList();
+				ke.a(ComponentListFragment.this.getContext(), (CharSequence) kq.a().a(ComponentListFragment.this.getContext(), (int) R.string.common_message_complete_delete), 0).show();
+				dialog.dismiss();
+			}
+		});
+		dialog.b(kq.a().a(getContext(), (int) R.string.common_word_cancel), new View.OnClickListener() {
+			public void onClick(View view) {
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
+	
+	/* access modifiers changed from: private */
+	public void sendComponentAnalytics(String action, int componentType, long value) {
+		String componentLabel = "INTENT";
+		if (componentType == 1) {
+			componentLabel = "INTENT";
+		} else if (componentType == 2) {
+			componentLabel = "FILE";
+		} else if (componentType == 3) {
+			componentLabel = "CALENDAR";
+		} else if (componentType == 4) {
+			componentLabel = "VIBRATOR";
+		} else if (componentType == 5) {
+			componentLabel = "TIMER";
+		} else if (componentType == 6) {
+			componentLabel = "FIREBASE";
+		} else if (componentType == 12) {
+			componentLabel = "FIREBASEAUTH";
+		} else if (componentType == 7) {
+			componentLabel = "DIALOG";
+		} else if (componentType == 8) {
+			componentLabel = "MEDIAPLAYER";
+		} else if (componentType == 9) {
+			componentLabel = "SOUNDPOOL";
+		} else if (componentType == 10) {
+			componentLabel = "OBJECTANIMATOR";
+		} else if (componentType == 11) {
+			componentLabel = "GYROSCOPE";
+		} else if (componentType == 14) {
+			componentLabel = "FIREBASESTORAGE";
+		} else if (componentType == 15) {
+			componentLabel = "CAMERA";
+		} else if (componentType == 16) {
+			componentLabel = "FILEPICKER";
+		} else if (componentType == 17) {
+			componentLabel = "REQUESTNETWORK";
+		} else if (componentType == 18) {
+			componentLabel = "TEXTTOSPEECH";
+		} else if (componentType == 19) {
+			componentLabel = "SPEECHTOTEXT";
+		} else if (componentType == 20) {
+			componentLabel = "BLUETOOTHCONNECT";
+		} else if (componentType == 21) {
+			componentLabel = "LOCATIONMANAGER";
+		}
+		sendAnalytics("Component", action, componentLabel, value);
+	}
+	
+	private void sendAnalytics(String category, String action, String label, long value) {
+		/* HitBuilders.EventBuilder eventBuilder = new HitBuilders.EventBuilder();
+eventBuilder.setCategory(category);
+eventBuilder.setAction(action);
+eventBuilder.setLabel(label);
+eventBuilder.setValue(value);
+this.o.send(eventBuilder.build());*/		
+	}
+	
+	/* access modifiers changed from: private */
+	public void openLogicEditor(String componentId, String eventName, String eventText) {
+		Intent intent = new Intent(getActivity(), LogicEditorActivity.class);
+		intent.setFlags(536870912);
+		intent.putExtra("sc_id", this.screenId);
+		intent.putExtra("id", componentId);
+		intent.putExtra("event", eventName);
+		intent.putExtra("project_file", this.projectFile);
+		intent.putExtra("event_text", eventText);
+		startActivity(intent);
+	}
+	
+	class ComponentAdapter extends RecyclerView.Adapter<ComponentAdapter.ComponentViewHolder> {
+		
+		/* renamed from: a  reason: collision with root package name */
+		int currentSelectedPosition = -1;
+		
+		public long getItemId(int i) {
+			return (long) i;
+		}
+		
+		public int getItemViewType(int i) {
+			return i;
+		}
+		
+		public ComponentAdapter(RecyclerView recyclerView) {
+			if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+				recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+					public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+						super.onScrolled(recyclerView, dx, dy);
+						if (dy > 2) {
+							if (ComponentListFragment.this.fabAddComponent.isEnabled()) {
+								ComponentListFragment.this.fabAddComponent.hide();
+							}
+						} else if (dy < -2 && ComponentListFragment.this.fabAddComponent.isEnabled()) {
+							ComponentListFragment.this.fabAddComponent.show();
+						}
+					}
+				});
+			}
+		}
+		
+		/* renamed from: a */
+		public ComponentViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+			return new ComponentViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fr_logic_list_item_component, viewGroup, false));
+		}
+		
+		/* renamed from: a */
+		public void onBindViewHolder(final ComponentViewHolder holder,final int position) {
+			final ComponentBean component = ComponentListFragment.this.componentList.get(position);
+			holder.componentTypeTextView.setText(ComponentBean.getComponentName(ComponentListFragment.this.getContext(), component.type));
+			holder.componentIconImageView.setImageResource(ComponentBean.getIconResource(component.type));
+			
+			if (component.type == 2) {
+				TextView textView = holder.componentIdTextView;
+				textView.setText(component.componentId + " : " + component.param1);
+			} else if (component.type == 6 || component.type == 14 || component.type == 16) {
+				String param = component.param1;
+				if (param.length() <= 0) {
+					param = "/";
+				}
+				TextView textView2 = holder.componentIdTextView;
+				textView2.setText(component.componentId + " : " + param);
+			} else {
+				holder.componentIdTextView.setText(component.componentId);
+			}
+			
+			ArrayList<EventBean> existingEvents = ma.a(ComponentListFragment.this.screenId).a(ComponentListFragment.this.projectFile.getJavaName(), component);
+			ArrayList<String> availableEvents = new ArrayList<>();
+			availableEvents.addAll(Arrays.asList(ex.b(component.getClassInfo())));
+			
+			holder.eventsPreviewLayout.removeAllViews();
+			holder.componentEventsLayout.removeAllViews();
+			holder.eventsPreviewLayout.setAlpha(1.0f);
+			holder.eventsPreviewLayout.setTranslationX(0.0f);
+			
+			if (component.isCollapsed) {
+				holder.componentOptionLayout.setVisibility(8);
+				holder.expandCollapseIcon.setRotation(0.0f);
+			} else {
+				holder.componentOptionLayout.setVisibility(0);
+				holder.expandCollapseIcon.setRotation(-180.0f);
+				if (component.isConfirmation) {
+					holder.confirmationView.a(); // show
+				} else {
+					holder.confirmationView.b(); // hide
+				}
+			}
+			
+			holder.componentOptionLayout.getLayoutParams().height = -2;
+			
+			Iterator<EventBean> it = existingEvents.iterator();
+			while (it.hasNext()) {
+				final EventBean event = it.next();
+				if (availableEvents.contains(event.eventName)) {
+					LinearLayout eventPreview = (LinearLayout) kp.a(ComponentListFragment.this.getContext(), (int) R.layout.fr_logic_list_item_event_preview);
+					LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-2, -2);
+					layoutParams.setMargins(0, 0, (int) kp.a(ComponentListFragment.this.getContext(), 4.0f), 0);
+					eventPreview.setLayoutParams(layoutParams);
+					((ImageView) eventPreview.findViewById(R.id.icon)).setImageResource(ex.b(event.eventName));
+					((LinearLayout) eventPreview.findViewById(R.id.icon_bg)).setBackgroundResource(R.drawable.circle_bg_white_outline_secondary);
+					
+					fi eventItem = new fi(ComponentListFragment.this.getContext());
+					eventItem.e.setText(event.eventName);
+					eventItem.c.setImageResource(ex.b(event.eventName));
+					eventItem.setClickListener(new View.OnClickListener() {
+						public void onClick(View view) {
+							if (!ki.a()) {
+								ComponentListFragment.this.openLogicEditor(event.targetId, event.eventName, event.eventName);
+							}
+						}
+					});
+					
+					holder.eventsPreviewLayout.addView(eventPreview);
+					holder.componentEventsLayout.addView(eventItem);
+					availableEvents.remove(event.eventName);
+				}
+			}
+			
+			Iterator it2 = availableEvents.iterator();
+			while (it2.hasNext()) {
+				final String eventName = (String) it2.next();
+				LinearLayout eventPreview = (LinearLayout) kp.a(ComponentListFragment.this.getContext(), (int) R.layout.fr_logic_list_item_event_preview);
+				LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-2, -2);
+				layoutParams2.setMargins(0, 0, (int) kp.a(ComponentListFragment.this.getContext(), 4.0f), 0);
+				eventPreview.setLayoutParams(layoutParams2);
+				ImageView iconView = (ImageView) eventPreview.findViewById(R.id.icon);
+				iconView.setImageResource(ex.b(eventName));
+				
+				ColorMatrix colorMatrix = new ColorMatrix();
+				colorMatrix.setSaturation(0.0f);
+				iconView.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+				
+				holder.eventsPreviewLayout.addView(eventPreview);
+				eventPreview.setScaleX(0.8f);
+				eventPreview.setScaleY(0.8f);
+				
+				final fi eventItem = new fi(ComponentListFragment.this.getContext());
+				holder.confirmationView.a(); // show
+				eventItem.e.setText(eventName);
+				eventItem.c.setImageResource(ex.b(eventName));
+				eventItem.setClickListener(new View.OnClickListener() {
+					public void onClick(View view) {
+						if (!ki.a()) {
+							EventBean newEvent = new EventBean(2, component.type, component.componentId, eventName);
+							ma.a(ComponentListFragment.this.screenId).a(ComponentListFragment.this.projectFile.getJavaName(), newEvent);
+							ke.a(ComponentListFragment.this.getContext(), (CharSequence) kq.a().a(ComponentListFragment.this.getContext(), (int) R.string.event_message_new_event), 0).show();
+							holder.confirmationView.b(); // hide
+							ComponentAdapter.this.notifyItemChanged(ComponentAdapter.this.currentSelectedPosition);
+							ComponentListFragment.this.sendComponentAnalytics(newEvent.targetId, newEvent.eventName, newEvent.eventName);
+						}
+					}
+				});
+				
+				holder.componentEventsLayout.addView(eventItem);
+			}
+		}
+		
+		public int getItemCount() {
+			int size = ComponentListFragment.this.componentList.size();
+			if (size == 0) {
+				ComponentListFragment.this.emptyMessageTextView.setVisibility(0);
+			} else {
+				ComponentListFragment.this.emptyMessageTextView.setVisibility(8);
+			}
+			return size;
+		}
+		
+		class ComponentViewHolder extends RecyclerView.ViewHolder {
+			
+			/* renamed from: a  reason: collision with root package name */
+			public ImageView componentIconImageView;
+			public TextView componentTypeTextView;
+			public TextView componentIdTextView;
+			public ImageView expandCollapseIcon;
+			public fh confirmationView;
+			public LinearLayout eventsPreviewLayout;
+			public LinearLayout componentOptionContainer;
+			public LinearLayout componentOptionLayout;
+			public LinearLayout componentEventsLayout;
+			
+			public ComponentViewHolder(View itemView) {
+				super(itemView);
+				this.componentIconImageView = (ImageView) itemView.findViewById(R.id.img_icon);
+				this.componentTypeTextView = (TextView) itemView.findViewById(R.id.tv_component_type);
+				this.componentIdTextView = (TextView) itemView.findViewById(R.id.tv_component_id);
+				this.expandCollapseIcon = (ImageView) itemView.findViewById(R.id.img_menu);
+				this.eventsPreviewLayout = (LinearLayout) itemView.findViewById(R.id.events_preview);
+				this.componentOptionLayout = (LinearLayout) itemView.findViewById(R.id.component_option_layout);
+				this.componentOptionContainer = (LinearLayout) itemView.findViewById(R.id.component_option);
+				this.componentEventsLayout = (LinearLayout) itemView.findViewById(R.id.component_events);
+				
+				this.confirmationView = new fh(ComponentListFragment.this.getContext());
+				this.confirmationView.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+				this.confirmationView.m.d.setText(kq.a().a(ComponentListFragment.this.getContext(), (int) R.string.component_context_menu_title_delete_component));
+				this.componentOptionContainer.addView(this.confirmationView);
+				
+				this.confirmationView.setButtonOnClickListener(new View.OnClickListener() {
+					public void onClick(View view) {
+						currentSelectedPosition = ComponentViewHolder.this.getLayoutPosition();
+						ComponentBean component = ma.a(ComponentListFragment.this.screenId).d(ComponentListFragment.this.projectFile.getJavaName(), currentSelectedPosition);
+						
+						if (view instanceof fj) {
+							component.isConfirmation = true;
+							notifyItemChanged(currentSelectedPosition);
+							return;
+						}
+						
+						// Assume 'componentType' is an int variable representing the type
+						int componentType = component.type;
+						
+						String componentTypeName = ComponentBean.getComponentTypeName(componentType);
+						int id = view.getId();
+						if (id == R.id.confirm_no) {
+							component.isConfirmation = false;
+							notifyItemChanged(currentSelectedPosition);
+						} else if (id == R.id.confirm_yes) {
+							ma.a(ComponentListFragment.this.screenId).b(ComponentListFragment.this.projectFile.getJavaName(), component);
+							ProjectLogicRepository.removeComponentLogic(ComponentListFragment.this.projectFile.getJavaName(), componentTypeName, component.componentId);
+							component.isConfirmation = false;
+							notifyItemRemoved(currentSelectedPosition);
+							notifyItemRangeChanged(currentSelectedPosition, getItemCount());
+							ComponentListFragment.this.fabAddComponent.show();
+						}
+					}
+				});
+				
+				itemView.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View view) {
+						currentSelectedPosition = ComponentViewHolder.this.getLayoutPosition();
+						ComponentBean component = ma.a(ComponentListFragment.this.screenId).d(ComponentListFragment.this.projectFile.getJavaName(), ComponentViewHolder.this.getLayoutPosition());
+						
+						if (component.isCollapsed) {
+							component.isCollapsed = false;
+							ComponentViewHolder.this.expandComponent();
+						} else {
+							component.isCollapsed = true;
+							ComponentViewHolder.this.collapseComponent();
+						}
+					}
+				});
+				
+				this.expandCollapseIcon.setOnClickListener(new View.OnClickListener() {
+					public void onClick(View view) {
+						currentSelectedPosition = ComponentViewHolder.this.getLayoutPosition();
+						ComponentBean component = ComponentListFragment.this.componentList.get(currentSelectedPosition);
+						
+						if (component.isCollapsed) {
+							component.isCollapsed = false;
+							ComponentViewHolder.this.expandComponent();
+						} else {
+							component.isCollapsed = true;
+							ComponentViewHolder.this.collapseComponent();
+						}
+					}
+				});
+				
+				itemView.setOnLongClickListener(new View.OnLongClickListener() {
+					public boolean onLongClick(View view) {
+						currentSelectedPosition = ComponentViewHolder.this.getLayoutPosition();
+						ComponentBean component = ComponentListFragment.this.componentList.get(currentSelectedPosition);
+						
+						if (component.isCollapsed) {
+							component.isCollapsed = false;
+							ComponentViewHolder.this.expandComponent();
+						} else {
+							component.isCollapsed = true;
+							ComponentViewHolder.this.collapseComponent();
+						}
+						return true;
+					}
+				});
+			}
+			
+			public void expandComponent() {
+				this.componentOptionLayout.setVisibility(0);
+				kf.a((View) this.expandCollapseIcon, -180.0f, (Animator.AnimatorListener) null);
+				kf.a((ViewGroup) this.componentOptionLayout, 200, (Animator.AnimatorListener) null);
+				
+				this.eventsPreviewLayout.animate().translationX((float) this.eventsPreviewLayout.getWidth()).alpha(0.0f).setDuration(150).start();
+				
+				this.componentEventsLayout.setTranslationX((float) (-this.componentEventsLayout.getWidth()));
+				this.componentEventsLayout.setAlpha(0.0f);
+				this.componentEventsLayout.animate().translationX(0.0f).setStartDelay(200).setDuration(120).alpha(1.0f).start();
+			}
+			
+			public void collapseComponent() {
+				kf.a((View) this.expandCollapseIcon, 0.0f, (Animator.AnimatorListener) null);
+				kf.b(this.componentOptionLayout, 200, new Animator.AnimatorListener() {
+					public void onAnimationCancel(Animator animator) {
+					}
+					
+					public void onAnimationRepeat(Animator animator) {
+					}
+					
+					public void onAnimationStart(Animator animator) {
+					}
+					
+					public void onAnimationEnd(Animator animator) {
+						ComponentViewHolder.this.componentOptionLayout.setVisibility(8);
+					}
+				});
+				
+				this.eventsPreviewLayout.animate().translationX(0.0f).alpha(1.0f).setStartDelay(120).setDuration(150).start();
+				
+				this.componentEventsLayout.animate().translationX((float) (-this.componentEventsLayout.getWidth())).setDuration(150).alpha(0.0f).start();
+			}
+		}
+	}
+	
+	private void initializeBean() {
+		ProjectFileBean bean = com.nexusteam.blacklogics.bean.AppState.getCurrentFile();
+		
+		if (bean != null) {
+			setProjectFile(bean);
+		}
+	}    
+	
+	private Qm getSession() {
+		if (getActivity() instanceof com.besome.blacklogics.lib.base.BaseActivity) {
+			return ((com.besome.blacklogics.lib.base.BaseActivity) getActivity()).activitySession;
+		}
+		return null;
+	}
+	
+	/* access modifiers changed from: private */
+	public void sendComponentAnalytics(String targetId, String eventName, String eventText) {
+		
+	}
+    private void loadComponenetsIntoMemory() {
+
+    Object[] allData = BlockStorage.readAll();
+
+    HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) allData[2];
+
+    if (projectFile == null) return;
+
+    
+    String activityName = com.besome.blacklogics.lib.base.BaseActivity.currentActivityName;
+
+    ArrayList<ComponentData> list = components.get(activityName);
+    if (list == null) return;
+
+    for (int i = 0; i < list.size(); i++) {
+        ComponentData data = list.get(i);
+
+        ma.a(this.screenId).a(
+            activityName,
+            data.type,
+            data.mainData,
+            data.extraData
+        );
+    }
+}
+}

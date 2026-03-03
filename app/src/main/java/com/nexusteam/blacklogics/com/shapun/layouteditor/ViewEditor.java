@@ -1,0 +1,3764 @@
+/*
+* MIT License (Modified) – Nexus Edition
+*
+* Copyright (c) 2025 NexusTeam & SmartIndiaGaming
+*
+* This file defines the `ViewEditor` class, originally inspired by a layout editor activity.
+* It has been ported, refactored, and fully restructured into a custom `LinearLayout`-based
+* component for advanced view editing functionality inside Android apps.
+*
+* **Important Notice:**
+* - This is NOT the original class by Shapun 963. The class did not originally exist in this form.
+* - Only the package name (`com.shapun.layouteditor`) is used for compatibility.
+* - All core logic, structure, and UI behavior are custom-built by NexusTeam & SmartIndiaGaming.
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, subject to the following conditions:
+*
+* - The above copyright notice and this permission notice shall be
+*   included in all copies or substantial portions of the Software.
+* - Proper attribution to NexusTeam & SmartIndiaGaming must be retained.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+*
+* Concept, Engineering & Development by: NexusTeam & SmartIndiaGaming (2025)
+*/
+
+package com.shapun.layouteditor;
+
+
+import b.b.b.pq;
+import android.*;
+import android.app.*;
+import android.os.*;
+import android.content.*;
+import android.content.res.*;
+import android.graphics.*;
+import android.graphics.drawable.*;
+import android.net.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.content.ClipboardManager;
+import android.view.animation.*;
+import android.webkit.*;
+import android.widget.*;
+import android.animation.*;
+
+
+import androidx.annotation.*;
+import androidx.appcompat.widget.*;
+import androidx.constraintlayout.widget.*;
+import androidx.recyclerview.widget.*;
+import androidx.localbroadcastmanager.content.*;
+
+
+import com.google.android.material.*;
+import com.google.android.material.appbar.*;
+import com.google.android.material.bottomsheet.*;
+import com.google.android.material.dialog.*;
+import com.google.android.material.textfield.*;
+
+
+import com.google.android.gms.ads.*;
+
+
+import com.google.gson.*;
+import com.google.gson.reflect.*;
+
+
+import java.io.*;
+import java.lang.reflect.*;
+import java.nio.charset.*;
+import java.security.*;
+import java.util.*;
+import java.util.regex.*;
+
+
+import javax.crypto.*;
+import javax.crypto.spec.*;
+
+
+import org.xmlpull.v1.*;
+
+
+import com.besome.blacklogics.*;
+import com.besome.blacklogics.beans.*;
+import com.nexusteam.blacklogics.*;
+import com.nexusteam.blacklogics.editor.layout.storage.*;
+import com.nexusteam.blacklogics.editor.layout.model.LayoutData;
+import com.besome.blacklogics.logic.editor.LogicEditorActivity;
+import com.besome.blacklogics.project.*;
+import com.nexusteam.internal.fe;
+import com.nexusteam.blacklogics.R;
+import com.nexusteam.blacklogics.adapter.*;
+import com.nexusteam.blacklogics.constants.*;
+import com.nexusteam.blacklogics.ui.*;
+import com.nexusteam.blacklogics.editor.*;
+import com.nexusteam.blacklogics.interfaces.*;
+import com.nexusteam.blacklogics.custom.*;
+import com.nexusteam.internal.os.layouteditor.*;
+import com.nexusteam.ui.FloatAttributeMaterialDialog.OnFloatSelected;
+import com.nexusteam.ui.TextSizePickerDialog;
+import com.nexusteam.ui.TextSizePickerDialog.OnTextSizeSelected;
+import com.nexusteam.internal.os.layouteditor.color.ColorPickerActivity;
+import com.nexusteam.internal.os.layouteditor.util.*;
+import com.nexusteam.ui.*;
+import com.shapun.layouteditor.*;
+
+import com.shapun.layouteditor.widgets.*;
+import com.shapun.layouteditor.managers.*;
+import com.shapun.layouteditor.utils.*;
+
+
+public class ViewEditor extends EditorLayout implements WidgetOnClick, WidgetOnAttribute {
+    
+    public static interface OnWidgetAdd {
+        void onWidgetAdded(View widget, ViewGroup parent);
+    }
+    
+    private ArrayList<String> typeList = new ArrayList<>();
+    private ArrayList<HashMap<String, Object>> viewsList = new ArrayList<>();
+    
+    private HashMap<String, Object> widget_add_map = new HashMap<>();
+    
+    private ArrayList<HashMap<String, Object>> list_widget_map = new ArrayList<>();
+
+    private LinearLayout lin_toolbar;
+    private LinearLayout linear7;
+    private ImageView img_views;
+    private LinearLayout linear9;
+    private ImageView img_import;
+    private ImageView img_copy;
+    private ImageView img_add_image;
+    private LinearLayout linear8;
+    public  LinearLayout editorLayout;
+    private ImageView img_add_view;
+    private RecyclerView listview_widgets;
+    private com.nexusteam.blacklogics.custom.NavBar customNav;
+    
+    public static TextView tv_view_name;
+    public static LinearLayout phone_action_bar;
+    
+    private static final char[] ENC_PASSWORD =
+    "blacklogic_layout_secure".toCharArray();
+    
+    private String cachedLayoutJson = null;
+    private long cacheLastModified = -1;
+    
+    private ViewGroup currentViewGroup;
+    private LinearLayoutCompat attributesContainer;
+    private ObjectAnimator anim = new ObjectAnimator();
+    
+    public Attribute attr;
+    public AttributeSet attrSet;
+    
+    private ViewEditorDrag viewEditorDrag;
+    
+    public HashMap<View, AttributeSet> oldAttributesValueMap = new HashMap<>();
+    
+    public String id = "";
+    public static String SAVE_PATH = "";
+    public static String SC_ID = "601";
+    public int index;
+    public Vibrator vib;
+    private View placeHolder;
+    private DragListener dragListener;// ViewEditor.java में initialize() method में:
+    
+    private ImageView deleteImg;
+    private HashMap<String, ArrayList<HashMap<String, Object>>> attributesMap = new HashMap<>();
+    private HashMap<String, ArrayList<HashMap<String, Object>>> parentAttributesMap = new HashMap<>();
+    public HashMap<View, AttributeSet> attributesValueMap = new HashMap<>();
+    public static IdManager idManager = new IdManager();
+    public IdManager oldIdManager = new IdManager();
+    public OnWidgetAdd onWidgetAddListener;
+    
+    private Stack<EditorAction> undoStack = new Stack<>();
+    private Stack<EditorAction> redoStack = new Stack<>();
+    
+    private Stack<String> undoXmlStack = new Stack<>(); 
+    private Stack<String> redoXmlStack = new Stack<>(); 
+    public boolean isUndoRedoInProgress = false;
+    
+    public Intent intent = new Intent();
+    
+    private CodeBean codeBean;
+    private com.nexusteam.blacklogics.custom.ViewItems viewItems;
+    
+    private ViewBeanManager beanManager;
+    
+    private DesignActivity designActivity;
+    
+    private final HashMap<View, Drawable> originalBackgrounds = new HashMap<>();
+    private View selectedView = null;
+    
+    private static final int ACTION_ADD_VIEW = 1;
+    private static final int ACTION_REMOVE_VIEW = 2;
+    private static final int ACTION_UPDATE_ATTR = 3;
+    
+    private HashMap<String, Stack<EditorAction>> undoStacks = new HashMap<>();
+    private HashMap<String, Stack<EditorAction>> redoStacks = new HashMap<>();
+    
+    public ViewEditor(Context context) {
+        super(context);
+        initialize(context);
+    }
+    
+    public ViewEditor(Context context, android.util.AttributeSet attrs) {
+        super(context, attrs);
+        initialize(context);
+    }
+    
+    public ViewEditor(Context context, android.util.AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initialize(context);
+    }
+    
+    public void setOnWidgetAddListener(OnWidgetAdd listener) {
+        this.onWidgetAddListener = listener;
+    }
+    
+    public void setScId(String SC_ID) {
+        this.SC_ID = SC_ID;
+    }
+    public void setDesignActivity(DesignActivity designActivity) {
+        this.designActivity = designActivity;
+
+        if (beanManager != null) {
+            beanManager.initialize(getContext(), SC_ID, getCurrentActivityName());
+            beanManager.cleanupOrphanedBeans();
+        }
+    }
+    private void initialize(Context context) {
+        setOrientation(VERTICAL);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View view = inflater.inflate(R.layout.view_editor, this, true);
+        
+
+        lin_toolbar = view.findViewById(R.id.lin_toolbar);
+        linear7 = view.findViewById(R.id.linear7);
+        img_views = view.findViewById(R.id.img_views);
+        linear9 = view.findViewById(R.id.linear9);
+        img_import = view.findViewById(R.id.img_import);
+        img_copy = view.findViewById(R.id.img_copy);
+        img_add_image = view.findViewById(R.id.img_add_image);
+        linear8 = view.findViewById(R.id.linear8);
+        editorLayout = view.findViewById(R.id.editorLayout);
+        img_add_view = view.findViewById(R.id.img_add_view);
+        listview_widgets = view.findViewById(R.id.listview_widgets);
+        tv_view_name = view.findViewById(R.id.tv_view_name);
+        phone_action_bar = view.findViewById(R.id.phone_action_bar);
+        customNav = view.findViewById(R.id.customNav);
+        vib = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        
+        setupListeners();
+        initializeLogic(context);
+        beanManager = ViewBeanManager.getInstance();
+        codeBean = new CodeBean();
+        /*    
+beanManager = ViewBeanManager.getInstance();
+beanManager.initialize(context, SC_ID, getCurrentActivityName());
+
+
+beanManager.cleanupOrphanedBeans();*/        
+    }    
+    
+    public void setPath(String SAVE_PATH) {
+        this.SAVE_PATH = SAVE_PATH;
+    }
+    
+    public void setCurrentViewGroup(ViewGroup viewGroup) {
+        this.currentViewGroup = viewGroup;
+    }
+    
+    public void a(LinearLayoutCompat viewGroup) {
+        this.attributesContainer = viewGroup;
+    }
+    
+    @Override
+    public void onWidgetClick(View view) {
+        showAttributesDialog(view);
+    }
+    @Override
+    public void onWidgetAttributes(View view, Attribute attr) {
+        applyAttribute(view, attr);
+    }
+    
+    
+    private void setupListeners() {
+        img_views.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder;
+                builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Select view");
+                
+                ArrayList<String> idsList = idManager.getIds();
+                final String[] ids = new String[idsList.size()];
+                idsList.toArray(ids);
+                
+                builder.setItems(
+                ids,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        idManager.getView(ids[which]);
+                    }
+                }
+                );
+                
+                builder.create().show();
+                
+            }
+        });
+        img_add_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View _view) {
+                showMaterialWidgetDialog(getContext(), viewsList);
+            }
+        });
+        editorLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View _view) {
+                hideProperties();
+                unselectSelectedWidget();
+            }
+        });
+        
+    }
+    
+    private void initializeLogic(Context context) {
+        placeHolder = new View(context);
+        placeHolder.setLayoutParams(new ViewGroup.LayoutParams(
+        (int) SketchwareUtil.getDip(context, 70),
+        (int) SketchwareUtil.getDip(context, 40)));
+        placeHolder.setMinimumHeight((int) SketchwareUtil.getDip(context, 40));
+        placeHolder.setMinimumWidth((int) SketchwareUtil.getDip(context, 70));
+        placeHolder.setBackgroundColor(0xFF757575);
+        
+        viewEditorDrag = new ViewEditorDrag(context, placeHolder);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int flags = getSystemUiVisibility();
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            setSystemUiVisibility(flags);
+            ((Activity) context).getWindow().setStatusBarColor(Color.WHITE);
+            ((Activity) context).getWindow().setNavigationBarColor(Color.WHITE);
+        }
+        
+        dragListener = new DragListener();
+
+
+        editorLayout.setOnDragListener(dragListener);
+
+        deleteImg = new ImageView(context);
+        deleteImg.setImageResource(R.drawable.ic_delete_white);
+        deleteImg.setColorFilter(0xFF757575, PorterDuff.Mode.SRC_ATOP);
+        deleteImg.setVisibility(View.GONE);
+        
+        customNav.addNavItem(R.drawable.ic_home, 101);
+        customNav.addNavItem(R.drawable.ic_bookmark, 102);
+        customNav.selectItem(101);
+        
+        customNav.setOnTabSelectedListener(new com.nexusteam.blacklogics.custom.NavBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int id) {
+
+            }
+        });
+        
+        
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+        (int) SketchwareUtil.getDip(context, 60),
+        (int) SketchwareUtil.getDip(context, 60));
+        params.gravity = Gravity.LEFT | Gravity.BOTTOM;
+        deleteImg.setLayoutParams(params);
+        ((ViewGroup) ((Activity) context).getWindow().findViewById(Window.ID_ANDROID_CONTENT)).addView(deleteImg);
+        
+        UiUtils.addRipple(img_add_view);
+        UiUtils.addRipple(img_views);
+        UiUtils.addRipple(img_copy);
+        UiUtils.addRipple(img_add_image);
+        UiUtils.addRipple(img_import);
+        
+        viewsList = new Gson().fromJson(Utils.readFromAsset(context, "views.json"),
+        new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
+        attributesMap = new Gson().fromJson(Utils.readFromAsset(context, "attributes.json"),
+        new TypeToken<HashMap<String, ArrayList<HashMap<String, Object>>>>() {}.getType());
+        parentAttributesMap = new Gson().fromJson(Utils.readFromAsset(context, "parent_dependent_attributes.json"),
+        new TypeToken<HashMap<String, ArrayList<HashMap<String, Object>>>>() {}.getType());
+        listview_widgets.setLayoutManager(new LinearLayoutManager(context));
+        listview_widgets.setAdapter(new Listview_widgetsAdapter(context, viewsList));
+        lin_toolbar.setElevation(5);
+        
+        View root = editorLayout.getChildAt(0);
+        if (root instanceof ViewGroup) {
+            applyContainerStroke(root);
+        }
+        
+    }
+    
+    public class AttributeAdaper extends BaseAdapter {
+        ArrayList<HashMap<String, Object>> _data;
+        public AttributeAdaper(ArrayList<HashMap<String, Object>> _arr) {
+            _data = _arr;
+        }
+        @Override
+        public int getCount() {
+            return _data.size();
+        }
+        @Override
+        public HashMap<String, Object> getItem(int _index) {
+            return _data.get(_index);
+        }
+        @Override
+        public long getItemId(int _index) {
+            return _index;
+        }
+        @Override
+        public View getView(final int _position, View _view, ViewGroup _viewGroup) {
+            LayoutInflater _inflater = LayoutInflater.from(getContext());
+            View _v = _view;
+            if (_v == null) {
+                _v = _inflater.inflate(R.layout.attribute_view, null);
+            }
+            TextView tv_name = _v.findViewById(R.id.tv_name);
+            tv_name.setText(_data.get(_position).get("name").toString());
+            return _v;
+        }
+    }
+    
+    public Object createObject(Class<?> cls) {
+        Object obj = null;
+        try {
+            obj = cls.getConstructor().newInstance();
+            if (obj instanceof View) {
+                setDefaultTextSize((View) obj); // Add this
+            }
+            return obj;
+        } catch (Exception e) {}
+        java.lang.reflect.Constructor[] constructorsArray = cls.getConstructors();
+        for (java.lang.reflect.Constructor constructor : constructorsArray) {
+            Class[] constructorParams = constructor.getParameterTypes();
+            Object[] argList = new Object[constructorParams.length];
+            for (int i = 0; i < constructorParams.length; i++) {
+                if (Context.class.isAssignableFrom(constructorParams[i])) {
+                    argList[i] = getContext();
+                    continue;
+                }
+                argList[i] = PrimitiveUtils.getDefaultValue(constructorParams[i]);
+            }
+            try {
+                obj = constructor.newInstance(argList);
+                if (obj instanceof View) {
+                    setDefaultTextSize((View) obj); // Add this
+                }
+                return obj;
+            } catch (Exception e) {}
+        }
+        return null;
+    }
+    
+    public void copy(String s) {
+        ((ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE))
+        .setPrimaryClip(ClipData.newPlainText("clipboard", s));
+    }
+    
+    public void log(String s) {
+        FileUtil.writeFile(FileUtil.getPackageDataDir(((Activity) getContext())) + "/log.txt",
+        FileUtil.readFile(FileUtil.getPackageDataDir(getContext()) + "/log.txt") + "\n" + s);
+    }
+    
+    public void _rearrangeListener(final View _view) {
+        final View view = _view;
+        final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() { 
+            public void onLongPress(MotionEvent event) {    
+                
+                DragAndDropUtils.startDragAndDrop(view,null, new View.DragShadowBuilder(view), view , 0);
+                
+                
+            } }); 
+        
+        _view.setOnTouchListener(new OnTouchListener() {
+            boolean bClick = true;
+            float startX = 0;
+            float startY= 0;
+            float endX=0;
+            float endY = 0;
+            float diffX= 0;
+            float diffY = 0;
+            @Override
+            public boolean onTouch(final View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: 
+                    startX = event.getX(); 
+                    startY = event.getY(); 
+                    bClick = true;
+                    /*
+new Handler().postDelayed(new Runnable(){ 
+public void run() { 
+if (bClick == true) { 
+MainActivity.this.runOnUiThread(new Runnable() {
+@Override
+public void run() {
+
+try{                
+DragAndDropUtils.startDragAndDrop(v,null, new View.DragShadowBuilder(v), v , 1);    
+}catch(
+Exception e){showMessage(e.toString());
+}
+}
+});                
+} 
+} }, 300);
+*/                    
+                    break;
+                    case MotionEvent.ACTION_UP:
+                    endX = event.getX(); 
+                    endY = event.getY(); 
+                    diffX = Math.abs(startX - endX);
+                    diffY = Math.abs(startY - endY); 
+                    if (diffX <= 5 && diffY <= 5 && bClick == true) {
+
+                       // showAttributesDialog(v);
+                       v.performClick();
+                    } 
+                    bClick = true;
+                    break;
+                    default: break; 
+                }
+                
+                gestureDetector.onTouchEvent(event);
+                return true;
+                
+                
+            }
+        });
+        
+    }
+    
+    public void showCustomAttributesDialog(final View view) {
+        final AlertDialog dialog = new AlertDialog.Builder(getContext()).create();
+        View inflated = LayoutInflater.from(getContext()).inflate(R.layout.custom_methods, null);
+        dialog.setView(inflated);
+        final EditText et_function_name = inflated.findViewById(R.id.et_function_name);
+        final EditText et_function_value = inflated.findViewById(R.id.et_function_value);
+        final Spinner spinner = inflated.findViewById(R.id.spinner);
+        final Button apply = inflated.findViewById(R.id.apply);
+        final CheckBox cb_field = inflated.findViewById(R.id.cb_field);
+        final CheckBox cb_layout_params = inflated.findViewById(R.id.cb_layout_params);
+        ArrayList<String> typesList = new ArrayList<>();
+        typesList.add("boolean");
+        typesList.add("int");
+        typesList.add("float");
+        typesList.add("CharSequence");
+        typesList.add("String");
+        typesList.add("color");
+        et_function_name.setFocusableInTouchMode(true);
+        et_function_value.setFocusableInTouchMode(true);
+        spinner.setAdapter(new ArrayAdapter<String>(getContext(),
+        android.R.layout.simple_spinner_dropdown_item, typesList));
+        apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String memberName = et_function_name.getText().toString();
+                String value = et_function_value.getText().toString();
+                Class<?> argument_class = null;
+                Object argument = null;
+                try {
+                    switch (spinner.getSelectedItemPosition()) {
+                        case 0:
+                        argument_class = boolean.class;
+                        argument = value.equals("true");
+                        break;
+                        case 1:
+                        argument = Integer.parseInt(value);
+                        argument_class = int.class;
+                        break;
+                        case 2:
+                        argument = Float.parseFloat(value);
+                        argument_class = float.class;
+                        break;
+                        case 3:
+                        argument = value;
+                        argument_class = CharSequence.class;
+                        break;
+                        case 4:
+                        argument = value;
+                        argument_class = String.class;
+                        break;
+                        case 5:
+                        argument = Color.parseColor(value);
+                        argument_class = int.class;
+                        break;
+                    }
+                    if (cb_field.isChecked()) {
+                        if (cb_layout_params.isChecked()) {
+                            ReflectionUtils.setField(view.getLayoutParams(), memberName, argument);
+                        } else {
+                            ReflectionUtils.setField(view, memberName, argument);
+                        }
+                        view.requestLayout();
+                    } else {
+                        if (cb_layout_params.isChecked()) {
+                            ReflectionUtils.invokeMethod(view.getLayoutParams(), memberName, argument);
+                        } else {
+                            ReflectionUtils.invokeMethod(view, memberName, argument);
+                        }
+                    }
+                } catch (Exception e) {
+                    showMessage(e.toString());
+                }
+            }
+        });
+        dialog.show();
+    }
+    
+    private void reloadAttributesForView(View view, RecyclerView rv_attributes, ArrayList<HashMap<String, Object>> attributesList) {
+        
+        attributesList.clear();
+        
+        Class<?> cls = view.getClass();
+        Class<?> stop = View.class.getSuperclass();
+        
+        while (cls != stop) {
+            ArrayList<HashMap<String, Object>> temp = attributesMap.get(cls.getName());
+            if (temp != null) {
+                attributesList.addAll(0, temp);
+            }
+            cls = cls.getSuperclass();
+        }
+        
+        if (view.getParent() instanceof ViewGroup) {
+            cls = view.getParent().getClass();
+            while (cls != stop) {
+                ArrayList<HashMap<String, Object>> temp = parentAttributesMap.get(cls.getName());
+                if (temp != null) {
+                    attributesList.addAll(temp);
+                }
+                cls = cls.getSuperclass();
+            }
+        }
+        
+        rv_attributes.getAdapter().notifyDataSetChanged();
+    }
+    
+    
+    /*
+* Modified showAttributesDialog method to use a tabbed layout with Attributes and Events tabs,
+* supporting listeners like onClick, onTouch, and onLongPress based on widget type.
+*/    
+    public void showAttributesDialog(final View view) {
+
+        final ArrayList<HashMap<String, Object>> attributesList = new ArrayList<>();
+        Class<?> cls = view.getClass();
+        Class<?> viewParentClass = View.class.getSuperclass();
+        
+
+        while (cls != viewParentClass) {
+            ArrayList<HashMap<String, Object>> tempList = attributesMap.get(cls.getName());
+            if (tempList != null) {
+                attributesList.addAll(0, tempList);
+            }
+            cls = cls.getSuperclass();
+        }
+        
+
+        if (view.getParent() instanceof ViewGroup) {
+            cls = view.getParent().getClass();
+            while (cls != viewParentClass) {
+                ArrayList<HashMap<String, Object>> tempList = parentAttributesMap.get(cls.getName());
+                if (tempList != null) {
+                    attributesList.addAll(tempList);
+                }
+                cls = cls.getSuperclass();
+            }
+        }
+        
+
+        final ArrayList<HashMap<String, Object>> listenersList = new ArrayList<>();
+        String viewType = view.getClass().getSimpleName().toLowerCase();
+        
+
+        listenersList.add(createListenerMap("onClick", "View.OnClickListener"));
+        listenersList.add(createListenerMap("onLongPress", "View.OnLongPressListener"));
+        listenersList.add(createListenerMap("onTouch", "View.OnTouchListener"));
+        
+
+        if (viewType.contains("edittext") || viewType.contains("textview")) {
+            listenersList.add(createListenerMap("onTextChanged", "TextWatcher"));
+            listenersList.add(createListenerMap("afterTextChanged", "TextWatcher"));
+        }
+        
+
+        if (viewType.contains("button") || viewType.contains("imagebutton")) {
+            listenersList.add(createListenerMap("onLongClick", "View.OnLongClickListener"));
+        }
+        
+
+        if (viewType.contains("seekbar")) {
+            listenersList.add(createListenerMap("onProgressChanged", "SeekBar.OnSeekBarChangeListener"));
+            listenersList.add(createListenerMap("onStartTrackingTouch", "SeekBar.OnSeekBarChangeListener"));
+            listenersList.add(createListenerMap("onStopTrackingTouch", "SeekBar.OnSeekBarChangeListener"));
+        }
+        
+
+        if (viewType.contains("checkbox") || viewType.contains("switch") || viewType.contains("togglebutton")) {
+            listenersList.add(createListenerMap("onCheckedChanged", "CompoundButton.OnCheckedChangeListener"));
+        }
+        
+
+        if (viewType.contains("listview") || viewType.contains("recyclerview")) {
+            listenersList.add(createListenerMap("onItemClick", "AdapterView.OnItemClickListener"));
+            listenersList.add(createListenerMap("onItemLongClick", "AdapterView.OnItemLongClickListener"));
+        }
+        if (viewType.contains("spinner")) {
+            listenersList.add(createListenerMap("onItemSelected", "AdapterView.OnItemSelectedListener"));
+            listenersList.add(createListenerMap("onNothingSelected", "AdapterView.OnItemSelectedListener"));
+        }
+        
+
+        if (viewType.contains("viewpager")) {
+            listenersList.add(createListenerMap("onPageSelected", "ViewPager.OnPageChangeListener"));
+            listenersList.add(createListenerMap("onPageScrolled", "ViewPager.OnPageChangeListener"));
+            listenersList.add(createListenerMap("onPageScrollStateChanged", "ViewPager.OnPageChangeListener"));
+        }
+        
+
+        if (viewType.contains("scrollview")) {
+            listenersList.add(createListenerMap("onScrollChanged", "ViewTreeObserver.OnScrollChangedListener"));
+        }
+        
+
+        if (viewType.contains("ratingbar")) {
+            listenersList.add(createListenerMap("onRatingChanged", "RatingBar.OnRatingBarChangeListener"));
+        }
+        
+
+        if (viewType.contains("textinput")) {
+            listenersList.add(createListenerMap("onTextChanged", "TextWatcher"));
+        }
+        
+
+        if (viewType.contains("webview")) {
+            listenersList.add(createListenerMap("onPageStarted", "WebViewClient"));
+            listenersList.add(createListenerMap("onPageFinished", "WebViewClient"));
+            listenersList.add(createListenerMap("shouldOverrideUrlLoading", "WebViewClient"));
+        }
+        
+        if (selectedView != null && selectedView != view) {
+            Drawable original = originalBackgrounds.get(selectedView);
+            if (original != null) {
+                selectedView.setBackground(original);
+            } else {
+                selectedView.setBackground(null);
+            }
+        }
+        
+        
+        selectedView = view;
+        
+        if (!originalBackgrounds.containsKey(view)) {
+            Drawable currentBg = view.getBackground();
+            if (currentBg != null) {
+                originalBackgrounds.put(view, currentBg.getConstantState() != null
+                ? currentBg.getConstantState().newDrawable().mutate()
+                : currentBg);
+            } else {
+                originalBackgrounds.put(view, null);
+            }
+        }
+        
+        GradientDrawable highlightDrawable = new GradientDrawable();
+        highlightDrawable.setColor(Color.parseColor("#77BBCCDD"));
+        highlightDrawable.setCornerRadius(8f);
+        view.setBackground(highlightDrawable);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(view, "alpha", 0.85f, 1f);
+        animator.setDuration(180);
+        animator.start();
+        
+        
+        showProperties();
+        
+
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        bottomSheetDialog.setCancelable(true);
+        bottomSheetDialog.setCanceledOnTouchOutside(true);
+        
+
+        View inflated = LayoutInflater.from(getContext()).inflate(R.layout.attributes_bottom_sheet, null);
+        bottomSheetDialog.setContentView(inflated);
+        
+        if (bottomSheetDialog.getBehavior() != null) {
+            bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+        
+        
+        /*
+
+if (bottomSheetDialog.getWindow() != null) {
+bottomSheetDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+}
+*/        
+        /*    GradientDrawable background = new GradientDrawable();
+int d = (int) getContext().getResources().getDisplayMetrics().density;
+background.setColor(0xFFFFFFFF);
+background.setCornerRadius(d * 16);
+inflated.setBackground(background);*/        
+        inflated.setClipToOutline(true);
+        
+
+
+        viewItems = inflated.findViewById(R.id.viewItems);
+        final RecyclerView rv_attributes = inflated.findViewById(R.id.rv_attributes);
+        final RecyclerView rv_listeners = inflated.findViewById(R.id.listeners);
+        final ImageView img_edit_id = inflated.findViewById(R.id.img_edit_id);
+        final ImageView img_common_attributes = inflated.findViewById(R.id.img_common_attributes);
+        final ImageView img_custom = inflated.findViewById(R.id.img_custom);
+        final com.google.android.material.tabs.TabLayout tabLayout = inflated.findViewById(R.id.attributesOrListener);
+        final LinearLayout attributesTab = inflated.findViewById(R.id.attributesTab);
+        final LinearLayout eventTab = inflated.findViewById(R.id.eventTab);
+        
+        viewItems.setIdManager(idManager);
+        
+        viewItems.setOnViewChangeListener(new OnViewChangeListener() {
+            @Override
+            public void onViewChanged(View newView, String id) {
+                
+
+                
+                if (selectedView == newView) return;
+                
+
+                if (selectedView != null) {
+                    Drawable original = originalBackgrounds.get(selectedView);
+                    selectedView.setBackground(original);
+                }
+                
+                selectedView = newView;
+                
+
+                GradientDrawable highlight = new GradientDrawable();
+                highlight.setColor(Color.parseColor("#77BBCCDD"));
+                highlight.setCornerRadius(8f);
+                selectedView.setBackground(highlight);
+                
+                reloadAttributesForView(selectedView, rv_attributes, attributesList);
+            }
+        });
+        
+        
+        
+
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText("attributes"));
+        tabLayout.addTab(tabLayout.newTab().setText("events"));
+        
+
+        LinearLayoutManager attrLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_attributes.setLayoutManager(attrLayoutManager);
+        AttributeRecyclerAdapter attrAdapter = new AttributeRecyclerAdapter(getContext(), attributesList);
+        rv_attributes.setAdapter(attrAdapter);
+        
+        LinearLayoutManager listenerLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rv_listeners.setLayoutManager(listenerLayoutManager);
+        ListenerRecyclerAdapter listenerAdapter = new ListenerRecyclerAdapter(getContext(), listenersList);
+        rv_listeners.setAdapter(listenerAdapter);
+        
+
+
+        
+
+        tabLayout.addOnTabSelectedListener(new com.google.android.material.tabs.TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(com.google.android.material.tabs.TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    attributesTab.setVisibility(View.VISIBLE);
+                    eventTab.setVisibility(View.GONE);
+                } else {
+                    attributesTab.setVisibility(View.GONE);
+                    eventTab.setVisibility(View.VISIBLE);
+                }
+            }
+            
+            @Override
+            public void onTabUnselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+            
+            @Override
+            public void onTabReselected(com.google.android.material.tabs.TabLayout.Tab tab) {}
+        });
+        
+
+        img_edit_id.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder idDialog = new AlertDialog.Builder(getContext());
+                idDialog.setTitle("Edit ID");
+                final EditText editText = new EditText(getContext());
+                editText.setText(idManager.getId(view));
+                idDialog.setView(editText);
+                idDialog.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface _dialog, int _which) {
+                        String newId = editText.getText().toString();
+                        idManager.updateId(view, newId);
+
+                        saveStateForUndo("change_id");
+                    }
+                });
+                idDialog.setNegativeButton("Cancel", null);
+                idDialog.show();
+            }
+        });
+        
+        img_common_attributes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetDialog.dismiss();
+                showCommonAttributesDialog(view);
+            }
+        });
+        img_custom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View _view) {
+                bottomSheetDialog.dismiss();
+                showCustomAttributesDialog(view);
+            }
+        });
+        
+
+        attrAdapter.setOnItemClickListener(new AttributeRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                final HashMap<String, Object> attribute = attributesList.get(position);
+                final String attrName = attribute.get("attribute_name").toString();
+                final String attrType = attribute.get("argument_type").toString();
+                final com.google.android.material.dialog.MaterialAlertDialogBuilder inputDialog =
+                new com.google.android.material.dialog.MaterialAlertDialogBuilder(
+                getContext(),
+                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                );
+                inputDialog.setTitle(attribute.get("name").toString());
+                inputDialog.setNeutralButton("Cancel", null);
+                attrSet = attributesValueMap.get(view);
+                String currentValue = attrSet != null && attrSet.getAttribute(attrName) != null ?
+                attrSet.getAttribute(attrName).getValue() : "";
+                
+                boolean shouldShowDialog = true;
+                
+
+                switch (attrType) {
+                    case "boolean":
+                    final RadioGroup rg = new RadioGroup(getContext());
+                    ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    final RadioButton rbTrue = new RadioButton(getContext());
+                    rbTrue.setText("True");
+                    rbTrue.setLayoutParams(p);
+                    rbTrue.setId(View.generateViewId());
+                    final RadioButton rbFalse = new RadioButton(getContext());
+                    rbFalse.setText("False");
+                    rbFalse.setId(View.generateViewId());
+                    rbFalse.setLayoutParams(p);
+                    rg.addView(rbTrue);
+                    rg.addView(rbFalse);
+                    if (currentValue.equals("true")) {
+                        rbTrue.setChecked(true);
+                    } else if (currentValue.equals("false")) {
+                        rbFalse.setChecked(true);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            String value = rbTrue.isChecked() ? "true" : "false";
+                            attr = new Attribute(attrName, value);
+                            if (attrSet == null) {
+                                attrSet = new AttributeSet();
+                                attributesValueMap.put(view, attrSet);
+                            }
+                            attrSet.add(attr);
+                            applyAttribute(view, attr, attribute);
+                        }
+                    });
+                    inputDialog.setView(rg);
+                    break;
+                    case "int":
+                    final EditText editTextInt = new EditText(getContext());
+                    editTextInt.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    if (!currentValue.isEmpty()) {
+                        editTextInt.setText(currentValue);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            String value = editTextInt.getText().toString();
+                            attr = new Attribute(attrName, value);
+                            if (attrSet == null) {
+                                attrSet = new AttributeSet();
+                                attributesValueMap.put(view, attrSet);
+                            }
+                            attrSet.add(attr);
+                            applyAttribute(view, attr, attribute);
+                        }
+                    });
+                    inputDialog.setView(editTextInt);
+                    break;
+                    case "float":
+                    shouldShowDialog = false;
+
+                    if (attrName.equals("android:textSize")) {
+                        try {
+                            String currentTextSize = currentValue;
+                            
+                            if ((currentValue == null || currentValue.isEmpty()) && view instanceof TextView) {
+                                float px = ((TextView) view).getTextSize();
+                                float spValue = px / getContext().getResources().getDisplayMetrics().scaledDensity;
+                                currentTextSize = String.format(Locale.getDefault(), "%.1fsp", spValue);
+                            }
+                            
+                            new com.nexusteam.ui.TextSizePickerDialog(
+                            getContext(),
+                            currentTextSize,
+                            new OnTextSizeSelected() {
+                                @Override
+                                public void onSelected(String selectedValue) {
+                                    try {
+                                        attr = new Attribute(attrName, selectedValue);
+                                        attr.setValue(selectedValue);
+                                        
+                                        float pxValue = DimensionUtils.getValueInPx(getContext(), selectedValue);
+                                        
+                                        if (view instanceof TextView) {
+                                            ((TextView) view).setTextSize(
+                                            TypedValue.COMPLEX_UNIT_PX,
+                                            pxValue
+                                            );
+                                        }
+                                        
+                                        if (attributesValueMap.get(view) != null) {
+                                            attributesValueMap.get(view).add(attr);
+                                        }
+                                        
+                                        applyAttribute(view, attr, attribute);
+                                        
+                                        saveStateForUndo("change_textsize");
+                                        
+                                        ViewGroup rootView =
+                                        (ViewGroup) editorLayout.getChildAt(0);
+                                        String xmlCode = generateCode(rootView);
+                                        
+                                    } catch (Exception e) {
+                                        SketchwareUtil.showMessage(
+                                        getContext(),
+                                        "Error applying textSize: " + e.getMessage()
+                                        );
+                                    }
+                                }
+                            }
+                            ).show();
+                            
+                            
+                        } catch (Exception e) {
+                            SketchwareUtil.showMessage(getContext(), "Error reading textSize: " + e.getMessage());
+                        }
+                    } 
+                    else {
+                        try {
+
+                            float currentFloat = 0f;
+                            try {
+                                if (!currentValue.isEmpty()) {
+                                    currentFloat = Float.parseFloat(currentValue);
+                                    Log.d("FLOAT_DEBUG", "Parsed currentValue: " + currentValue + " to: " + currentFloat);
+                                }
+                            } catch (NumberFormatException e) {
+                                Log.e("FLOAT_DEBUG", "Error parsing currentValue: " + currentValue, e);
+                                currentFloat = 0f;
+                            }
+                            
+                            Log.d("FLOAT_DEBUG", "Calling FloatAttributeMaterialDialog with: " + currentFloat);
+                            
+                            FloatAttributeMaterialDialog.show(
+                            getContext(),
+                            attribute.get("name").toString(),
+                            currentFloat,
+                            new OnFloatSelected() {
+                                @Override
+                                public void onSelected(float value) {
+                                    try {
+                                        String formatted = String.format(
+                                        Locale.getDefault(),
+                                        "%.1f",
+                                        value
+                                        );
+                                        
+                                        Log.d("FLOAT_DEBUG",
+                                        "Selected value: " + value +
+                                        ", formatted: " + formatted
+                                        );
+                                        
+                                        attr = new Attribute(attrName, formatted);
+                                        
+                                        if (attrSet == null) {
+                                            attrSet = new AttributeSet();
+                                            attributesValueMap.put(view, attrSet);
+                                        }
+                                        
+                                        attrSet.add(attr);
+                                        applyAttribute(view, attr, attribute);
+                                        
+                                    } catch (Exception e) {
+                                        Log.e("FLOAT_DEBUG", "Error in callback", e);
+                                        SketchwareUtil.showMessage(
+                                        getContext(),
+                                        "Error: " + e.getMessage()
+                                        );
+                                    }
+                                }
+                            }
+                            );
+                            
+                            
+                        } catch (Exception e) {
+                            Log.e("FLOAT_DEBUG", "Overall error in float case", e);
+                            SketchwareUtil.showMessage(getContext(), "Float dialog error: " + e.getMessage());
+                        }
+                        shouldShowDialog = false;
+                    }
+                    break;
+                    
+                    case "String":
+                    if (attrName.equals("Convert Widget")) {
+                        showConvertWidgetDialog(view);
+                        shouldShowDialog = false; 
+                    } else {
+                        final EditText editTextString = new EditText(getContext());
+                        if (!currentValue.isEmpty()) {
+                            editTextString.setText(currentValue);
+                        }
+                        inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface _dialog, int _which) {
+                                String value = editTextString.getText().toString();
+                                attr = new Attribute(attrName, value);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(view, attrSet);
+                                }
+                                attrSet.add(attr);
+                                applyAttribute(view, attr, attribute);
+                            }
+                        });
+                        inputDialog.setView(editTextString);
+                    }
+                    break;
+                    case "Size":
+                    final RadioGroup rgSize = new RadioGroup(getContext());
+                    final RadioButton rb_match_parent = new RadioButton(getContext());
+                    rb_match_parent.setText("match_parent");
+                    final RadioButton rb_wrap_content = new RadioButton(getContext());
+                    rb_wrap_content.setText("wrap_content");
+                    final RadioButton rb_custom = new RadioButton(getContext());
+                    rb_custom.setText("Value in dp");
+                    final EditText editTextSize = new EditText(getContext());
+                    final TextView tv_dp = new TextView(getContext());
+                    tv_dp.setText("dp");
+                    tv_dp.setTextSize(16);
+                    final LinearLayout lin_custom = new LinearLayout(getContext());
+                    lin_custom.setOrientation(LinearLayout.HORIZONTAL);
+                    lin_custom.setVisibility(View.GONE);
+                    lin_custom.addView(editTextSize);
+                    lin_custom.addView(tv_dp);
+                    rgSize.addView(rb_match_parent);
+                    rgSize.addView(rb_wrap_content);
+                    rgSize.addView(rb_custom);
+                    rgSize.addView(lin_custom);
+                    rb_match_parent.setId(1);
+                    rb_wrap_content.setId(2);
+                    rb_custom.setId(3);
+                    editTextSize.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
+                    lin_custom.getLayoutParams().width = LinearLayout.LayoutParams.MATCH_PARENT;
+                    ((LinearLayout.LayoutParams) editTextSize.getLayoutParams()).weight = 1.0f;
+                    editTextSize.requestLayout();
+                    com.shapun.layouteditor.utils.AnimationUtils.animate(rgSize);
+                    rb_custom.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            lin_custom.setVisibility(
+                            isChecked ? View.VISIBLE : View.GONE
+                            );
+                        }
+                    }
+                    );
+                    
+                    if (!currentValue.isEmpty()) {
+                        if (currentValue.equals("match_parent")) {
+                            rb_match_parent.setChecked(true);
+                        } else if (currentValue.equals("wrap_content")) {
+                            rb_wrap_content.setChecked(true);
+                        } else {
+                            rb_custom.setChecked(true);
+                            editTextSize.setText(currentValue.replaceAll("dp", ""));
+                        }
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            String value = null;
+                            switch (rgSize.getCheckedRadioButtonId()) {
+                                case 1:
+                                value = "match_parent";
+                                break;
+                                case 2:
+                                value = "wrap_content";
+                                break;
+                                case 3:
+                                value = editTextSize.getText().toString() + "dp";
+                                break;
+                            }
+                            attr = new Attribute(attrName, value);
+                            if (attrSet == null) {
+                                attrSet = new AttributeSet();
+                                attributesValueMap.put(view, attrSet);
+                            }
+                            attrSet.add(attr);
+                            applyAttribute(view, attr, attribute);
+                        }
+                    });
+                    inputDialog.setView(rgSize);
+                    break;
+                    case "Color":
+                    final int initialColor = !currentValue.isEmpty()
+                    ? Color.parseColor(currentValue)
+                    : Color.WHITE;
+                    
+
+                    final String currentAttrName = attrName;
+                    final HashMap<String, Object> currentAttribute = attribute;
+                    final View currentView = view;
+                    
+
+                    BroadcastReceiver colorReceiver = new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            String selectedColor = intent.getStringExtra("color");
+                            if (selectedColor != null) {
+                                Attribute colorAttr = new Attribute(currentAttrName, selectedColor);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(currentView, attrSet);
+                                }
+                                attrSet.add(colorAttr);
+                                applyAttribute(currentView, colorAttr, currentAttribute);
+                                
+
+                                LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(this);
+                            }
+                        }
+                    };
+                    
+                    LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                    colorReceiver,
+                    new IntentFilter("data")
+                    );
+                    
+
+                    Intent colorIntent = new Intent(getContext(), ColorPickerActivity.class);
+                    colorIntent.putExtra("initialColor", initialColor);
+                    getContext().startActivity(colorIntent);
+                    shouldShowDialog = false;
+                    break;
+                    case "Drawable":
+                    ArrayList<String> listData = new ArrayList<>();
+                    ArrayList<String> imagePaths = new ArrayList<>();
+                    FileUtil.listDir(FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + ProjectDataHelper.getScId(getContext()) + "/", imagePaths);
+                    for (String name : imagePaths) {
+                        if (name.endsWith(".png")) {
+                            name = Uri.parse(name).getLastPathSegment();
+                            name = name.substring(0, name.lastIndexOf("."));
+                            listData.add(name);
+                        }
+                    }
+                    String selectedData = currentValue.isEmpty() ? "" : AttributeUtils.getName(currentValue);
+                    final ScrollView scrollViewDrawable = new ScrollView(getContext());
+                    final RadioGroup rgDrawable = new RadioGroup(getContext());
+                    rgDrawable.setOrientation(RadioGroup.VERTICAL);
+                    scrollViewDrawable.addView(rgDrawable);
+                    for (String str : listData) {
+                        RadioButton rb = new RadioButton(getContext());
+                        rb.setId(View.generateViewId());
+                        if (str.equals(selectedData)) rb.setChecked(true);
+                        rb.setText(str);
+                        rgDrawable.addView(rb);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            RadioButton rb = rgDrawable.findViewById(rgDrawable.getCheckedRadioButtonId());
+                            if (rb != null) {
+                                String value = "@drawable/" + rb.getText().toString();
+                                attr = new Attribute(attrName, value);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(view, attrSet);
+                                }
+                                attrSet.add(attr);
+                                applyAttribute(view, attr, attribute);
+                            }
+                        }
+                    });
+                    inputDialog.setView(scrollViewDrawable);
+                    break;
+                    case "View":
+                    ArrayList<String> listDataView = new ArrayList<>();
+                    if (view.getParent() instanceof ViewGroup) {
+                        ViewGroup parent = (ViewGroup) view.getParent();
+                        for (int i = 0; i < parent.getChildCount(); i++) {
+                            listDataView.add(idManager.getId(parent.getChildAt(i)));
+                        }
+                    }
+                    String selectedDataView = currentValue.isEmpty() ? "" : AttributeUtils.getName(currentValue);
+                    final ScrollView scrollViewView = new ScrollView(getContext());
+                    final RadioGroup rgView = new RadioGroup(getContext());
+                    rgView.setOrientation(RadioGroup.VERTICAL);
+                    scrollViewView.addView(rgView);
+                    for (String str : listDataView) {
+                        RadioButton rb = new RadioButton(getContext());
+                        rb.setId(View.generateViewId());
+                        if (str.equals(selectedDataView)) rb.setChecked(true);
+                        rb.setText(str);
+                        rgView.addView(rb);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            RadioButton rb = rgView.findViewById(rgView.getCheckedRadioButtonId());
+                            if (rb != null) {
+                                String value = "@+id/" + rb.getText().toString();
+                                attr = new Attribute(attrName, value);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(view, attrSet);
+                                }
+                                attrSet.add(attr);
+                                applyAttribute(view, attr, attribute);
+                            }
+                        }
+                    });
+                    inputDialog.setView(scrollViewView);
+                    break;
+                    case "enum":
+                    final ScrollView scrollViewEnum = new ScrollView(getContext());
+                    final RadioGroup rgEnum = new RadioGroup(getContext());
+                    rgEnum.setOrientation(RadioGroup.VERTICAL);
+                    scrollViewEnum.addView(rgEnum);
+                    ArrayList<String> listDataEnum = (ArrayList<String>) attribute.get("xml_arguments");
+                    String selectedDataEnum = currentValue.isEmpty() ? "" : AttributeUtils.getName(currentValue);
+                    for (String str : listDataEnum) {
+                        RadioButton rb = new RadioButton(getContext());
+                        rb.setId(View.generateViewId());
+                        if (str.equals(selectedDataEnum)) rb.setChecked(true);
+                        rb.setText(str);
+                        rgEnum.addView(rb);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            RadioButton rb = rgEnum.findViewById(rgEnum.getCheckedRadioButtonId());
+                            if (rb != null) {
+                                String value = rb.getText().toString();
+                                attr = new Attribute(attrName, value);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(view, attrSet);
+                                }
+                                attrSet.add(attr);
+                                applyAttribute(view, attr, attribute);
+                            }
+                        }
+                    });
+                    inputDialog.setView(scrollViewEnum);
+                    break;
+                    case "flag":
+                    final ScrollView scrollViewFlag = new ScrollView(getContext());
+                    final LinearLayout lin = new LinearLayout(getContext());
+                    lin.setOrientation(LinearLayout.VERTICAL);
+                    scrollViewFlag.addView(lin);
+                    String selectedDataFlag = currentValue.isEmpty() ? "" : AttributeUtils.getName(currentValue);
+                    ArrayList<String> selectedList = new ArrayList<>(Arrays.asList(selectedDataFlag.split("\\|")));
+                    ArrayList<String> listDataFlag = (ArrayList<String>) attribute.get("xml_arguments");
+                    for (String str : listDataFlag) {
+                        CheckBox cb = new CheckBox(getContext());
+                        if (selectedList.contains(str)) cb.setChecked(true);
+                        cb.setText(str);
+                        lin.addView(cb);
+                    }
+                    inputDialog.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface _dialog, int _which) {
+                            String value = "";
+                            try {
+                                for (int i = 0; i < lin.getChildCount(); i++) {
+                                    CheckBox cb = (CheckBox) lin.getChildAt(i);
+                                    if (cb.isChecked()) {
+                                        value = value.isEmpty() ? cb.getText().toString() : value + "|" + cb.getText().toString();
+                                    }
+                                }
+                                attr = new Attribute(attrName, value);
+                                if (attrSet == null) {
+                                    attrSet = new AttributeSet();
+                                    attributesValueMap.put(view, attrSet);
+                                }
+                                attrSet.add(attr);
+                                applyAttribute(view, attr, attribute);
+                            } catch (Exception e) {
+                                SketchwareUtil.showMessage(getContext(), e.toString());
+                            }
+                        }
+                    });
+                    inputDialog.setView(scrollViewFlag);
+                    break;
+                    case "custom":
+                    
+                    if ("android:padding_all".equals(attrName)) {
+                        showPaddingDialog(view);
+                        shouldShowDialog = false;
+                        return;
+                    } else if ("android:layout_margin_all".equals(attrName)) {
+                        showMarginDialog(view);
+                        shouldShowDialog = false;
+                        return;
+                    }
+                    break;
+                    default:
+
+                    break;
+                }
+                if (shouldShowDialog) {
+                    inputDialog.show();
+                }
+            }
+        });
+        
+
+        listenerAdapter.setOnItemClickListener(new AttributeRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                DesignActivity designActivity = (DesignActivity) getContext();
+                
+                saveLayout(ProjectDataHelper.getActivityName(getContext()));
+                
+                final HashMap<String, Object> listener = listenersList.get(position);
+                
+                final String listenerName = listener.get("name").toString();
+                final String listenerType = listener.get("type").toString();
+                
+
+                if (FileUtil.isExistFile(FileUtil.getExternalStorageDir()
+                .concat("/.blacklogics/data/")
+                .concat(SC_ID)
+                .concat("/basedata"))) {
+                    
+                    list_widget_map = new Gson().fromJson(
+                    FileUtil.readFile(FileUtil.getExternalStorageDir()
+                    .concat("/.blacklogics/data/")
+                    .concat(SC_ID)
+                    .concat("/basedata")),
+                    new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType()
+                    );
+                    
+                } else {
+                    list_widget_map = new ArrayList<>();
+                }
+                
+
+                widget_add_map = new HashMap<>();
+                widget_add_map.put("widget_id", idManager.getId(view));
+                widget_add_map.put("widget_type", getWidgetTypeName(view));
+                widget_add_map.put("widget_listener_name", listenerName);
+                widget_add_map.put("activityName", ProjectDataHelper.getActivityName(getContext()));
+                
+                boolean alreadyExists = false;
+                for (HashMap<String, Object> item : list_widget_map) {
+                    if (item.get("widget_id").equals(widget_add_map.get("widget_id"))
+                    && item.get("widget_listener_name").equals(widget_add_map.get("widget_listener_name"))
+                    && item.get("activityName").equals(widget_add_map.get("activityName"))) {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+                
+                if (!alreadyExists) {
+                    list_widget_map.add(widget_add_map);
+                    FileUtil.writeFile(
+                    FileUtil.getExternalStorageDir()
+                    .concat("/.blacklogics/data/")
+                    .concat(SC_ID)
+                    .concat("/basedata"),
+                    new Gson().toJson(list_widget_map)
+                    );
+                }
+                
+
+                String event = listenerType;
+                
+                intent.putExtra("id", idManager.getId(view));
+                intent.putExtra("event", event);
+                intent.putExtra("event_text", idManager.getId(view));
+                intent.putExtra("filename",
+                idManager.getId(view) +
+                ProjectDataHelper.getActivityName(getContext()) +
+                event);
+                intent.putExtra("sc_id", ProjectDataHelper.getScId(getContext()));
+                intent.putExtra("activityName", ProjectDataHelper.getActivityName(getContext()));
+                intent.putExtra("widgetId", idManager.getId(view));
+                intent.putExtra("type", "");
+                
+                intent.setClass(getContext(), LogicEditorActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+        
+        
+        
+        bottomSheetDialog.show();
+        
+
+        _rearrangeListener(view);
+        if (view instanceof ViewGroup) {
+            view.setOnDragListener(dragListener);
+            view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+        }
+        
+    }
+    
+    
+
+    private HashMap<String, Object> createListenerMap(String name, String type) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("type", type);
+        return map;
+    }
+    
+
+    public class ListenerRecyclerAdapter extends RecyclerView.Adapter<ListenerRecyclerAdapter.ViewHolder> {
+        private ArrayList<HashMap<String, Object>> data;
+        private Context context;
+        private AttributeRecyclerAdapter.OnItemClickListener listener;
+        
+        public ListenerRecyclerAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
+            this.context = context;
+            this.data = data;
+        }
+        
+        public void setOnItemClickListener(AttributeRecyclerAdapter.OnItemClickListener listener) {
+            this.listener = listener;
+        }
+        
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(context).inflate(R.layout.attribute_view, parent, false);
+            return new ViewHolder(view);
+        }
+        
+        @Override
+        public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+            HashMap<String, Object> item = data.get(position);
+            String listenerName = item.get("name").toString();
+            holder.tvName.setText(listenerName);
+            
+
+            holder.ivIcon.setVisibility(View.GONE);
+            /*
+if (listenerName.equals("onClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_touch_app_48);
+} else if (listenerName.equals("onLongPress") || listenerName.equals("onLongClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_gesture_48);
+} else if (listenerName.equals("onTouch")) {
+holder.ivIcon.setImageResource(R.drawable.ic_swipe_48);
+} else if (listenerName.equals("onTextChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_text_fields_48);
+} else if (listenerName.equals("onProgressChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_sliders_48);
+} else if (listenerName.equals("onCheckedChanged")) {
+holder.ivIcon.setImageResource(R.drawable.ic_check_box_48);
+} else if (listenerName.equals("onItemClick")) {
+holder.ivIcon.setImageResource(R.drawable.ic_list_48);
+} else {
+holder.ivIcon.setVisibility(View.GONE);
+}*/            
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View _view) {
+                    if (listener != null) {
+                        listener.onItemClick(position);
+                    }
+                }
+            });
+        }
+        
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+        
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            TextView tvName;
+            ImageView ivIcon;
+            
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                tvName = itemView.findViewById(R.id.tv_name);
+                ivIcon = itemView.findViewById(R.id.iv_icon);
+            }
+        }
+    }
+    
+    private HashMap<String, Object> findAttributeMap(String attrName, View view) {
+        Class<?> cls = view.getClass();
+        while (cls != null && !cls.equals(View.class.getSuperclass())) {
+            ArrayList<HashMap<String, Object>> tempList = attributesMap.get(cls.getName());
+            if (tempList != null) {
+                for (HashMap<String, Object> map : tempList) {
+                    if (map.get("attribute_name").equals(attrName)) {
+                        return map;
+                    }
+                }
+            }
+            cls = cls.getSuperclass();
+        }
+        return null;
+    }
+    
+
+    private String formatAttributeValue(Attribute attr, HashMap<String, Object> map) {
+        String value = attr.getValue();
+        
+        if (map != null && map.containsKey("dimension")) {
+            String unit = map.get("dimension").toString(); // "dp" or "sp"
+            if (!value.endsWith(unit)) {
+                return value.replaceAll("\\.0$", "") + unit; // remove ".0" if present
+            }
+        }
+        
+        return value.replaceAll("\\.0$", ""); // clean numbers like 15.0 -> 15
+    }
+    
+    private String generateCode(View view) {
+        StringBuilder sb = new StringBuilder();
+        
+
+        AttributeSet attributeSet = attributesValueMap.get(view);
+        String customWidgetClass = null;
+        if (attributeSet != null) {
+            Attribute convertAttr = attributeSet.getAttribute("app:convertedWidget");
+            if (convertAttr != null) customWidgetClass = convertAttr.getValue();
+        }
+        
+
+        String tagName = (customWidgetClass != null) ? customWidgetClass : view.getClass().getSimpleName();
+        if ("PlaceholderWebView".equals(tagName)) tagName = "WebView";
+        
+        sb.append("<").append(tagName);
+        
+
+        if (attributeSet != null) {
+            for (Attribute attr : attributeSet.getAttributes()) {
+                if (!"xmlns:android".equals(attr.getName()) && !"app:convertedWidget".equals(attr.getName())) {
+                    HashMap<String, Object> attrMap = findAttributeMap(attr.getName(), view);
+                    String value = formatAttributeValue(attr, attrMap);
+                    sb.append("\n    ").append(attr.getName()).append("=\"").append(value).append("\"");
+                }
+            }
+        } else {
+
+            sb.append("\n    android:layout_width=\"wrap_content\"");
+            sb.append("\n    android:layout_height=\"wrap_content\"");
+        }
+        
+
+        if (customWidgetClass != null && !sb.toString().contains("xmlns:app")) {
+            sb.append("\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"");
+        }
+        
+
+        if (view instanceof ViewGroup) {
+            sb.append(">\n");
+            ViewGroup group = (ViewGroup) view;
+            
+            for (int i = 0; i < group.getChildCount(); i++) {
+                View child = group.getChildAt(i);
+
+                if (child == placeHolder) continue;
+                
+                String childXml = generateCode(child);
+                sb.append(indent(childXml, 4)).append("\n");
+            }
+            
+            sb.append("</").append(tagName).append(">");
+        } else {
+            sb.append(" />");
+        }
+        
+        return sb.toString();
+    }
+    
+
+    private String indent(String xml, int spaces) {
+        String indentStr = new String(new char[spaces]).replace('\0', ' ');
+        return indentStr + xml.replace("\n", "\n" + indentStr);
+    }
+    
+    public String generateCode(View view, boolean isRoot) {
+        StringBuilder sb = new StringBuilder();
+        
+
+        sb.append("<").append(view.getClass().getSimpleName());
+        
+
+        AttributeSet attributeSet = attributesValueMap.get(view);
+        if (attributeSet != null) {
+
+            sb.append(" ");
+
+            sb.append(attributeSet.toString().replaceAll("(?m)^", "    ").trim());
+        }
+        
+
+        if (isRoot) {
+
+            if (attributeSet == null || !attributeSet.toString().contains("xmlns:android")) {
+                if (attributeSet != null && !attributeSet.toString().isEmpty()) {
+                    sb.append("\n    ");
+                }
+                sb.append("xmlns:android=\"http://schemas.android.com/apk/res/android\"");
+            }
+        }
+        
+
+        if (view instanceof ViewGroup) {
+            sb.append(">\n");
+            ViewGroup vg = (ViewGroup) view;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                View child = vg.getChildAt(i);
+
+                String childXml = generateCode(child, false);
+                sb.append(childXml.replaceAll("(?m)^", "    ")).append("\n");
+            }
+            sb.append("</").append(view.getClass().getSimpleName()).append(">");
+        } else {
+
+            sb.append("/>");
+        }
+        
+        return sb.toString();
+    }
+    
+    public void applyAttribute(View view, Attribute attribute) {
+        AttributeSet currentAttrSet = attributesValueMap.get(view);
+        Attribute oldAttr = (currentAttrSet != null) ? currentAttrSet.getAttribute(attribute.getName()) : null;
+
+        if (!isUndoRedoInProgress) {
+            saveStateForUndo("attribute_change_" + attribute.getName());
+        }
+        
+        final ArrayList<HashMap<String, Object>> listMap = new ArrayList<>();
+        Class cls = view.getClass();
+        Class viewParentClass = View.class.getSuperclass();
+        while (cls != viewParentClass) {
+            ArrayList<HashMap<String, Object>> tempListMap = attributesMap.get(cls.getName());
+            if (tempListMap != null) listMap.addAll(0, tempListMap);
+            cls = cls.getSuperclass();
+        }
+        final String attribute_name = attribute.getName();
+        for (HashMap<String, Object> map : listMap) {
+            if (map.get("attribute_name").toString().equals(attribute_name)) {
+                applyAttribute(view, attribute, map);
+                break;
+            }
+        }
+        
+
+        ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+        String xmlCode = generateCode(rootView);
+        
+        if (currentAttrSet == null) {
+            currentAttrSet = new AttributeSet();
+            attributesValueMap.put(view, currentAttrSet);
+        }
+        currentAttrSet.add(attribute);
+        
+    }
+    
+    public void applyAttribute(View view, Attribute attribute, HashMap<String, Object> map) {
+        if (!isUndoRedoInProgress) {
+        }
+        final String argument_type = map.get("argument_type").toString();
+        String value = attribute.getValue();
+        String attribute_name = attribute.getName();
+        Object argumentValue = null;
+        String member_name = map.get("member_name").toString();
+        
+        if ("app:convertedWidget".equals(attribute_name)) {
+            handleWidgetConversion(view, value);
+            return;
+        }
+        
+        if (attribute_name.equals("android:layout_width") || attribute_name.equals("android:layout_height")) {
+            
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            
+            if (params == null) {
+                params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+            }
+            
+            int pixelValue = parseDimension(value); 
+            
+            if (attribute_name.equals("android:layout_width")) {
+                params.width = pixelValue;
+            } else { 
+                params.height = pixelValue;
+            }
+            
+            view.setLayoutParams(params);
+            view.requestLayout();
+        }
+        
+        try {
+            Object targetObj = view;
+            if (map.containsKey("layout_params") && (boolean) map.get("layout_params")) {
+                targetObj = view.getLayoutParams();
+            }
+            switch (argument_type) {
+                case "boolean":
+                argumentValue = value.equals("true");
+                break;
+                case "int":
+                if (map.containsKey("dimension")) {
+                    argumentValue = (int) DimensionUtils.getValueInPx(getContext(), value);
+                } else {
+                    argumentValue = Integer.parseInt(value);
+                }
+                break;
+                case "float":
+                
+                if ("android:textSize".equals(attribute_name)) {
+                    if (value != null && !value.isEmpty()) {
+                        try {
+                            if (value.endsWith("sp")) {
+                                value = value.replace("sp", "").trim();
+                                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_SP, Float.parseFloat(value));
+                                return;
+                            } else if (value.endsWith("dp")) {
+                                value = value.replace("dp", "").trim();
+                                ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_DIP, Float.parseFloat(value));
+                                return;
+                            } else {
+                                ((TextView) view).setTextSize(Float.parseFloat(value));
+                                return;
+                            }
+                        } catch (Exception e) {
+                            SketchwareUtil.showMessage(getContext(), "Invalid textSize: " + value);
+                            return;
+                        }
+                    } else {
+
+                        ((TextView) view).setTextSize(12f);
+                        return;
+                    }
+                }
+                
+                try {
+                    if (map.containsKey("dimension")) {
+                        argumentValue = (float) DimensionUtils.getValueInPx(getContext(), value);
+                    } else {
+                        argumentValue = Float.parseFloat(value);
+                    }
+                } catch (Exception e) {
+                    SketchwareUtil.showMessage(getContext(), "Invalid float value: " + value);
+                    return;
+                }
+                break;
+                
+                case "String":
+
+                if ("android:text".equals(attribute_name) && value.startsWith("@string/")) {
+                    String resourceName = value.substring("@string/".length());
+                    String scId = DesignActivity.getScId(); // Get sc_id from DesignActivity
+                    String resolvedValue = getStringResourceValue(scId, resourceName);
+                    argumentValue = (resolvedValue != null) ? resolvedValue : value; // Fallback to original value if not found
+                } else {
+                    argumentValue = value;
+                }
+                break;
+                case "Size":
+                if (value.equals("match_parent")) {
+                    argumentValue = ViewGroup.LayoutParams.MATCH_PARENT;
+                } else if (value.equals("wrap_content")) {
+                    argumentValue = ViewGroup.LayoutParams.WRAP_CONTENT;
+                } else {
+                    argumentValue = DimensionUtils.getValueInPx(getContext(), value);
+                }
+                break;
+                case "Color":
+                argumentValue = Color.parseColor(value);
+                break;
+                case "Drawable":
+                String path = FileUtil.getExternalStorageDir() + "/.blacklogics/resources/images/" + ProjectDataHelper.getScId(getContext()) + "/" +
+                AttributeUtils.getImageName(value) + ".png";
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                android.graphics.drawable.Drawable drawable =
+                new android.graphics.drawable.BitmapDrawable(getContext().getResources(), bitmap);
+                argumentValue = drawable;
+                break;
+                case "View":
+                if (value.startsWith("@")) {
+                    argumentValue = idManager.getId(AttributeUtils.getName(value));
+                } else {
+                    ArrayList<String> xml_list = (ArrayList<String>) map.get("xml_arguments");
+                    ArrayList<String> java_list = (ArrayList<String>) map.get("java_arguments");
+                    String Path = java_list.get(xml_list.indexOf(value));
+                    try {
+                        Class<?> cls = Class.forName(Path);
+                        Object obj = createObject(cls);
+                        argumentValue = obj;
+                    } catch (ClassNotFoundException e) {
+                        java.lang.reflect.Field field = ReflectionUtils.getStaticField(Path);
+                        argumentValue = field.get(null);
+                    }
+                }
+                break;
+                case "enum":
+                ArrayList<String> xml_arguments = (ArrayList<String>) map.get("xml_arguments");
+                ArrayList<String> java_arguments = (ArrayList<String>) map.get("java_arguments");
+                String pAth = java_arguments.get(xml_arguments.indexOf(value));
+                try {
+                    Class<?> cls = Class.forName(pAth);
+                    Object obj = createObject(cls);
+                    argumentValue = obj;
+                } catch (ClassNotFoundException e) {
+                    java.lang.reflect.Field field = ReflectionUtils.getStaticField(pAth);
+                    argumentValue = field.get(null);
+                }
+                break;
+                case "flag":
+                List<String> selectedList = Arrays.asList(value.split("\\|"));
+                ArrayList<String> Xml_arguments = (ArrayList<String>) map.get("xml_arguments");
+                ArrayList<String> Java_arguments = (ArrayList<String>) map.get("java_arguments");
+                try {
+                    argumentValue = 0;
+                    for (String str : selectedList) {
+                        String fieldFullPath = Java_arguments.get(Xml_arguments.indexOf(str));
+                        argumentValue = (int) argumentValue | (int) ReflectionUtils.getStaticFieldValue(fieldFullPath);
+                    }
+                } catch (Exception e) {
+                    SketchwareUtil.showMessage(getContext(), e.toString());
+                }
+                break;
+                default:
+                SketchwareUtil.showMessage(getContext(), "No such type found");
+                break;
+            }
+            if (map.containsKey("member_type")) {
+                if (map.get("member_type").toString().equals("method")) {
+                    if (map.containsKey("constant")) {
+                        String constant_path = map.get("constant").toString();
+                        Object constant = null;
+                        try {
+                            Class<?> cls = Class.forName(constant_path);
+                            try {
+                                constant = createObject(cls);
+                            } catch (Exception e) {
+                                showMessage("couldn't initialize " + cls.toString());
+                            }
+                        } catch (ClassNotFoundException e) {
+                            constant = ReflectionUtils.getStaticFieldValue(constant_path);
+                        }
+                        ReflectionUtils.invokeMethod(targetObj, member_name, constant, argumentValue);
+                        view.requestLayout();
+                    } else {
+                        ReflectionUtils.invokeMethod(targetObj, member_name, argumentValue);
+                    }
+                } else {
+                    ReflectionUtils.setField(targetObj, member_name, argumentValue);
+                    view.requestLayout();
+                }
+            }
+
+            ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+            String xmlCode = generateCode(rootView);
+            String activityName = getCurrentActivityName();
+            /*  designActivity.complex.setXmlCode(designActivity.currentActivityBean.getLayoutName(), getXMLCode());
+designActivity.generateJavaCode(activityName, designActivity.currentActivityBean.getLayoutName());*/            
+            
+        } catch (Exception e) {
+            showMessage("error while applying attribute \"" + attribute_name + "\"\n" + e.toString());
+        }
+    }
+    
+    public void showCommonAttributesDialog(View view) {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        View inflated = LayoutInflater.from(getContext()).inflate(R.layout.common_attributes, null);
+        dialog.setNegativeButton("Cancel", null);
+        RadioGroup rg_width = inflated.findViewById(R.id.rg_width);
+        RadioGroup rg_height = inflated.findViewById(R.id.rg_height);
+        LinearLayout lin_padding = inflated.findViewById(R.id.lin_padding);
+        LinearLayout lin_margin = inflated.findViewById(R.id.lin_margin);
+        RadioButton width_match_parent = inflated.findViewById(R.id.width_match_parent);
+        RadioButton width_wrap_content = inflated.findViewById(R.id.width_wrap_content);
+        RadioButton width_custom = inflated.findViewById(R.id.width_custom);
+        EditText edittext_width = inflated.findViewById(R.id.edittext_width);
+        RadioButton height_match_parent = inflated.findViewById(R.id.height_match_parent);
+        RadioButton height_wrap_content = inflated.findViewById(R.id.height_wrap_content);
+        RadioButton height_custom = inflated.findViewById(R.id.height_custom);
+        EditText edittext_height = inflated.findViewById(R.id.edittext_height);
+        EditText padding_all = inflated.findViewById(R.id.padding_all);
+        CheckBox cb_padding_all = inflated.findViewById(R.id.cb_padding_all);
+        EditText padding_left = inflated.findViewById(R.id.padding_left);
+        EditText padding_top = inflated.findViewById(R.id.padding_top);
+        TextView textview4 = inflated.findViewById(R.id.textview4);
+        EditText padding_right = inflated.findViewById(R.id.padding_right);
+        TextView textview5 = inflated.findViewById(R.id.textview5);
+        EditText padding_bottom = inflated.findViewById(R.id.padding_bottom);
+        EditText margin_all = inflated.findViewById(R.id.margin_all);
+        CheckBox cb_margin_all = inflated.findViewById(R.id.cb_margin_all);
+        EditText margin_left = inflated.findViewById(R.id.margin_left);
+        EditText margin_top = inflated.findViewById(R.id.margin_top);
+        EditText margin_right = inflated.findViewById(R.id.margin_right);
+        EditText margin_bottom = inflated.findViewById(R.id.margin_bottom);
+        dialog.setView(inflated);
+        dialog.show();
+    }
+    
+    public void saveLayout(String layoutName) {
+        
+        if (layoutName == null || layoutName.trim().isEmpty()) return;
+        if (editorLayout.getChildCount() == 0) return;
+        
+        try {
+            
+            String xml = generateLayoutXml();
+            xml = cleanXML(xml);
+            
+            if (!validateXML(xml)) return;
+            
+            LayoutStorage.save(
+            new File(SAVE_PATH),
+            layoutName,
+            xml,
+            ENC_PASSWORD
+            );
+            
+        } catch (Exception e) {
+            Log.e("ViewEditor", "saveLayout failed", e);
+        }
+    }
+    
+    
+    private String generateLayoutXml() {
+        
+        if (editorLayout.getChildCount() == 0) return "";
+        
+        View root = editorLayout.getChildAt(0);
+        
+        String xml = generateCode(root);
+        xml = addXmlnsToRoot(xml);
+        
+        return "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" + xml;
+    }
+    
+    
+
+    private String addXmlnsToRoot(String xml) {
+        if (xml.contains("xmlns:android")) {
+            return xml;
+        }
+        
+
+        int firstTagEnd = xml.indexOf(">");
+        if (firstTagEnd == -1) {
+            return xml;
+        }
+        
+        String firstPart = xml.substring(0, firstTagEnd);
+        String secondPart = xml.substring(firstTagEnd);
+        
+
+        if (firstPart.trim().endsWith("/")) {
+
+            String withoutSlash = firstPart.substring(0, firstPart.lastIndexOf("/"));
+            return withoutSlash + " xmlns:android=\"http://schemas.android.com/apk/res/android\"" + "/>" + secondPart.substring(1);
+        } else {
+
+            return firstPart + " xmlns:android=\"http://schemas.android.com/apk/res/android\"" + secondPart;
+        }
+    }
+    
+
+    private String removeXmlnsAndroid(String xml) {
+        if (!xml.contains("xmlns:android")) {
+            return xml;
+        }
+        
+
+        return xml.replace(" xmlns:android=\"http://schemas.android.com/apk/res/android\"", "");
+    }
+    
+
+    private String indentXml(String xml, int spaces) {
+        StringBuilder indented = new StringBuilder();
+        String indent = new String(new char[spaces]).replace('\0', ' ');
+        String[] lines = xml.split("\n");
+        
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                indented.append("\n");
+            }
+            indented.append(indent).append(lines[i]);
+        }
+        
+        return indented.toString();
+    }
+    
+    public void loadLayout(String layoutName) {
+        
+        editorLayout.removeAllViews();
+        
+        if (layoutName == null || layoutName.trim().isEmpty()) return;
+        
+        try {
+            
+            LayoutData data = LayoutStorage.load(
+            new File(SAVE_PATH),
+            layoutName,
+            ENC_PASSWORD
+            );
+            
+            if (data == null) return;
+            
+            oldIdManager = idManager;
+            oldAttributesValueMap = new HashMap<>(attributesValueMap);
+            
+            idManager = new IdManager();
+            attributesValueMap.clear();
+            
+            loadFromXml(data.xml);
+            
+        } catch (Exception e) {
+            restorePreviousStateOnFailure();
+            Log.e("ViewEditor", "loadLayout failed", e);
+        }
+    }
+    
+    
+    private String readEncryptedJson(File file) throws Exception {
+        
+        long modified = file.lastModified();
+        
+        if (cachedLayoutJson != null && cacheLastModified == modified) {
+            return cachedLayoutJson;
+        }
+        
+        byte[] decrypted = pq.decryptFromFile(file, ENC_PASSWORD);
+        
+        String json = new String(decrypted, "UTF-8");
+        
+        cachedLayoutJson = json;
+        cacheLastModified = modified;
+        
+        return json;
+    }
+    
+    private void loadFromXml(String xml) throws Exception {
+        
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(new StringReader(xml));
+        
+        Stack<ViewGroup> stack = new Stack<>();
+        boolean rootAdded = false;
+        
+        int type;
+        
+        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+            
+            if (type == XmlPullParser.START_TAG) {
+                
+                String tag = parser.getName();
+                
+                View view = createPlaceholderOrStandardView(tag);
+                if (view == null) continue;
+                
+                boolean isContainer = view instanceof ViewGroup;
+                
+                /* ---------- ATTRIBUTES MAP ---------- */
+                
+                AttributeSet set = new AttributeSet();
+                attributesValueMap.put(view, set);
+                
+                for (int i = 0; i < parser.getAttributeCount(); i++) {
+                    
+                    String name = parser.getAttributeName(i);
+                    String value = parser.getAttributeValue(i);
+                    
+                    if ("android:id".equals(name)) {
+                        idManager.addNewId(view, AttributeUtils.getName(value));
+                    }
+                    
+                    set.add(new Attribute(name, value));
+                }
+                
+                /* ---------- ROOT CONTAINER ---------- */
+                
+                if (!rootAdded && isContainer) {
+                    
+                    editorLayout.addView(view);
+                    stack.push((ViewGroup) view);
+                    rootAdded = true;
+                    
+
+                    view.setOnDragListener(dragListener);
+                    view.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String id = idManager.getId(v);
+                            if (id != null && viewItems != null) {
+                                viewItems.selectId(id);
+                            }
+                            
+                            showAttributesDialog(v);
+                        }
+                    });
+                    applyContainerStroke(view);
+                    
+                    view.setMinimumHeight(
+                    (int) SketchwareUtil.getDip(getContext(), 30)
+                    );
+                    
+                    continue;
+                }
+                
+                /* ---------- ADD TO PARENT ---------- */
+                
+                if (!stack.isEmpty()) {
+                    stack.peek().addView(view);
+                } else {
+                    editorLayout.addView(view);
+                }
+                
+                /* ---------- CLICK / REARRANGE ---------- */
+                
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String id = idManager.getId(v);
+                        if (id != null && viewItems != null) {
+                            viewItems.selectId(id);
+                        }
+                        
+                        showAttributesDialog(v);
+                    }
+                });
+                _rearrangeListener(view);
+                
+                /* ---------- VIEWGROUP HANDLING ---------- */
+                
+                if (isContainer) {
+                    
+                    ViewGroup vg = (ViewGroup) view;
+                    
+                    vg.setOnDragListener(dragListener);
+                    vg.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String id = idManager.getId(v);
+                            if (id != null && viewItems != null) {
+                                viewItems.selectId(id);
+                            }
+                            
+                            showAttributesDialog(v);
+                        }
+                    });
+                    applyContainerStroke(vg);
+                    
+                    vg.setMinimumHeight(
+                    (int) SketchwareUtil.getDip(getContext(), 30)
+                    );
+                    
+                    stack.push(vg);
+                }
+                
+            } else if (type == XmlPullParser.END_TAG) {
+                
+
+                if (stack.size() > 1) {
+                    stack.pop();
+                }
+            }
+        }
+        
+        /* ---------- APPLY ATTRIBUTES AFTER TREE BUILT ---------- */
+        
+        for (View v : attributesValueMap.keySet()) {
+            
+            AttributeSet set = attributesValueMap.get(v);
+            if (set == null) continue;
+            
+            for (Attribute a : set.getAttributes()) {
+                applyAttribute(v, a);
+            }
+        }
+    }
+    
+    
+    private boolean isViewGroupTag(String tag) {
+        return tag.equals("LinearLayout")
+        || tag.equals("RelativeLayout")
+        || tag.equals("FrameLayout")
+        || tag.equals("GridLayout")
+        || tag.equals("TableLayout")
+        || tag.equals("ConstraintLayout")
+        || tag.equals("CoordinatorLayout")
+        || tag.equals("MotionLayout");
+    }
+    
+    public String getXMLCode() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+        
+
+        sb.append("<LinearLayout\n")
+        .append("    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n")
+        .append("    android:layout_width=\"match_parent\"\n")
+        .append("    android:layout_height=\"match_parent\"\n")
+        .append("    android:orientation=\"vertical\"\n")
+        .append("    android:background=\"#FFFFFF\">\n");
+        
+
+        for (int i = 0; i < editorLayout.getChildCount(); i++) {
+            View child = editorLayout.getChildAt(i);
+            String childXml = generateCode(child);
+            sb.append(indent(childXml, 4)).append("\n");
+        }
+        
+        sb.append("</LinearLayout>");
+        return sb.toString();
+    }
+    
+    public class Listview_widgetsAdapter extends RecyclerView.Adapter<Listview_widgetsAdapter.ViewHolder> {
+        
+        private Context context;
+        private final ArrayList<HashMap<String, Object>> data;
+        
+        public Listview_widgetsAdapter(Context context, ArrayList<HashMap<String, Object>> data) {
+            this.context = context;
+            this.data = data;
+        }
+        
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(context).inflate(R.layout.list_widget, parent, false);
+            return new ViewHolder(v);
+        }
+        
+        @Override
+        public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+            HashMap<String, Object> item = data.get(position);
+            
+            int n = holder.lin_main.getId();
+            int n2 = TheBlockLogicsUtil.getDip(context, 18);
+            int n3 = TheBlockLogicsUtil.getDip(context, 18);
+            int n4 = TheBlockLogicsUtil.getDip(context, 0);
+            int n5 = TheBlockLogicsUtil.getDip(context, 2);
+            
+            GradientDrawable gradientDrawable = TheBlockLogicsUtil.getGradient(
+            context, 1, Color.parseColor("#DDDDDD"), -1
+            );
+            gradientDrawable.setCornerRadius((float) n4);
+            
+            holder.lin_main.setElevation(2f);
+            holder.lin_main.setGravity(Gravity.CENTER_VERTICAL);
+            holder.lin_main.setPadding(n5, n5, n5, n5);
+
+            
+
+            holder.ivIcon.setPadding(n5, n5, n5, n5);
+
+            
+
+            if (item.containsKey("icon")) {
+                String iconName = item.get("icon").toString();
+                int resId = context.getResources()
+                .getIdentifier(iconName, "drawable", context.getPackageName());
+                if (resId != 0) {
+                    holder.ivIcon.setImageResource(resId);
+                    holder.ivIcon.setVisibility(View.VISIBLE);
+                } else {
+                    holder.ivIcon.setVisibility(View.GONE);
+                }
+            } else {
+                holder.ivIcon.setVisibility(View.GONE);
+            }
+            
+
+            if (item.containsKey("name")) {
+                holder.tvName.setText(item.get("name").toString());
+            } else {
+                holder.tvName.setText("LinearLayout");
+            }
+            holder.tvName.setTextColor(Color.parseColor("#555555"));
+            holder.tvName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+            holder.tvName.setSingleLine();
+            
+            holder.lin_main.setOnLongClickListener(
+            new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    unselectSelectedWidget();
+                    
+                    DragAndDropUtils.startDragAndDrop(
+                    v,
+                    null,
+                    new View.DragShadowBuilder(holder.lin_main),
+                    data.get(position),
+                    1
+                    );
+                    
+                    unselectSelectedWidget();
+                    return true;
+                }
+            }
+            );
+            
+        }
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+        
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            final LinearLayout lin_main;
+            final TextView tvName;
+            final ImageView ivIcon;
+            
+            public ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                lin_main = itemView.findViewById(R.id.lin_main);
+                tvName = itemView.findViewById(R.id.title);
+                ivIcon = itemView.findViewById(R.id.icon);
+            }
+        }
+    }
+    
+    
+    
+    public /*static*/ void showProperties() {
+        LinearLayoutCompat base = attributesContainer;
+        base.setVisibility(View.VISIBLE);
+        anim.setTarget(base);
+        anim.setProperty(View.TRANSLATION_Y);
+        anim.setFloatValues(new float[]{(float) 0});
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.start();
+    }
+    
+    public /*static */void hideProperties() {
+        unselectSelectedWidget();
+        LinearLayoutCompat base = attributesContainer;
+        anim.setTarget(base);
+        anim.setProperty(View.TRANSLATION_Y);
+        anim.setFloatValues(new float[]{(float) base.getHeight()});
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.start();
+    }
+    
+    public void unselectSelectedWidget()
+    {
+        if (selectedView != null) {
+
+            AttributeSet attrSet = attributesValueMap.get(selectedView);
+            if (attrSet != null) {
+                Attribute bgColorAttr = attrSet.getAttribute("android:background");
+                if (bgColorAttr != null) {
+
+                    String colorValue = bgColorAttr.getValue();
+                    try {
+                        int color = Color.parseColor(colorValue);
+                        selectedView.setBackgroundColor(color);
+                    } catch (Exception e) {
+
+                    }
+                } else {
+
+                    Drawable original = originalBackgrounds.get(selectedView);
+                    if (original != null) {
+                        selectedView.setBackground(original);
+                    } else {
+                        selectedView.setBackground(null);
+                    }
+                }
+            }
+            selectedView = null;
+        }
+    }
+    
+    public boolean isHiddenProperties() {
+        return attributesContainer.getTranslationY() == ((float) attributesContainer.getHeight());
+    }
+    
+    public boolean undo() {
+        if (undoStack.isEmpty()) {
+            SketchwareUtil.showMessage(getContext(), "Nothing to undo");
+            return false;
+        }
+        
+        isUndoRedoInProgress = true;
+        try {
+            EditorAction action = undoStack.pop();
+            redoStack.push(createCurrentStateAction());
+            
+
+            if (action.xmlSnapshot != null && !action.xmlSnapshot.isEmpty()) {
+                restoreFromXmlSnapshot(action.xmlSnapshot);
+            } else {
+
+                performUndoAction(action);
+            }
+            
+            SketchwareUtil.showMessage(getContext(), "Undo completed");
+            return true;
+        } catch (Exception e) {
+            SketchwareUtil.showMessage(getContext(), "Undo error: " + e.getMessage());
+            Log.e("ViewEditor", "Undo failed", e);
+            return false;
+        } finally {
+            isUndoRedoInProgress = false;
+        }
+    }
+    
+
+    public boolean redo() {
+        if (redoStack.isEmpty()) {
+            SketchwareUtil.showMessage(getContext(), "Nothing to redo");
+            return false;
+        }
+        
+        isUndoRedoInProgress = true;
+        try {
+            EditorAction action = redoStack.pop();
+            undoStack.push(createCurrentStateAction());
+            
+            if (action.xmlSnapshot != null && !action.xmlSnapshot.isEmpty()) {
+                restoreFromXmlSnapshot(action.xmlSnapshot);
+            } else {
+                performRedoAction(action);
+            }
+            
+            SketchwareUtil.showMessage(getContext(), "Redo completed");
+            return true;
+        } catch (Exception e) {
+            SketchwareUtil.showMessage(getContext(), "Redo error: " + e.getMessage());
+            Log.e("ViewEditor", "Redo failed", e);
+            return false;
+        } finally {
+            isUndoRedoInProgress = false;
+        }
+    }
+    
+    private EditorAction createCurrentStateAction() {
+        String xmlState = getXMLCode();
+        return new EditorAction(
+        ACTION_UPDATE_ATTR, null, null, -1,
+        null, null, getCurrentActivityName(), xmlState
+        );
+    }
+    
+    public static List<String> getIdsByType(String type) {
+        List<String> ids = new ArrayList<>();
+        for (View view : idManager.getViews()) {
+            String className = view.getClass().getSimpleName();
+            if (type.equalsIgnoreCase("all") || className.equalsIgnoreCase(type)) {
+                ids.add(idManager.getId(view));
+            }
+        }
+        return ids;
+    }
+    
+    
+    public static Map<String, String> getIdsWithClass(String type, String activityName) {
+        Map<String, String> ids = new LinkedHashMap<>(); // maintain order
+        
+        String layoutFilePath = SAVE_PATH + "/root_layout.json";
+        if (!FileUtil.isExistFile(layoutFilePath)) {
+            Log.e("ViewEditor", "Layout file not found: " + layoutFilePath);
+            return ids;
+        }
+        
+        try {
+            ArrayList<HashMap<String, Object>> layoutList = new Gson().fromJson(
+            FileUtil.readFile(layoutFilePath),
+            new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType()
+            );
+            
+            HashMap<String, Object> targetLayout = null;
+            for (HashMap<String, Object> layout : layoutList) {
+                if (activityName.equals(layout.get("name"))) {
+                    targetLayout = layout;
+                    break;
+                }
+            }
+            
+            if (targetLayout == null) {
+                Log.e("ViewEditor", "Layout not found: " + activityName);
+                return ids;
+            }
+            
+            String xmlContent = (String) targetLayout.get("xml");
+            
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = factory.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(new StringReader(xmlContent));
+            
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    String tagName = parser.getName(); // full XML class name
+                    String viewId = null;
+                    
+                    for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if ("android:id".equals(parser.getAttributeName(i))) {
+                            viewId = AttributeUtils.getName(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                    
+                    if (viewId != null && !viewId.isEmpty()) {
+                        if ("all".equalsIgnoreCase(type) || tagName.equalsIgnoreCase(type)) {
+                            ids.put(viewId, tagName); // store full class name
+                        }
+                    }
+                }
+                eventType = parser.next();
+            }
+            
+        } catch (Exception e) {
+            Log.e("ViewEditor", "Error loading IDs by type: " + e.getMessage(), e);
+        }
+        
+        return ids;
+    }
+    
+    
+    private String cleanXML(String xmlCode) {
+
+        xmlCode = xmlCode.replaceAll("(?m)^\\s*xmlns:android=\"http://schemas.android.com/apk/res/android\"\\s*$", "");
+
+        if (!xmlCode.contains("xmlns:android")) {
+            xmlCode = xmlCode.replaceFirst("<(\\w+)", "<$1 xmlns:android=\"http://schemas.android.com/apk/res/android\"");
+        }
+
+        xmlCode = xmlCode.replaceAll("android:id=\"@\\+id/\"", "");
+        xmlCode = xmlCode.replaceAll("android:id=\"@\\+id/\\s*\"", "");
+
+        xmlCode = xmlCode.replaceAll("\\s+\n", "\n").trim();
+        return xmlCode;
+    }
+    
+    private boolean validateXML(String xmlContent) {
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = factory.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(new StringReader(xmlContent));
+            parser.nextTag(); // Ensure it starts with a tag
+            return true;
+        } catch (XmlPullParserException | IOException e) {
+            Log.e("ViewEditor", "XML validation failed: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    private View createPlaceholderOrStandardView(String tag) {
+        switch (tag) {
+            case "WebView":
+            return new PlaceholderWebView(getContext());
+            case "VideoView":
+            case "ViewPager":
+            return new PlaceholderWidget(getContext(), tag);
+            default:
+            try {
+                View view = ReflectionUtils.createView(getContext(), "android.widget." + tag);
+                if (view != null) {
+                    setDefaultTextSize(view); // Add this
+                    return view;
+                }
+                view = ReflectionUtils.createView(getContext(), tag);
+                if (view != null) {
+                    setDefaultTextSize(view); // Add this
+                    return view;
+                }
+            } catch (ClassNotFoundException |
+            InstantiationException |
+            InvocationTargetException |
+            NoSuchMethodException |
+            IllegalAccessException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return null;
+    }
+    
+    private void setupImportedView(View view) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = idManager.getId(v);
+                if (id != null && viewItems != null) {
+                    viewItems.selectId(id);
+                }
+                
+                showAttributesDialog(v);
+            }
+        });
+        _rearrangeListener(view);
+        
+        if (view instanceof ViewGroup) {
+            ((ViewGroup) view).setOnDragListener(dragListener);
+            ((ViewGroup) view).setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+        }
+        
+        view.setMinimumWidth((int) SketchwareUtil.getDip(getContext(), 50));
+        view.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+    }
+    
+    
+    private void restorePreviousStateOnFailure() {
+
+        if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
+
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    idManager = oldIdManager;
+                    attributesValueMap = oldAttributesValueMap;
+                    editorLayout.removeAllViews();
+                    for (View v : oldAttributesValueMap.keySet()) {
+                        if (v.getParent() == null) {
+                            editorLayout.addView(v);
+                        }
+                    }
+                }
+            });
+            return;
+        }
+        
+
+        idManager = oldIdManager;
+        attributesValueMap = oldAttributesValueMap;
+        editorLayout.removeAllViews();
+        for (View v : oldAttributesValueMap.keySet()) {
+            if (v.getParent() == null) {
+                editorLayout.addView(v);
+            }
+        }
+    }
+    
+    private String getStringResourceValue(String scId, String resourceName) {
+        String filePath = "/storage/emulated/0/.blacklogics/data/" + scId + "/files/resource/values/strings.xml";
+        File file = new File(filePath);
+        
+        if (!file.exists()) {
+            Log.e("ViewEditor", "strings.xml not found at: " + filePath);
+            return null;
+        }
+        
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = factory.newPullParser();
+            parser.setInput(new FileInputStream(file), "UTF-8");
+            
+            String currentName = null;
+            StringBuilder currentValue = new StringBuilder();
+            int eventType = parser.getEventType();
+            
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && "string".equals(parser.getName())) {
+                    currentName = parser.getAttributeValue(null, "name");
+                } else if (eventType == XmlPullParser.TEXT && currentName != null) {
+                    currentValue.append(parser.getText());
+                } else if (eventType == XmlPullParser.END_TAG && "string".equals(parser.getName())) {
+                    if (currentName != null && currentName.equals(resourceName)) {
+                        return currentValue.toString();
+                    }
+                    currentName = null;
+                    currentValue.setLength(0);
+                }
+                eventType = parser.next();
+            }
+        } catch (XmlPullParserException | IOException e) {
+            Log.e("ViewEditor", "Error parsing strings.xml: " + e.getMessage(), e);
+        }
+        
+        return null;
+    }
+    
+    private void handleWidgetConversion(View originalView, String customClassName) {
+        try {
+            if (customClassName == null || customClassName.trim().isEmpty()) {
+                return;
+            }
+            
+            
+
+            AttributeSet originalAttributes = attributesValueMap.get(originalView);
+            String originalId = idManager.getId(originalView);
+            ViewGroup parent = (ViewGroup) originalView.getParent();
+            int index = parent.indexOfChild(originalView);
+            
+
+            View customView;
+            try {
+
+                customView = ReflectionUtils.createView(getContext(), customClassName);
+            } catch (Exception e) {
+                try {
+
+                    customView = ReflectionUtils.createView(getContext(), "android.widget." + customClassName);
+                } catch (Exception e2) {
+                    try {
+
+                        customView = ReflectionUtils.createView(getContext(), "androidx.appcompat.widget." + customClassName);
+                    } catch (Exception e3) {
+
+                        return;
+                    }
+                }
+            }
+            
+            if (customView != null) {
+
+                ViewGroup.LayoutParams params = originalView.getLayoutParams();
+                customView.setLayoutParams(params);
+                
+
+                customView.setPadding(
+                originalView.getPaddingLeft(),
+                originalView.getPaddingTop(),
+                originalView.getPaddingRight(),
+                originalView.getPaddingBottom()
+                );
+                
+
+                if (originalAttributes != null) {
+                    for (Attribute attr : originalAttributes.getAttributes()) {
+                        if (!"app:convertedWidget".equals(attr.getName())) {
+                            applyAttribute(customView, attr);
+                        }
+                    }
+                }
+                
+
+                _rearrangeListener(customView);
+                customView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String id = idManager.getId(v);
+                        if (id != null && viewItems != null) {
+                            viewItems.selectId(id);
+                        }
+                        
+                        showAttributesDialog(v);
+                    }
+                });
+                if (customView instanceof ViewGroup) {
+                    customView.setOnDragListener(dragListener);
+                }
+                
+                idManager.addNewId(customView, originalId);
+                attributesValueMap.put(customView, originalAttributes);
+                
+
+                parent.removeViewAt(index);
+                parent.addView(customView, index);
+                
+                String activityName = getCurrentActivityName();
+                String widgetType = getWidgetTypeName(customView);
+                saveWidgetInfo(activityName, widgetType, originalId);
+                
+
+                
+                if (!isUndoRedoInProgress) {
+                    saveStateForUndo("convert_widget");
+                }
+                
+
+                ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+                String xmlCode = generateCode(rootView);
+            }
+            
+        } catch (Exception e) {
+            SketchwareUtil.showMessage(getContext(), "Conversion error: " + e.getMessage());
+            Log.e("ViewEditor", "Widget conversion failed", e);
+        }
+    }
+    
+    private void showConvertWidgetDialog(final View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+        dialog.setTitle("Convert Widget");
+        
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 30, 50, 30);
+        
+        TextView hintText = new TextView(getContext());
+        hintText.setText("Enter custom widget class name:\nExamples: MaterialButton, CardView, SearchView");
+        hintText.setTextSize(12);
+        hintText.setTextColor(0xFF666666);
+        hintText.setPadding(0, 0, 0, 20);
+        
+        final EditText editText = new EditText(getContext());
+        editText.setHint("android.widget.SearchView");
+        editText.setSingleLine(true);
+        
+
+        attrSet = attributesValueMap.get(view);
+        if (attrSet != null) {
+            Attribute convertAttr = attrSet.getAttribute("app:convertedWidget");
+            if (convertAttr != null) {
+                editText.setText(convertAttr.getValue());
+            }
+        }
+        
+        layout.addView(hintText);
+        layout.addView(editText);
+        
+        dialog.setView(layout);
+        dialog.setPositiveButton("Convert", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface _dialog, int _which) {
+                String className = editText.getText().toString().trim();
+                if (!className.isEmpty()) {
+
+                    Attribute convertAttr = new Attribute("app:convertedWidget", className);
+                    if (attrSet == null) {
+                        attrSet = new AttributeSet();
+                        attributesValueMap.put(view, attrSet);
+                    }
+                    attrSet.add(convertAttr);
+                    
+
+                    handleWidgetConversion(view, className);
+                }
+            }
+        });
+        dialog.setNegativeButton("Cancel", null);
+        
+        dialog.show();
+    }
+    
+    private String[] getCommonWidgetSuggestions() {
+        return new String[]{
+            "android.widget.SearchView",
+            "androidx.cardview.widget.CardView",
+            "com.google.android.material.button.MaterialButton",
+            "com.google.android.material.card.MaterialCardView",
+            "com.google.android.material.textfield.TextInputLayout",
+            "androidx.appcompat.widget.Toolbar",
+            "androidx.recyclerview.widget.RecyclerView",
+            "androidx.viewpager2.widget.ViewPager2",
+            "android.widget.ProgressBar",
+            "android.widget.RatingBar"
+        };
+    }
+    private void setupCheckboxToggle(
+    final CheckBox checkBox,
+    final EditText editText,
+    final EditText[] linkedEditTexts) {
+        
+        checkBox.setChecked(true); // Default checked
+        
+        checkBox.setOnCheckedChangeListener(
+        new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(
+            CompoundButton buttonView,
+            boolean isChecked) {
+                
+                editText.setEnabled(isChecked);
+                editText.setVisibility(
+                isChecked ? View.VISIBLE : View.GONE
+                );
+                
+
+                if (linkedEditTexts != null) {
+                    for (int i = 0; i < linkedEditTexts.length; i++) {
+                        EditText linkedEt = linkedEditTexts[i];
+                        linkedEt.setEnabled(isChecked);
+                        linkedEt.setVisibility(
+                        isChecked ? View.VISIBLE : View.GONE
+                        );
+                    }
+                }
+            }
+        }
+        );
+    }
+    
+    private void applyPaddingToView(View view, EditText etLeft, EditText etTop, EditText etRight, EditText etBottom,
+    CheckBox cbLeft, CheckBox cbTop, CheckBox cbRight, CheckBox cbBottom) {
+        try {
+            int left = cbLeft.isChecked() && !TextUtils.isEmpty(etLeft.getText()) ? 
+            (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etLeft.getText().toString())) : view.getPaddingLeft();
+            
+            int top = cbTop.isChecked() && !TextUtils.isEmpty(etTop.getText()) ? 
+            (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etTop.getText().toString())) : view.getPaddingTop();
+            
+            int right = cbRight.isChecked() && !TextUtils.isEmpty(etRight.getText()) ? 
+            (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etRight.getText().toString())) : view.getPaddingRight();
+            
+            int bottom = cbBottom.isChecked() && !TextUtils.isEmpty(etBottom.getText()) ? 
+            (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etBottom.getText().toString())) : view.getPaddingBottom();
+            
+            view.setPadding(left, top, right, bottom);
+            view.requestLayout();
+            
+
+            AttributeSet attrSet = attributesValueMap.get(view);
+            if (attrSet == null) {
+                attrSet = new AttributeSet();
+                attributesValueMap.put(view, attrSet);
+            }
+            
+
+            if (cbLeft.isChecked()) {
+                attrSet.add(new Attribute("android:paddingLeft", etLeft.getText().toString() + "dp"));
+            }
+            if (cbTop.isChecked()) {
+                attrSet.add(new Attribute("android:paddingTop", etTop.getText().toString() + "dp"));
+            }
+            if (cbRight.isChecked()) {
+                attrSet.add(new Attribute("android:paddingRight", etRight.getText().toString() + "dp"));
+            }
+            if (cbBottom.isChecked()) {
+                attrSet.add(new Attribute("android:paddingBottom", etBottom.getText().toString() + "dp"));
+            }
+            
+        } catch (NumberFormatException e) {
+            SketchwareUtil.showMessage(getContext(), "Invalid padding values");
+        }
+    }
+    
+    private void applyMarginToView(View view, EditText etLeft, EditText etTop, EditText etRight, EditText etBottom,
+    CheckBox cbLeft, CheckBox cbTop, CheckBox cbRight, CheckBox cbBottom) {
+        try {
+            ViewGroup.LayoutParams params = view.getLayoutParams();
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+                
+                marginParams.leftMargin = cbLeft.isChecked() && !TextUtils.isEmpty(etLeft.getText()) ? 
+                (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etLeft.getText().toString())) : marginParams.leftMargin;
+                
+                marginParams.topMargin = cbTop.isChecked() && !TextUtils.isEmpty(etTop.getText()) ? 
+                (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etTop.getText().toString())) : marginParams.topMargin;
+                
+                marginParams.rightMargin = cbRight.isChecked() && !TextUtils.isEmpty(etRight.getText()) ? 
+                (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etRight.getText().toString())) : marginParams.rightMargin;
+                
+                marginParams.bottomMargin = cbBottom.isChecked() && !TextUtils.isEmpty(etBottom.getText()) ? 
+                (int) SketchwareUtil.getDip(getContext(), Integer.parseInt(etBottom.getText().toString())) : marginParams.bottomMargin;
+                
+                view.setLayoutParams(marginParams);
+                
+
+                AttributeSet attrSet = attributesValueMap.get(view);
+                if (attrSet == null) {
+                    attrSet = new AttributeSet();
+                    attributesValueMap.put(view, attrSet);
+                }
+                
+
+                if (cbLeft.isChecked()) {
+                    attrSet.add(new Attribute("android:layout_marginLeft", etLeft.getText().toString() + "dp"));
+                }
+                if (cbTop.isChecked()) {
+                    attrSet.add(new Attribute("android:layout_marginTop", etTop.getText().toString() + "dp"));
+                }
+                if (cbRight.isChecked()) {
+                    attrSet.add(new Attribute("android:layout_marginRight", etRight.getText().toString() + "dp"));
+                }
+                if (cbBottom.isChecked()) {
+                    attrSet.add(new Attribute("android:layout_marginBottom", etBottom.getText().toString() + "dp"));
+                }
+            }
+        } catch (NumberFormatException e) {
+            SketchwareUtil.showMessage(getContext(), "Invalid margin values");
+        }
+    }
+    private void showPaddingDialog(final View view) {
+        new DimensionEditorDialog(
+        getContext(),
+        view,
+        DimensionType.PADDING,
+        new Runnable() {
+            @Override
+            public void run() {
+                saveStateForUndo("change_padding");
+            }
+        }
+        ).show();
+        
+    }
+    private void showMarginDialog(final View view) {
+        new DimensionEditorDialog(
+        getContext(),
+        view,
+        DimensionType.MARGIN,
+        new Runnable() {
+            @Override
+            public void run() {
+                saveStateForUndo("change_margin");
+            }
+        }
+        ).show();
+        
+    }
+    private String getCurrentActivityName() {
+        return (designActivity.activityBean != null)
+        ? designActivity.activityBean.getActivityName()
+        : "MainActivity";
+    }
+    
+    private void addAction(EditorAction action) {
+        String activityName = action.activityName;
+        if (!undoStacks.containsKey(activityName)) {
+            undoStacks.put(activityName, new Stack<EditorAction>());
+            redoStacks.put(activityName, new Stack<EditorAction>());
+        }
+        undoStacks.get(activityName).push(action);
+        redoStacks.get(activityName).clear(); // Clear redo after new action
+    }
+    
+    public static void saveWidgetInfo(String activityName, String widgetType, String widgetId) {
+    }
+    
+    
+    public int parseDimension(String dimensionValue) {
+        if (dimensionValue == null || dimensionValue.isEmpty()) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        
+        if (dimensionValue.equalsIgnoreCase("match_parent")) {
+            return ViewGroup.LayoutParams.MATCH_PARENT;
+        }
+        if (dimensionValue.equalsIgnoreCase("wrap_content")) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        
+        String lowerCaseValue = dimensionValue.toLowerCase();
+        
+        if (lowerCaseValue.endsWith("dp")) {
+            try {
+                float value = Float.parseFloat(lowerCaseValue.substring(0, lowerCaseValue.length() - 2));
+                
+                return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                value,
+                getContext().getResources().getDisplayMetrics()
+                );
+            } catch (NumberFormatException e) {
+                return ViewGroup.LayoutParams.WRAP_CONTENT; 
+            }
+        }
+        
+        
+        return ViewGroup.LayoutParams.WRAP_CONTENT; 
+    }
+    
+    
+    private String getWidgetTypeName(View view) {
+        String className = view.getClass().getSimpleName();
+
+        if (className.startsWith("Widget")) {
+            return className.substring(6);  // Remove "Widget" prefix
+        }
+        return className;
+    }
+    
+    private void setupClickListener(final View view) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = idManager.getId(v);
+                if (id != null && viewItems != null) {
+                    viewItems.selectId(id);
+                }
+                
+                showAttributesDialog(v); // Attributes dialog
+                Log.d("ViewEditor", "onClick triggered on normal view: " + view.getClass().getSimpleName());
+            }
+        });
+    }
+    
+    public void setDefaultTextSize(View view) {
+        if (view instanceof TextView) {
+            ((TextView) view).setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        }
+    }
+    
+    
+    private String getWidgetTypeFromView(View view) {
+        AttributeSet attrSet = attributesValueMap.get(view);
+        if (attrSet != null) {
+
+            Attribute convertAttr = attrSet.getAttribute("app:convertedWidget");
+            if (convertAttr != null && !convertAttr.getValue().trim().isEmpty()) {
+                String fullClassName = convertAttr.getValue().trim(); 
+                
+                int lastDot = fullClassName.lastIndexOf('.');
+                if (lastDot != -1 && lastDot < fullClassName.length() - 1) {
+                    return fullClassName.substring(lastDot + 1); // "SearchView"
+                }
+                return fullClassName; 
+            }
+        }
+        
+
+        String simpleName = view.getClass().getSimpleName();
+        if (simpleName == null || simpleName.isEmpty()) {
+            return "View"; // Fallback
+        }
+        
+
+        if (simpleName.startsWith("Widget")) {
+            simpleName = simpleName.substring(6); // 6 chars after "Widget"
+            if (simpleName.isEmpty()) simpleName = "View";
+        }
+        
+
+        switch (simpleName.toLowerCase()) {
+            case "imagebutton": return "ImageButton";
+            case "linearlayoutcompat": return "LinearLayout"; // Compat classes normalize
+            case "constraintlayout": return "ConstraintLayout";
+            default: return simpleName;
+        }
+    }
+    @Deprecated
+    public void showMessage(String _s) {
+        Toast.makeText(getContext(), _s, Toast.LENGTH_SHORT).show();
+    }
+    
+    
+    @Deprecated
+    public float getDip(int _input) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, _input, getResources().getDisplayMetrics());
+    }
+    
+    @Deprecated
+    public int getDisplayWidthPixels() {
+        return getResources().getDisplayMetrics().widthPixels;
+    }
+    
+    @Deprecated
+    public int getDisplayHeightPixels() {
+        return getResources().getDisplayMetrics().heightPixels;
+    }
+    public void removeViewWithUndo(View view) {
+        if (!isUndoRedoInProgress) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            int index = parent.indexOfChild(view);
+            String viewId = idManager.getId(view);
+            AttributeSet attributes = attributesValueMap.get(view);
+            
+            EditorAction action = new EditorAction(
+            ACTION_REMOVE_VIEW, view, parent, index,
+            attributes, null, getCurrentActivityName(), null
+            );
+            undoStack.push(action);
+            redoStack.clear();
+        }
+        
+        ViewGroup parent = (ViewGroup) view.getParent();
+        if (parent != null) {
+            parent.removeView(view);
+        }
+        idManager.remove(view);
+        attributesValueMap.remove(view);
+    }
+    
+
+    public void clearUndoRedoHistory() {
+        undoStack.clear();
+        redoStack.clear();
+    }
+    
+
+    public boolean canUndo() {
+        return !undoStack.isEmpty();
+    }
+    
+    public boolean canRedo() {
+        return !redoStack.isEmpty();
+    }
+    
+
+    public int getUndoStackSize() {
+        return undoStack.size();
+    }
+    
+    public int getRedoStackSize() {
+        return redoStack.size();
+    }
+    
+    public void saveStateForUndo(String actionType) {
+        if (isUndoRedoInProgress) return;
+        
+        try {
+            String xmlState = getXMLCode();
+            EditorAction action = new EditorAction(
+            ACTION_UPDATE_ATTR, null, null, -1,
+            null, null, getCurrentActivityName(), xmlState
+            );
+            undoStack.push(action);
+            redoStack.clear();
+            
+
+            if (undoStack.size() > 50) {
+                undoStack.remove(0);
+            }
+        } catch (Exception e) {
+            Log.e("ViewEditor", "Error saving undo state: " + e.getMessage());
+        }
+    }
+    
+    private void performUndoAction(EditorAction action) {
+        switch (action.actionType) {
+            case ACTION_ADD_VIEW:
+            if (action.parent != null && action.view != null) {
+                action.parent.removeView(action.view);
+                idManager.remove(action.view);
+                attributesValueMap.remove(action.view);
+            }
+            break;
+            
+            case ACTION_REMOVE_VIEW:
+            if (action.parent != null && action.view != null) {
+                action.parent.addView(action.view, Math.min(action.index, action.parent.getChildCount()));
+                idManager.addNewId(action.view, action.viewId);
+                
+                if (action.oldAttributes != null) {
+                    attributesValueMap.put(action.view, action.oldAttributes);
+                    for (Attribute attr : action.oldAttributes.getAttributes()) {
+                        applyAttribute(action.view, attr);
+                    }
+                }
+            }
+            break;
+            
+            case ACTION_UPDATE_ATTR:
+            if (action.view != null && action.oldAttributes != null) {
+                attributesValueMap.put(action.view, action.oldAttributes);
+                for (Attribute attr : action.oldAttributes.getAttributes()) {
+                    applyAttribute(action.view, attr);
+                }
+            }
+            break;
+        }
+    }
+    
+    private View createViewFromTag(String tagName) {
+        try {
+
+            if (tagName.contains(".")) {
+                return ReflectionUtils.createView(getContext(), tagName);
+            } else {
+                return ReflectionUtils.createView(getContext(), "android.widget." + tagName);
+            }
+        } catch (Exception e) {
+            Log.e("ViewEditor", "Failed to create view for tag: " + tagName, e);
+            return null;
+        }
+    }
+    private void restoreFromXmlSnapshot(String xmlSnapshot) {
+        try {
+
+            editorLayout.removeAllViews();
+            idManager = new IdManager();
+            attributesValueMap.clear();
+            
+
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = factory.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(new StringReader(xmlSnapshot));
+            
+            ArrayList<View> viewStack = new ArrayList<>();
+            viewStack.add(editorLayout);
+            
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    String tagName = parser.getName();
+                    if ("LinearLayout".equals(tagName) && parser.getDepth() == 2) {
+
+                        eventType = parser.next();
+                        continue;
+                    }
+                    
+                    View view = createViewFromTag(tagName);
+                    if (view != null) {
+                        setupImportedView(view);
+                        
+                        AttributeSet attrSet = new AttributeSet();
+                        attributesValueMap.put(view, attrSet);
+                        
+
+                        for (int i = 0; i < parser.getAttributeCount(); i++) {
+                            String attrName = parser.getAttributeName(i);
+                            String attrValue = parser.getAttributeValue(i);
+                            
+                            if ("android:id".equals(attrName)) {
+                                String id = AttributeUtils.getName(attrValue);
+                                idManager.addNewId(view, id);
+                            }
+                            
+                            attrSet.add(new Attribute(attrName, attrValue));
+                        }
+                        
+                        viewStack.add(view);
+                    }
+                } else if (eventType == XmlPullParser.END_TAG && viewStack.size() > 1) {
+                    View child = viewStack.remove(viewStack.size() - 1);
+                    ViewGroup parent = (ViewGroup) viewStack.get(viewStack.size() - 1);
+                    
+
+                    if (parent == editorLayout) {
+
+                        editorLayout.addView(child);
+                    } else {
+
+                        parent.addView(child);
+                    }
+                    
+
+                    AttributeSet childAttrSet = attributesValueMap.get(child);
+                    if (childAttrSet != null) {
+                        for (Attribute attr : childAttrSet.getAttributes()) {
+                            applyAttribute(child, attr);
+                        }
+                    }
+                }
+                
+                eventType = parser.next();
+            }
+            
+        } catch (Exception e) {
+            Log.e("ViewEditor", "Error restoring from XML snapshot", e);
+            throw new RuntimeException("Failed to restore layout", e);
+        }
+    }
+    
+    private void performRedoAction(EditorAction action) {
+        switch (action.actionType) {
+            case ACTION_ADD_VIEW:
+            if (action.parent != null && action.view != null) {
+                action.parent.addView(action.view, Math.min(action.index, action.parent.getChildCount()));
+                idManager.addNewId(action.view, action.viewId);
+                
+                if (action.newAttributes != null) {
+                    attributesValueMap.put(action.view, action.newAttributes);
+                    for (Attribute attr : action.newAttributes.getAttributes()) {
+                        applyAttribute(action.view, attr);
+                    }
+                }
+            }
+            break;
+            
+            case ACTION_REMOVE_VIEW:
+            if (action.parent != null && action.view != null) {
+                action.parent.removeView(action.view);
+                idManager.remove(action.view);
+                attributesValueMap.remove(action.view);
+            }
+            break;
+            
+            case ACTION_UPDATE_ATTR:
+            if (action.view != null && action.newAttributes != null) {
+                attributesValueMap.put(action.view, action.newAttributes);
+                for (Attribute attr : action.newAttributes.getAttributes()) {
+                    applyAttribute(action.view, attr);
+                } 
+            }
+            break;
+        }
+    }
+    
+    private void applyContainerStroke(View view) {
+        if (view instanceof ViewGroup) {
+            int dp = (int) SketchwareUtil.getDip(getContext(), 1);
+            view.setBackground(UiUtils.createStrokedBackground(0, 0xFF000000, dp));
+        }
+    }
+    private void showMaterialWidgetDialog(final Context context, final ArrayList<HashMap<String, Object>> viewsList) {
+        
+        new WidgetClassPickerDialog(
+        context,
+        new OnWidgetClassSelectedListener() {
+            @Override
+            public void onWidgetClassSelected(
+            String widgetName,
+            String classPath
+            ) {
+                
+                HashMap<String, Object> map =
+                new HashMap<String, Object>();
+                
+                map.put("name", widgetName);
+                map.put("class_path", classPath);
+                
+                viewsList.add(map);
+            }
+        }
+        ).show();
+        
+    }
+    
+    private class DragListener implements View.OnDragListener {
+        
+        @Override
+        public boolean onDrag(View destinationView, DragEvent event) {
+            View draggedView = null;
+            if (event.getLocalState() instanceof View) {
+                draggedView = (View) event.getLocalState();
+            }
+            
+            try {
+                switch (event.getAction()) {
+                    
+                    case DragEvent.ACTION_DRAG_STARTED:
+                    log("drag started on " + destinationView);
+                    if (draggedView != null) {
+                        ViewGroupUtils.removeView(draggedView);
+                    }
+                    return true;
+                    
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                    log("drag entered/location on " + destinationView);
+                    addView(placeHolder, (ViewGroup) destinationView, event);
+                    return true;
+                    
+                    case DragEvent.ACTION_DRAG_EXITED:
+                    ViewGroupUtils.removeView(placeHolder);
+                    return true;
+                    
+                    case DragEvent.ACTION_DROP:
+                    if (draggedView == null) {
+
+                        try {
+                            HashMap<String, Object> viewData = (HashMap<String, Object>) event.getLocalState();
+                            View newView = ReflectionUtils.createView(getContext(), viewData.get("class_path").toString());
+                            
+
+                            newView.setMinimumHeight((int) SketchwareUtil.getDip(getContext(), 30));
+                            newView.setMinimumWidth((int) SketchwareUtil.getDip(getContext(), 30));
+                            
+                            _rearrangeListener(newView);
+
+                            newView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    String id = idManager.getId(v);
+                                    if (id != null && viewItems != null) {
+                                        viewItems.selectId(id);
+                                    }
+                                    
+                                    showAttributesDialog(v);
+                                }
+                            });
+                            
+
+                            ViewGroupUtils.removeView(placeHolder);
+                            addView(newView, (ViewGroup) destinationView, event);
+                            
+
+                            if (newView instanceof ViewGroup) {
+                                newView.setOnDragListener(dragListener);
+                                int dp = (int) SketchwareUtil.getDip(getContext(), 8);
+                                newView.setPadding(dp, dp, dp, dp);
+
+                                newView.setBackground(UiUtils.createStrokedBackground(0, 0xFF000000, 1));
+                            }
+                            
+
+                            String newId = idManager.generateNewId(newView);
+                            idManager.addNewId(newView, newId);
+                            
+                            AttributeSet attributeSet = new AttributeSet();
+                            attributesValueMap.put(newView, attributeSet);
+                            attributeSet.add(new Attribute("android:id", "@+id/" + newId));
+                            
+                            ViewGroup.LayoutParams params = newView.getLayoutParams();
+                            if (newView instanceof ViewGroup) {
+                                params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                attributeSet.add(new Attribute("android:layout_width", "match_parent"));
+                                attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
+                            } else {
+                                params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                attributeSet.add(new Attribute("android:layout_width", "wrap_content"));
+                                attributeSet.add(new Attribute("android:layout_height", "wrap_content"));
+                            }
+                            
+                            addInitialAttributes(newView, viewData);
+                            
+                            
+                            setDefaultTextSize(newView);
+                            
+
+                            if (!isUndoRedoInProgress) {
+                                saveStateForUndo("add_widget");
+                            }
+                            
+
+                            ViewGroup rootView = (ViewGroup) editorLayout.getChildAt(0);
+                            String xmlCode = generateCode(rootView);
+                            if (onWidgetAddListener != null) {
+                                onWidgetAddListener.onWidgetAdded(newView, (ViewGroup) destinationView);
+                            }
+                            
+                        } catch (Throwable t) {
+                            SketchwareUtil.showMessage(getContext(), "Create failed: " + t.getMessage());
+                        }
+                    } else {
+
+                        ViewGroupUtils.removeView(placeHolder);
+                        addView(draggedView, (ViewGroup) destinationView, event);
+                        
+                        if (!isUndoRedoInProgress) {
+                            saveStateForUndo("move_widget");
+                        }
+                    }
+                    return true;
+                    
+                    case DragEvent.ACTION_DRAG_ENDED:
+                    log("drag ended on " + destinationView);
+                    ViewGroupUtils.removeView(placeHolder);
+                    
+                    if (event.getResult()) {
+                        vib.vibrate(100);
+                    } else {
+                        if (draggedView != null) {
+                            idManager.remove(draggedView);
+                            attributesValueMap.remove(draggedView);
+                        }
+                    }
+                    draggedView = null;
+                    return true;
+                    
+                    default:
+                    break;
+                }
+            } catch (Exception e) {
+                showMessage(e.toString());
+            }
+            
+            return true;
+        }
+        
+
+        
+        private int getIndexForNewChildOfLinearLayout(LinearLayout linear, DragEvent dragEvent) {
+            int orientation = linear.getOrientation();
+            if (orientation == LinearLayout.VERTICAL) {
+                int posY = (int) dragEvent.getY();
+                int index = 0;
+                for (int i = 0; i < linear.getChildCount(); i++) {
+                    View child = linear.getChildAt(i);
+                    if (child == placeHolder) continue;
+                    if (child.getTop() < posY) index++;
+                }
+                return index;
+            } else if (orientation == LinearLayout.HORIZONTAL) {
+                int posX = (int) dragEvent.getX();
+                int index = 0;
+                for (int i = 0; i < linear.getChildCount(); i++) {
+                    View child = linear.getChildAt(i);
+                    if (child == placeHolder) continue;
+                    if (child.getRight() < posX) index++;
+                }
+                return index;
+            }
+            return -1;
+        }
+        
+        private int getGravityForNewChildOfFrameLayout(FrameLayout frameLayout, DragEvent event) {
+            int gravity = 0;
+            int posX = (int) event.getX();
+            int posY = (int) event.getY();
+            int height = frameLayout.getHeight();
+            int width = frameLayout.getWidth();
+            int childHeight = placeHolder.getLayoutParams().height;
+            int childWidth = placeHolder.getLayoutParams().width;
+            
+            if (posX > width / 2 - childWidth && posX < width / 2 + childWidth) {
+                gravity |= Gravity.CENTER_HORIZONTAL;
+            }
+            if (posY > height / 2 - childHeight && posY < height / 2 + childHeight) {
+                gravity |= Gravity.CENTER_VERTICAL;
+            }
+            if (posX > width - childWidth) {
+                gravity |= Gravity.RIGHT;
+            }
+            if (posY > height - childHeight) {
+                gravity |= Gravity.BOTTOM;
+            }
+            return gravity;
+        }
+        
+        private void addView(View view, ViewGroup destination, DragEvent event) {
+            try {
+                if (destination instanceof LinearLayout) {
+                    int index = getIndexForNewChildOfLinearLayout((LinearLayout) destination, event);
+                    ViewGroupUtils.addView(view, destination, index);
+                    return;
+                }
+                
+                if (destination instanceof FrameLayout) {
+                    ViewGroupUtils.addView(view, destination);
+                    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+                    params.gravity = getGravityForNewChildOfFrameLayout((FrameLayout) destination, event);
+                    return;
+                }
+                
+                ViewGroupUtils.addView(view, destination);
+            } catch (Exception e) {
+                SketchwareUtil.showMessage(getContext(), "Add failed: " + e.getMessage());
+            }
+        }
+        
+        private void addInitialAttributes(View view, HashMap<String, Object> map) {
+            if (map.containsKey("initial_attributes")) {
+                Map<String, String> initial_attributes = (Map<String, String>) map.get("initial_attributes");
+                for (String key : initial_attributes.keySet()) {
+                    Attribute attr = new Attribute(key, initial_attributes.get(key));
+                    applyAttribute(view, attr);
+                    attributesValueMap.get(view).add(attr);
+                }
+            }
+        }
+    }
+    
+}

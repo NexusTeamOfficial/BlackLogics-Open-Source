@@ -30,7 +30,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="4dp"
-				android:text="onCreate"
+				android:text="@string/default_event_name"
 				android:textSize="14sp"
 				android:focusable="false" />
 			<TextView
@@ -38,7 +38,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="4dp"
-				android:text="On activity create"
+				android:text="@string/default_event_desc"
 				android:textSize="12sp"
 				android:focusable="false" />
 		</LinearLayout>

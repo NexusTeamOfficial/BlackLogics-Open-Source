@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -27,8 +28,7 @@
                 android:layout_width="100dp"
                 android:layout_height="150dp"
                 android:src="@drawable/default_image"
-                android:scaleType="fitCenter"
-                android:focusable="false" />
+                android:scaleType="fitCenter" />
 
             <LinearLayout
                 android:id="@+id/linear5"
@@ -41,10 +41,9 @@
                     android:id="@+id/checkbox_status_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="StatusBar"
+                    android:text="Status Bar"
                     android:textSize="12sp"
-                    android:checked="true"
-                    android:focusable="false" />
+                    android:checked="true" />
 
                 <CheckBox
                     android:id="@+id/checkbox_toolbar"
@@ -52,24 +51,21 @@
                     android:layout_height="wrap_content"
                     android:text="Toolbar"
                     android:textSize="12sp"
-                    android:checked="true"
-                    android:focusable="false" />
+                    android:checked="true" />
 
                 <CheckBox
                     android:id="@+id/checkbox_drawer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Drawer"
-                    android:textSize="12sp"
-                    android:focusable="false" />
+                    android:textSize="12sp" />
 
                 <CheckBox
                     android:id="@+id/checkbox_fab"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="FAB"
-                    android:textSize="12sp"
-                    android:focusable="false" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -88,7 +84,10 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:hint="Enter name"
-                android:focusable="false" />
+                android:inputType="text"
+                android:focusable="true"
+                android:clickable="true"
+                android:focusableInTouchMode="true" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -99,8 +98,7 @@
             android:layout_marginTop="16dp"
             android:text="Type"
             android:textSize="12sp"
-            android:textStyle="bold"
-            android:focusable="false" />
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/radio_group_type"
@@ -114,21 +112,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_margin="5dp" />
+                android:text="Activity"
+                android:layout_margin="2dp" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radio_fragment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_margin="5dp" />
+                android:text="Fragment"
+                android:layout_margin="2dp" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radio_dialog_fragment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_margin="5dp" />
+                android:text="Dialog"
+                android:layout_margin="2dp" />
 
         </RadioGroup>
 
@@ -139,8 +140,7 @@
             android:layout_marginTop="16dp"
             android:text="Screen orientation"
             android:textSize="12sp"
-            android:textStyle="bold"
-            android:focusable="false" />
+            android:textStyle="bold" />
 
         <RadioGroup
             android:id="@+id/radio_group_orientation"
@@ -153,19 +153,22 @@
                 android:id="@+id/radio_portrait"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Portrait" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radio_landscape"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Landscape" />
 
             <com.google.android.material.radiobutton.MaterialRadioButton
                 android:id="@+id/radio_both"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="Both" />
 
         </RadioGroup>
 
@@ -173,7 +176,7 @@
             android:id="@+id/linear6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:orientation="horizontal"
             android:gravity="end">
 

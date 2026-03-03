@@ -8,12 +8,12 @@ android {
 	useLibrary 'org.apache.http.legacy'
 	
 	defaultConfig {
-		applicationId "com.besome.blacklogics"
-		namespace "com.besome.blacklogics"
+		applicationId "com.nexusteam.blacklogics"
+		namespace "com.nexusteam.blacklogics"
 		minSdkVersion 21
 		targetSdkVersion 35
-		versionCode 14591
-		versionName "0.0.5 alpha5"
+		versionCode 15564
+		versionName "0.0.6 alpha6"
 	}
 	
 	buildTypes {
@@ -35,5 +35,5 @@ dependencies {
 	implementation 'com.google.guava:guava:31.1-android'
 	implementation 'com.github.angads25:filepicker:1.1.1'
 	implementation 'com.github.angads25:filepicker:1.1.1'
-	implementation 'com.github.megatronking.stringfog:xor:5.0.0'
+	implementation 'com.github.angads25:filepicker:1.1.1'
 }
