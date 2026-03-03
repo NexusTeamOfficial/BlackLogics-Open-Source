@@ -56,7 +56,11 @@
 ### **Logic Workflow**
 ![Logic Editor](screenshots/s4.png.png)
 
----
+
+### 🚀 New: Package Refactor Tool
+Safely rename package with automatic import updates and directory restructuring.
+
+![Refactor Package](screenshots/Screenshot_20260303_124642.jpg)
 
 ---
 
