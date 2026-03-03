@@ -111,6 +111,30 @@ We believe in the power of open-source. Whether you are fixing bugs, improving t
 ## 📄 License
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for full details.
 
+---
+
+## 📜 Credits & Third-Party Acknowledgements
+
+At **BlackLogics**, we respect and value the open-source ecosystem.  
+This project integrates selected components from the following open-source repository:
+
+### 🔹 Logcat Integration Module
+
+- **Repository:** [YuriyTaras/logcat](https://github.com/YuriyTaras/logcat)  
+- **License:** Apache License 2.0  
+
+Portions of this software are derived from the above project.  
+All intellectual property rights for the respective components remain with their original author(s).
+
+BlackLogics uses and distributes this component in full compliance with the terms of the Apache License, Version 2.0.
+
+A copy of the Apache License 2.0 is available in the `LICENSE` file of this repository  
+or online at: http://www.apache.org/licenses/LICENSE-2.0
+
+---
+
+> 💙 We sincerely thank the original author for contributing to the open-source community.
+
 ## 🔗 Connect With Us
 * **Official Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
 * **YouTube Channel:** [@BlackLogics](https://youtube.com/@blacklogics)
