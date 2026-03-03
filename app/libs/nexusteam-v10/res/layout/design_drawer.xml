@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:id="@+id/layout_drawer" android:background="#ffffff" android:layout_width="250dp" android:layout_height="match_parent">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:fillViewport="true" android:layout_weight="1">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView android:textSize="14sp" android:textColor="@color/scolor_dark_yellow_01" android:gravity="center" android:id="@+id/tv_title_configuration" android:padding="8dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <View android:background="@color/scolor_light_grey" android:layout_width="match_parent" android:layout_height="1.2dp"/>
+            <LinearLayout android:orientation="vertical" android:id="@+id/layout_menus" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:textSize="14sp" android:textColor="@color/light_grey" android:gravity="left" android:id="@+id/tv_title_global" android:padding="8dp" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <View android:background="@color/scolor_light_grey" android:layout_width="match_parent" android:layout_height="1.2dp"/>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@+id/layout_bottom_menus" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+</LinearLayout>

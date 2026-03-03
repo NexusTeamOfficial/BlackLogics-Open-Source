@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <TextView android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary" android:id="@+id/tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginTop="12dp" android:layout_marginBottom="12dp"/>
+    <View android:background="@color/color_secondary" android:layout_width="380dp" android:layout_height="3dp"/>
+    <LinearLayout android:orientation="horizontal" android:background="#fff" android:layout_width="wrap_content" android:layout_height="300dp">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/var_type_category" android:background="@color/lighter_grey" android:layout_width="80dp" android:layout_height="match_parent" android:splitMotionEvents="false"/>
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/var_type_list" android:background="#fff" android:layout_width="300dp" android:layout_height="match_parent" android:splitMotionEvents="false"/>
+    </LinearLayout>
+</LinearLayout>

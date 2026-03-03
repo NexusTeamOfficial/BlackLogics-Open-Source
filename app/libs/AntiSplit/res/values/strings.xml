@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="fnAntiSplit">About</string>
+<string name="dup_0x7f060001">Apks to Apk</string>
+<string name="dup_0x7f060002">Select a file</string>
+<string name="dup_0x7f060003">Cancel</string>
+<string name="dup_0x7f060004">File (*.apks *.zip *.xapk)</string>
+<string name="dup_0x7f060005">Help</string>
+<string name="dup_0x7f060006">Merge</string>
+<string name="dup_0x7f060007">ApkMirror module is installed</string>
+<string name="dup_0x7f060008">ApkMirror</string>
+<string name="dup_0x7f060009">ApkMirror module not installed</string>
+<string name="dup_0x7f06000a">Native Library Compression</string>
+<string name="dup_0x7f06000b">Compression OFF</string>
+<string name="dup_0x7f06000c">Compression ON</string>
+<string name="dup_0x7f06000d">Compression</string>
+<string name="dup_0x7f06000e">Language</string>
+<string name="dup_0x7f06000f">Copy only language (experimental)</string>
+<string name="dup_0x7f060010">Only Language</string>
+<string name="dup_0x7f060011">Apks to Apk</string>
+<string name="dup_0x7f060012">Language code</string>
+<string name="dup_0x7f060013">Language code</string>
+<string name="dup_0x7f060014">Mismatched packages or versions</string>
+<string name="dup_0x7f060015">Disable</string>
+<string name="dup_0x7f060016">Enable</string>
+<string name="dup_0x7f060017">Build from different packages or versions</string>
+<string name="dup_0x7f060018">Optional Module</string>
+<string name="dup_0x7f060019">Skip module files</string>
+<string name="dup_0x7f06001a">Add module files in apk</string>
+<string name="dup_0x7f06001b">Module</string>
+<string name="dup_0x7f06001c">Sign APK</string>
+<string name="dup_0x7f06001d">Signing disabled</string>
+<string name="dup_0x7f06001e">Signing enabled</string>
+<string name="dup_0x7f06001f">Sign with test signature</string>
+<string name="dup_0x7f060020">Settings</string>
+<string name="dup_0x7f060021">Log</string>
+<string name="dup_0x7f060022">Decrypt ApkMirror</string>
+<string name="dup_0x7f060023">Choose</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:gravity="center_vertical" android:orientation="horizontal" android:id="@+id/container" android:background="?attr/selectableItemBackground" android:padding="4dp" android:focusable="true" android:clickable="true" android:layout_width="match_parent" android:layout_height="48dp">
+    <TextView android:id="@+id/tv_preview" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"/>
+    <ImageView android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/ic_arrow_drop_down_grey600_24dp"/>
+</LinearLayout>

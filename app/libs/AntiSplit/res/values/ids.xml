@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="fnAntiSplit">false</bool>
+    <bool name="dup_0x7f030001">false</bool>
+    <bool name="dup_0x7f030002">false</bool>
+    <bool name="dup_0x7f030003">false</bool>
+    <bool name="dup_0x7f030004">false</bool>
+    <bool name="dup_0x7f030005">false</bool>
+    <bool name="dup_0x7f030006">false</bool>
+    <bool name="dup_0x7f030007">false</bool>
+    <bool name="dup_0x7f030008">false</bool>
+    <bool name="dup_0x7f030009">false</bool>
+    <bool name="dup_0x7f03000a">false</bool>
+    <bool name="dup_0x7f03000b">false</bool>
+    <bool name="dup_0x7f03000c">false</bool>
+</resources>

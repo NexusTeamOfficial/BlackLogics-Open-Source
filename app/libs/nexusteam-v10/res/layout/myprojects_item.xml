@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_marginTop="0dp" android:layout_marginRight="8dp" android:layout_marginBottom="@dimen/card_view_margin" app:cardBackgroundColor="#ffffff">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <LinearLayout android:orientation="horizontal" android:id="@+id/project_one" android:background="?attr/selectableItemBackground" android:layout_width="match_parent" android:layout_height="96dp">
+                <RelativeLayout android:layout_width="120dp" android:layout_height="match_parent">
+                    <RelativeLayout android:id="@+id/app_icon_layout" android:layout_width="70dp" android:layout_height="70dp" android:layout_centerInParent="true">
+                        <View android:background="@drawable/circle_bg_white" android:layout_width="64dp" android:layout_height="64dp" android:layout_centerInParent="true" android:contentDescription="@null"/>
+                        <com.besome.sketch.lib.ui.CircleImageView android:id="@+id/img_icon" android:layout_width="56dp" android:layout_height="56dp" android:src="@drawable/android_icon" android:layout_centerInParent="true" android:contentDescription="@null"/>
+                    </RelativeLayout>
+                </RelativeLayout>
+                <RelativeLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+                    <LinearLayout android:gravity="left|center_vertical|center_horizontal|center" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_centerVertical="true">
+                        <TextView android:textSize="14sp" android:textColor="#404040" android:id="@+id/project_name" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                        <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginRight="40dp">
+                            <TextView android:textSize="12sp" android:textColor="#9a9a9a" android:id="@+id/app_name" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                            <TextView android:textSize="10sp" android:textColor="#9a9a9a" android:id="@+id/project_version" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="4dp"/>
+                        </LinearLayout>
+                        <TextView android:textSize="12sp" android:textColor="#9a9a9a" android:id="@+id/package_name" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                    <ImageView android:layout_gravity="right" android:id="@+id/expand" android:padding="8dp" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/selector_ic_expand_more_24" android:layout_alignParentRight="true" android:layout_alignParentBottom="true"/>
+                    <TextView android:textSize="12sp" android:textColor="@color/scolor_red_02" android:layout_gravity="right" android:id="@+id/tv_published" android:paddingLeft="16dp" android:paddingTop="8dp" android:paddingRight="16dp" android:paddingBottom="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_alignParentRight="true"/>
+                </RelativeLayout>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:id="@+id/project_option_layout" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <View android:background="@color/color_secondary" android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginLeft="16dp" android:layout_marginRight="16dp"/>
+                <LinearLayout android:orientation="vertical" android:id="@+id/project_option" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
