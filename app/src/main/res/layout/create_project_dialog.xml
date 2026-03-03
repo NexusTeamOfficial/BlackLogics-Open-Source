@@ -13,7 +13,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="16dp"
-		android:text="New Project"
+		android:text="@string/app_create_new_project_title"
 		android:textSize="20sp"
 		android:textStyle="bold"
 		android:textColor="@color/md_theme_light_tertiary" />
@@ -45,7 +45,7 @@
 				android:focusable="false"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Tap to change icon"
+				android:text="@string/word_type_to_change_icon"
 				android:textSize="12sp"
 				android:textColor="#9E9E9E" />
 		</LinearLayout>
@@ -68,10 +68,10 @@
 					android:layout_height="wrap_content"
 					android:paddingBottom="8dp"
 					android:textSize="16sp"
-					android:hint="Enter application name"
+					android:textColor="@color/textColor"
+					android:hint="@string/project_default_name_hint_text"
 					android:textColorHint="@color/hint_color"
 					android:background="@null"
-					android:textColor="@android:color/black"
 					android:inputType="textCapWords"
 					android:focusable="true"
 					android:focusableInTouchMode="true" />
@@ -91,9 +91,9 @@
 			android:focusable="false"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="Advanced Settings"
+			android:text="@string/app_advance_settings_word"
 			android:textSize="15sp"
-			android:textColor="@color/hint_color"
+			android:textColor="@color/textColor"
 			android:layout_weight="1" />
 		<ImageView
 			android:id="@+id/advanced_icon"
@@ -133,7 +133,7 @@
 					android:focusable="false"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="colorAccent"
+					android:text="@string/word_color_accent"
 					android:textSize="13sp"
 					android:textColor="#424242" />
 			</LinearLayout>
@@ -155,7 +155,7 @@
 					android:focusable="false"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="colorPrimary"
+					android:text="@string/word_color_primary"
 					android:textSize="13sp"
 					android:textColor="#424242" />
 			</LinearLayout>
@@ -178,7 +178,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:gravity="center_vertical"
-					android:text="colorPrimaryDark"
+					android:text="@string/word_color_primary_dark"
 					android:textSize="13sp"
 					android:textColor="#424242"
 					android:layout_gravity="center_horizontal|center_vertical" />
@@ -201,7 +201,7 @@
 					android:focusable="false"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="colorPrimaryHighlight"
+					android:text="@string/word_color_primary_highlight"
 					android:textSize="13sp"
 					android:textColor="#424242" />
 			</LinearLayout>
@@ -223,7 +223,7 @@
 					android:focusable="false"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="colorPrimaryNormal"
+					android:text="@string/word_color_primary_normal"
 					android:textSize="13sp"
 					android:textColor="#424242" />
 			</LinearLayout>
@@ -268,7 +268,7 @@
 					android:focusable="false"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:text="Package name"
+					android:text="@string/project_template_package_name_title"
 					android:textSize="14sp"
 					android:textColor="@color/hint_color" />
 				<com.google.android.material.textfield.TextInputLayout
@@ -282,11 +282,11 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:paddingBottom="8dp"
-						android:text="com.my.newproject"
+						android:text="@string/project_template_package_name_hint"
 						android:textSize="15sp"
+						android:textColor="@color/textColor"
 						android:textColorHint="@color/hint_color"
 						android:background="@null"
-						android:textColor="@android:color/black"
 						android:focusable="true"
 						android:focusableInTouchMode="true" />
 				</com.google.android.material.textfield.TextInputLayout>
@@ -338,11 +338,11 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:paddingBottom="8dp"
-						android:text="NewProject"
+						android:text="@string/project_name_title"
 						android:textSize="15sp"
+						android:textColor="@color/textColor"
 						android:textColorHint="@color/hint_color"
 						android:background="@null"
-						android:textColor="@android:color/black"
 						android:focusable="true"
 						android:focusableInTouchMode="true" />
 				</com.google.android.material.textfield.TextInputLayout>
@@ -434,7 +434,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
-			android:text="CANCEL"
+			android:text="@string/cancel"
 			android:textSize="12sp"
 			android:background="@null"
 			android:textAllCaps="true" />
@@ -443,7 +443,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="4dp"
-			android:text="CREATE APP"
+			android:text="@string/create_app_word"
 			android:textSize="12sp"
 			android:background="@null"
 			android:textAllCaps="true"

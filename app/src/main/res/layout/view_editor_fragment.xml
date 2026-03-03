@@ -210,7 +210,15 @@
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:background="#FFFFFF"
-									android:orientation="vertical" />
+									android:orientation="vertical">
+									<androidx.cardview.widget.CardView
+										android:id="@+id/cardview1"
+										android:layout_width="match_parent"
+										android:layout_height="wrap_content"
+										app:contentPadding="8dp"
+										app:cardElevation="2dp"
+										app:cardCornerRadius="20dp" />
+								</LinearLayout>
 							</ScrollView>
 						</LinearLayout>
 					</LinearLayout>

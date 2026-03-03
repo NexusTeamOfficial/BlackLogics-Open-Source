@@ -106,7 +106,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:padding="8dp"
-									android:text="Restore projects"
+									android:text="@string/restore_project_title"
 									android:textSize="16sp"
 									android:textColor="?attr/colorOnSurface" />
 							</LinearLayout>

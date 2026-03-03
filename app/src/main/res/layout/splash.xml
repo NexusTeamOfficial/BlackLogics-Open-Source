@@ -44,7 +44,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
-			android:text="Imagine, Create, Share"
+			android:text="@string/splash_tag"
 			android:textSize="14sp"
 			android:textColor="@color/textGrey"
 			android:background="?attr/colorSurface" />
@@ -58,7 +58,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
-			android:text="Shree Ganeshay Namaha"
+			android:text="@string/pray_god"
 			android:textSize="14sp"
 			android:textColor="@color/textBlueGrey"
 			android:background="?attr/colorSurface" />

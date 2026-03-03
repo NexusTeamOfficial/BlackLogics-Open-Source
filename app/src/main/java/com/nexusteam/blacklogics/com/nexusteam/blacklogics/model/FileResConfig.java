@@ -1,0 +1,199 @@
+package com.nexusteam.blacklogics.model;
+
+import com.google.gson.Gson;
+import com.nexusteam.blacklogics.utils.FilePathUtil;
+import com.nexusteam.blacklogics.utils.FileUtil;
+import com.nexusteam.blacklogics.utils.Helper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileResConfig {
+    private FilePathUtil filePathUtil;
+    private String projectId;
+    
+    private List<String> broadcastManifest;
+    private List<String> assetsFiles;
+    private List<String> broadcastFiles;
+    private List<String> importList;
+    private List<String> javaFiles;
+    private List<String> nativeLibsFiles;
+    private List<String> permissions;
+    private List<String> resourceFiles;
+    private List<String> serviceFiles;
+    private List<String> javaManifest;
+    private List<String> serviceManifest;
+
+    public FileResConfig(String projectId) {
+        this.projectId = projectId;
+        this.filePathUtil = new FilePathUtil();
+        
+
+        this.broadcastManifest = new ArrayList<>();
+        this.assetsFiles = new ArrayList<>();
+        this.broadcastFiles = new ArrayList<>();
+        this.importList = new ArrayList<>();
+        this.javaFiles = new ArrayList<>();
+        this.nativeLibsFiles = new ArrayList<>();
+        this.permissions = new ArrayList<>();
+        this.resourceFiles = new ArrayList<>();
+        this.serviceFiles = new ArrayList<>();
+        this.javaManifest = new ArrayList<>();
+        this.serviceManifest = new ArrayList<>();
+        
+        loadPermissions();
+    }
+
+    private void loadPermissions() {
+        if (projectId == null || projectId.isEmpty()) {
+            return;
+        }
+
+        String permissionsJson = FileUtil.readFile(filePathUtil.getPathPermission(projectId));
+        if (permissionsJson == null || permissionsJson.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Object object = new Gson().fromJson(permissionsJson, Helper.TYPE_STRING);
+            if (object instanceof ArrayList) {
+                permissions = (ArrayList<String>) object;
+            }
+        } catch (Exception e) {
+
+            permissions.clear();
+        }
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+        loadPermissions(); // Reload permissions for new project
+    }
+
+    public List<String> getPermissions() {
+        return new ArrayList<>(permissions);
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = new ArrayList<>(permissions);
+    }
+
+    public void addPermission(String permission) {
+        if (!permissions.contains(permission)) {
+            permissions.add(permission);
+        }
+    }
+
+    public void removePermission(String permission) {
+        permissions.remove(permission);
+    }
+
+    public boolean hasPermission(String permission) {
+        return permissions.contains(permission);
+    }
+
+    public void clearPermissions() {
+        permissions.clear();
+    }
+
+    public List<String> getNativeLibsFiles(String path) {
+        nativeLibsFiles.clear();
+        FileUtil.listDir(path, nativeLibsFiles);
+        return new ArrayList<>(nativeLibsFiles);
+    }
+
+    public String getPackageName() {
+        return "com.nexusteam.blacklogics";
+    }
+
+    private List<String> listDirectory(String path, List<String> targetList) {
+        targetList.clear();
+        FileUtil.listDir(path, targetList);
+        return new ArrayList<>(targetList);
+    }
+
+    public List<String> getJavaFiles() {
+        return listDirectory(filePathUtil.getPathJava(projectId), javaFiles);
+    }
+
+    public List<String> getAssetsFiles() {
+        return listDirectory(filePathUtil.getPathAssets(projectId), assetsFiles);
+    }
+
+    public List<String> getResourceFiles(String path) {
+        return listDirectory(path, resourceFiles);
+    }
+
+    public List<String> getImportList() {
+        String importJson = FileUtil.readFile(filePathUtil.getPathImport(projectId));
+        if (importJson == null || importJson.trim().isEmpty()) {
+            return new ArrayList<>(importList);
+        }
+
+        try {
+            Object object = new Gson().fromJson(importJson, Helper.TYPE_STRING);
+            if (object instanceof ArrayList) {
+                importList = (ArrayList<String>) object;
+            }
+        } catch (Exception e) {
+
+        }
+
+        return new ArrayList<>(importList);
+    }
+
+    public List<String> getBroadcastFiles() {
+        return listDirectory(filePathUtil.getPathBroadcast(projectId), broadcastFiles);
+    }
+
+    public List<String> getServiceFiles() {
+        return listDirectory(filePathUtil.getPathService(projectId), serviceFiles);
+    }
+
+    public List<String> getJavaManifestList() {
+        loadManifestData(filePathUtil.getManifestJava(projectId), javaManifest);
+        return new ArrayList<>(javaManifest);
+    }
+
+    public List<String> getBroadcastManifestList() {
+        loadManifestData(filePathUtil.getManifestBroadcast(projectId), broadcastManifest);
+        return new ArrayList<>(broadcastManifest);
+    }
+
+    public List<String> getServiceManifestList() {
+        loadManifestData(filePathUtil.getManifestService(projectId), serviceManifest);
+        return new ArrayList<>(serviceManifest);
+    }
+
+    private void loadManifestData(String filePath, List<String> targetList) {
+        String jsonContent = FileUtil.readFile(filePath);
+        if (jsonContent == null || jsonContent.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Object object = new Gson().fromJson(jsonContent, Helper.TYPE_STRING);
+            if (object instanceof ArrayList) {
+                targetList.clear();
+                targetList.addAll((ArrayList<String>) object);
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void savePermissions() {
+        if (projectId != null && !projectId.isEmpty()) {
+            String json = new Gson().toJson(permissions);
+            FileUtil.writeFile(filePathUtil.getPathPermission(projectId), json);
+        }
+    }
+
+    public FilePathUtil getFilePathUtil() {
+        return filePathUtil;
+    }
+}

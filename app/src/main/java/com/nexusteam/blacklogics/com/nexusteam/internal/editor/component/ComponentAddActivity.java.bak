@@ -1,0 +1,576 @@
+package com.nexusteam.internal.editor.component;
+
+import com.nexusteam.internal.fc;
+import com.nexusteam.internal.CustomAlertDialog;
+import com.nexusteam.internal.FullStorage;
+import com.nexusteam.internal.BlockStorage;
+import com.nexusteam.internal.model.ComponentData;
+import com.nexusteam.internal.ke;
+import com.nexusteam.internal.ki;
+import com.nexusteam.internal.ViewHelper;
+import com.nexusteam.internal.StringResourceManager;
+import com.nexusteam.internal.ky;
+import com.nexusteam.internal.lk;
+import com.nexusteam.internal.lr;
+import com.nexusteam.internal.ma;
+import com.nexusteam.blacklogics.logic.ProjectLogicRepository;
+import android.animation.Animator;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import android.util.Pair;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import com.nexusteam.blacklogics.R;
+import com.nexusteam.internal.beans.ComponentBean;
+import com.nexusteam.internal.beans.ProjectFileBean;
+import com.nexusteam.internal.beans.ProjectLibraryBean;
+import com.nexusteam.internal.lib.base.BaseDialogActivity;
+import com.nexusteam.internal.beans.BlockBean;
+import com.nexusteam.internal.model.ComponentData;
+import com.nexusteam.internal.model.VariableData;
+import com.google.android.flexbox.FlexboxLayoutManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+
+public class ComponentAddActivity extends BaseDialogActivity {
+    lr A;
+    lk B;
+    lk C;
+    lk D;
+    LinearLayout E;
+    LinearLayout F;
+    RelativeLayout G;
+    Button H;
+    Button I;
+    
+    /* renamed from: a  reason: collision with root package name */
+    RecyclerView f1092a;
+    a b;
+    ArrayList<ComponentBean> c;
+    HashMap<Integer, Pair<Integer, Integer>> d;
+    boolean e;
+    boolean f;
+    TextView g;
+    TextView h;
+    TextView i;
+    ImageView j;
+    ImageView k;
+    ImageView l;
+    String m;
+    ProjectFileBean n;
+    LinearLayout o;
+    TextView p;
+    EditText q;
+    EditText r;
+    EditText s;
+    EditText t;
+    TextInputLayout u;
+    TextInputLayout v;
+    TextInputLayout w;
+    TextInputLayout x;
+    TextView y;
+    TextView z;
+    
+    /* access modifiers changed from: protected */
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setContentView(R.layout.logic_popup_add_component_temp);
+        a();
+        b();
+        if (bundle == null) {
+            Intent intent = getIntent();
+            this.m = intent.getStringExtra("sc_id");
+            this.n = (ProjectFileBean) intent.getParcelableExtra("project_file");
+        } else {
+            this.m = bundle.getString("sc_id");
+            this.n = (ProjectFileBean) bundle.getParcelable("project_file");
+        }
+        this.g = (TextView) findViewById(R.id.tv_component_title);
+        this.h = (TextView) findViewById(R.id.tv_description);
+        this.i = (TextView) findViewById(R.id.tv_name);
+        this.p = (TextView) findViewById(R.id.tv_warning);
+        this.y = (TextView) findViewById(R.id.tv_desc_firebase_path);
+        this.z = (TextView) findViewById(R.id.tv_desc_file_picker);
+        this.q = (EditText) findViewById(R.id.ed_input);
+        this.s = (EditText) findViewById(R.id.ed_input_firebase_path);
+        this.r = (EditText) findViewById(R.id.ed_input_filename);
+        this.t = (EditText) findViewById(R.id.ed_input_file_picker);
+        this.E = (LinearLayout) findViewById(R.id.layout_inputs);
+        this.k = (ImageView) findViewById(R.id.img_back);
+        this.k.setVisibility(8);
+        this.l = (ImageView) findViewById(R.id.img_file_picker);
+        this.u = (TextInputLayout) findViewById(R.id.ti_input);
+        this.v = (TextInputLayout) findViewById(R.id.ti_input_filename);
+        this.w = (TextInputLayout) findViewById(R.id.ti_input_firebase_path);
+        this.x = (TextInputLayout) findViewById(R.id.ti_input_file_picker);
+        this.F = (LinearLayout) findViewById(R.id.layout_img_icon);
+        this.G = (RelativeLayout) findViewById(R.id.layout_description);
+        this.o = (LinearLayout) findViewById(R.id.layout_input_file_picker);
+        this.q.setPrivateImeOptions("defaultInputmode=english;");
+        this.H = (Button) findViewById(R.id.add_button);
+        this.H.setText(StringResourceManager.a().a(getApplicationContext(), (int) R.string.common_word_add));
+        this.I = (Button) findViewById(R.id.docs_button);
+        this.I.setText(StringResourceManager.a().a(getApplicationContext(), (int) R.string.component_add_docs_button_title_go_to_docs));
+        this.g.setText(StringResourceManager.a().a(getApplicationContext(), (int) R.string.component_title_add_component));
+        this.f1092a = (RecyclerView) findViewById(R.id.component_list);
+        FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(this);
+        flexboxLayoutManager.setFlexDirection(0);
+        flexboxLayoutManager.setFlexWrap(1);
+        flexboxLayoutManager.setJustifyContent(2);
+        flexboxLayoutManager.setAlignItems(2);
+        this.f1092a.setLayoutManager(flexboxLayoutManager);
+        this.b = new a();
+        this.f1092a.setHasFixedSize(true);
+        this.f1092a.setAdapter(this.b);
+        this.G.setVisibility(8);
+        this.j = (ImageView) findViewById(R.id.img_icon);
+        this.A = new lr(this, (TextInputLayout) findViewById(R.id.ti_input), fc.b, fc.c(), ma.a(this.m).b(this.n));
+        this.B = new lk(this, (TextInputLayout) findViewById(R.id.ti_input_filename), 1, 20);
+        this.C = new lk(this, (TextInputLayout) findViewById(R.id.ti_input_firebase_path), 0, 100);
+        this.D = new lk(this, (TextInputLayout) findViewById(R.id.ti_input_file_picker), 1, 50);
+        this.y.setText(StringResourceManager.a().a((Context) this, (int) R.string.design_library_firebase_guide_path_example));
+        this.z.setText(StringResourceManager.a().a((Context) this, (int) R.string.component_description_file_picker_guide_mime_type_example));
+        this.u.setHint(StringResourceManager.a().a((Context) this, (int) R.string.component_hint_enter_name));
+        this.v.setHint(StringResourceManager.a().a((Context) this, (int) R.string.component_file_hint_enter_file_name));
+        this.w.setHint(StringResourceManager.a().a((Context) this, (int) R.string.design_library_firebase_hint_enter_data_location));
+        this.x.setHint(StringResourceManager.a().a((Context) this, (int) R.string.component_file_picker_hint_mime_type));
+        this.d = new HashMap<>();
+        this.k.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!ki.a()) {
+                    ComponentAddActivity.this.onBackPressed();
+                }
+            }
+        });
+        this.H.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!ki.a() && ComponentAddActivity.this.h()) {
+                    ComponentAddActivity.this.c();
+                }
+            }
+        });
+        this.I.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!ki.a()) {
+                    ComponentAddActivity.this.i();
+                }
+            }
+        });
+        this.l.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                ComponentAddActivity.this.e();
+            }
+        });
+    }
+    
+    /* access modifiers changed from: protected */
+    public void onPostCreate(@Nullable Bundle bundle) {
+        super.onPostCreate(bundle);
+        d();
+    }
+    
+    /* access modifiers changed from: private */
+    public void c() {
+        ke.a((Context) this, (CharSequence) StringResourceManager.a().a((Context) this, (int) R.string.component_message_component_block_added), 1).show();
+        ki.a(getApplicationContext(), this.q);
+        setResult(-1);
+        finish();
+    }
+    
+    /* access modifiers changed from: protected */
+    public void onResume() {
+        super.onResume();
+
+
+    }
+    
+    /* access modifiers changed from: protected */
+    public void onSaveInstanceState(Bundle bundle) {
+        bundle.putString("sc_id", this.m);
+        bundle.putParcelable("project_file", this.n);
+        super.onSaveInstanceState(bundle);
+    }
+    
+    public void onBackPressed() {
+        if (this.e) {
+            g();
+        } else {
+            super.onBackPressed();
+        }
+    }
+    
+    private void d() {
+        this.c = new ArrayList<>();
+        this.c.add(new ComponentBean(1));
+        this.c.add(new ComponentBean(2));
+        this.c.add(new ComponentBean(3));
+        this.c.add(new ComponentBean(4));
+        this.c.add(new ComponentBean(5));
+        this.c.add(new ComponentBean(7));
+        this.c.add(new ComponentBean(8));
+        this.c.add(new ComponentBean(9));
+        this.c.add(new ComponentBean(10));
+        this.c.add(new ComponentBean(15));
+        this.c.add(new ComponentBean(16));
+        this.c.add(new ComponentBean(11));
+        this.c.add(new ComponentBean(6));
+        this.c.add(new ComponentBean(12));
+        this.c.add(new ComponentBean(14));
+        this.c.add(new ComponentBean(13));
+        this.c.add(new ComponentBean(18));
+        this.c.add(new ComponentBean(19));
+        this.c.add(new ComponentBean(17));
+        this.c.add(new ComponentBean(20));
+        this.c.add(new ComponentBean(21));
+        this.b.notifyDataSetChanged();
+    }
+    
+    /* access modifiers changed from: private */
+    public void e() {
+        startActivityForResult(new Intent(this, ShowFilePickerTypesActivity.class), 275);
+    }
+    
+    /* access modifiers changed from: protected */
+    public void onActivityResult(int i2, int i3, Intent intent) {
+        super.onActivityResult(i2, i3, intent);
+        if (i2 == 275 && i3 == -1) {
+            this.t.setText(intent.getStringExtra("mime_type"));
+        }
+    }
+    
+    class a extends RecyclerView.Adapter<a.C0039a> {
+        
+        public int f1100a = -1;
+        RecyclerView b;
+        
+        public long getItemId(int i) {
+            return (long) i;
+        }
+        
+        public a() {
+        }
+        
+        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+            this.b = recyclerView;
+        }
+        
+        @Override
+        @NonNull
+        public C0039a onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+            View a2 = ViewHelper.a(parent.getContext(), (int) R.layout.component_add_item);
+            int a3 = (int) ViewHelper.a(parent.getContext(), 76.0f);
+            a2.setLayoutParams(new FlexboxLayoutManager.LayoutParams(a3, a3));
+            return new C0039a(a2);
+        }
+        
+        @Override
+        public void onBindViewHolder(@NonNull C0039a holder, int position) {
+
+            final String componentName = ComponentBean.getComponentName(ComponentAddActivity.this.getApplicationContext(), ComponentAddActivity.this.c.get(position).type);
+            holder.itemView.setAlpha(1.0f);
+            holder.itemView.setTranslationX(0.0f);
+            holder.itemView.setTranslationY(0.0f);
+            holder.b.setAlpha(1.0f);
+            holder.b.setText(componentName);
+            holder.f1102a.setImageResource(ComponentBean.getIconResource(ComponentAddActivity.this.c.get(position).type));
+            
+            if (!ComponentAddActivity.this.e) {
+                return;
+            }
+            
+            if (position == this.f1100a) {
+                Pair pair = ComponentAddActivity.this.d.get(Integer.valueOf(position));
+                holder.b.animate().setDuration(100).alpha(0.0f).start();
+                long j = (long) 300;
+                holder.itemView.animate().setStartDelay(j).translationX((float) (-((Integer) pair.first).intValue())).translationY((float) (-((Integer) pair.second).intValue())).setDuration(j).setListener(new Animator.AnimatorListener() {
+                    public void onAnimationCancel(Animator animator) {}
+                    public void onAnimationRepeat(Animator animator) {}
+                    public void onAnimationStart(Animator animator) {}
+                    
+                    public void onAnimationEnd(Animator animator) {
+                        ComponentAddActivity.this.i.setText(componentName);
+                        ComponentAddActivity.this.f();
+                        ComponentAddActivity.this.f = false;
+                    }
+                }).start();
+                return;
+            }
+            holder.itemView.animate().alpha(0.0f).start();
+        }
+        
+        public int getItemCount() {
+            return ComponentAddActivity.this.c.size();
+        }
+        
+        class C0039a extends RecyclerView.ViewHolder {
+            ImageView f1102a;
+            TextView b;
+            
+            public C0039a(View view) {
+                super(view);
+                this.f1102a = (ImageView) view.findViewById(R.id.icon);
+                this.b = (TextView) view.findViewById(R.id.name);
+                view.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        if (!ComponentAddActivity.this.f) {
+                            ComponentAddActivity.this.f = true;
+                            a.this.f1100a = C0039a.this.getLayoutPosition();
+                            ComponentAddActivity.this.e = true;
+                            int[] iArr = new int[2];
+                            view.getLocationInWindow(iArr);
+                            int[] iArr2 = new int[2];
+                            a.this.b.getLocationInWindow(iArr2);
+                            ComponentAddActivity.this.d.put(Integer.valueOf(a.this.f1100a), new Pair(Integer.valueOf(iArr[0] - iArr2[0]), Integer.valueOf((int) (((float) (iArr[1] - iArr2[1])) - ViewHelper.a(ComponentAddActivity.this.getApplicationContext(), 16.0f)))));
+                            a.this.notifyDataSetChanged();
+                        }
+                    }
+                });
+            }
+        }
+    }
+    
+    /* access modifiers changed from: private */
+    public void f() {
+        this.j.setVisibility(0);
+        this.G.setVisibility(0);
+        this.E.setVisibility(0);
+        this.F.setVisibility(0);
+        this.h.setVisibility(0);
+        this.k.setVisibility(0);
+        this.f1092a.setVisibility(8);
+        this.F.setTranslationX(0.0f);
+        this.F.setTranslationY(0.0f);
+        ComponentBean componentBean = this.c.get(this.b.f1100a);
+        this.p.setVisibility(8);
+        this.v.setVisibility(8);
+        this.y.setVisibility(8);
+        this.z.setVisibility(8);
+        this.w.setVisibility(8);
+        this.o.setVisibility(8);
+        int i2 = componentBean.type;
+        if (i2 == 2) {
+            this.v.setVisibility(0);
+        } else if (i2 == 6) {
+            this.y.setVisibility(0);
+            this.w.setVisibility(0);
+        } else if (i2 != 11) {
+            if (i2 == 14) {
+                this.y.setVisibility(0);
+                this.w.setVisibility(0);
+            } else if (i2 == 16) {
+                this.z.setVisibility(0);
+                this.o.setVisibility(0);
+            }
+        } else if (!ky.b(this, 4)) {
+            this.p.setVisibility(0);
+            this.p.setText(StringResourceManager.a().a((Context) this, (int) R.string.message_device_not_support));
+        }
+        this.j.setImageResource(ComponentBean.getIconResource(componentBean.type));
+        this.g.setText(ComponentBean.getComponentName(getApplicationContext(), componentBean.type));
+        this.h.setText(StringResourceManager.a().a(getApplicationContext(), ComponentBean.getDescStrResource(componentBean.type)));
+        this.h.setAlpha(0.0f);
+        this.E.setAlpha(0.0f);
+        this.H.setAlpha(0.0f);
+        this.I.setAlpha(0.0f);
+        this.E.setTranslationY(300.0f);
+        this.h.animate().alpha(1.0f).start();
+        this.k.animate().alpha(1.0f).start();
+        this.E.animate().alpha(1.0f).translationY(0.0f).start();
+        this.H.animate().setStartDelay(150).alpha(1.0f).start();
+        this.I.animate().setStartDelay(150).alpha(1.0f).start();
+    }
+    
+    private void g() {
+        if (!this.f) {
+            View currentFocus = getCurrentFocus();
+            if (currentFocus != null) {
+                ((InputMethodManager) getSystemService("input_method")).hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
+            }
+            this.f = true;
+            this.h.animate().alpha(0.0f).start();
+            this.E.animate().alpha(0.0f).start();
+            this.H.animate().alpha(0.0f).start();
+            this.I.animate().alpha(0.0f).start();
+            Pair pair = this.d.get(Integer.valueOf(this.b.f1100a));
+            this.F.animate().translationX((float) ((Integer) pair.first).intValue()).translationY((float) ((Integer) pair.second).intValue()).setDuration(300).setListener(new Animator.AnimatorListener() {
+                public void onAnimationCancel(Animator animator) {
+                }
+                
+                public void onAnimationRepeat(Animator animator) {
+                }
+                
+                public void onAnimationStart(Animator animator) {
+                }
+                
+                public void onAnimationEnd(Animator animator) {
+                    ComponentAddActivity.this.f = false;
+                    ComponentAddActivity.this.e = false;
+                    ComponentAddActivity.this.G.setVisibility(8);
+                    ComponentAddActivity.this.h.setVisibility(8);
+                    ComponentAddActivity.this.k.setVisibility(8);
+                    ComponentAddActivity.this.F.setVisibility(8);
+                    ComponentAddActivity.this.f1092a.setVisibility(0);
+                    ComponentAddActivity.this.g.setText(StringResourceManager.a().a(ComponentAddActivity.this.getApplicationContext(), (int) R.string.component_title_add_component));
+                    ComponentAddActivity.this.b.notifyDataSetChanged();
+                }
+            }).start();
+        }
+    }
+    
+    /* access modifiers changed from: private */
+    /* access modifiers changed from: private */
+    public boolean h() {
+        int componentType = this.c.get(this.b.f1100a).type;
+        String componentName = this.q.getText().toString();
+        
+        if (!this.A.a()) {
+            return false;
+        }
+        
+        String projectId = this.m; // project ID
+        String activityName = this.n.getJavaName(); // activity name
+        String extraData = null;
+        
+        try {
+
+            if (componentType == 2) { // File component
+                if (!this.B.a()) return false;
+                extraData = this.r.getText().toString();
+                ma.a(projectId).a(activityName, componentType, componentName, extraData);
+                
+            } else if (componentType == 6 || componentType == 14) { // Firebase components
+                if (!this.C.a()) return false;
+                if (ma.d(projectId).c().useYn.equals(ProjectLibraryBean.LIB_USE_N)) {
+                    ke.b(this, StringResourceManager.a().a(this, R.string.design_library_guide_setup_first), 1).show();
+                    return false;
+                }
+                extraData = this.s.getText().toString();
+                ma.a(projectId).a(activityName, componentType, componentName, extraData);
+                
+            } else if (componentType == 12) { // Another Firebase component
+                if (ma.d(projectId).c().useYn.equals(ProjectLibraryBean.LIB_USE_N)) {
+                    ke.b(this, StringResourceManager.a().a(this, R.string.design_library_guide_setup_first), 1).show();
+                    return false;
+                } else if (ma.d(projectId).c().reserved2.trim().isEmpty()) {
+                    ke.b(this, StringResourceManager.a().a(this, R.string.design_library_firebase_guide_setup_first), 1).show();
+                    return false;
+                } else {
+                    extraData = this.s.getText().toString();
+                    ma.a(projectId).a(activityName, componentType, componentName, extraData);
+                }
+                
+            } else if (componentType == 13) { // AdMob component
+                if (ma.d(projectId).e().useYn.equals(ProjectLibraryBean.LIB_USE_N)) {
+                    ke.b(this, StringResourceManager.a().a(this, R.string.design_library_admob_component_setup_first), 1).show();
+                    return false;
+                }
+                ma.a(projectId).c(activityName, componentType, componentName);
+                ProjectLogicRepository.saveComponentLogic(activityName, componentType, componentName);
+                
+            } else if (componentType == 16) { // File picker component
+                if (this.t.getText().toString().isEmpty() || !this.D.a()) {
+                    return false;
+                }
+                extraData = this.t.getText().toString();
+                ma.a(projectId).a(activityName, componentType, componentName, extraData);
+                
+            } else { // Regular components
+                ma.a(projectId).c(activityName, componentType, componentName);
+                ProjectLogicRepository.saveComponentLogic(activityName, componentType, componentName);
+                
+            }
+            
+
+            ma.a(projectId).c();
+            
+            ArrayList<ComponentBean> allComponents = ma.a(projectId).k(activityName);
+            
+            for (int i = 0; i < allComponents.size(); i++) {
+                
+                ComponentBean comp = allComponents.get(i);
+                
+                ComponentData data = new ComponentData(
+                comp.type,
+                comp.componentId,
+                comp.param1 != null ? comp.param1 : ""
+                );
+                
+                
+                BlockStorage.addComponent(activityName, data);
+            }
+            
+            
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    /* access modifiers changed from: private */
+    public void i() {
+        String componentDocsUrlByTypeName = ComponentBean.getComponentDocsUrlByTypeName(this.c.get(this.b.f1100a).type);
+        if (componentDocsUrlByTypeName.equals("")) {
+            ke.a(getApplicationContext(), (CharSequence) StringResourceManager.a().a(getApplicationContext(), (int) R.string.component_add_message_docs_updated_soon), 0).show();
+            return;
+        }
+        try {
+            Intent intent = new Intent("android.intent.action.VIEW");
+            intent.addFlags(268435456);
+            intent.setData(Uri.parse("googlechrome://navigate?url=" + componentDocsUrlByTypeName));
+            intent.addFlags(1);
+            intent.addFlags(2);
+            intent.addFlags(64);
+            startActivity(intent);
+        } catch (Exception unused) {
+            j();
+        }
+    }
+    
+    private void j() {
+        final CustomAlertDialog kdVar = new CustomAlertDialog(this);
+        kdVar.a((int) R.drawable.chrome_96);
+        kdVar.a(StringResourceManager.a().a(getApplicationContext(), (int) R.string.title_compatible_chrome_browser));
+        kdVar.b(StringResourceManager.a().a(getApplicationContext(), (int) R.string.message_compatible_chrome_brower));
+        kdVar.a(StringResourceManager.a().a(getApplicationContext(), (int) R.string.common_word_ok), new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!ki.a()) {
+                    Intent intent = new Intent("android.intent.action.VIEW");
+                    intent.setData(Uri.parse("market://details?id=com.android.chrome"));
+                    ComponentAddActivity.this.startActivity(intent);
+                    kdVar.dismiss();
+                }
+            }
+        });
+        kdVar.b(StringResourceManager.a().a(getApplicationContext(), (int) R.string.common_word_cancel), new View.OnClickListener() {
+            public void onClick(View view) {
+                kdVar.dismiss();
+            }
+        });
+        kdVar.show();
+    }
+}

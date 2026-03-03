@@ -1,7 +1,7 @@
 
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.besome.blacklogics">
+	package="com.nexusteam.blacklogics">
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,6 +16,7 @@
 	<uses-permission android:name="android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.READ_LOGS" />
 	<uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 	<uses-permission android:name="android.permission.WAKE_LOCK" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -149,6 +150,11 @@
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true" />
 		<activity
+			android:name=".DexEncryptionActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true" />
+		<activity
 			android:name=".DebugActivity"
 			android:screenOrientation="portrait"
 			android:theme="@style/AppTheme.DebugActivity" />
@@ -159,7 +165,7 @@
 			android:theme="@android:style/Theme.Translucent" />
 		<provider
 			android:name="com.google.android.gms.ads.MobileAdsInitProvider"
-			android:authorities="com.besome.blacklogics.mobileadsinitprovider"
+			android:authorities="com.nexusteam.blacklogics.mobileadsinitprovider"
 			android:exported="false"
 			android:initOrder="100" />
 		<service
@@ -176,7 +182,7 @@
 			android:exported="false" />
 		<provider
 			android:name="androidx.startup.InitializationProvider"
-			android:authorities="com.besome.blacklogics.androidx-startup"
+			android:authorities="com.nexusteam.blacklogics.androidx-startup"
 			android:exported="false">
 			<meta-data
 				android:name="androidx.lifecycle.ProcessLifecycleInitializer"
@@ -312,16 +318,10 @@
 			android:name="mod.hey.studios.project.stringfog.ManageStringfogActivity"
 			android:configChanges="orientation|screenSize" />
 		<activity
-			android:name="dev.aldi.sayuti.editor.manage.ManageLocalLibraryActivity"
-			android:configChanges="orientation|screenSize" />
-		<activity
 			android:name="com.besome.blacklogics.editor.manage.font.AddFontActivity"
 			android:configChanges="orientation|screenSize" />
 		<activity
 			android:name="com.besome.blacklogics.editor.manage.font.ManageFontActivity"
-			android:configChanges="orientation|screenSize" />
-		<activity
-			android:name="LogicEditorActivity"
 			android:configChanges="orientation|screenSize" />
 		<activity
 			android:name="com.besome.blacklogics.tools.CollectErrorActivity"
@@ -371,15 +371,72 @@
 		<activity
 			android:name="com.nexusteam.internal.os.layouteditor.widget.WidgetCircleImageView"
 			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.permission.ManagePermissionActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.activities.AboutTeamActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.activities.SrcCodeEditor"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.activities.ManageAssetsActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.besome.sketch.editor.LogicEditorActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.besome.sketch.editor.component.ComponentAddActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.besome.sketch.editor.component.ShowFilePickerTypesActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.besome.sketch.editor.makeblock.MakeBlockActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.internal.editor.component.ComponentAddActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.internal.editor.component.ShowFilePickerTypesActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.internal.editor.makeblock.MakeBlockActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="LogicEditorActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.code.SrcCodeEditor"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.java.ManageJavaActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="dev.aldi.sayuti.editor.manage.ManageLocalLibraryActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.project.proguard.ManageProguardActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.resource.ManageResourceActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.project.stringfog.ManageStringfogActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.sdk.nativelib.ManageNativelibsActivity"
+			android:configChanges="orientation|screenSize" />
 		<uses-library
 			android:name="org.apache.http.legacy"
 			android:required="false" />
 <activity
-			android:name=".ViewEditorFragmentActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-			android:hardwareAccelerated="true"
-			android:supportsPictureInPicture="true" />
-		<activity
+	android:name=".ViewEditorFragmentActivity"
+	android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+	android:hardwareAccelerated="true"
+	android:supportsPictureInPicture="true" />
+ <activity
     android:name=".EventFragmentActivity"
     android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
     android:hardwareAccelerated="true"
@@ -391,7 +448,7 @@
     android:supportsPictureInPicture="true" />
     <provider
 android:name="androidx.core.content.FileProvider"
-android:authorities="com.besome.blacklogics.provider"
+android:authorities="com.nexusteam.blacklogics.provider"
 android:exported="false"
 android:grantUriPermissions="true">
 
@@ -407,5 +464,24 @@ android:resource="@xml/provider_paths" />
         <action android:name="com.besome.blacklogics.ACTION_NEW_BLACKLOG" />
     </intent-filter>
 </receiver>
+<activity
+	android:name="com.nexusteam.blacklogics.logcat.LogcatActivity"
+	android:theme="@style/LogcatActivityTheme"
+	android:windowSoftInputMode="stateHidden" />
+    
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="com.nexusteam.blacklogics.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>    
+<activity
+    android:name="com.nexusteam.internal.editor.LogicEditorActivity"
+    android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+    android:hardwareAccelerated="true"
+    android:supportsPictureInPicture="true" />
 	</application>
 </manifest>

@@ -2,7 +2,8 @@
 <resources>
     <style
         name="ButtonTheme">
-        <item name="android:textColor">#ffffff</item>
+        <item
+            name="android:textColor">#ffffff</item>
         <item
             name="android:colorControlHighlight">#55ffffff</item>
         <item
@@ -266,4 +267,63 @@
         <item
             name="cornerSize">16dp</item>
     </style>
+    <style
+        name="ModalBottomSheetDialog"
+        parent="Widget.Material3.BottomSheet.Modal">
+        <item
+            name="backgroundTint">?attr/colorPrimary</item>
+        <item
+            name="shapeAppearance">@style/ShapeAppearance.App.LargeComponent</item>
+    </style>
+    <style
+        name="ShapeAppearance.App.LargeComponent"
+        parent="ShapeAppearance.Material3.LargeComponent">
+        <item
+            name="cornerFamily">rounded</item>
+        <item
+            name="cornerSize">30dp</item>
+    </style>
+    <style
+        name="BaseTheme"
+        parent="Theme.AppCompat.Light.NoActionBar">
+        <item
+            name="windowActionBar">false</item>
+        <item
+            name="windowNoTitle">true</item>
+        <!--remove windowBackground-->
+        <item
+            name="android:windowBackground">@null</item>
+        <item
+            name="android:windowEnableSplitTouch">false</item>
+        <item
+            name="android:colorBackground">@color/white</item>
+        <item
+            name="android:splitMotionEvents">false</item>
+    </style>
+    <style
+        name="ThemeOverlay.App.BottomSheetDialog"
+        parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item
+            name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.App.CornerExtraLarge</item>
+        <item
+            name="backgroundTint">@color/md_theme_light_surface</item>
+    </style>
+    <style
+        name="ShapeAppearanceOverlay.App.CornerExtraLarge">
+        <item
+            name="cornerFamily">rounded</item>
+        <item
+            name="cornerSize">16dp</item>
+    </style>
+    <style
+        name="ShapeAppearanceOverlay.App"
+        parent="ShapeAppearance.Material3.MediumComponent">
+        <item
+            name="cornerFamily">rounded</item>
+        <item
+            name="cornerSize">12dp</item>
+    </style>
+    <style
+        name="LogCatActivity"
+        parent="BaseTheme" />
 </resources>

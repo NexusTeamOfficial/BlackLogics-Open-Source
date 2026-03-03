@@ -52,7 +52,7 @@
 					android:layout_height="wrap_content"
 					android:padding="8dp"
 					android:gravity="center_horizontal|center_vertical"
-					android:text="Export Source Code"
+					android:text="@string/export_project_source_code_title"
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
@@ -107,7 +107,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:padding="8dp"
-						android:text="Local Path"
+						android:text="@string/app_local_path_title"
 						android:textSize="14sp"
 						android:textColor="@color/textColor" />
 				</LinearLayout>
@@ -139,7 +139,7 @@
 					android:layout_height="wrap_content"
 					android:padding="4dp"
 					android:gravity="center_vertical"
-					android:text="Send Source Code Zip File"
+					android:text="@string/share_exported_source_code_title"
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_gravity="right|center_vertical"

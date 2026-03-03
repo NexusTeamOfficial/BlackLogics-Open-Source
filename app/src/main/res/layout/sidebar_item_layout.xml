@@ -6,21 +6,22 @@
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
 	android:gravity="center"
+	android:background="?attr/colorSurface"
 	android:padding="8dp">
 	<ImageView
 		android:id="@+id/sidebar_item_icon"
-		android:focusable="false"
 		android:layout_width="24dp"
 		android:layout_height="24dp"
 		android:scaleType="fitCenter"
-		android:src="@android:drawable/ic_menu_info_details" />
+		android:src="@android:drawable/ic_menu_info_details"
+		android:focusable="false" />
 	<TextView
 		android:id="@+id/sidebar_item_title"
-		android:focusable="false"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="4dp"
 		android:text="@string/sidebar_item_title"
 		android:textSize="12sp"
-		android:textColor="@android:color/black" />
+		android:textColor="@android:color/black"
+		android:focusable="false" />
 </LinearLayout>

@@ -42,7 +42,7 @@
 						android:paddingTop="8dp"
 						android:paddingRight="8dp"
 						android:paddingBottom="8dp"
-						android:text="Properties"
+						android:text="@string/app_property_title"
 						android:textSize="16sp"
 						android:textColor="#000000" />
 					<com.google.android.material.textfield.TextInputLayout
@@ -84,7 +84,7 @@
 								android:gravity="left|center_vertical"
 								android:textSize="14sp"
 								android:textColor="#000000"
-								android:hint="Type"
+								android:hint="@string/common_word_type"
 								android:textColorHint="#607D8B" />
 						</com.google.android.material.textfield.TextInputLayout>
 						<LinearLayout
@@ -115,7 +115,7 @@
 							android:gravity="left|center_vertical"
 							android:textSize="14sp"
 							android:textColor="#000000"
-							android:hint="Type name"
+							android:hint="@string/common_word_type_name"
 							android:textColorHint="#607D8B" />
 					</com.google.android.material.textfield.TextInputLayout>
 				</LinearLayout>
@@ -145,7 +145,7 @@
 						android:paddingTop="8dp"
 						android:paddingRight="8dp"
 						android:paddingBottom="8dp"
-						android:text="Design"
+						android:text="@string/design"
 						android:textSize="16sp"
 						android:textColor="#000000" />
 					<LinearLayout
@@ -183,7 +183,7 @@
 								android:gravity="left|center_vertical"
 								android:textSize="14sp"
 								android:textColor="#000000"
-								android:hint="color"
+								android:hint="@string/app_color_title"
 								android:textColorHint="#607D8B" />
 						</com.google.android.material.textfield.TextInputLayout>
 						<LinearLayout
@@ -200,20 +200,29 @@
 								android:scaleType="fitXY" />
 						</LinearLayout>
 					</LinearLayout>
-					<EditText
-						android:id="@+id/spec"
-						android:layout_width="wrap_content"
+					<androidx.cardview.widget.CardView
+						android:id="@+id/cardview5"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_marginTop="4dp"
-						android:padding="8dp"
-						android:background="#FFFFFF"
-						android:gravity="left|center_vertical"
-						android:textSize="14sp"
-						android:textStyle="bold"
-						android:textColor="#616161"
-						android:hint="block spec"
-						android:textColorHint="#90A4AE"
-						android:singleLine="true" />
+						android:layout_margin="5dp"
+						app:contentPadding="8dp"
+						app:cardElevation="2dp"
+						app:cardCornerRadius="20dp">
+						<EditText
+							android:id="@+id/spec"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="4dp"
+							android:padding="8dp"
+							android:background="#FFFFFF"
+							android:gravity="left|center_vertical"
+							android:textSize="14sp"
+							android:textStyle="bold"
+							android:textColor="#616161"
+							android:hint="@string/block_spec_title"
+							android:textColorHint="#90A4AE"
+							android:singleLine="true" />
+					</androidx.cardview.widget.CardView>
 					<TextView
 						android:id="@+id/textview7"
 						android:layout_width="wrap_content"
@@ -251,7 +260,7 @@
 							android:gravity="left|center_vertical"
 							android:textSize="14sp"
 							android:textColor="#000000"
-							android:hint="Spec2"
+							android:hint="@string/block_spec2_title"
 							android:textColorHint="#607D8B" />
 					</com.google.android.material.textfield.TextInputLayout>
 					<TextView
@@ -259,7 +268,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:padding="8dp"
-						android:text="Block preview"
+						android:text="@string/block_preview_title"
 						android:textSize="10sp"
 						android:textColor="#9E9E9E" />
 					<RelativeLayout
@@ -295,7 +304,7 @@
 						android:paddingTop="8dp"
 						android:paddingRight="8dp"
 						android:paddingBottom="8dp"
-						android:text="Code"
+						android:text="@string/app_code_title"
 						android:textSize="16sp"
 						android:textColor="#424242" />
 					<EditText

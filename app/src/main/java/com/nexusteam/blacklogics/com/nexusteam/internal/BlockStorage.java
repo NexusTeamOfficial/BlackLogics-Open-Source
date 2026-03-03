@@ -1,0 +1,482 @@
+package com.nexusteam.internal;
+
+import android.util.Log;
+import android.util.Pair;
+import com.nexusteam.internal.beans.BlockBean;
+import com.nexusteam.internal.model.ComponentData;
+import com.nexusteam.internal.model.VariableData;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+public final class BlockStorage {
+    
+    private static final String BASE = "/storage/emulated/0/.blacklogics/data/";
+    private static final String FILE = "project.dat";
+    private static final int VERSION = 4; // Version 3 for variables support
+    private static String sc_id;
+    private static final byte[] MASK_KEY = "NEXUS_PRIVATE_KEY_123".getBytes();
+    
+    private static File file() {
+        File d = new File(BASE + sc_id);
+        if (!d.exists()) d.mkdirs();
+        return new File(d, FILE);
+    }
+    
+    private static byte[] applyMask(byte[] data) {
+        byte[] result = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            result[i] = (byte) (data[i] ^ MASK_KEY[i % MASK_KEY.length]);
+        }
+        return result;
+    }
+    
+    public static void setScId(String sc) {
+        BlockStorage.sc_id = sc;
+    }
+    
+    /* ================= WRITE (with Variables) ================= */
+    public static void writeAll(
+    HashMap<String, ArrayList<BlockBean>> blocks,
+    HashMap<String, ArrayList<Pair<String, String>>> functions,
+    HashMap<String, ArrayList<ComponentData>> components,
+    HashMap<String, ArrayList<VariableData>> variables) {
+        
+        ByteArrayOutputStream bos = null;
+        DataOutputStream out = null;
+        FileOutputStream fos = null;
+        
+        try {
+            bos = new ByteArrayOutputStream();
+            out = new DataOutputStream(bos);
+            
+            out.writeInt(VERSION);
+            
+
+            out.writeInt(blocks.size());
+            Iterator<Map.Entry<String, ArrayList<BlockBean>>> blockIter = blocks.entrySet().iterator();
+            while (blockIter.hasNext()) {
+                Map.Entry<String, ArrayList<BlockBean>> entry = blockIter.next();
+                out.writeUTF(entry.getKey());
+                ArrayList<BlockBean> list = entry.getValue();
+                out.writeInt(list == null ? 0 : list.size());
+                if (list != null) {
+                    for (int i = 0; i < list.size(); i++) {
+                        BlockBean b = list.get(i);
+                        b.writeToStream(out); 
+                    }
+                }
+            }
+            
+
+            out.writeInt(functions.size());
+            Iterator<Map.Entry<String, ArrayList<Pair<String, String>>>> funcIter = functions.entrySet().iterator();
+            while (funcIter.hasNext()) {
+                Map.Entry<String, ArrayList<Pair<String, String>>> entry = funcIter.next();
+                out.writeUTF(entry.getKey());
+                ArrayList<Pair<String, String>> list = entry.getValue();
+                out.writeInt(list == null ? 0 : list.size());
+                if (list != null) {
+                    for (int i = 0; i < list.size(); i++) {
+                        Pair<String, String> p = list.get(i);
+                        out.writeUTF(p.first);
+                        out.writeUTF(p.second);
+                    }
+                }
+            }
+            
+
+            out.writeInt(components.size());
+            Iterator<Map.Entry<String, ArrayList<ComponentData>>> compIter =
+            components.entrySet().iterator();
+            
+            while (compIter.hasNext()) {
+                
+                Map.Entry<String, ArrayList<ComponentData>> entry = compIter.next();
+                out.writeUTF(entry.getKey());
+                
+                ArrayList<ComponentData> list = entry.getValue();
+                out.writeInt(list == null ? 0 : list.size());
+                
+                if (list != null) {
+                    for (int i = 0; i < list.size(); i++) {
+                        ComponentData c = list.get(i);
+                        out.writeInt(c.type);
+                        out.writeUTF(c.mainData != null ? c.mainData : "");
+                        out.writeUTF(c.extraData != null ? c.extraData : "");
+                    }
+                }
+            }
+            
+            
+
+            out.writeInt(variables.size());
+            Iterator<Map.Entry<String, ArrayList<VariableData>>> varIter = variables.entrySet().iterator();
+            while (varIter.hasNext()) {
+                Map.Entry<String, ArrayList<VariableData>> entry = varIter.next();
+                out.writeUTF(entry.getKey());
+                ArrayList<VariableData> list = entry.getValue();
+                out.writeInt(list == null ? 0 : list.size());
+                if (list != null) {
+                    for (int i = 0; i < list.size(); i++) {
+                        VariableData v = list.get(i);
+                        out.writeInt(v.type);      // 0=boolean, 1=int, 2=string, 3=map, 4=listInt, 5=listStr, 6=listMap
+                        out.writeUTF(v.name);
+                        out.writeUTF(v.defaultValue != null ? v.defaultValue : "");
+                    }
+                }
+            }
+            
+            out.flush();
+            
+            byte[] encryptedBytes = applyMask(bos.toByteArray());
+            fos = new FileOutputStream(file());
+            fos.write(encryptedBytes);
+            
+        } catch (Exception e) {
+            Log.e("BlockStorage", "WRITE ERROR", e);
+        } finally {
+            try {
+                if (out != null) out.close();
+                if (bos != null) bos.close();
+                if (fos != null) fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    /* ================= READ (with Variables) ================= */
+    public static Object[] readAll() {
+        HashMap<String, ArrayList<BlockBean>> blocks = new HashMap<String, ArrayList<BlockBean>>();
+        HashMap<String, ArrayList<Pair<String, String>>> functions = new HashMap<String, ArrayList<Pair<String, String>>>();
+        HashMap<String, ArrayList<ComponentData>> components =
+        new HashMap<String, ArrayList<ComponentData>>();
+        HashMap<String, ArrayList<VariableData>> variables = new HashMap<String, ArrayList<VariableData>>();
+        
+        File f = file();
+        if (!f.exists()) {
+            return new Object[]{blocks, functions, components, variables};
+        }
+        
+        FileInputStream fis = null;
+        DataInputStream in = null;
+        
+        try {
+            byte[] fileData = new byte[(int) f.length()];
+            fis = new FileInputStream(f);
+            fis.read(fileData);
+            
+            byte[] decryptedBytes = applyMask(fileData);
+            
+            in = new DataInputStream(new ByteArrayInputStream(decryptedBytes));
+            int version = in.readInt();
+            
+
+            int bc = in.readInt();
+            for (int i = 0; i < bc; i++) {
+                String key = in.readUTF();
+                int size = in.readInt();
+                ArrayList<BlockBean> list = new ArrayList<BlockBean>();
+                for (int j = 0; j < size; j++) {
+                    BlockBean b = new BlockBean();
+                    b.readFromStream(in); 
+                    list.add(b);
+                }
+                blocks.put(key, list);
+            }
+            
+
+            int fc = in.readInt();
+            for (int i = 0; i < fc; i++) {
+                String key = in.readUTF();
+                int size = in.readInt();
+                ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
+                for (int j = 0; j < size; j++) {
+                    list.add(new Pair<String, String>(in.readUTF(), in.readUTF()));
+                }
+                functions.put(key, list);
+            }
+            
+
+            if (version >= 2) {
+                
+                int cc = in.readInt();
+                
+                for (int i = 0; i < cc; i++) {
+                    
+                    String key = in.readUTF();
+                    int size = in.readInt();
+                    
+                    ArrayList<ComponentData> list =
+                    new ArrayList<ComponentData>();
+                    
+                    for (int j = 0; j < size; j++) {
+                        
+                        int type = in.readInt();
+                        String mainData = in.readUTF();
+                        String extraData = in.readUTF();
+                        
+                        list.add(new ComponentData(type, mainData, extraData));
+                    }
+                    
+                    components.put(key, list);
+                }
+            }
+            
+            
+
+            if (version >= 3) {
+                int vc = in.readInt();
+                for (int i = 0; i < vc; i++) {
+                    String key = in.readUTF();
+                    int size = in.readInt();
+                    ArrayList<VariableData> list = new ArrayList<VariableData>();
+                    for (int j = 0; j < size; j++) {
+                        int type = in.readInt();
+                        String name = in.readUTF();
+                        String defaultValue = in.readUTF();
+                        list.add(new VariableData(type, name, defaultValue));
+                    }
+                    variables.put(key, list);
+                }
+            }
+            
+        } catch (Exception e) {
+            Log.e("BlockStorage", "READ ERROR (File might be corrupted)", e);
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (fis != null) fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return new Object[]{blocks, functions, components, variables};
+    }
+    
+    /* ================= VARIABLE METHODS ================= */
+    
+    /**
+* Save all variables for an activity
+*/    
+    public static void saveVariables(String activityName, ArrayList<VariableData> variableList) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        variables.put(activityName, variableList);
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    /**
+* Add a single variable to an activity
+*/    
+    public static void addVariable(String activityName, VariableData variable) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<VariableData> list = variables.get(activityName);
+        if (list == null) {
+            list = new ArrayList<VariableData>();
+        }
+        
+
+        for (int i = 0; i < list.size(); i++) {
+            VariableData v = list.get(i);
+            if (v.name.equals(variable.name) && v.type == variable.type) {
+                return; // Already exists
+            }
+        }
+        
+        list.add(variable);
+        variables.put(activityName, list);
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    /**
+* Remove a variable from an activity
+*/    
+    public static void removeVariable(String activityName, int type, String name) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<VariableData> list = variables.get(activityName);
+        if (list != null) {
+            ArrayList<VariableData> newList = new ArrayList<VariableData>();
+            for (int i = 0; i < list.size(); i++) {
+                VariableData v = list.get(i);
+                if (!(v.type == type && v.name.equals(name))) {
+                    newList.add(v);
+                }
+            }
+            variables.put(activityName, newList);
+            writeAll(blocks, functions, components, variables);
+        }
+    }
+    
+    /**
+* Load all variables for an activity
+*/    
+    public static ArrayList<VariableData> loadVariables(String activityName) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        ArrayList<VariableData> list = variables.get(activityName);
+        return list == null ? new ArrayList<VariableData>() : list;
+    }
+    
+    /* ================= PUBLIC API (keeping existing methods) ================= */
+    public static void save(String key, ArrayList<BlockBean> list) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        blocks.put(key, list);
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    public static ArrayList<BlockBean> load(String key) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        ArrayList<BlockBean> list = blocks.get(key);
+        return list == null ? new ArrayList<BlockBean>() : list;
+    }
+    
+    public static void saveFunctions(String key, ArrayList<Pair<String, String>> list) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        HashMap<String, ArrayList<VariableData>> variables = (HashMap<String, ArrayList<VariableData>>) o[3];
+        functions.put(key, list);
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    public static ArrayList<Pair<String, String>> loadFunctions(String key) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        ArrayList<Pair<String, String>> list = functions.get(key);
+        return list == null ? new ArrayList<Pair<String, String>>() : list;
+    }
+    
+    public static void saveComponent(String key, ComponentData data) {
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+        (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+        (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+        (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<ComponentData> list = new ArrayList<ComponentData>();
+        list.add(data);
+        
+        components.put(key, list);
+        
+        writeAll(blocks, functions, components, variables);
+        
+    }
+    
+    public static void addComponent(String activityName, ComponentData data) {
+        
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+        (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+        (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+        (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<ComponentData> list = components.get(activityName);
+        
+        if (list == null) {
+            list = new ArrayList<ComponentData>();
+        }
+        
+        list.add(data);
+        
+        components.put(activityName, list);
+        
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    public static void saveComponents(final String activityName,
+    final ArrayList<ComponentData> list) {
+        
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+        (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+        (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+        (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        components.put(activityName, list);
+        
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    
+    public static ArrayList<ComponentData> loadComponents(String activityName) {
+        
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        ArrayList<ComponentData> list = components.get(activityName);
+        
+        if (list == null) {
+            return new ArrayList<ComponentData>();
+        }
+        
+        return list;
+    }
+    
+    
+    public static ComponentData loadComponent(String key) {
+        ArrayList<ComponentData> list = loadComponents(key);
+        
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        
+        return new ComponentData(0, "", "");
+        
+    }
+}

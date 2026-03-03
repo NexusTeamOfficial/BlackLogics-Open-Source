@@ -45,4 +45,8 @@
             name="darkTheme"
             format="boolean" />
     </declare-styleable>
+    <declare-styleable name="NavBarItem">
+        <attr name="active_color" format="color" />
+        <attr name="inactive_color" format="color" />
+    </declare-styleable>
 </resources>

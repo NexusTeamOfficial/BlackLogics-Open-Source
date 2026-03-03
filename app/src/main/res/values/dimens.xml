@@ -16,4 +16,17 @@
     <dimen name="design_tab_text_size">14.0sp</dimen>
     
     <dimen name="action_bar_height">48.0dip</dimen>
+    
+    <dimen name="def_elevation">4dp</dimen>
+	<dimen name="filter_elevation">24dp</dimen>
+
+	<dimen name="progress_size">60dp</dimen>
+	<dimen name="filter_container_height">56dp</dimen>
+
+	<dimen name="text_10sp">10sp</dimen>
+	<dimen name="text_14sp">14sp</dimen>
+	<dimen name="offset_4dp">4dp</dimen>
+	<dimen name="offset_8dp">8dp</dimen>
+	<dimen name="offset_12dp">12dp</dimen>
+	<dimen name="offset_16dp">16dp</dimen>
 </resources>
