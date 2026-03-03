@@ -75,7 +75,7 @@ Protect your APK from reverse engineering and code theft with enterprise-grade D
 
 ⚠ Note: Enabling this may increase APK size and make debugging harder.
 
-![Dex Encryption](screenshots/Screenshot_20260303_125253.jpg)
+![Dex Encryption](screenshots/Screenshot_20260303_125654.jpg)
 
 ---
 
