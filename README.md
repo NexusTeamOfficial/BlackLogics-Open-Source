@@ -113,28 +113,32 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
+---
+
 ## 📜 Credits & Third-Party Acknowledgements
 
-At **BlackLogics**, we respect and value the open-source ecosystem.  
-This project integrates selected components from the following open-source repository:
+At **BlackLogics**, we deeply respect the open-source community and the developers who contribute to it.
+
+This project incorporates certain components from the following open-source repository:
 
 ### 🔹 Logcat Integration Module
 
 - **Repository:** [YurkivTaras/logcat](https://github.com/YurkivTaras/logcat)  
-- **License:** Apache License 2.0  
+- **Original Author:** Yuriy Taras  
+- **License:** Apache License, Version 2.0  
 
-Portions of this software are derived from the above project.  
-All intellectual property rights for the respective components remain with their original author(s).
+Portions of this software are derived from the above repository.
 
-BlackLogics uses and distributes this component in full compliance with the terms of the Apache License, Version 2.0.
+All copyrights, intellectual property rights, and ownership of the respective third-party components remain solely with their original author(s).
 
-A copy of the Apache License 2.0 is available in the `LICENSE` file of this repository  
-or online at: http://www.apache.org/licenses/LICENSE-2.0
+BlackLogics does not claim ownership of third-party code and distributes such components strictly in accordance with their original open-source licenses.
+
+The Apache License, Version 2.0, can be found in the `LICENSE` file of this repository or at:  
+http://www.apache.org/licenses/LICENSE-2.0
 
 ---
 
-> 💙 We sincerely thank the original author for contributing to the open-source community.
-
+> 💙 We sincerely thank the original author and all open-source contributors for their valuable work.
 ## 🔗 Connect With Us
 * **Official Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
 * **YouTube Channel:** [@BlackLogics](https://youtube.com/@blacklogics)
