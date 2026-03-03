@@ -139,6 +139,9 @@ http://www.apache.org/licenses/LICENSE-2.0
 ---
 
 > 💙 We sincerely thank the original author and all open-source contributors for their valuable work.
+
+BlackLogics fully respects all open-source licenses and ensures proper attribution and compliance with their terms, including but not limited to GPL, MIT, Apache License 2.0, and other applicable licenses.
+
 ## 🔗 Connect With Us
 * **Official Telegram:** [@BlackLogicsOfficial](https://t.me/blacklogics)
 * **YouTube Channel:** [@BlackLogics](https://youtube.com/@blacklogics)
