@@ -199,3 +199,6 @@ BlackLogics fully respects all open-source licenses and ensures proper attributi
 * **GitHub Repository:** [NexusTeamOfficial/BlackLogics-Open-Source](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 
 > Made with passion by **NexusTeam** & **SmartIndiaGaming**
+
+
+Minor documentation improvement by Gaurav.
