@@ -134,13 +134,28 @@ We believe in the power of open-source. Whether you are fixing bugs, improving t
 3.  **Commit** your changes (`git commit -m 'Add specialized feature'`).
 4.  **Push** and open a **Pull Request**.
 
-### Core Development Team
-* **NexusTeam:** Lead Architecture & UI Framework.
-* **SmartIndiaGaming:** Firebase Systems & Multimedia Integration.
+---
 
-### 👨‍💻 Contributors
-* **Gaurav** – Android Developer  
-  GitHub: https://github.com/GauravDeveloper-Android
+## 👨‍💻 Core Development Team
+
+- **NexusTeam** – Lead Architecture & UI Framework  
+- **SmartIndiaGaming** – Firebase Systems & Multimedia Integration  
+
+---
+
+## 🌟 Contributors
+
+| Name | Role | GitHub Profile |
+|------|------|----------------|
+| **Gaurav** | Android Developer | https://github.com/GauravDeveloper-Android |
+
+---
+
+## 💙 Special Acknowledgement
+
+BlackLogics development is actively supported by **Gaurav** (GitHub: https://github.com/GauravDeveloper-Android) for Android development contributions, testing, and feature improvements.
+
+---
 
 ---
 
