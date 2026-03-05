@@ -194,6 +194,27 @@ See `COMMERCIAL-LICENSE.md` for details.
 
 ---
 
+## 📜 License Transition Notice
+
+BlackLogics licensing structure has evolved.
+
+- **Version 0.0.6 and earlier** are licensed under the MIT License.
+- **Version 0.0.7 and later** are licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+
+### What This Means
+
+If you are using:
+- v0.0.6 or below → MIT terms apply.
+- v0.0.7 or above → AGPL-3.0 terms apply.
+
+All new development and future releases are governed under AGPL-3.0.
+
+For proprietary or closed-source usage of v0.0.7+, a commercial license is required.
+
+See `LICENSE` and `COMMERCIAL-LICENSE.md` for full details.
+
+---
+
 ## 📜 Credits & Third-Party Acknowledgements
 
 At **BlackLogics**, we deeply respect the open-source community and the developers who contribute to it.
