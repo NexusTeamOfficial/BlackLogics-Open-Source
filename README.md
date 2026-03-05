@@ -138,6 +138,10 @@ We believe in the power of open-source. Whether you are fixing bugs, improving t
 * **NexusTeam:** Lead Architecture & UI Framework.
 * **SmartIndiaGaming:** Firebase Systems & Multimedia Integration.
 
+### 👨‍💻 Contributors
+* **Gaurav** – Android Developer  
+  GitHub: https://github.com/GauravDeveloper-Android
+
 ---
 
 ## 📄 License
