@@ -161,7 +161,7 @@ BlackLogics development is actively supported by **Gaurav** (GitHub: https://git
 
 ## 📄 License
 
-This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+This project is licensed under the **GNU  General Public License v3.0 (GPL-3.0)**.
 
 You are free to:
 - Use
@@ -172,7 +172,7 @@ You are free to:
 Under the following conditions:
 - Modified source code must be disclosed
 - Proper attribution must be given
-- License must remain AGPL-3.0
+- License must remain GPL-3.0
 - Network-based deployments must also provide source access
 
 See the [LICENSE](LICENSE) file for full details.
@@ -199,15 +199,15 @@ See `COMMERCIAL-LICENSE.md` for details.
 BlackLogics licensing structure has evolved.
 
 - **Version 0.0.6 and earlier** are licensed under the MIT License.
-- **Version 0.0.7 and later** are licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).
+- **Version 0.0.7 and later** are licensed under the GNU General Public License v3.0 (GPL-3.0).
 
 ### What This Means
 
 If you are using:
 - v0.0.6 or below → MIT terms apply.
-- v0.0.7 or above → AGPL-3.0 terms apply.
+- v0.0.7 or above → GPL-3.0 terms apply.
 
-All new development and future releases are governed under AGPL-3.0.
+All new development and future releases are governed under GPL-3.0.
 
 For proprietary or closed-source usage of v0.0.7+, a commercial license is required.
 
