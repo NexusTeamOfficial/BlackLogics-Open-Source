@@ -48,7 +48,7 @@
   </tr>
   <tr>
     <td><img src="screenshots/Screenshot_20260325_152206.jpg" width="100%"/></td>
-    <td><img src="screenshots/Screenshot_20260303_125506.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20260325_183618.jpg" width="100%"/></td>
     <td><img src="screenshots/Screenshot_20260325_183328.jpg" width="100%"/></td>
   </tr>
 </table>
