@@ -1,0 +1,86 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/linear2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="2dp"
+			android:orientation="vertical">
+			<LinearLayout
+				android:id="@+id/linear3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="#3F51B5"
+				android:orientation="horizontal">
+				<ImageView
+					android:id="@+id/imageview1"
+					android:layout_width="30dp"
+					android:layout_height="30dp"
+					android:src="@drawable/field"
+					android:scaleType="fitCenter"
+					android:focusable="false" />
+				<TextView
+					android:id="@+id/textview1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="Enter Value"
+					android:textSize="12sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF"
+					android:focusable="false" />
+			</LinearLayout>
+			<EditText
+				android:id="@+id/value"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:gravity="top"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textColor="#000000"
+				android:textColorHint="#607D8B"
+				android:singleLine="true"
+				android:inputType="numberSigned|numberDecimal"
+				android:focusable="true" />
+			<LinearLayout
+				android:id="@+id/linear4"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="#3F51B5"
+				android:gravity="right"
+				android:orientation="horizontal">
+				<TextView
+					android:id="@+id/cancel"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="cancel"
+					android:textSize="12sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF"
+					android:focusable="false" />
+				<TextView
+					android:id="@+id/save"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="Save"
+					android:textSize="12sp"
+					android:textStyle="bold"
+					android:textColor="#FFFFFF"
+					android:focusable="false" />
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

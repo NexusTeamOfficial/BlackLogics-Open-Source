@@ -4,6 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:background="?attr/colorSurface"
 	android:orientation="vertical">
 	<include layout="@layout/toolbar_improved" />
 	<LinearLayout
@@ -30,8 +31,7 @@
 					android:layout_height="wrap_content"
 					android:padding="8dp"
 					android:text="Enabled"
-					android:textSize="16sp"
-					android:textColor="@color/textColor" />
+					android:textSize="16sp" />
 			</LinearLayout>
 			<Switch
 				android:id="@+id/switch1"
@@ -59,8 +59,7 @@
 				android:layout_height="wrap_content"
 				android:padding="8dp"
 				android:text="Activating App Compat library will let you add Drawer Layout and Floating Action Button to the Activities."
-				android:textSize="14sp"
-				android:textColor="@color/textColor" />
+				android:textSize="14sp" />
 		</LinearLayout>
 		<TextView
 			android:id="@+id/textview3"

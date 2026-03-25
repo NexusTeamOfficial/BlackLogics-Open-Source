@@ -36,6 +36,8 @@ public class fm extends fo {
    public fq s = null;
    public String t;
    public String u;
+   public boolean isCustomBlock = false;
+   public int originalId = -1;
 
    public fm(Context var1, int var2, String var3, String var4, String var5) {
       super(var1, var4, false);
@@ -43,6 +45,8 @@ public class fm extends fo {
       this.a = var3;
       this.b = var5;
       this.a();
+      this.isCustomBlock = (var2 < 0);
+      this.originalId = var2;
    }
 
    public fm(Context var1, int var2, String var3, String var4, String var5, String var6) {
@@ -51,6 +55,9 @@ public class fm extends fo {
       this.a = var3;
       this.b = var6;
       this.a();
+      // ✅ YEH DO LINES ADD KARO
+    this.isCustomBlock = (var2 < 0);
+    this.originalId = var2;
    }
 
    private int a(TextView var1) {
@@ -707,28 +714,58 @@ public class fm extends fo {
    }
 
    public BlockBean getBean() {
-      BlockBean var5 = new BlockBean(this.getTag().toString(), this.a, this.w, this.x, this.b);
-      var5.color = this.z;
-      Iterator var3 = this.c.iterator();
-
-      while(var3.hasNext()) {
-         View var2 = (View)var3.next();
-         if (var2 instanceof fn) {
+    // ✅ Safe ID handling - String ho ya Integer
+    Object tagObj = this.getTag();
+    String idStr;
+    int idInt = -1;  // Default value
+    
+    if (tagObj instanceof Integer) {
+        idInt = (Integer) tagObj;
+        idStr = String.valueOf(idInt);
+    } else {
+        idStr = tagObj.toString();
+        try {
+            idInt = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            // Agar parse na ho to -1 hi rahega
+            idInt = -1;
+        }
+    }
+    
+    // ✅ BlockBean create karo with safe ID
+    BlockBean var5 = new BlockBean(idStr, this.a, this.w, this.x, this.b);
+    
+    // ✅ Color set karo
+    var5.color = this.z;
+    
+    // ✅ Custom block flag set karo
+    var5.isCustomBlock = this.isCustomBlock;  // fm ke fields use karo
+var5.originalId = this.originalId;
+    
+    // ✅ Parameters handle karo
+    Iterator var3 = this.c.iterator();
+    while(var3.hasNext()) {
+        View var2 = (View)var3.next();
+        if (var2 instanceof fn) {
+            // fn block ka value add karo
             var5.parameters.add(((fn)var2).getArgValue().toString());
-         } else if (var2 instanceof fm) {
+        } else if (var2 instanceof fm) {
+            // Nested block ka reference add karo (@ ke saath)
             ArrayList var1 = var5.parameters;
             StringBuilder var4 = new StringBuilder();
             var4.append("@");
             var4.append(var2.getTag().toString());
             var1.add(var4.toString());
-         }
-      }
-
-      var5.subStack1 = this.m;
-      var5.subStack2 = this.n;
-      var5.nextBlock = this.l;
-      return var5;
-   }
+        }
+    }
+    
+    // ✅ Substack aur next block IDs set karo
+    var5.subStack1 = this.m;
+    var5.subStack2 = this.n;
+    var5.nextBlock = this.l;
+    
+    return var5;
+}
 
    public int getBlockType() {
       return this.r;

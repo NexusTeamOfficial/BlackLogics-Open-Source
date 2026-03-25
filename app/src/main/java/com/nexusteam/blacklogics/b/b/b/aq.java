@@ -214,6 +214,8 @@ public class aq {
                 fos.write(permJson.getBytes(StandardCharsets.UTF_8));
             }
             
+            autoRegisterActivities(sc_id);
+            
         } catch (Exception e) {}
     }
     
@@ -251,8 +253,52 @@ public class aq {
                 }
             }
             
+            autoRegisterActivities(sc_id);
+            
         } catch (Exception e) {}
     }
+    
+    public aq autoRegisterActivities(String sc_id) {
+    try {
+        File file = new File("/storage/emulated/0/.blacklogics/data/" + sc_id + "/java");
+
+        if (!file.exists()) return this;
+
+        String json = new String(
+            Files.readAllBytes(file.toPath()),
+            StandardCharsets.UTF_8
+        );
+
+        List<String> list = new Gson().fromJson(
+            json,
+            new TypeToken<List<String>>(){}.getType()
+        );
+
+        if (list == null) return this;
+
+        for (String fullName : list) {
+            if (fullName == null || fullName.trim().isEmpty()) continue;
+
+            // 👉 class name nikal (last part)
+            String className = fullName.substring(fullName.lastIndexOf(".") + 1);
+
+            // 👉 manifest format: .ClassName
+            String manifestName = "." + className;
+
+            Map<String, String> attrs = new HashMap<>();
+            attrs.put("exported", "true");
+            attrs.put("configChanges", "orientation|keyboardHidden|screenSize");
+            attrs.put("windowSoftInputMode", "adjustResize");
+
+            addActivity(manifestName, attrs);
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return this;
+}
     
     public void extractManifest(String sc_id, String outputPath) {
         try {

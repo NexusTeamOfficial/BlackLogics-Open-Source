@@ -182,6 +182,12 @@
 				app:iconPadding="8dp"
 				app:iconGravity="textStart"
 				app:backgroundTint="?attr/colorPrimary" />
+			<com.nexusteam.blacklogics.widget.AdLayout
+				android:id="@+id/adLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				app:bannerAdUnitId="ca-app-pub-2903137488772866/3754424748"
+				app:interstitialAdUnitId="ca-app-pub-2903137488772866/3754424748" />
 		</LinearLayout>
 	</ScrollView>
 </LinearLayout>

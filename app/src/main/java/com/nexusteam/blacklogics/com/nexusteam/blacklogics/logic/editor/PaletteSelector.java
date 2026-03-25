@@ -44,11 +44,12 @@ public class PaletteSelector extends LinearLayout implements OnClickListener {
         addCategoryItem(1, getResources().getString(R.string.title_bl_cate_list), -3384542);
         addCategoryItem(2, getResources().getString(R.string.title_bl_cate_control), -1988310);
         addCategoryItem(3, getResources().getString(R.string.title_bl_cate_operator), -10701022);
-        addCategoryItem(4, getResources().getString(R.string.title_bl_cate_function), -11899692);
-        addCategoryItem(5, getResources().getString(R.string.title_bl_cate_moreblock), -7711273);
+        addCategoryItem(4, "Math", Color.parseColor("#4CAF50"));
+        addCategoryItem(5, getResources().getString(R.string.title_bl_cate_function), -11899692);
+        addCategoryItem(6, getResources().getString(R.string.title_bl_cate_moreblock), -7711273);
 
 
-        int index = 6; // Start index for dynamically adding category items
+        int index = 7; // Start index for dynamically adding category items
         try {
 
             BufferedReader bufferedReader = new BufferedReader(new FileReader(PALETTE_PATH));

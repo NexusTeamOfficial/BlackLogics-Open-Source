@@ -37,10 +37,14 @@ import androidx.constraintlayout.widget.*;
 import androidx.core.*;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -53,6 +57,7 @@ import com.google.gson.*;
 import com.google.gson.Gson;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -276,9 +281,9 @@ public class ManagerActivity extends AppCompatActivity {
 			
 			@Override
 			public void onScroll(AbsListView abs, int _firstVisibleItem, int _visibleItemCount, int _totalItemCount) {
-				try {
+				try{
 					scroll1 = _firstVisibleItem;
-				} catch (Exception e) {
+				}catch(Exception e){
 					
 				}
 			}
@@ -317,9 +322,9 @@ public class ManagerActivity extends AppCompatActivity {
 			
 			@Override
 			public void onScroll(AbsListView abs, int _firstVisibleItem, int _visibleItemCount, int _totalItemCount) {
-				try {
+				try{
 					scroll2 = _firstVisibleItem;
-				} catch (Exception e) {
+				}catch(Exception e){
 					
 				}
 			}
@@ -1534,11 +1539,11 @@ iniColor = "";
 				down.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View _view) {
-						try {
+						try{
 							Collections.swap(_data, (int)(_position), (int)(_position + 1));
 							FileUtil.writeFile(save_path, new Gson().toJson(listmap));
 							notifyDataSetChanged();
-						} catch (Exception e) {
+						}catch(Exception e){
 							
 						}
 					}
@@ -1546,11 +1551,11 @@ iniColor = "";
 				up.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View _view) {
-						try {
+						try{
 							Collections.swap(_data, (int)(_position), (int)(_position + 1));
 							FileUtil.writeFile(save_path, new Gson().toJson(listmap));
 							notifyDataSetChanged();
-						} catch (Exception e) {
+						}catch(Exception e){
 							
 						}
 					}

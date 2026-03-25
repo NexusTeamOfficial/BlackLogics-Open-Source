@@ -1,0 +1,24 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:padding="8dp">
+	<TextView
+		android:id="@+id/tv_widget_id"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="16sp"
+		android:textColor="@color/textColor"
+		android:layout_marginStart="8dp" />
+	<CheckBox
+		android:id="@+id/cb_widget"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:textColor="#000000" />
+</LinearLayout>

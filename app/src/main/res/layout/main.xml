@@ -26,8 +26,8 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:orientation="vertical"
-			app:layout_behavior="@string/appbar_scrolling_view_behavior"
-			android:background="?attr/colorSurface">
+			android:background="@color/md_theme_light_background"
+			app:layout_behavior="@string/appbar_scrolling_view_behavior">
 			<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 				android:id="@+id/swipeRefresh"
 				android:layout_width="match_parent"
@@ -107,8 +107,7 @@
 									android:layout_height="wrap_content"
 									android:padding="8dp"
 									android:text="@string/restore_project_title"
-									android:textSize="16sp"
-									android:textColor="?attr/colorOnSurface" />
+									android:textSize="16sp" />
 							</LinearLayout>
 						</com.google.android.material.card.MaterialCardView>
 						<com.google.android.gms.ads.AdView
@@ -140,7 +139,14 @@
 							android:id="@+id/baseRecycler"
 							android:layout_width="match_parent"
 							android:layout_height="match_parent"
-							android:padding="8dp" />
+							android:padding="8dp"
+							android:layout_weight="1" />
+						<com.nexusteam.blacklogics.widget.AdLayout
+							android:id="@+id/adLayout"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							app:bannerAdUnitId="ca-app-pub-2903137488772866/3754424748"
+							app:interstitialAdUnitId="ca-app-pub-2903137488772866/3754424748" />
 					</LinearLayout>
 				</androidx.core.widget.NestedScrollView>
 			</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

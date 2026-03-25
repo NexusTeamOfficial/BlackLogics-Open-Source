@@ -31,6 +31,7 @@ public enum ActivityType {
                this == APP_COMPAT_DIALOG_FRAGMENT || 
                this == BOTTOM_SHEET_DIALOG_FRAGMENT || 
                this == LIST_FRAGMENT || 
+               this == FRAGMENT_ACTIVITY || 
                this == PREFERENCE_FRAGMENT;
     }
     public boolean isDialogFragment() {

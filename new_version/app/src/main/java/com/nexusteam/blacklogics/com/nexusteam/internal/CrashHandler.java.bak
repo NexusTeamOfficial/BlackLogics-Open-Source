@@ -1,0 +1,47 @@
+package com.nexusteam.internal;
+
+import android.os.Build;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class CrashHandler implements Thread.UncaughtExceptionHandler {
+
+    private static final String TAG = "CRASH_HANDLER";
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+
+        // 1️⃣ Always log to Logcat
+        Log.e(TAG, "Uncaught exception", throwable);
+
+        // 2️⃣ Try writing to /storage/emulated/0 (only if allowed)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                return; // permission nahi hai, bas logcat
+            }
+        }
+
+        FileWriter writer = null;
+        try {
+            File file = new File("/storage/emulated/0/nexus_crash_log.txt");
+            writer = new FileWriter(file, true);
+
+            writer.write("\n----- CRASH -----\n");
+            writer.write(throwable.toString());
+            writer.write("\n");
+
+        } catch (Throwable e) {
+            Log.e(TAG, "File write failed", e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ignored) {}
+            }
+        }
+    }
+}

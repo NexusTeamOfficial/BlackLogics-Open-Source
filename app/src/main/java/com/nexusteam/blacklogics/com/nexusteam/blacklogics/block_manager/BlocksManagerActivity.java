@@ -88,7 +88,7 @@ public class BlocksManagerActivity extends AppCompatActivity {
             public void onItemClick(int position, HashMap<String, Object> item) {
                 Intent intent = new Intent(BlocksManagerActivity.this, BlocksManagerDetailsActivity.class);
 
-                intent.putExtra("paletteIndex", String.valueOf(position + 6));
+                intent.putExtra("paletteIndex", String.valueOf(position + 7));
                 startActivity(intent);
             }
         });
@@ -268,7 +268,7 @@ public class BlocksManagerActivity extends AppCompatActivity {
                     paletteMap.put("name", paletteObj.getString("name"));
                     paletteMap.put("color", paletteObj.getString("color"));
 
-                    String paletteId = String.valueOf(i + 6);
+                    String paletteId = String.valueOf(i + 7);
 
                     int count = blockCounts.getOrDefault(paletteId, 0);
                     paletteMap.put("count", count);

@@ -1,0 +1,38 @@
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:padding="4dp">
+	<LinearLayout
+		android:id="@+id/linear10"
+		android:layout_width="100dp"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<ImageView
+			android:id="@+id/image_view"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="100dp"
+			android:src="@drawable/default_image"
+			android:scaleType="centerCrop" />
+		<TextView
+			android:id="@+id/text_view"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:textSize="12sp"
+			android:textColor="@color/textColor" />
+		<CheckBox
+			android:id="@+id/check_box"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:layout_gravity="center_horizontal|center_vertical" />
+	</LinearLayout>
+</FrameLayout>

@@ -1,0 +1,1032 @@
+package com.nexusteam.blacklogics.editor.layout.parser;
+
+import android.util.Log;
+import android.util.Pair;
+import com.nexusteam.blacklogics.FileUtil;
+import com.nexusteam.blacklogics.editor.layout.model.LayoutData;
+import com.nexusteam.blacklogics.editor.layout.storage.LayoutStorage;
+import com.nexusteam.internal.beans.*;
+import com.nexusteam.internal.kk;
+import com.nexusteam.internal.lx;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class ViewParser {
+    
+    private static final String TAG = "ViewParser";
+    private static ViewParser instance;
+    
+    private String currentScId;
+    private String currentActivityName;
+    
+    // 🔥 Updated: Cache with timestamps for real-time tracking
+    private ConcurrentHashMap<String, CacheEntry> viewMap;
+    private HashMap<String, ViewBean> fabMap;
+    private HashMap<String, ViewBean> idToBeanMap;
+    
+    // 🔥 New: File monitoring
+    private ScheduledExecutorService scheduler;
+    private ConcurrentHashMap<String, AtomicLong> fileTimestamps;
+    private ConcurrentHashMap<String, String> fileContents;
+    
+    // 🔥 New: Quick access maps
+    private ConcurrentHashMap<String, List<ViewBean>> typeIndex;
+    private ConcurrentHashMap<String, List<ViewBean>> parentIndex;
+    
+    private kk fileHelper = new kk();
+    
+    // 🔥 Cache entry with timestamp
+    private static class CacheEntry {
+        ArrayList<ViewBean> beans;
+        long timestamp;
+        String filePath;
+        
+        CacheEntry(ArrayList<ViewBean> beans, String filePath) {
+            this.beans = beans;
+            this.filePath = filePath;
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        boolean isExpired(long maxAge) {
+            return System.currentTimeMillis() - timestamp > maxAge;
+        }
+    }
+    
+    private ViewParser() {
+        viewMap = new ConcurrentHashMap<>();
+        fabMap = new HashMap<>();
+        idToBeanMap = new HashMap<>();
+        fileTimestamps = new ConcurrentHashMap<>();
+        fileContents = new ConcurrentHashMap<>();
+        typeIndex = new ConcurrentHashMap<>();
+        parentIndex = new ConcurrentHashMap<>();
+        
+        // 🔥 Start background updater
+        startBackgroundUpdater();
+    }
+    
+    public static synchronized ViewParser getInstance() {
+        if (instance == null) {
+            instance = new ViewParser();
+        }
+        return instance;
+    }
+    
+    public void init(String scId, String activityName) {
+        this.currentScId = scId;
+        this.currentActivityName = activityName;
+        
+        // 🔥 Force reload on init
+        String xmlName = activityName;
+        forceReload(xmlName);
+        
+        Log.d(TAG, "ViewParser initialized with scId=" + scId + ", activity=" + activityName);
+    }
+    
+    public ArrayList<ViewBean> loadBeanData() {
+        return loadBeanData(currentActivityName);
+    }
+    
+    // 🔥 New: Background updater that runs every second
+    private void startBackgroundUpdater() {
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    updateChangedFiles();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error in background updater: " + e.getMessage());
+                }
+            }
+        }, 1, 1, TimeUnit.SECONDS); // 🔥 Har second check
+    }
+    
+    // 🔥 New: Check and update changed files
+    private void updateChangedFiles() {
+        if (currentScId == null) return;
+        
+        String basePath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + currentScId + "/";
+        
+        for (Map.Entry<String, CacheEntry> entry : viewMap.entrySet()) {
+            String xmlName = entry.getKey();
+            CacheEntry cache = entry.getValue();
+            
+            if (cache.filePath != null) {
+                File file = new File(cache.filePath);
+                if (file.exists()) {
+                    long lastModified = file.lastModified();
+                    AtomicLong storedTime = fileTimestamps.get(xmlName);
+                    
+                    if (storedTime == null || storedTime.get() != lastModified) {
+                        // 🔥 File changed - reload it
+                        Log.d(TAG, "File changed detected: " + xmlName);
+                        reloadFile(xmlName, cache.filePath);
+                        fileTimestamps.put(xmlName, new AtomicLong(lastModified));
+                    }
+                }
+            }
+        }
+    }
+    
+    // 🔥 New: Reload specific file
+    private synchronized void reloadFile(String xmlName, String filePath) {
+        try {
+            ArrayList<ViewBean> newBeans = loadFromFilePath(filePath, xmlName);
+            if (newBeans != null && !newBeans.isEmpty()) {
+                // Update cache
+                viewMap.put(xmlName, new CacheEntry(newBeans, filePath));
+                
+                // Update indexes
+                updateIndexes(xmlName, newBeans);
+                
+                Log.d(TAG, "✅ Auto-reloaded " + xmlName + " with " + newBeans.size() + " views");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error reloading file: " + xmlName, e);
+        }
+    }
+    
+    // 🔥 New: Force reload a file
+    private void forceReload(String xmlName) {
+        if (xmlName == null || currentScId == null) return;
+        
+        String layoutPath = FileUtil.getExternalStorageDir() 
+            + "/.blacklogics/data/" + currentScId + "/";
+        
+        String filePath = layoutPath + xmlName;
+        File file = new File(filePath);
+        
+        if (file.exists()) {
+            reloadFile(xmlName, filePath);
+            fileTimestamps.put(xmlName, new AtomicLong(file.lastModified()));
+        }
+    }
+    
+    // 🔥 Modified: loadBeanData with real-time check
+    public ArrayList<ViewBean> loadBeanData(String activityName) {
+        if (activityName == null || currentScId == null) {
+            Log.e(TAG, "Cannot load beans: scId or activityName not set");
+            return new ArrayList<>();
+        }
+        
+        String xmlName = activityName;
+        String layoutPath = FileUtil.getExternalStorageDir() 
+            + "/.blacklogics/data/" + currentScId + "/";
+        String fullPath = layoutPath + xmlName;
+        
+        Log.d(TAG, "Loading beans from: " + fullPath);
+        
+        // 🔥 Check cache with timestamp
+        CacheEntry cached = viewMap.get(xmlName);
+        if (cached != null) {
+            File file = new File(fullPath);
+            if (file.exists()) {
+                long lastModified = file.lastModified();
+                AtomicLong storedTime = fileTimestamps.get(xmlName);
+                
+                if (storedTime != null && storedTime.get() == lastModified) {
+                    // 🔥 Cache is still valid
+                    if (!cached.isExpired(5000)) { // 5 seconds max cache
+                        Log.d(TAG, "Returning cached views for " + xmlName);
+                        return cached.beans;
+                    }
+                }
+            }
+        }
+        
+        // 🔥 Load fresh
+        ArrayList<ViewBean> beans = loadFromStorage(layoutPath, xmlName);
+        
+        if (beans != null && !beans.isEmpty()) {
+            CacheEntry newCache = new CacheEntry(beans, fullPath);
+            viewMap.put(xmlName, newCache);
+            
+            File file = new File(fullPath);
+            if (file.exists()) {
+                fileTimestamps.put(xmlName, new AtomicLong(file.lastModified()));
+            }
+            
+            // 🔥 Update indexes
+            updateIndexes(xmlName, beans);
+            
+            Log.d(TAG, "✅ Loaded " + beans.size() + " views from " + xmlName);
+        } else {
+            Log.d(TAG, "No views found for " + xmlName);
+            beans = new ArrayList<>();
+            viewMap.put(xmlName, new CacheEntry(beans, null));
+        }
+        
+        return beans;
+    }
+    
+    // 🔥 New: Update search indexes
+    private void updateIndexes(String xmlName, ArrayList<ViewBean> beans) {
+        // Update ID map
+        for (ViewBean bean : beans) {
+            idToBeanMap.put(bean.id, bean);
+        }
+        
+        // Update type index
+        for (ViewBean bean : beans) {
+            String typeKey = xmlName + "_type_" + bean.type;
+            List<ViewBean> typeList = typeIndex.get(typeKey);
+            if (typeList == null) {
+                typeList = new CopyOnWriteArrayList<>();
+                typeIndex.put(typeKey, typeList);
+            }
+            typeList.add(bean);
+        }
+        
+        // Update parent index
+        for (ViewBean bean : beans) {
+            if (bean.parent != null) {
+                String parentKey = xmlName + "_parent_" + bean.parent;
+                List<ViewBean> parentList = parentIndex.get(parentKey);
+                if (parentList == null) {
+                    parentList = new CopyOnWriteArrayList<>();
+                    parentIndex.put(parentKey, parentList);
+                }
+                parentList.add(bean);
+            }
+        }
+    }
+    
+    // 🔥 New: Load from file path directly
+    private ArrayList<ViewBean> loadFromFilePath(String filePath, String layoutName) {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return null;
+            }
+            
+            File baseDir = file.getParentFile();
+            LayoutData layoutData = LayoutStorage.load(baseDir, layoutName, null);
+            
+            if (layoutData != null && layoutData.xml != null) {
+                return parseXmlToBeans(layoutData.xml);
+            }
+            
+            String viewPath = fe.e(currentScId) + File.separator + "view";
+            if (fileHelper.a(viewPath)) {
+                byte[] bytes = fileHelper.f(viewPath);
+                String data = fileHelper.b(bytes);
+                return parseLwFormat(data);
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading from file path: " + e.getMessage(), e);
+        }
+        
+        return null;
+    }
+    
+    // 🔥 Modified: getViewBean with real-time check
+    public ViewBean getViewBean(String xmlName, String viewId) {
+        // 🔥 Check if we need to reload
+        String activityName = xmlName;
+        if (activityName != null && activityName.equals(currentActivityName)) {
+            // Only auto-reload current activity
+            checkAndReloadIfNeeded(xmlName);
+        }
+        
+        // Check cache
+        ViewBean bean = idToBeanMap.get(viewId);
+        if (bean != null) return bean;
+        
+        // Load if not found
+        ArrayList<ViewBean> beans = loadBeanData(xmlName);
+        if (beans != null) {
+            for (ViewBean b : beans) {
+                if (viewId.equals(b.id)) {
+                    idToBeanMap.put(viewId, b);
+                    return b;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    public ViewBean getViewBean(String viewId) {
+        String xmlName = currentActivityName;
+        return getViewBean(xmlName, viewId);
+    }
+    
+    // 🔥 New: Quick check and reload
+    private void checkAndReloadIfNeeded(String xmlName) {
+        if (currentScId == null) return;
+        
+        String layoutPath = FileUtil.getExternalStorageDir() 
+            + "/.blacklogics/data/" + currentScId + "/";
+        String fullPath = layoutPath + xmlName;
+        
+        File file = new File(fullPath);
+        if (file.exists()) {
+            long lastModified = file.lastModified();
+            AtomicLong storedTime = fileTimestamps.get(xmlName);
+            
+            if (storedTime == null || storedTime.get() != lastModified) {
+                // 🔥 File changed, reload
+                reloadFile(xmlName, fullPath);
+                fileTimestamps.put(xmlName, new AtomicLong(lastModified));
+            }
+        }
+    }
+    
+    public ArrayList<ViewBean> getAllBeans() {
+        String xmlName = currentActivityName;
+        return getAllBeans(xmlName);
+    }
+    
+    public ArrayList<ViewBean> getAllBeans(String xmlName) {
+        checkAndReloadIfNeeded(xmlName);
+        CacheEntry entry = viewMap.get(xmlName);
+        return entry != null ? entry.beans : null;
+    }
+    
+    // 🔥 New: Real-time getBeansByType
+    public ArrayList<ViewBean> getBeansByType(int type) {
+        String xmlName = currentActivityName;
+        checkAndReloadIfNeeded(xmlName);
+        
+        String typeKey = xmlName + "_type_" + type;
+        List<ViewBean> indexed = typeIndex.get(typeKey);
+        if (indexed != null) {
+            return new ArrayList<>(indexed);
+        }
+        
+        // Fallback to old method
+        ArrayList<ViewBean> all = getAllBeans();
+        if (all == null) return new ArrayList<>();
+        
+        ArrayList<ViewBean> result = new ArrayList<>();
+        for (ViewBean bean : all) {
+            if (bean.type == type) {
+                result.add(bean);
+            }
+        }
+        return result;
+    }
+    
+    public ArrayList<ViewBean> getBeansByClass(String className) {
+        int type = ViewBean.getViewTypeByTypeName(className);
+        if (type != -1) {
+            return getBeansByType(type);
+        }
+        return new ArrayList<>();
+    }
+    
+    // 🔥 New: Get child views of a parent
+    public ArrayList<ViewBean> getChildViews(String parentId) {
+        String xmlName = currentActivityName;
+        checkAndReloadIfNeeded(xmlName);
+        
+        String parentKey = xmlName + "_parent_" + parentId;
+        List<ViewBean> children = parentIndex.get(parentKey);
+        if (children != null) {
+            return new ArrayList<>(children);
+        }
+        return new ArrayList<>();
+    }
+    
+    public ArrayList<Pair<Integer, String>> getViewsByType(String xmlName, String viewType) {
+        ArrayList<Pair<Integer, String>> result = new ArrayList<>();
+        ArrayList<ViewBean> beans = getAllBeans(xmlName);
+        
+        if (beans == null) {
+            beans = loadBeanData(xmlName);
+        }
+        
+        if (beans != null) {
+            for (ViewBean bean : beans) {
+                if (viewType.equals("CheckBox")) {
+                    if (bean.getClassInfo().a("CompoundButton")) {
+                        result.add(new Pair<>(bean.type, bean.id));
+                    }
+                } else if (bean.getClassInfo().a(viewType)) {
+                    result.add(new Pair<>(bean.type, bean.id));
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    // 🔥 New: Force refresh everything
+    public void refreshAll() {
+        Log.d(TAG, "Forcing full refresh");
+        clearCache();
+        
+        if (currentActivityName != null && currentScId != null) {
+            String xmlName = currentActivityName;
+            forceReload(xmlName);
+        }
+    }
+    
+    // 🔥 New: Subscribe to changes (for UI updates)
+    public interface ViewParserListener {
+        void onViewsChanged(String xmlName);
+    }
+    
+    private List<ViewParserListener> listeners = new CopyOnWriteArrayList<>();
+    
+    public void addListener(ViewParserListener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(ViewParserListener listener) {
+        listeners.remove(listener);
+    }
+    
+    private void notifyListeners(String xmlName) {
+        for (ViewParserListener listener : listeners) {
+            try {
+                listener.onViewsChanged(xmlName);
+            } catch (Exception e) {
+                Log.e(TAG, "Listener error: " + e.getMessage());
+            }
+        }
+    }
+    
+    // 🔥 Modified: Clear cache properly
+    public void clearCache() {
+        viewMap.clear();
+        fabMap.clear();
+        idToBeanMap.clear();
+        fileTimestamps.clear();
+        fileContents.clear();
+        typeIndex.clear();
+        parentIndex.clear();
+        Log.d(TAG, "Cache cleared");
+    }
+    
+    // 🔥 Clean shutdown
+    public void shutdown() {
+        if (scheduler != null) {
+            scheduler.shutdown();
+            try {
+                if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
+                    scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                scheduler.shutdownNow();
+            }
+        }
+    }
+    
+    // ==================== ALL OLD METHODS FROM HERE ====================
+    
+    private ArrayList<ViewBean> loadFromStorage(String savePath, String layoutName) {
+        try {
+            File baseDir = new File(savePath);
+            if (!baseDir.exists()) {
+                return null;
+            }
+            
+            LayoutData layoutData = LayoutStorage.load(baseDir, layoutName, null);
+            if (layoutData != null && layoutData.xml != null) {
+                return parseXmlToBeans(layoutData.xml);
+            }
+            
+            String viewPath = fe.e(currentScId) + File.separator + "view";
+            if (fileHelper.a(viewPath)) {
+                byte[] bytes = fileHelper.f(viewPath);
+                String data = fileHelper.b(bytes);
+                return parseLwFormat(data);
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading from storage: " + e.getMessage(), e);
+        }
+        
+        return null;
+    }
+    
+    private ArrayList<ViewBean> parseXmlToBeans(String xml) {
+        ArrayList<ViewBean> beans = new ArrayList<>();
+        Stack<ViewBean> parentStack = new Stack<>();
+        Map<String, Integer> idCounter = new HashMap<>();
+        
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser parser = factory.newPullParser();
+            parser.setInput(new StringReader(xml));
+            
+            int eventType = parser.getEventType();
+            int viewIndex = 0;
+            
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    String tagName = parser.getName();
+                    
+                    if (!"merge".equals(tagName) && !"include".equals(tagName)) {
+                        ViewBean bean = new ViewBean();
+                        
+                        String id = parseId(parser);
+                        if (id != null) {
+                            bean.id = id;
+                            bean.name = id;
+                        } else {
+                            String baseId = tagName.toLowerCase() + "_";
+                            Integer count = idCounter.get(baseId);
+                            if (count == null) count = 0;
+                            count++;
+                            idCounter.put(baseId, count);
+                            bean.id = baseId + count;
+                            bean.name = bean.id;
+                        }
+                        
+                        bean.type = getViewType(tagName);
+                        bean.index = viewIndex++;
+                        
+                        if (!parentStack.isEmpty()) {
+                            ViewBean parent = parentStack.peek();
+                            bean.parent = parent.id;
+                            bean.parentType = parent.type;
+                        }
+                        
+                        bean.layout = new LayoutBean();
+                        parseLayoutParams(parser, bean.layout);
+                        
+                        if (isTextView(bean.type)) {
+                            bean.text = new TextBean();
+                            parseTextProperties(parser, bean.text);
+                        }
+                        
+                        if (bean.type == 6) { // ImageView
+                            bean.image = new ImageBean();
+                            parseImageProperties(parser, bean.image);
+                        }
+                        
+                        parseCommonAttributes(parser, bean);
+                        parseWidgetSpecificAttributes(parser, bean);
+                        
+                        beans.add(bean);
+                        
+                        if (isViewGroup(tagName)) {
+                            parentStack.push(bean);
+                        }
+                    }
+                } else if (eventType == XmlPullParser.END_TAG) {
+                    String tagName = parser.getName();
+                    if (isViewGroup(tagName) && !parentStack.isEmpty()) {
+                        parentStack.pop();
+                    }
+                }
+                
+                eventType = parser.next();
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing XML: " + e.getMessage(), e);
+        }
+        
+        return beans;
+    }
+    
+    private ArrayList<ViewBean> parseLwFormat(String data) {
+        ArrayList<ViewBean> beans = new ArrayList<>();
+        
+        try {
+            BufferedReader reader = new BufferedReader(new StringReader(data));
+            String currentKey = "";
+            StringBuffer currentData = new StringBuffer();
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.length() > 0) {
+                    if (line.charAt(0) == '@') {
+                        if (currentKey.length() > 0 && currentData.length() > 0) {
+                            ArrayList<ViewBean> parsed = parseLwSection(currentKey, currentData.toString());
+                            if (parsed != null) {
+                                beans.addAll(parsed);
+                            }
+                            currentData = new StringBuffer();
+                        }
+                        currentKey = line.substring(1);
+                    } else {
+                        currentData.append(line).append("\n");
+                    }
+                }
+            }
+            
+            if (currentKey.length() > 0 && currentData.length() > 0) {
+                ArrayList<ViewBean> parsed = parseLwSection(currentKey, currentData.toString());
+                if (parsed != null) {
+                    beans.addAll(parsed);
+                }
+            }
+            
+            reader.close();
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing LW format: " + e.getMessage(), e);
+        }
+        
+        return beans;
+    }
+    
+    // 🔥 FIXED: Enum के साथ सही comparison
+    private ArrayList<ViewBean> parseLwSection(String key, String data) {
+        try {
+            lx lxVar = new lx(key);
+            lx.DataType type = lxVar.c();
+            
+            if (type == lx.DataType.DATA_TYPE_VIEW) {
+                return (ArrayList<ViewBean>) lxVar.a(data);
+            } else if (type == lx.DataType.DATA_TYPE_FAB) {
+                ArrayList<ViewBean> list = (ArrayList<ViewBean>) lxVar.a(data);
+                if (list != null && !list.isEmpty()) {
+                    fabMap.put(lxVar.a(), list.get(0));
+                    return list;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing section: " + key, e);
+        }
+        return null;
+    }
+    
+    private String parseId(XmlPullParser parser) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            if ("id".equals(name) || "android:id".equals(name)) {
+                String value = parser.getAttributeValue(i);
+                if (value != null) {
+                    if (value.startsWith("@+id/")) {
+                        return value.substring(5);
+                    } else if (value.startsWith("@id/")) {
+                        return value.substring(4);
+                    }
+                    return value;
+                }
+            }
+        }
+        return null;
+    }
+    
+    private void parseLayoutParams(XmlPullParser parser, LayoutBean layout) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            String value = parser.getAttributeValue(i);
+            
+            if ("layout_width".equals(name) || "android:layout_width".equals(name)) {
+                if ("match_parent".equals(value)) layout.width = -1;
+                else if ("wrap_content".equals(value)) layout.width = -2;
+            } else if ("layout_height".equals(name) || "android:layout_height".equals(name)) {
+                if ("match_parent".equals(value)) layout.height = -1;
+                else if ("wrap_content".equals(value)) layout.height = -2;
+            } else if ("layout_margin".equals(name) || "android:layout_margin".equals(name)) {
+                int margin = parseDimensionValue(value);
+                layout.marginLeft = margin;
+                layout.marginTop = margin;
+                layout.marginRight = margin;
+                layout.marginBottom = margin;
+            } else if ("layout_marginLeft".equals(name) || "android:layout_marginLeft".equals(name)) {
+                layout.marginLeft = parseDimensionValue(value);
+            } else if ("layout_marginTop".equals(name) || "android:layout_marginTop".equals(name)) {
+                layout.marginTop = parseDimensionValue(value);
+            } else if ("layout_marginRight".equals(name) || "android:layout_marginRight".equals(name)) {
+                layout.marginRight = parseDimensionValue(value);
+            } else if ("layout_marginBottom".equals(name) || "android:layout_marginBottom".equals(name)) {
+                layout.marginBottom = parseDimensionValue(value);
+            } else if ("orientation".equals(name) || "android:orientation".equals(name)) {
+                layout.orientation = "vertical".equalsIgnoreCase(value) ? 1 : 0;
+            }
+        }
+        
+        // Default values
+        if (layout.width == 0) layout.width = -2;
+        if (layout.height == 0) layout.height = -2;
+        if (layout.orientation == 0) layout.orientation = 1;
+    }
+    
+    private void parseTextProperties(XmlPullParser parser, TextBean text) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            String value = parser.getAttributeValue(i);
+            
+            if ("text".equals(name) || "android:text".equals(name)) {
+                text.text = value;
+            } else if ("hint".equals(name) || "android:hint".equals(name)) {
+                text.hint = value;
+            } else if ("textColor".equals(name) || "android:textColor".equals(name)) {
+                try {
+                    if (value != null && value.startsWith("#")) {
+                        text.textColor = (int)Long.parseLong(value.substring(1), 16);
+                    } else {
+                        text.textColor = 0xFF000000;
+                    }
+                } catch (Exception e) {
+                    text.textColor = 0xFF000000;
+                }
+            } else if ("textSize".equals(name) || "android:textSize".equals(name)) {
+                try {
+                    String size = value.replace("sp", "").replace("dp", "").replace("px", "");
+                    text.textSize = (int)Float.parseFloat(size);
+                } catch (NumberFormatException e) {
+                    text.textSize = 14;
+                }
+            } else if ("textStyle".equals(name) || "android:textStyle".equals(name)) {
+                text.textType = parseTextStyle(value);
+            } else if ("fontFamily".equals(name) || "android:fontFamily".equals(name)) {
+                text.textFont = value;
+            } else if ("singleLine".equals(name) || "android:singleLine".equals(name)) {
+                text.singleLine = "true".equals(value) ? 1 : 0;
+            } else if ("lines".equals(name) || "android:lines".equals(name)) {
+                try {
+                    text.line = Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    text.line = 0;
+                }
+            } else if ("inputType".equals(name) || "android:inputType".equals(name)) {
+                text.inputType = parseInputType(value);
+            } else if ("imeOptions".equals(name) || "android:imeOptions".equals(name)) {
+                text.imeOption = parseImeOption(value);
+            }
+        }
+        
+        if (text.text == null) text.text = "";
+        if (text.textSize == 0) text.textSize = 14;
+        if (text.textColor == 0) text.textColor = 0xFF000000;
+        if (text.textFont == null) text.textFont = TextBean.TEXT_FONT;
+        if (text.hint == null) text.hint = "";
+        if (text.hintColor == 0) text.hintColor = 0xFF808080;
+    }
+    
+    private int parseTextStyle(String value) {
+        if (value == null) return TextBean.TEXT_TYPE_NORMAL;
+        
+        if ("bold".equals(value)) return TextBean.TEXT_TYPE_BOLD;
+        if ("italic".equals(value)) return TextBean.TEXT_TYPE_ITALIC;
+        if ("bold|italic".equals(value)) return TextBean.TEXT_TYPE_BOLDITALIC;
+        
+        return TextBean.TEXT_TYPE_NORMAL;
+    }
+    
+    private int parseImeOption(String value) {
+        if (value == null) return TextBean.IME_OPTION_NORMAL;
+        
+        if ("actionDone".equals(value)) return TextBean.IME_OPTION_DONE;
+        if ("actionGo".equals(value)) return TextBean.IME_OPTION_GO;
+        if ("actionNext".equals(value)) return TextBean.IME_OPTION_NEXT;
+        if ("actionSearch".equals(value)) return TextBean.IME_OPTION_SEARCH;
+        if ("actionSend".equals(value)) return TextBean.IME_OPTION_SEND;
+        
+        return TextBean.IME_OPTION_NORMAL;
+    }
+    
+    private void parseImageProperties(XmlPullParser parser, ImageBean image) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            String value = parser.getAttributeValue(i);
+            
+            if ("scaleType".equals(name) || "android:scaleType".equals(name)) {
+           //     image.scaleType = parseScaleType(value);
+            } else if ("src".equals(name) || "android:src".equals(name)) {
+                image.resName = value;
+            }
+        }
+    }
+    
+    private void parseCommonAttributes(XmlPullParser parser, ViewBean bean) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            String value = parser.getAttributeValue(i);
+            
+            if ("enabled".equals(name) || "android:enabled".equals(name)) {
+                bean.enabled = "true".equals(value) ? 1 : 0;
+            } else if ("clickable".equals(name) || "android:clickable".equals(name)) {
+                bean.clickable = "true".equals(value) ? 1 : 0;
+            } else if ("padding".equals(name) || "android:padding".equals(name)) {
+                int pad = parseDimensionValue(value);
+                bean.layout.paddingLeft = pad;
+                bean.layout.paddingTop = pad;
+                bean.layout.paddingRight = pad;
+                bean.layout.paddingBottom = pad;
+            } else if ("paddingLeft".equals(name) || "android:paddingLeft".equals(name)) {
+                bean.layout.paddingLeft = parseDimensionValue(value);
+            } else if ("paddingTop".equals(name) || "android:paddingTop".equals(name)) {
+                bean.layout.paddingTop = parseDimensionValue(value);
+            } else if ("paddingRight".equals(name) || "android:paddingRight".equals(name)) {
+                bean.layout.paddingRight = parseDimensionValue(value);
+            } else if ("paddingBottom".equals(name) || "android:paddingBottom".equals(name)) {
+                bean.layout.paddingBottom = parseDimensionValue(value);
+            } else if ("background".equals(name) || "android:background".equals(name)) {
+                if (value != null && value.startsWith("#")) {
+                    try {
+                        bean.layout.backgroundColor = (int)Long.parseLong(value.substring(1), 16);
+                    } catch (NumberFormatException e) {
+                        bean.layout.backgroundColor = 0xFFFFFF;
+                    }
+                } else {
+                    bean.layout.backgroundResource = value;
+                }
+            } else if ("alpha".equals(name) || "android:alpha".equals(name)) {
+                try {
+                    bean.alpha = Float.parseFloat(value);
+                } catch (NumberFormatException e) {
+                    bean.alpha = 1.0f;
+                }
+            }
+        }
+    }
+    
+    private void parseWidgetSpecificAttributes(XmlPullParser parser, ViewBean bean) {
+        for (int i = 0; i < parser.getAttributeCount(); i++) {
+            String name = parser.getAttributeName(i);
+            String value = parser.getAttributeValue(i);
+            
+            switch (bean.type) {
+                case 8: // ProgressBar
+                case 14: // SeekBar
+                    if ("max".equals(name) || "android:max".equals(name)) {
+                        try {
+                            bean.max = Integer.parseInt(value);
+                        } catch (NumberFormatException e) {
+                            bean.max = 100;
+                        }
+                    }
+                    if ("progress".equals(name) || "android:progress".equals(name)) {
+                        try {
+                            bean.progress = Integer.parseInt(value);
+                        } catch (NumberFormatException e) {
+                            bean.progress = 0;
+                        }
+                    }
+                    if ("indeterminate".equals(name) || "android:indeterminate".equals(name)) {
+                        bean.indeterminate = value;
+                    }
+                    break;
+                    
+                case 11: // CheckBox
+                case 13: // Switch
+                    if ("checked".equals(name) || "android:checked".equals(name)) {
+                        bean.checked = "true".equals(value) ? 1 : 0;
+                    }
+                    break;
+                    
+                case 9: // ListView
+                    if ("choiceMode".equals(name) || "android:choiceMode".equals(name)) {
+                        if ("multipleChoice".equals(value)) bean.choiceMode = 2;
+                        else if ("singleChoice".equals(value)) bean.choiceMode = 1;
+                        else bean.choiceMode = 0;
+                    }
+                    if ("dividerHeight".equals(name) || "android:dividerHeight".equals(name)) {
+                        bean.dividerHeight = parseDimensionValue(value);
+                    }
+                    break;
+                    
+                case 10: // Spinner
+                    if ("spinnerMode".equals(name) || "android:spinnerMode".equals(name)) {
+                        bean.spinnerMode = "dialog".equals(value) ? 0 : 1;
+                    }
+                    break;
+                    
+                case 15: // CalendarView
+                    if ("firstDayOfWeek".equals(name) || "android:firstDayOfWeek".equals(name)) {
+                        try {
+                            bean.firstDayOfWeek = Integer.parseInt(value);
+                        } catch (NumberFormatException e) {
+                            bean.firstDayOfWeek = 1;
+                        }
+                    }
+                    break;
+                    
+                case 17: // AdView
+                    if ("adSize".equals(name)) bean.adSize = value;
+                    if ("adUnitId".equals(name)) bean.adUnitId = value;
+                    break;
+            }
+        }
+    }
+    
+    private int parseDimensionValue(String value) {
+        if (value == null) return 0;
+        try {
+            if (value.endsWith("dp")) {
+                return Integer.parseInt(value.substring(0, value.length() - 2));
+            } else if (value.endsWith("px")) {
+                return Integer.parseInt(value.substring(0, value.length() - 2));
+            } else if (value.endsWith("dip")) {
+                return Integer.parseInt(value.substring(0, value.length() - 3));
+            }
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+    
+    private int parseInputType(String value) {
+        if (value == null) return TextBean.INPUT_TYPE_TEXT;
+        
+        if (value.contains("textPassword")) return TextBean.INPUT_TYPE_PASSWORD;
+        if (value.contains("numberDecimal")) return TextBean.INPUT_TYPE_NUMBER_DECIMAL;
+        if (value.contains("numberSigned")) return TextBean.INPUT_TYPE_NUMBER_SIGNED;
+        if (value.contains("phone")) return TextBean.INPUT_TYPE_PHONE;
+        if (value.contains("number")) return TextBean.INPUT_TYPE_NUMBER_SIGNED_DECIMAL;
+        
+        return TextBean.INPUT_TYPE_TEXT;
+    }
+    
+    private int parseScaleType(String value) {
+        if (value == null) return 0;
+        if ("center".equals(value)) return 1;
+        if ("centerCrop".equals(value)) return 2;
+        if ("centerInside".equals(value)) return 3;
+        if ("fitCenter".equals(value)) return 4;
+        if ("fitEnd".equals(value)) return 5;
+        if ("fitStart".equals(value)) return 6;
+        if ("fitXY".equals(value)) return 7;
+        if ("matrix".equals(value)) return 8;
+        return 4; // fitCenter default
+    }
+    
+    private int getViewType(String tagName) {
+        if (tagName == null) return -1;
+        
+        if (tagName.equals("LinearLayout")) return 0;
+        if (tagName.equals("RelativeLayout")) return 1;
+        if (tagName.equals("HorizontalScrollView")) return 2;
+        if (tagName.equals("Button")) return 3;
+        if (tagName.equals("TextView")) return 4;
+        if (tagName.equals("EditText")) return 5;
+        if (tagName.equals("ImageView")) return 6;
+        if (tagName.equals("WebView")) return 7;
+        if (tagName.equals("ProgressBar")) return 8;
+        if (tagName.equals("ListView")) return 9;
+        if (tagName.equals("Spinner")) return 10;
+        if (tagName.equals("CheckBox")) return 11;
+        if (tagName.equals("ScrollView")) return 12;
+        if (tagName.equals("Switch")) return 13;
+        if (tagName.equals("SeekBar")) return 14;
+        if (tagName.equals("CalendarView")) return 15;
+        if (tagName.equals("FloatingActionButton")) return 16;
+        if (tagName.contains("AdView")) return 17;
+        if (tagName.contains("MapView")) return 18;
+        
+        return -1;
+    }
+    
+    private boolean isTextView(int type) {
+        return type == 3 || type == 4 || type == 5 || type == 11 || type == 13;
+    }
+    
+    private boolean isViewGroup(String tagName) {
+        return tagName.endsWith("Layout") || 
+               tagName.endsWith("ViewGroup") ||
+               tagName.contains("ScrollView") ||
+               tagName.equals("FrameLayout") ||
+               tagName.equals("TableLayout") ||
+               tagName.equals("GridLayout") ||
+               tagName.equals("ConstraintLayout");
+    }
+    
+    private String convertToXmlName(String activityName) {
+        if (activityName == null) return null;
+        
+        String name = activityName.replace(".java", "");
+        
+        StringBuilder xmlName = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (Character.isUpperCase(c)) {
+                if (i != 0) xmlName.append("_");
+                xmlName.append(Character.toLowerCase(c));
+            } else {
+                xmlName.append(c);
+            }
+        }
+        
+        return xmlName.toString() + ".xml";
+    }
+    
+    private String xmlNameToActivityName(String xmlName) {
+        if (xmlName == null) return null;
+        
+        String name = xmlName.replace(".xml", "");
+        StringBuilder activityName = new StringBuilder();
+        
+        String[] parts = name.split("_");
+        for (String part : parts) {
+            if (part.length() > 0) {
+                activityName.append(Character.toUpperCase(part.charAt(0)))
+                           .append(part.substring(1));
+            }
+        }
+        
+        return activityName.toString() + ".java";
+    }
+    
+    private static class fe {
+        public static String e(String scId) {
+            return FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + scId;
+        }
+    }
+}

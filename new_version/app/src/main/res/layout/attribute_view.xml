@@ -1,0 +1,46 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="8dp"
+	android:gravity="center_vertical">
+	<androidx.cardview.widget.CardView
+		android:id="@+id/widget_inject_attributes"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:focusable="true"
+		android:foreground="?selectableItemBackground"
+		app:cardCornerRadius="3.0dip"
+		app:cardElevation="4.0dip"
+		app:cardUseCompatPadding="true">
+		<LinearLayout
+			android:id="@+id/linear32"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="vertical"
+			android:layout_width="75.0dip"
+			android:layout_height="75.0dip"
+			android:padding="8.0dip">
+			<ImageView
+				android:id="@+id/iv_icon"
+				android:layout_width="24dp"
+				android:layout_height="24dp"
+				android:src="@drawable/default_image"
+				android:scaleType="fitCenter"
+				android:focusable="false"
+				android:visibility="gone" />
+			<TextView
+				android:id="@+id/tv_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="4dp"
+				android:text="Attribute"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:focusable="false"
+				android:paddingStart="8dp" />
+		</LinearLayout>
+	</androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -1,0 +1,65 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout
+		android:id="@+id/linear5"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+		<include layout="@layout/toolbar_improved" />
+		<ScrollView
+			android:id="@+id/vscroll2"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+			<LinearLayout
+				android:id="@+id/linear7"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:orientation="vertical"
+				android:padding="16.0dip">
+				<Switch
+					android:id="@+id/sw_pg_enabled"
+					android:focusable="false"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="left|center_vertical"
+					android:text="Activated"
+					android:textColor="#E53935"
+					android:checked="true"
+					android:paddingTop="8.0dip"
+					android:paddingBottom="8.0dip"
+					android:layout_marginBottom="12.0dip"
+					android:textSize="16.0sp" />
+				<LinearLayout
+					android:id="@+id/linear8"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:padding="8.0dip">
+					<ImageView
+						android:id="@+id/imageview2"
+						android:focusable="false"
+						android:src="@drawable/connected_96"
+						android:scaleType="fitCenter"
+						android:layout_width="32.0dip"
+						android:layout_height="32.0dip"
+						android:padding="4.0dip"
+						android:layout_marginRight="8.0dip" />
+					<TextView
+						android:id="@+id/textview2"
+						android:focusable="false"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="left"
+						android:text="Activating StringFog will encrypt the strings in compilation time, which will make your app more difficult to reverse-engineer."
+						android:textColor="#757575"
+						android:textSize="14.0sp" />
+				</LinearLayout>
+			</LinearLayout>
+		</ScrollView>
+	</LinearLayout>
+</LinearLayout>

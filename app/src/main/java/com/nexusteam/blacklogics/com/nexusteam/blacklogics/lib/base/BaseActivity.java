@@ -196,6 +196,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             scName = getIntent().getStringExtra("scName");
             projectPath = getIntent().getStringExtra("projectPath");
             
+            com.nexusteam.blacklogics.logic.ProjectLogicRepository.setPath(projectPath);
+            
             if (sc_id == null || sc_id.isEmpty()) {
                 log("sc_id missing, finishing activity");
                 safeFinish();

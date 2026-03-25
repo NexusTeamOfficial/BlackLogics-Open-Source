@@ -3,7 +3,7 @@ package com.nexusteam.sdk.java;
 import static mod.SketchwareUtil.dpToPx;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -31,7 +31,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.ScrollView;
+import androidx.appcompat.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.View;
+import android.widget.ScrollView;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.textview.MaterialTextView;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.io.File;
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -529,92 +540,100 @@ public class ManageJavaActivity extends Activity {
     // ==================== REFACTOR METHODS ====================
     
     private void showRefactorDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_refactor, null);
-        
-        final EditText etOldPackage = dialogView.findViewById(R.id.et_old_package);
-        final EditText etNewPackage = dialogView.findViewById(R.id.et_new_package);
-        final CheckBox cbDryRun = dialogView.findViewById(R.id.cb_dry_run);
-        final CheckBox cbUpdateImports = dialogView.findViewById(R.id.cb_update_imports);
-        final CheckBox cbMoveFiles = dialogView.findViewById(R.id.cb_move_files);
-        final TextView tvPreview = dialogView.findViewById(R.id.tv_preview);
-        final ScrollView previewScroll = dialogView.findViewById(R.id.preview_scroll);
-        final Button btnPreview = dialogView.findViewById(R.id.btn_preview);
-        final Button btnExecute = dialogView.findViewById(R.id.btn_execute);
-        final Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
-        
-        // Set current package as default
-        String currentPkg = getCurrentPkgName();
-        etOldPackage.setText(currentPkg);
-        etNewPackage.setText(currentPkg);
-        
-        final AlertDialog dialog = builder.setView(dialogView)
-                .setTitle("Refactor Package")
-                .setCancelable(true)
-                .create();
-        
-        btnPreview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String oldPkg = etOldPackage.getText().toString().trim();
-                String newPkg = etNewPackage.getText().toString().trim();
-                
-                if (oldPkg.isEmpty() || newPkg.isEmpty()) {
-                    SketchwareUtil.toastError("Please enter both package names");
-                    return;
-                }
-                
-                // Show preview
-                previewScroll.setVisibility(View.VISIBLE);
-                StringBuilder preview = new StringBuilder();
-                preview.append("📋 PREVIEW OF CHANGES (DRY RUN)\n\n");
-                preview.append("Old Package: ").append(oldPkg).append("\n");
-                preview.append("New Package: ").append(newPkg).append("\n");
-                preview.append("================================\n\n");
-                preview.append("Files to be affected:\n");
-                
-                // List files that will be updated
-                File javaDir = new File(fpu.getPathJava(sc_id));
-                listFilesForPreview(javaDir, preview, oldPkg);
-                
-                if (preview.toString().contains("No files found")) {
-                    preview.append("\n⚠ No files found with package: ").append(oldPkg);
-                }
-                
-                tvPreview.setText(preview.toString());
+
+    View dialogView = getLayoutInflater().inflate(R.layout.dialog_refactor, null);
+
+    final TextInputEditText etOldPackage = (TextInputEditText) dialogView.findViewById(R.id.et_old_package);
+    final TextInputEditText etNewPackage = (TextInputEditText) dialogView.findViewById(R.id.et_new_package);
+
+    final MaterialCheckBox cbDryRun = (MaterialCheckBox) dialogView.findViewById(R.id.cb_dry_run);
+    final MaterialCheckBox cbUpdateImports = (MaterialCheckBox) dialogView.findViewById(R.id.cb_update_imports);
+    final MaterialCheckBox cbMoveFiles = (MaterialCheckBox) dialogView.findViewById(R.id.cb_move_files);
+
+    final MaterialButton btnPreview = (MaterialButton) dialogView.findViewById(R.id.btn_preview);
+    final MaterialButton btnExecute = (MaterialButton) dialogView.findViewById(R.id.btn_execute);
+    final MaterialButton btnCancel = (MaterialButton) dialogView.findViewById(R.id.btn_cancel);
+
+    final MaterialTextView tvPreview = (MaterialTextView) dialogView.findViewById(R.id.tv_preview);
+    final ScrollView previewScroll = (ScrollView) dialogView.findViewById(R.id.preview_scroll);
+
+    String currentPkg = getCurrentPkgName();
+    etOldPackage.setText(currentPkg);
+    etNewPackage.setText(currentPkg);
+
+    final androidx.appcompat.app.AlertDialog dialog = new AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create();
+
+    btnPreview.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            String oldPkg = etOldPackage.getText().toString().trim();
+            String newPkg = etNewPackage.getText().toString().trim();
+
+            if (oldPkg.length() == 0 || newPkg.length() == 0) {
+                SketchwareUtil.toastError("Please enter both package names");
+                return;
             }
-        });
-        
-        btnExecute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String oldPkg = etOldPackage.getText().toString().trim();
-                String newPkg = etNewPackage.getText().toString().trim();
-                
-                if (oldPkg.isEmpty() || newPkg.isEmpty()) {
-                    SketchwareUtil.toastError("Please enter both package names");
-                    return;
-                }
-                
-                boolean dryRun = cbDryRun.isChecked();
-                boolean updateImports = cbUpdateImports.isChecked();
-                boolean moveFiles = cbMoveFiles.isChecked();
-                
-                // Execute refactoring
-                executeRefactor(oldPkg, newPkg, dryRun, updateImports, moveFiles, dialog);
+
+            previewScroll.setVisibility(View.VISIBLE);
+
+            StringBuilder preview = new StringBuilder();
+
+            preview.append("📋 PREVIEW OF CHANGES\n\n");
+            preview.append("Old Package: ").append(oldPkg).append("\n");
+            preview.append("New Package: ").append(newPkg).append("\n");
+            preview.append("================================\n\n");
+
+            File javaDir = new File(fpu.getPathJava(sc_id));
+
+            preview.append("Files to be affected:\n");
+
+            listFilesForPreview(javaDir, preview, oldPkg);
+
+            if (preview.toString().contains("No files found")) {
+                preview.append("\n⚠ No files found with package: ").append(oldPkg);
             }
-        });
-        
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+
+            tvPreview.setText(preview.toString());
+        }
+    });
+
+    btnExecute.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            String oldPkg = etOldPackage.getText().toString().trim();
+            String newPkg = etNewPackage.getText().toString().trim();
+
+            if (oldPkg.length() == 0 || newPkg.length() == 0) {
+                SketchwareUtil.toastError("Please enter both package names");
+                return;
             }
-        });
-        
-        dialog.show();
+
+            boolean dryRun = cbDryRun.isChecked();
+            boolean updateImports = cbUpdateImports.isChecked();
+            boolean moveFiles = cbMoveFiles.isChecked();
+
+            executeRefactor(oldPkg, newPkg, dryRun, updateImports, moveFiles, dialog);
+        }
+    });
+
+    btnCancel.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dialog.dismiss();
+        }
+    });
+
+    dialog.show();
+
+    if (dialog.getWindow() != null) {
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
-    
+}
     private void listFilesForPreview(File dir, StringBuilder preview, String oldPkg) {
         File[] files = dir.listFiles();
         boolean found = false;
@@ -639,7 +658,7 @@ public class ManageJavaActivity extends Activity {
     }
     
     private void executeRefactor(String oldPkg, String newPkg, boolean dryRun, 
-                                boolean updateImports, boolean moveFiles, AlertDialog dialog) {
+                                boolean updateImports, boolean moveFiles, androidx.appcompat.app.AlertDialog dialog) {
         try {
             AdvancedRefactor refactor = new AdvancedRefactor(dryRun);
             

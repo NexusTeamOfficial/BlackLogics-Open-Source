@@ -1,0 +1,83 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp"
+	android:background="@drawable/dialog_background_new">
+	<TextView
+		android:id="@+id/textview2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="16dp"
+		android:text="Add Font"
+		android:textSize="20sp"
+		android:textStyle="bold"
+		android:textColor="@color/textColor"
+		android:focusable="false" />
+	<EditText
+		android:id="@+id/fontName"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="12dp"
+		android:textSize="12sp"
+		android:textColor="@color/textColor"
+		android:hint="Font name"
+		android:textColorHint="#607D8B"
+		android:focusable="false" />
+	<TextView
+		android:id="@+id/fontPreview"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:gravity="center_horizontal|center_vertical"
+		android:text="Aa Bb Cc Dd Ee Ff"
+		android:textSize="24sp"
+		android:textColor="@color/textColor"
+		android:focusable="false" />
+	<Button
+		android:id="@+id/selectFont"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:text="Select"
+		android:textSize="12sp"
+		android:textColor="#0077B6" />
+	<CheckBox
+		android:id="@+id/addToCollection"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="12dp"
+		android:text="Add to my collection"
+		android:textSize="12sp"
+		android:textColor="@color/textColor"
+		android:focusable="false" />
+	<LinearLayout
+		android:id="@+id/linear2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:orientation="horizontal"
+		android:gravity="end">
+		<TextView
+			android:id="@+id/cancelButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textColor="#0077B6"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/saveButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:text="Save"
+			android:textSize="12sp"
+			android:textColor="#0077B6"
+			android:focusable="false" />
+	</LinearLayout>
+</LinearLayout>

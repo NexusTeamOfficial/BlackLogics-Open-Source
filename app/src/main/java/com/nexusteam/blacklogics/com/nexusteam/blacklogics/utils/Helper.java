@@ -104,7 +104,7 @@ public class Helper {
         }
 
         GradientDrawable background = new GradientDrawable();
-        background.setColor(Color.parseColor("#008dcd"));
+        background.setColor(Color.parseColor("#904A47"));
         background.setCornerRadius(90);
 
         view.setBackground(new RippleDrawable(

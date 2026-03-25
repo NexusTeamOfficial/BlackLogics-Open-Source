@@ -3,11 +3,13 @@ package com.nexusteam.blacklogics.custom;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import com.nexusteam.blacklogics.R;
 
 public class NavBar extends LinearLayout {
@@ -34,11 +36,21 @@ public class NavBar extends LinearLayout {
 
     public void addNavItem(int iconRes, final int id) {
         ImageView iv = new ImageView(getContext());
+
+        // Material style layout
         LayoutParams params = new LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f);
         iv.setLayoutParams(params);
         iv.setImageResource(iconRes);
-        iv.setPadding(35, 35, 35, 35);
+        iv.setPadding(24, 24, 24, 24);  // slightly smaller padding for Material feel
         iv.setId(id);
+        iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        // Material ripple
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            iv.setForeground(getResources().getDrawable(R.drawable.ripple_material, null));
+        } else {
+            iv.setBackgroundResource(R.drawable.ripple_material); // fallback for older devices
+        }
 
         iv.setOnClickListener(new OnClickListener() {
             @Override
@@ -62,8 +74,8 @@ public class NavBar extends LinearLayout {
             if (child instanceof ImageView) {
                 ImageView img = (ImageView) child;
                 if (img.getId() == id) {
-                    img.setBackgroundResource(R.drawable.nav_active_bg);
-                    img.setColorFilter(Color.WHITE);
+                    img.setBackgroundResource(R.drawable.nav_active_bg); // highlight background
+                    img.setColorFilter(activeColor);
                 } else {
                     img.setBackgroundColor(Color.TRANSPARENT);
                     img.setColorFilter(inactiveColor);
@@ -76,17 +88,3 @@ public class NavBar extends LinearLayout {
         this.listener = listener;
     }
 }
-/*
-using hahaha
-NavBar nav = (NavBar) findViewById(R.id.customNav);
-nav.addNavItem(R.drawable.ic_home, 101);
-nav.addNavItem(R.drawable.ic_bookmark, 102);
-nav.selectItem(101);
-
-nav.setOnTabSelectedListener(new NavBar.OnTabSelectedListener() {
-    @Override
-    public void onTabSelected(int id) {
-
-    }
-});
-*/

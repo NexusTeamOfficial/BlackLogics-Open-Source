@@ -1,11 +1,13 @@
 /* Decompiler 2899ms, total 6535ms, lines 4614 */
-package com.besome.sketch.editor;
+package com.nexusteam.internal.editor;
 import com.nexusteam.blacklogics.R;
 
 import b.b.b.Qm;
 import b.b.b.Qf;
 import com.nexusteam.internal.BlockStorage;
 import com.nexusteam.internal.FullStorage;
+import com.nexusteam.blacklogics.editor.layout.parser.ViewParser;
+import com.nexusteam.internal.manager.ComponentManager;
 import com.nexusteam.internal.ei;
 import com.nexusteam.internal.ej;
 import com.nexusteam.internal.es;
@@ -22,7 +24,6 @@ import com.nexusteam.internal.fm;
 import com.nexusteam.internal.fn;
 import com.nexusteam.internal.fo;
 import com.nexusteam.internal.fp;
-import com.nexusteam.internal.BlockComponentView;
 import com.nexusteam.internal.fq;
 import com.nexusteam.internal.fr;
 import com.nexusteam.internal.hc;
@@ -35,6 +36,7 @@ import com.nexusteam.internal.ki;
 import com.nexusteam.internal.kk;
 import com.nexusteam.internal.ViewHelper;
 import com.nexusteam.internal.StringResourceManager;
+import com.nexusteam.blacklogics.logic.ProjectLogicRepository;
 import com.nexusteam.internal.kv;
 import com.nexusteam.internal.kx;
 import com.nexusteam.internal.ky;
@@ -61,6 +63,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.os.Build.VERSION;
+import android.util.Log;
 import androidx.fragment.app.FragmentActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
@@ -95,37 +98,45 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout.LayoutParams;
-import com.besome.sketch.beans.BlockBean;
-import com.besome.sketch.beans.BlockCollectionBean;
-import com.besome.sketch.beans.ComponentBean;
-import com.besome.sketch.beans.HistoryBlockBean;
-import com.besome.sketch.beans.MoreBlockCollectionBean;
-import com.besome.sketch.beans.ProjectFileBean;
-import com.besome.sketch.beans.ProjectResourceBean;
-import com.besome.sketch.beans.ViewBean;
-import com.besome.sketch.editor.component.ComponentAddActivity;
-import com.besome.sketch.editor.logic.LogicTopMenu;
-import com.besome.sketch.editor.logic.PaletteBlock;
-import com.besome.sketch.editor.logic.PaletteSelector;
-import com.besome.sketch.editor.makeblock.MakeBlockActivity;
+import com.nexusteam.internal.beans.BlockBean;
+import com.nexusteam.internal.beans.BlockCollectionBean;
+import com.nexusteam.internal.beans.ComponentBean;
+import com.nexusteam.internal.beans.HistoryBlockBean;
+import com.nexusteam.internal.beans.MoreBlockCollectionBean;
+import com.nexusteam.internal.beans.ProjectFileBean;
+import com.nexusteam.internal.beans.ProjectResourceBean;
+import com.nexusteam.internal.beans.ViewBean;
+import com.nexusteam.internal.editor.component.ComponentAddActivity;
+import com.nexusteam.internal.editor.logic.LogicTopMenu;
+import com.nexusteam.internal.editor.logic.PaletteBlock;
+import com.nexusteam.internal.editor.logic.PaletteSelector;
+import com.nexusteam.internal.editor.makeblock.MakeBlockActivity;
 import com.besome.blacklogics.development.Complex;
-//import com.besome.sketch.editor.manage.ShowBlockCollectionActivity;
-import com.besome.sketch.editor.view.ViewDummy;
-import com.besome.sketch.editor.view.ViewLogicEditor;
-import com.besome.sketch.lib.base.BaseAppCompatActivity;
-//import com.besome.sketch.shared.moreblocks.SharedMoreBlocksListActivity;
-import com.bumptech.glide.DrawableRequestBuilder;
-import com.bumptech.glide.DrawableTypeRequest;
+
+import com.nexusteam.internal.editor.view.ViewDummy;
+import com.nexusteam.internal.editor.view.ViewLogicEditor;
+import com.nexusteam.internal.lib.base.BaseAppCompatActivity;
+
+//import com.bumptech.glide.DrawableRequestBuilder;
+//import com.bumptech.glide.DrawableTypeRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
-//import com.google.android.gms.analytics.HitBuilders.EventBuilder;
-//import com.google.android.gms.analytics.HitBuilders.ScreenViewBuilder;
+
+import java.util.Map;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 import java.util.Iterator;
 
 public class LogicEditorActivity extends BaseAppCompatActivity implements fr, OnClickListener, OnTouchListener {
@@ -187,7 +198,9 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 	private String type;
 	private String widgetId;
 	private String activityName;
-    private Complex complex;
+	private Complex complex;
+	private static final String BLOCK_PATH =
+	"/storage/emulated/0/.blacklogics/resources/block/My Block/block.json";
 	
 	public class LogicEditorActivity$23 implements Runnable {
 		
@@ -213,7 +226,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// if (a/a/ki.a()) return;
+			
 			if (ki.a()) {
 				return;
 			}
@@ -238,45 +251,113 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 	}
 	
 	class LogicEditorActivity$3 implements View.OnClickListener {
-		final lr a;
-		final RadioGroup b;
-		final EditText c;
-		final CustomAlertDialog d;
-		final LogicEditorActivity e;
-		
-		LogicEditorActivity$3(LogicEditorActivity activity, lr validator, RadioGroup group, EditText input, CustomAlertDialog dialog) {
-			this.e = activity;
-			this.a = validator;
-			this.b = group;
-			this.c = input;
-			this.d = dialog;
-		}
-		
-		@Override
-		public void onClick(View v) {
-			// Validate first
-			if (!a.a()) {
-				return;
-			}
-			
-			int checkedId = b.getCheckedRadioButtonId();
-			int type = 1;
-			
-			if (checkedId == com.nexusteam.blacklogics.R.id.rb_int) { // was 0x7f08039b
-				type = 1;
-			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_string) { // was 0x7f08039f
-				type = 2;
-			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_map) { // was 0x7f08039c
-				type = 3;
-			}
-			
-			String text = c.getText().toString();
-			
-			e.b(type, text);
-			ki.a(e.getApplicationContext(), c);
-			d.dismiss();
-		}
-	}
+    final lr a;           // Validator
+    final RadioGroup b;   // RadioGroup for type selection
+    final EditText c;     // EditText for list name
+    final CustomAlertDialog d;  // Dialog
+    final LogicEditorActivity e; // Activity
+    
+    LogicEditorActivity$3(LogicEditorActivity activity, lr validator, 
+                          RadioGroup group, EditText input, CustomAlertDialog dialog) {
+        this.e = activity;
+        this.a = validator;
+        this.b = group;
+        this.c = input;
+        this.d = dialog;
+    }
+    
+    @Override
+    public void onClick(View v) {
+        // Validation check
+        if (!a.a()) {
+            return;
+        }
+        
+        // Get selected list type
+        int checkedId = b.getCheckedRadioButtonId();
+        int listType = 1; // 1 = Number list (List<Double>)
+        
+        if (checkedId == com.nexusteam.blacklogics.R.id.rb_int) {
+            listType = 1;   // List<Double>
+        } else if (checkedId == com.nexusteam.blacklogics.R.id.rb_string) {
+            listType = 2;   // List<String>
+        } else if (checkedId == com.nexusteam.blacklogics.R.id.rb_map) {
+            listType = 3;   // List<Map<String, Object>>
+        }
+        
+        String listName = c.getText().toString().trim();
+        
+        if (listName.isEmpty()) {
+            Toast.makeText(e.getApplicationContext(), 
+                "Please enter list name", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        // ========== STORE LIST VARIABLE ==========
+        
+        // STEP 1: Check if list already exists in runtime cache
+        lw storage = ma.a(e.f);
+        if (storage.b(e.getJavaName(), listType, listName)) {
+            Toast.makeText(e.getApplicationContext(), 
+                "List '" + listName + "' already exists!", 
+                Toast.LENGTH_SHORT).show();
+            ki.a(e.getApplicationContext(), c);
+            d.dismiss();
+            return;
+        }
+        
+        // STEP 2: Store in runtime cache (lw class)
+        storage.a(e.getJavaName(), listType, listName);
+        
+        // STEP 3: Store in BlockStorage permanently
+        // Convert listType to storage type: 4=listInt, 5=listStr, 6=listMap
+        int storageType = listType + 3;
+        VariableData listData = new VariableData(storageType, listName, "[]");
+        
+        ArrayList<VariableData> variables = BlockStorage.loadVariables(e.getJavaName());
+        if (variables == null) {
+            variables = new ArrayList<>();
+        }
+        
+        // Check duplicate again
+        boolean exists = false;
+        for (VariableData vd : variables) {
+            if (vd.name.equals(listName) && vd.type >= 4 && vd.type <= 6) {
+                exists = true;
+                break;
+            }
+        }
+        
+        if (!exists) {
+            variables.add(listData);
+            BlockStorage.saveVariables(e.getJavaName(), variables);
+            
+            // STEP 4: Store in ProjectLogicRepository for Java code generation
+            String typeName = "";
+            switch (listType) {
+                case 1: typeName = "List<Double>"; break;
+                case 2: typeName = "List<String>"; break;
+                case 3: typeName = "List<Map<String, Object>>"; break;
+            }
+            ProjectLogicRepository.saveVariable(e.activityName, typeName, listName);
+            
+            Toast.makeText(e.getApplicationContext(), 
+                "List '" + listName + "' added successfully", 
+                Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(e.getApplicationContext(), 
+                "List already exists in storage!", 
+                Toast.LENGTH_SHORT).show();
+        }
+        
+        // Hide keyboard and dismiss dialog
+        ki.a(e.getApplicationContext(), c);
+        d.dismiss();
+        
+        // Refresh palette
+        e.a(1, -3384542);
+    }
+}
 	
 	public class LogicEditorActivity$4 implements View.OnClickListener {
 		
@@ -292,72 +373,91 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// Get context
+			
 			Context context = c.getApplicationContext();
 			
-			// Call utility to validate or process EditText
+			
 			ki.a(context, a);
 			
-			// Dismiss dialog
+			
 			b.dismiss();
 		}
 	}
 	
-	public class LogicEditorActivity$5 implements View.OnClickListener {
-		
-		final ViewGroup a;
-		final CustomAlertDialog b;
-		final LogicEditorActivity c;
-		
-		public LogicEditorActivity$5(LogicEditorActivity logicEditorActivity, ViewGroup viewGroup, CustomAlertDialog dialog) {
-			this.c = logicEditorActivity;
-			this.a = viewGroup;
-			this.b = dialog;
-		}
-		
-		@Override
-		public void onClick(View v) {
-			int childCount = a.getChildCount();
-			for (int i = 0; i < childCount; i++) {
-				RadioButton rb = (RadioButton) a.getChildAt(i);
-				if (rb.isChecked()) {
-					
-					// Check if variable name already exists
-					fq fqVar = c.e;
-					String name = rb.getText().toString();
-					boolean exists = fqVar.b(name);
-					
-					if (!exists) {
-						lw lwVar = ma.a(c.f);
-						String javaName = c.m.getJavaName();
-						String selected = rb.getText().toString();
-						String finalName = c.g + "_" + c.h;
-						
-						boolean duplicate = lwVar.b(javaName, selected, finalName);
-						if (!duplicate) {
-							// Add new variable
-							c.c(selected);
-						} else {
-							// Duplicate name Toast
-							Context ctx = c.getApplicationContext();
-							String msg = StringResourceManager.a().a(c.getApplicationContext(), com.nexusteam.blacklogics.R.string.block_fileutil_write_head);
-							Toast.makeText(ctx, msg, 0).show();
-							return;
-						}
-					} else {
-						// Variable already exists Toast
-						Context ctx = c.getApplicationContext();
-						String msg = StringResourceManager.a().a(c.getApplicationContext(), com.nexusteam.blacklogics.R.string.block_fileutil_write_head);
-						Toast.makeText(ctx, msg, 0).show();
-						return;
-					}
-				}
-			}
-			
-			// Close dialog
-			b.dismiss();
-		}
-	}
+	class LogicEditorActivity$5 implements View.OnClickListener {
+    final ViewGroup a;      // ViewGroup containing radio buttons
+    final CustomAlertDialog b;  // Dialog
+    final LogicEditorActivity c; // Activity
+    
+    LogicEditorActivity$5(LogicEditorActivity logicEditorActivity, 
+                          ViewGroup viewGroup, CustomAlertDialog dialog) {
+        this.c = logicEditorActivity;
+        this.a = viewGroup;
+        this.b = dialog;
+    }
+    
+    @Override
+    public void onClick(View v) {
+        int childCount = a.getChildCount();
+        
+        for (int i = 0; i < childCount; i++) {
+            RadioButton rb = (RadioButton) a.getChildAt(i);
+            
+            if (rb.isChecked()) {
+                String listName = rb.getText().toString();
+                int listType = (int) rb.getTag(); // Get stored list type (1,2,3)
+                
+                // ========== REMOVE LIST VARIABLE ==========
+                
+                // STEP 1: Remove from runtime cache (lw class)
+                lw storage = ma.a(c.f);
+                boolean exists = storage.b(listName);
+                
+                if (exists) {
+                    storage.g(c.getJavaName(), listName); // Remove from runtime
+                    
+                    // STEP 2: Remove from BlockStorage permanently
+                    ArrayList<VariableData> variables = BlockStorage.loadVariables(c.getJavaName());
+                    if (variables != null) {
+                        Iterator<VariableData> it = variables.iterator();
+                        while (it.hasNext()) {
+                            VariableData vd = it.next();
+                            if (vd.name.equals(listName) && vd.type >= 4 && vd.type <= 6) {
+                                it.remove();
+                                break;
+                            }
+                        }
+                        BlockStorage.saveVariables(c.getJavaName(), variables);
+                    }
+                    
+                    // STEP 3: Remove from ProjectLogicRepository
+                    int storageType = listType + 3; // 4,5,6
+                    ProjectLogicRepository.removeVariable(c.activityName, 
+                        String.valueOf(storageType), listName);
+                    
+                    // STEP 4: Call original method to update UI
+                    c.c(listName);
+                    
+                    Toast.makeText(c.getApplicationContext(), 
+                        "List '" + listName + "' removed successfully", 
+                        Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(c.getApplicationContext(), 
+                        "List not found!", 
+                        Toast.LENGTH_SHORT).show();
+                }
+                
+                break;
+            }
+        }
+        
+        // Dismiss dialog
+        b.dismiss();
+        
+        // Refresh palette
+        c.a(1, -3384542);
+    }
+}
 	
 	class LogicEditorActivity$6 implements View.OnClickListener {
 		final CustomAlertDialog a;
@@ -388,14 +488,14 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// Update internal editor state
+			
 			ei manager = ei.f();
 			manager.a(a, true);
 			
-			// Refresh Logic Drawer
+			
 			c.o.a(a);
 			
-			// Close dialog
+			
 			b.dismiss();
 		}
 	}
@@ -412,7 +512,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// Close the dialog
+			
 			a.dismiss();
 		}
 	}
@@ -435,11 +535,11 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		public void onClick(View view) {
 			d.a(a, b.getText().toString());
 			
-			// Hide keyboard
+			
 			Context context = d.getApplicationContext();
 			ki.a(context, b);
 			
-			// Dismiss dialog
+			
 			c.dismiss();
 		}
 	}
@@ -465,7 +565,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// ----------- LogicEditorActivity$11 -----------
+	
 	class LogicEditorActivity$11 implements View.OnClickListener {
 		
 		final fn a;
@@ -489,7 +589,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// ----------- LogicEditorActivity$12 -----------
+	
 	class LogicEditorActivity$12 implements View.OnClickListener {
 		
 		final LogicEditorActivity a;
@@ -556,24 +656,24 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 					text = "";
 				}
 			} else {
-				// handle @ prefix special case
+				
 				if (text.length() > 0 && text.charAt(0) == '@') {
 					text = " " + text;
 				}
 			}
 			
-			e.a(c, text);
+			//	e.a(c, text);
 			
-			// Hide keyboard
+			
 			Context context = e.getApplicationContext();
 			ki.a(context, a);
 			
-			// Dismiss dialog
+			
 			d.dismiss();
 		}
 	}
 	
-	// ----------- LogicEditorActivity$15 -----------
+	
 	class LogicEditorActivity$15 implements View.OnClickListener {
 		
 		final EditText a;
@@ -588,11 +688,11 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Hide keyboard
+			
 			Context context = c.getApplicationContext();
 			ki.a(context, a);
 			
-			// Dismiss dialog
+			
 			b.dismiss();
 		}
 	}
@@ -624,7 +724,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// ----------- LogicEditorActivity$17 -----------
+	
 	class LogicEditorActivity$17 implements View.OnClickListener {
 		
 		final CustomAlertDialog a;
@@ -662,14 +762,14 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 			for (int i = 0; i < childCount; i++) {
 				RadioButton rb = (RadioButton) a.getChildAt(i);
 				if (rb.isChecked()) {
-					// Use the tag of the RadioButton as the value
+					
 					Object tag = rb.getTag();
 					d.a(b, tag);
 					break;
 				}
 			}
 			
-			// Dismiss the dialog
+			
 			c.dismiss();
 		}
 	}
@@ -735,7 +835,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// ----------- LogicEditorActivity$22 -----------
+	
 	class LogicEditorActivity$22 implements View.OnClickListener {
 		
 		final RadioGroup a;
@@ -781,7 +881,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// $25: SoundPool OnLoadCompleteListener
+	
 	class LogicEditorActivity$25 implements SoundPool.OnLoadCompleteListener {
 		
 		final LogicEditorActivity a;
@@ -793,7 +893,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		@Override
 		public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
 			if (soundPool != null) {
-				// Play the sound with default params
+				
 				soundPool.play(
 				sampleId, // sound ID
 				1.0f,     // leftVolume
@@ -819,21 +919,21 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Convert activity.f to mb object
+			
 			mb soundManager = ma.c(activity.f);
 			
-			// Cast view to RadioButton and get its text
+			
 			String soundFile = ((RadioButton) view).getText().toString();
 			
-			// Get actual path/string for the sound
+			
 			String path = soundManager.d(soundFile);
 			
-			// Load the sound into the SoundPool
+			
 			soundPool.load(path, 1);
 		}
 	}
 	
-	// $27: RadioGroup selection and dialog dismiss
+	
 	class LogicEditorActivity$27 implements View.OnClickListener {
 		
 		final RadioGroup a;
@@ -855,18 +955,18 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 			for (int i = 0; i < childCount; i++) {
 				RadioButton rb = (RadioButton) a.getChildAt(i);
 				if (rb.isChecked()) {
-					// Pass selected RadioButton text to LogicEditorActivity
+					
 					d.a(b, rb.getText().toString());
 					break;
 				}
 			}
 			
-			// Dismiss the dialog
+			
 			c.dismiss();
 		}
 	}
 	
-	// $28: Simple dismiss button listener
+	
 	class LogicEditorActivity$28 implements View.OnClickListener {
 		
 		final CustomAlertDialog a; // Dialog
@@ -879,12 +979,12 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Simply dismiss the dialog
+			
 			a.dismiss();
 		}
 	}
 	
-	// $29: Clicking a child in a ViewGroup selects corresponding RadioButton in RadioGroup
+	
 	class LogicEditorActivity$29 implements View.OnClickListener {
 		
 		final ViewGroup a; // Parent container
@@ -899,16 +999,16 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Get index of clicked view inside the container
+			
 			int index = a.indexOfChild(view);
 			
-			// Select the corresponding RadioButton in RadioGroup
+			
 			RadioButton rb = (RadioButton) b.getChildAt(index);
 			rb.setChecked(true);
 		}
 	}
 	
-	// $30: Handles RadioGroup selection and updates fn object, then dismisses dialog
+	
 	class LogicEditorActivity$30 implements View.OnClickListener {
 		
 		final RadioGroup a; // RadioGroup
@@ -929,7 +1029,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 			for (int i = 0; i < count; i++) {
 				RadioButton rb = (RadioButton) a.getChildAt(i);
 				if (rb.isChecked()) {
-					// Update fn object with the tag of checked RadioButton
+					
 					d.a(b, rb.getTag());
 					break;
 				}
@@ -938,7 +1038,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// $31: Simple dismiss button listener
+	
 	class LogicEditorActivity$31 implements View.OnClickListener {
 		
 		final CustomAlertDialog a; // Dialog
@@ -955,7 +1055,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// LogicEditorActivity$32: Handles RadioGroup selection and updates fn object, then dismisses dialog
+	
 	class LogicEditorActivity$32 implements View.OnClickListener {
 		
 		final RadioGroup a; // RadioGroup
@@ -976,7 +1076,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 			for (int i = 0; i < count; i++) {
 				RadioButton rb = (RadioButton) a.getChildAt(i);
 				if (rb.isChecked()) {
-					// Update fn object with the text of checked RadioButton
+					
 					d.a(b, rb.getText().toString());
 					break;
 				}
@@ -985,7 +1085,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// LogicEditorActivity$33: Simple dismiss button listener
+	
 	class LogicEditorActivity$33 implements View.OnClickListener {
 		
 		final CustomAlertDialog a; // Dialog
@@ -1018,7 +1118,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		}
 	}
 	
-	// Inner class keeping Smali name $35
+	
 	public class LogicEditorActivity$35 implements View.OnClickListener {
 		
 		final lr a;
@@ -1041,7 +1141,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 				return;
 			}
 			
-			// Handle spec string
+			
 			String spec = b.spec;
 			if (spec.contains(" ")) {
 				int index = spec.indexOf(" ");
@@ -1050,18 +1150,18 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 				spec = "";
 			}
 			
-			// Append EditText value to spec
+			
 			String newSpec = c.getText().toString() + spec;
 			b.spec = newSpec;
 			
-			// Call LogicEditorActivity static method
+			
 			LogicEditorActivity.a(e, b);
 			
-			// Update EditText via ki.a (assuming helper method)
+			
 			Context context = e.getApplicationContext();
 			ki.a(context, c);
 			
-			// Dismiss dialog
+			
 			d.dismiss();
 		}
 	}
@@ -1080,11 +1180,11 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Handle EditText (like hiding keyboard)
+			
 			Context context = c.getApplicationContext();
 			ki.a(context, a);
 			
-			// Dismiss the dialog/popup
+			
 			b.dismiss();
 		}
 	}
@@ -1103,44 +1203,44 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// First ArrayList loop
+			
 			Iterator<Pair<Integer, String>> it1 = LogicEditorActivity.e(c).iterator();
 			while (it1.hasNext()) {
 				Pair<Integer, String> pair = it1.next();
 				lw obj = ma.a(c.f);
-				obj.a(c.m.getJavaName(), pair.first.intValue(), pair.second);
+				obj.a(c.getJavaName(), pair.first.intValue(), pair.second);
 			}
 			
-			// Second ArrayList loop
+			
 			Iterator<Pair<Integer, String>> it2 = LogicEditorActivity.f(c).iterator();
 			while (it2.hasNext()) {
 				Pair<Integer, String> pair = it2.next();
 				lw obj = ma.a(c.f);
-				obj.b(c.m.getJavaName(), pair.first.intValue(), pair.second);
+				obj.b(c.getJavaName(), pair.first.intValue(), pair.second);
 			}
 			
-			// Third ArrayList loop
+			
 			Iterator<ProjectResourceBean> it3 = LogicEditorActivity.g(c).iterator();
 			while (it3.hasNext()) {
 				ProjectResourceBean res = it3.next();
 				LogicEditorActivity.a(c, res.resName);
 			}
 			
-			// Fourth ArrayList loop
+			
 			Iterator<ProjectResourceBean> it4 = LogicEditorActivity.h(c).iterator();
 			while (it4.hasNext()) {
 				ProjectResourceBean res = it4.next();
 				LogicEditorActivity.b(c, res.resName);
 			}
 			
-			// Fifth ArrayList loop
+			
 			Iterator<ProjectResourceBean> it5 = LogicEditorActivity.i(c).iterator();
 			while (it5.hasNext()) {
 				ProjectResourceBean res = it5.next();
 				LogicEditorActivity.c(c, res.resName);
 			}
 			
-			// Final method calls
+			
 			LogicEditorActivity.b(c, a);
 			b.dismiss();
 		}
@@ -1159,7 +1259,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// Just dismiss the dialog
+			
 			a.dismiss();
 		}
 	}
@@ -1177,24 +1277,24 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View v) {
-			// If some global lock is active, do nothing
+			
 			if (ki.a()) {
 				return;
 			}
 			
-			// Get selected position from adapter
+			
 			int selectedIndex = b.q.a;
 			if (selectedIndex < 0) {
 				return;
 			}
 			
-			// Get the selected MoreBlockCollectionBean
+			
 			MoreBlockCollectionBean bean = (MoreBlockCollectionBean) b.r.get(selectedIndex);
 			
-			// Call the static method c() with this bean
+			
 			LogicEditorActivity.c(b, bean);
 			
-			// Dismiss the dialog
+			
 			a.dismiss();
 		}
 	}
@@ -1234,22 +1334,22 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Check some condition using a.a()
+			
 			if (a.a()) {
-				// Call static method in LogicEditorActivity with EditText content
+				
 				LogicEditorActivity.a(e, b.getText().toString(), c);
 				
-				// Some utility method to handle EditText (like hiding keyboard)
+				
 				Context context = e.getApplicationContext();
 				ki.a(context, b);
 				
-				// Dismiss dialog or popup
+				
 				d.dismiss();
 			}
 		}
 	}
 	
-	// ===== Inner class equivalent to LogicEditorActivity$42 =====
+	
 	private class LogicEditorActivity$42 implements View.OnClickListener {
 		
 		final EditText a;
@@ -1264,11 +1364,11 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Handle EditText (like hiding keyboard)
+			
 			Context context = c.getApplicationContext();
 			ki.a(context, a);
 			
-			// Dismiss dialog or popup
+			
 			b.dismiss();
 		}
 	}
@@ -1292,38 +1392,43 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		public void onClick(View view) {
 			int checkedId = a.getCheckedRadioButtonId();
 			int value = 1; // default
+			String typeName = "double";
 			
-			// Convert resource IDs to decimal integers
-			if (checkedId == com.nexusteam.blacklogics.R.id.rb_boolean) { // 0x7f080399
+			if (checkedId == com.nexusteam.blacklogics.R.id.rb_boolean) {
 				value = 0;
-			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_int) { // 0x7f08039b
+				typeName = "boolean";
+			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_int) {
 				value = 1;
-			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_string) { // 0x7f08039f
+				typeName = "double";
+			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_string) {
 				value = 2;
-			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_map) { // 0x7f08039c
+				typeName = "String";
+			} else if (checkedId == com.nexusteam.blacklogics.R.id.rb_map) {
 				value = 3;
+				typeName = "HashMap<String, Object>";
 			}
 			
 			String text = b.getText().toString();
 			
-			if (!c.a()) { // if not valid, just return
+			if (!c.a()) { 
 				return;
 			}
 			
 			e.a(value, text);
-		//	BlockStorage.addVariable(this.m.getJavaName(), new VariableData(type, name, ""));
 			
-			// Hide keyboard
+			// save variable
+			ProjectLogicRepository.saveVariable(e.activityName, typeName, text);
+			
 			Context context = e.getApplicationContext();
 			ki.a(context, b);
 			
-			// Dismiss dialog
+			
 			d.dismiss();
 		}
 	}
 	
 	
-	// ----------- LogicEditorActivity$44 -----------
+	
 	class LogicEditorActivity$44 implements View.OnClickListener {
 		
 		final EditText a;
@@ -1338,11 +1443,11 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 		
 		@Override
 		public void onClick(View view) {
-			// Hide keyboard
+			
 			Context context = c.getApplicationContext();
 			ki.a(context, a);
 			
-			// Dismiss dialog
+			
 			b.dismiss();
 		}
 	}
@@ -1367,13 +1472,13 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 				RadioButton radio = (RadioButton) a.getChildAt(i);
 				
 				if (radio.isChecked()) {
-					// Check if function name already exists
+					
 					boolean exists = c.e.a(radio.getText().toString());
 					
 					if (!exists) {
-						// Verify with project structure
+						
 						lw lwObject = ma.a(c.f);
-						String javaName = c.m.getJavaName();
+						String javaName = c.getJavaName();
 						String radioText = radio.getText().toString();
 						String uniqueName = c.g + "_" + c.h;
 						
@@ -1381,17 +1486,17 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 						boolean result = lwObject.a(javaName, radioText, uniqueName);
 						
 						if (!result) {
-							// If everything is fine, call LogicEditorActivity.b(String)
+							
 							c.b(radio.getText().toString());
 						} else {
-							// Show a toast error
+							
 							Context context = c.getApplicationContext();
 							String msg = StringResourceManager.a().a(context, com.nexusteam.blacklogics.R.string.block_fileutil_write_tail);
 							Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 							return;
 						}
 					} else {
-						// Duplicate function name
+						
 						Context context = c.getApplicationContext();
 						String msg = StringResourceManager.a().a(context, com.nexusteam.blacklogics.R.string.block_fileutil_write_tail);
 						Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
@@ -1401,7 +1506,7 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 				}
 			}
 			
-			// Close the dialog at the end
+			
 			b.dismiss();
 		}
 	}
@@ -1409,93 +1514,93 @@ public class LogicEditorActivity extends BaseAppCompatActivity implements fr, On
 	
 	
 	private void A() {
-    CustomAlertDialog var3 = new CustomAlertDialog(this);
-    var3.a(StringResourceManager.a().a(this.getApplicationContext(), 
-           com.nexusteam.blacklogics.R.string.logic_editor_title_remove_variable));
-    var3.a(com.nexusteam.blacklogics.R.drawable.delete_96);
-    
-    View var2 = ViewHelper.a(this, com.nexusteam.blacklogics.R.layout.property_popup_selector_single);
-    ViewGroup var1 = (ViewGroup)var2.findViewById(com.nexusteam.blacklogics.R.id.rg_content);
-    
-    // Primitive variables (this.d)
-    ArrayList<Pair<Integer, String>> var4 = ma.a(this.f).e(this.m.getJavaName());
-    Iterator var7 = var4.iterator();
-    
-    while(var7.hasNext()) {
-        Pair var5 = (Pair)var7.next();
-        RadioButton var6 = this.e((String)var5.second);
-        var6.setTag(var5.first);  // type set kiya (0,1,2,3)
-        var1.addView(var6);
-    }
-    
-    // List variables (this.e) - ye add karna hai!
-    ArrayList<Pair<Integer, String>> listVars = ma.a(this.f).f(this.m.getJavaName());
-    Iterator listIter = listVars.iterator();
-    
-    while(listIter.hasNext()) {
-        Pair var5 = (Pair)listIter.next();
-        RadioButton var6 = this.e((String)var5.second);
-        // list type convert: 1,2,3 -> 4,5,6
-        var6.setTag((Integer)var5.first + 3);  
-        var1.addView(var6);
-    }
-    
-    var3.a(var2);
-    // YAHAN PE NAYA LISTENER BANANA HOGA, $45 NAHI!
-    var3.a(StringResourceManager.a().a(this.getApplicationContext(), 
-           com.nexusteam.blacklogics.R.string.common_word_remove), 
-           new LogicEditorActivity$46(this, var1, var3));  // Naya listener $46
-    var3.b(StringResourceManager.a().a(this.getApplicationContext(), 
-           com.nexusteam.blacklogics.R.string.common_word_cancel), 
-           new LogicEditorActivity$2(this, var3));
-    var3.show();
-}
-
-// Naya listener class - variable removal ke liye
-class LogicEditorActivity$46 implements View.OnClickListener {
-    
-    private final ViewGroup a;
-    private final CustomAlertDialog b;
-    private final LogicEditorActivity c;
-    
-    public LogicEditorActivity$46(LogicEditorActivity activity, ViewGroup viewGroup, CustomAlertDialog dialog) {
-        this.c = activity;
-        this.a = viewGroup;
-        this.b = dialog;
-    }
-    
-    @Override
-    public void onClick(View v) {
-        int childCount = a.getChildCount();
-        
-        for (int i = 0; i < childCount; i++) {
-            RadioButton radio = (RadioButton) a.getChildAt(i);
-            
-            if (radio.isChecked()) {
-                int type = (Integer) radio.getTag();  // 0-6
-                String name = radio.getText().toString();
-                
-                // Remove from runtime
-                if (type <= 3) {
-                    // Primitive variable removal
-                    ma.a(c.f).f(c.m.getJavaName(), name);
-                } else {
-                    // List variable removal (type 4,5,6)
-                    ma.a(c.f).g(c.m.getJavaName(), name);
-                }
-                
-                // Remove from persistent storage
-                BlockStorage.removeVariable(c.m.getJavaName(), type, name);
-                
-                break;
-            }
-        }
-        
-        // Refresh UI
-        c.a(0, -1147626);  // variable palette refresh
-        b.dismiss();
-    }
-}
+		CustomAlertDialog var3 = new CustomAlertDialog(this);
+		var3.a(StringResourceManager.a().a(this.getApplicationContext(), 
+		com.nexusteam.blacklogics.R.string.logic_editor_title_remove_variable));
+		var3.a(com.nexusteam.blacklogics.R.drawable.delete_96);
+		
+		View var2 = ViewHelper.a(this, com.nexusteam.blacklogics.R.layout.property_popup_selector_single);
+		ViewGroup var1 = (ViewGroup)var2.findViewById(com.nexusteam.blacklogics.R.id.rg_content);
+		
+		
+		ArrayList<Pair<Integer, String>> var4 = ma.a(this.f).e(this.getJavaName());
+		Iterator var7 = var4.iterator();
+		
+		while(var7.hasNext()) {
+			Pair var5 = (Pair)var7.next();
+			RadioButton var6 = this.e((String)var5.second);
+			var6.setTag(var5.first);  // type set kiya (0,1,2,3)
+			var1.addView(var6);
+		}
+		
+		
+		ArrayList<Pair<Integer, String>> listVars = ma.a(this.f).f(this.getJavaName());
+		Iterator listIter = listVars.iterator();
+		
+		while(listIter.hasNext()) {
+			Pair var5 = (Pair)listIter.next();
+			RadioButton var6 = this.e((String)var5.second);
+			
+			var6.setTag((Integer)var5.first + 3);  
+			var1.addView(var6);
+		}
+		
+		var3.a(var2);
+		
+		var3.a(StringResourceManager.a().a(this.getApplicationContext(), 
+		com.nexusteam.blacklogics.R.string.common_word_remove), 
+		new LogicEditorActivity$46(this, var1, var3));  // Naya listener $46
+		var3.b(StringResourceManager.a().a(this.getApplicationContext(), 
+		com.nexusteam.blacklogics.R.string.common_word_cancel), 
+		new LogicEditorActivity$2(this, var3));
+		var3.show();
+	}
+	
+	
+	class LogicEditorActivity$46 implements View.OnClickListener {
+		
+		private final ViewGroup a;
+		private final CustomAlertDialog b;
+		private final LogicEditorActivity c;
+		
+		public LogicEditorActivity$46(LogicEditorActivity activity, ViewGroup viewGroup, CustomAlertDialog dialog) {
+			this.c = activity;
+			this.a = viewGroup;
+			this.b = dialog;
+		}
+		
+		@Override
+		public void onClick(View v) {
+			int childCount = a.getChildCount();
+			
+			for (int i = 0; i < childCount; i++) {
+				RadioButton radio = (RadioButton) a.getChildAt(i);
+				
+				if (radio.isChecked()) {
+					int type = (Integer) radio.getTag();  // 0-6
+					String name = radio.getText().toString();
+					
+					if (type <= 3) {
+						ma.a(c.f).f(c.getJavaName(), name);
+					} else {
+						ma.a(c.f).g(c.getJavaName(), name);
+					}
+					
+					// remove from project logic
+					ProjectLogicRepository.removeVariable(activityName, String.valueOf(type), name);
+					
+					// remove from block storage
+					BlockStorage.removeVariable(c.getJavaName(), type, name);
+					
+					break;
+				}
+			}
+			
+			
+			c.a(0, -1147626);  // variable palette refresh
+			b.dismiss();
+		}
+	}
 	
 	private void f(fn var1) {
 		View var4 = ViewHelper.a(this, com.nexusteam.blacklogics.R.layout.color_picker);
@@ -1542,7 +1647,7 @@ class LogicEditorActivity$46 implements View.OnClickListener {
 		View var1 = ViewHelper.a(this, com.nexusteam.blacklogics.R.layout.property_popup_selector_single);
 		ViewGroup var3 = (ViewGroup)var1.findViewById(com.nexusteam.blacklogics.R.id.rg_content);
 		new ArrayList();
-		ArrayList var4 = ma.a(this.f).f(this.m.getJavaName());
+		ArrayList var4 = ma.a(this.f).f(this.getJavaName());
 		Iterator var6 = var4.iterator();
 		
 		while(var6.hasNext()) {
@@ -1631,7 +1736,12 @@ class LogicEditorActivity$46 implements View.OnClickListener {
 					var11 = Uri.fromFile(new File(ma.c(this.f).b(var1)));
 				}
 				
-				/*	RequestManager var16 = Glide.with(this);
+				Glide.with(this)
+				.load(var11)
+				.error(com.nexusteam.blacklogics.R.drawable.ic_remove_grey600_24dp)
+				.into(var14);
+				
+				/*    RequestManager var16 = Glide.with(this);
 DrawableTypeRequest var12 = var16.load(var11);
 DrawableRequestBuilder var13 = var12.signature(mb.b());
 var13 = var13.error(com.nexusteam.internal.R.drawable.ic_remove_grey600_24dp);
@@ -1868,8 +1978,8 @@ var13.into(var14);*/
 		var3.b(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.common_word_cancel), new LogicEditorActivity$24(this, var3));
 		var3.show();
 	}
-    
-    @Deprecated
+	
+	@Deprecated
 	public void showMessage(String _s) {
 		Toast.makeText(getApplicationContext(), _s, Toast.LENGTH_SHORT).show();
 	}
@@ -1882,6 +1992,10 @@ var13.into(var14);*/
 			var10.n = -1;
 			var10.l = -1;
 			int var5 = var1.parameters.size();
+			
+			if (var1.isCustomBlock) {
+				var10.z = var1.color;  // Color restore
+			}
 			
 			fm var18;
 			for(int var4 = 0; var4 < var5; ++var4) {
@@ -1899,11 +2013,11 @@ var13.into(var14);*/
 						}
 					} else if (var10.c.get(var4) instanceof fn) {
 						fn var12 = (fn)var10.c.get(var4);
-						String var13 = this.m.getJavaName();
-						String var9 = this.m.getXmlName();
+						String var13 = this.getJavaName();
+						String var9 = getXmlName();
 						String var8 = var9;
 						if (this.h.equals("onBindCustomView")) {
-							ViewBean var14 = ma.a(this.f).e(this.m.getXmlName(), this.g);
+							ViewBean var14 = ViewParser.getInstance().getViewBean(this.activityName, this.g);
 							var8 = var9;
 							if (var14.customView != null) {
 								var8 = ProjectFileBean.getXmlName(var14.customView);
@@ -2405,17 +2519,17 @@ var13.into(var14);*/
 		this.b(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static void a(LogicEditorActivity var0, MoreBlockCollectionBean var1) {
 		var0.d(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static void a(LogicEditorActivity var0, String var1) {
 		var0.m(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static void a(LogicEditorActivity var0, String var1, fm var2) {
 		var0.a(var1, var2);
 	}
@@ -2486,7 +2600,7 @@ var13.into(var14);*/
 		return this.n.a(var1, var2);
 	}
 	
-	// $FF: synthetic method
+	
 	static boolean a(LogicEditorActivity var0) {
 		return var0.T;
 	}
@@ -2565,7 +2679,7 @@ var13.into(var14);*/
 			var5 = var6.substring(0, var6.indexOf(32));
 		}
 		
-		ArrayList var8 = ma.a(this.f).h(this.m.getJavaName());
+		ArrayList var8 = ma.a(this.f).h(this.getJavaName());
 		Iterator var9 = var8.iterator();
 		
 		boolean var2;
@@ -2590,12 +2704,12 @@ var13.into(var14);*/
 		
 	}
 	
-	// $FF: synthetic method
+	
 	static void b(LogicEditorActivity var0, MoreBlockCollectionBean var1) {
 		var0.f(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static void b(LogicEditorActivity var0, String var1) {
 		var0.n(var1);
 	}
@@ -2656,7 +2770,7 @@ var13.into(var14);*/
 		}
 		
 		if (var1.opCode.equals("definedFunc")) {
-			ArrayList var10 = ma.a(this.f).h(this.m.getJavaName());
+			ArrayList var10 = ma.a(this.f).h(this.getJavaName());
 			Iterator var11 = var10.iterator();
 			boolean var9 = false;
 			
@@ -2676,10 +2790,10 @@ var13.into(var14);*/
 			boolean var5;
 			if (var1.type.equals("v")) {
 				if (!this.h.equals("onBindCustomView")) {
-					var5 = ma.a(this.f).f(this.m.getXmlName(), ViewBean.getViewTypeByTypeName(var1.typeName), var1.spec);
+					var5 = ma.a(this.f).f(getXmlName(), ViewBean.getViewTypeByTypeName(var1.typeName), var1.spec);
 				} else {
 					var6 = "";
-					ViewBean var14 = ma.a(this.f).e(this.m.getXmlName(), this.g);
+					ViewBean var14 = ViewParser.getInstance().getViewBean(this.activityName, this.g);
 					if (var14.customView != null) {
 						var6 = ProjectFileBean.getXmlName(var14.customView);
 					}
@@ -2687,47 +2801,47 @@ var13.into(var14);*/
 					var5 = ma.a(this.f).f(var6, ViewBean.getViewTypeByTypeName(var1.typeName), var1.spec);
 				}
 			} else if (var1.type.equals("p")) {
-				var5 = ma.a(this.f).g(this.m.getJavaName(), ComponentBean.getComponentTypeByTypeName(var1.typeName), var1.spec);
+				var5 = ma.a(this.f).g(this.getJavaName(), ComponentBean.getComponentTypeByTypeName(var1.typeName), var1.spec);
 			} else {
 				label133: {
 					if (var1.type.equals("l")) {
 						if (var1.typeName.equals("List Number")) {
-							var5 = ma.a(this.f).e(this.m.getJavaName(), 1, var1.spec);
+							var5 = ma.a(this.f).e(this.getJavaName(), 1, var1.spec);
 							break label133;
 						}
 						
 						if (var1.typeName.equals("List String")) {
-							var5 = ma.a(this.f).e(this.m.getJavaName(), 2, var1.spec);
+							var5 = ma.a(this.f).e(this.getJavaName(), 2, var1.spec);
 							break label133;
 						}
 						
 						if (var1.typeName.equals("List Map")) {
-							var5 = ma.a(this.f).e(this.m.getJavaName(), 3, var1.spec);
+							var5 = ma.a(this.f).e(this.getJavaName(), 3, var1.spec);
 							break label133;
 						}
 						
-						if (var1.typeName.equals("List") && (ma.a(this.f).e(this.m.getJavaName(), 1, var1.spec) || ma.a(this.f).e(this.m.getJavaName(), 2, var1.spec) || ma.a(this.f).e(this.m.getJavaName(), 3, var1.spec))) {
+						if (var1.typeName.equals("List") && (ma.a(this.f).e(this.getJavaName(), 1, var1.spec) || ma.a(this.f).e(this.getJavaName(), 2, var1.spec) || ma.a(this.f).e(this.getJavaName(), 3, var1.spec))) {
 							var5 = true;
 							break label133;
 						}
 					} else {
 						if (var1.type.equals("b")) {
-							var5 = ma.a(this.f).d(this.m.getJavaName(), 0, var1.spec);
+							var5 = ma.a(this.f).d(this.getJavaName(), 0, var1.spec);
 							break label133;
 						}
 						
 						if (var1.type.equals("d")) {
-							var5 = ma.a(this.f).d(this.m.getJavaName(), 1, var1.spec);
+							var5 = ma.a(this.f).d(this.getJavaName(), 1, var1.spec);
 							break label133;
 						}
 						
 						if (var1.type.equals("s")) {
-							var5 = ma.a(this.f).d(this.m.getJavaName(), 2, var1.spec);
+							var5 = ma.a(this.f).d(this.getJavaName(), 2, var1.spec);
 							break label133;
 						}
 						
 						if (var1.type.equals("a")) {
-							var5 = ma.a(this.f).d(this.m.getJavaName(), 3, var1.spec);
+							var5 = ma.a(this.f).d(this.getJavaName(), 3, var1.spec);
 							break label133;
 						}
 					}
@@ -2788,7 +2902,7 @@ var13.into(var14);*/
 			this.ae = new ArrayList();
 		}
 		
-		ArrayList var5 = ma.a(this.f).e(this.m.getJavaName());
+		ArrayList var5 = ma.a(this.f).e(this.getJavaName());
 		Iterator var6 = var5.iterator();
 		
 		Pair var7;
@@ -2858,12 +2972,12 @@ var13.into(var14);*/
 		var3.show();
 	}
 	
-	// $FF: synthetic method
+	
 	static void c(LogicEditorActivity var0, MoreBlockCollectionBean var1) {
 		var0.a(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static void c(LogicEditorActivity var0, String var1) {
 		var0.o(var1);
 	}
@@ -2903,7 +3017,7 @@ var13.into(var14);*/
 			this.af = new ArrayList();
 		}
 		
-		ArrayList var5 = ma.a(this.f).f(this.m.getJavaName());
+		ArrayList var5 = ma.a(this.f).f(this.getJavaName());
 		Iterator var6 = var5.iterator();
 		
 		while(var6.hasNext()) {
@@ -3027,7 +3141,7 @@ var13.into(var14);*/
 		return var2;
 	}
 	
-	// $FF: synthetic method
+	
 	static ArrayList e(LogicEditorActivity var0) {
 		return var0.ae;
 	}
@@ -3046,7 +3160,7 @@ var13.into(var14);*/
 		this.n.c(var1);
 	}
 	
-	// $FF: synthetic method
+	
 	static ArrayList f(LogicEditorActivity var0) {
 		return var0.af;
 	}
@@ -3060,9 +3174,9 @@ var13.into(var14);*/
 			var2 = var3;
 		}
 		
-		ma.a(this.f).c(this.m.getJavaName(), var2, var3);
+		ma.a(this.f).c(this.getJavaName(), var2, var3);
 		lw var6 = ma.a(this.f);
-		String var5 = this.m.getJavaName();
+		String var5 = this.getJavaName();
 		StringBuilder var4 = new StringBuilder();
 		var4.append(var2);
 		var4.append("_");
@@ -3097,7 +3211,7 @@ var13.into(var14);*/
 		return var3;
 	}
 	
-	// $FF: synthetic method
+	
 	static ArrayList g(LogicEditorActivity var0) {
 		return var0.ag;
 	}
@@ -3168,10 +3282,10 @@ var13.into(var14);*/
 	}
 	
 	private String h() {
-		return lu.a(this.m.getJavaName(), this.g, this.h);
+		return lu.a(this.getJavaName(), this.g, this.h);
 	}
 	
-	// $FF: synthetic method
+	
 	static ArrayList h(LogicEditorActivity var0) {
 		return var0.ah;
 	}
@@ -3254,7 +3368,7 @@ var13.into(var14);*/
 		return var3;
 	}
 	
-	// $FF: synthetic method
+	
 	static ArrayList i(LogicEditorActivity var0) {
 		return var0.ai;
 	}
@@ -3442,9 +3556,8 @@ var13.into(var14);*/
 			
 		}
 	}
-	
 	private void k() {
-		ArrayList var5 = ma.a(this.f).e(this.m.getJavaName());
+		ArrayList var5 = ma.a(this.f).e(this.getJavaName());
 		Iterator var6 = var5.iterator();
 		int var4 = 0;
 		int var3 = 0;
@@ -3502,30 +3615,160 @@ var13.into(var14);*/
 		Iterator var10;
 		View var11;
 		ViewBean var14;
+		
+		// 🔥 FIXED: View palette section - Built-in views se pehle try karo, nahi to ViewParser se lo
 		if (this.h.equals("onBindCustomView")) {
-			String var9 = ma.a(this.f).e(this.m.getXmlName(), this.g).customView;
-			if (var9 != null && var9.length() > 0) {
-				this.a("Custom Views", -11184811);
-				var5 = ma.a(this.f).a(ProjectFileBean.getXmlName(var9));
-				var10 = var5.iterator();
-				
-				while(var10.hasNext()) {
-					var14 = (ViewBean)var10.next();
-					var11 = this.a(var14.id, "v", ViewBean.getViewTypeName(var14.type), "getVar");
-					var11.setTag(var14.id);
-				}
+			// Custom View case
+			String customViewName = null;
+			
+			// पहले ViewParser से current view का data लो
+			ViewBean currentView = ViewParser.getInstance().getViewBean(
+			this.activityName, 
+			this.g
+			);
+			
+			Log.d("VIEW_PALETTE", "CustomView from parser: " + 
+			(currentView != null ? currentView.customView : "null"));
+			
+			if (currentView != null) {
+				customViewName = currentView.customView;
 			}
 			
-			this.b("c", "viewOnClick");
-		} else {
-			this.a("Views", -11184811);
-			var5 = ma.a(this.f).a(this.m.getXmlName());
-			var10 = var5.iterator();
+			// Old method से fallback
+			if (customViewName == null || customViewName.length() == 0) {
+				customViewName = ma.a(this.f).e(getXmlName(), this.g).customView;
+				Log.d("VIEW_PALETTE", "CustomView from ma: " + customViewName);
+			}
 			
-			while(var10.hasNext()) {
-				var14 = (ViewBean)var10.next();
-				var11 = this.a(var14.id, "v", ViewBean.getViewTypeName(var14.type), "getVar");
-				var11.setTag(var14.id);
+			if (customViewName != null && customViewName.length() > 0) {
+				// 🔥 IMPORTANT: Palette में section add करो
+				this.a("Custom Views", -11184811);
+				
+				// Custom View के सभी views लो
+				ArrayList<ViewBean> customViewBeans = ViewParser.getInstance().getAllBeans(
+				this.activityName
+				);
+				
+				if (customViewBeans != null) {
+					Log.d("VIEW_PALETTE", "CustomView beans count: " + customViewBeans.size());
+					
+					var10 = customViewBeans.iterator();
+					while(var10.hasNext()) {
+						var14 = (ViewBean)var10.next();
+						
+						// 🔥 DEBUG: Check if view belongs to custom view
+						if (var14.customView != null && var14.customView.equals(customViewName)) {
+							
+							// 🔥 FIXED: Pehle ViewBean.getViewTypeName() try karo
+							String typeName = ViewBean.getViewTypeName(var14.type);
+							
+							// Agar empty hai toh ViewParser se lo
+							if (typeName == null || typeName.isEmpty()) {
+								typeName = ViewParser.getInstance().getViewXmlTag(
+								this.activityName, var14.id
+								);
+								Log.d("VIEW_PALETTE", "Got from ViewParser: " + typeName + " for view: " + var14.id);
+							}
+							
+							// Agar ab bhi empty hai toh default do
+							if (typeName == null || typeName.isEmpty()) {
+								typeName = "View";
+							}
+							
+							Log.d("VIEW_PALETTE", "Adding custom view: " + var14.id + 
+							" type: " + var14.type + " typeName: " + typeName);
+							
+							var11 = this.a(var14.id, "v", typeName, "getVar");
+							var11.setTag(var14.id);
+						}
+					}
+				}
+				
+				this.b("c", "viewOnClick");
+				
+			} else {
+				// Fallback to normal activity case
+				// 🔥 IMPORTANT: Palette में section add करो
+				this.a("Views", -11184811);
+				
+				// Current activity के सभी views लो
+				ArrayList<ViewBean> activityBeans = ViewParser.getInstance().getAllBeans();
+				
+				if (activityBeans != null) {
+					Log.d("VIEW_PALETTE", "Activity beans count: " + activityBeans.size());
+					
+					var10 = activityBeans.iterator();
+					while(var10.hasNext()) {
+						var14 = (ViewBean)var10.next();
+						
+						// 🔥 FIXED: Pehle ViewBean.getViewTypeName() try karo
+						String typeName = ViewBean.getViewTypeName(var14.type);
+						
+						// Agar empty hai toh ViewParser se lo
+						if (typeName == null || typeName.isEmpty()) {
+							typeName = ViewParser.getInstance().getViewXmlTag(
+							this.activityName, var14.id
+							);
+							Log.d("VIEW_PALETTE", "Got from ViewParser: " + typeName + " for view: " + var14.id);
+						}
+						
+						// Agar ab bhi empty hai toh default do
+						if (typeName == null || typeName.isEmpty()) {
+							typeName = "View";
+						}
+						
+						Log.d("VIEW_PALETTE", "Adding view: " + var14.id + 
+						" type: " + var14.type + " typeName: " + typeName);
+						
+						var11 = this.a(var14.id, "v", typeName, "getVar");
+						var11.setTag(var14.id);
+					}
+				} else {
+					Log.d("VIEW_PALETTE", "No activity beans found!");
+				}
+				
+				this.m.hasActivityOption(8);
+				this.m.hasActivityOption(4);
+			}
+		} else {
+			// Normal Activity case
+			// 🔥 IMPORTANT: Palette में section add करो
+			this.a("Views", -11184811);
+			
+			// Current activity के सभी views लो
+			ArrayList<ViewBean> activityBeans = ViewParser.getInstance().getAllBeans();
+			
+			if (activityBeans != null) {
+				Log.d("VIEW_PALETTE", "Activity beans count: " + activityBeans.size());
+				
+				var10 = activityBeans.iterator();
+				while(var10.hasNext()) {
+					var14 = (ViewBean)var10.next();
+					
+					// 🔥 FIXED: Pehle ViewBean.getViewTypeName() try karo
+					String typeName = ViewBean.getViewTypeName(var14.type);
+					
+					// Agar empty hai toh ViewParser se lo
+					if (typeName == null || typeName.isEmpty()) {
+						typeName = ViewParser.getInstance().getViewXmlTag(
+						this.activityName, var14.id
+						);
+						Log.d("VIEW_PALETTE", "Got from ViewParser: " + typeName + " for view: " + var14.id);
+					}
+					
+					// Agar ab bhi empty hai toh default do
+					if (typeName == null || typeName.isEmpty()) {
+						typeName = "View";
+					}
+					
+					Log.d("VIEW_PALETTE", "Adding view: " + var14.id + 
+					" type: " + var14.type + " typeName: " + typeName);
+					
+					var11 = this.a(var14.id, "v", typeName, "getVar");
+					var11.setTag(var14.id);
+				}
+			} else {
+				Log.d("VIEW_PALETTE", "No activity beans found!");
 			}
 			
 			this.m.hasActivityOption(8);
@@ -3533,15 +3776,98 @@ var13.into(var14);*/
 		}
 		
 		this.a("Components", -11184811);
-		var5 = ma.a(this.f).k(this.m.getJavaName());
-		Iterator var15 = var5.iterator();
 		
-		while(var15.hasNext()) {
-			ComponentBean var12 = (ComponentBean)var15.next();
-			View var13 = this.a(var12.componentId, "p", ComponentBean.getComponentTypeName(var12.type), "getVar");
-			var13.setTag(var12.componentId);
+		// 🔥 FIXED: Components section
+		// First, load default/built-in components
+		ArrayList<ComponentBean> defaultComps = ma.a(this.f).k(activityName);
+		if (defaultComps == null) defaultComps = new ArrayList<ComponentBean>();
+		
+		for (int i = 0; i < defaultComps.size(); i++) {
+			ComponentBean comp = defaultComps.get(i);
+			View componentView = this.a(
+			comp.componentId,
+			"p",
+			ComponentBean.getComponentTypeName(comp.type),
+			"getVar"
+			);
+			componentView.setTag(comp.componentId);
 		}
 		
+		// 🔥 FIXED: Custom components handling
+		// Load from BlockStorage first (user added components)
+		ArrayList<ComponentData> storedComps = BlockStorage.loadComponents(activityName);
+		if (storedComps == null) storedComps = new ArrayList<ComponentData>();
+		
+		// Create a map to track which component types we've already added to avoid duplicates
+		HashMap<String, Boolean> addedComponentTypes = new HashMap<String, Boolean>();
+		
+		// First, mark default component types as already added
+		for (int i = 0; i < defaultComps.size(); i++) {
+			ComponentBean comp = defaultComps.get(i);
+			if (comp.typeName != null && !comp.typeName.isEmpty()) {
+				addedComponentTypes.put(comp.typeName, true);
+			}
+		}
+		
+		// Now load custom components from ComponentManager
+		ComponentManager cm = ComponentManager.getInstance();
+		cm.refreshCustomComponents();
+		List<ComponentBean> customComponentsFromJson = cm.getCustomComponents();
+		
+		// For debugging
+		Log.d("COMPONENT_LOAD", "Custom components from JSON: " + customComponentsFromJson.size());
+		
+		// First, add all custom components from JSON that match stored instances
+		for (int i = 0; i < customComponentsFromJson.size(); i++) {
+			ComponentBean customComp = customComponentsFromJson.get(i);
+			
+			// Check if there are any stored instances of this component type
+			boolean hasInstances = false;
+			for (int j = 0; j < storedComps.size(); j++) {
+				ComponentData data = storedComps.get(j);
+				if (customComp.typeName != null && customComp.typeName.equals(data.extraData)) {
+					hasInstances = true;
+					break;
+				}
+			}
+			
+			// If there are instances AND we haven't added this type yet
+			if (hasInstances && !addedComponentTypes.containsKey(customComp.typeName)) {
+				Log.d("COMPONENT_LOAD", "Adding custom component type to palette: " + customComp.typeName);
+				
+				// Add the component type to palette (not instances yet)
+				// The instances will be loaded from storedComps below
+				addedComponentTypes.put(customComp.typeName, true);
+			}
+		}
+		
+		// Now add all stored component instances
+		for (int i = 0; i < storedComps.size(); i++) {
+			ComponentData data = storedComps.get(i);
+			
+			// Get full bean from ComponentManager to get typeName
+			ComponentBean fullBean = cm.getComponentById(data.mainData);
+			
+			String typeName;
+			if (fullBean != null && fullBean.typeName != null && !fullBean.typeName.isEmpty()) {
+				typeName = fullBean.typeName; // JSON wala proper typeName
+			} else {
+				typeName = data.extraData; // fallback
+			}
+			
+			if (typeName == null || typeName.isEmpty()) continue;
+			
+			Log.d("COMPONENT_LOAD", "Adding component instance: " + data.mainData + " type: " + typeName);
+			
+			View componentView = this.a(
+			data.mainData,  // instance ID e.g. "fpP"
+			"p",
+			typeName,
+			"getVar"
+			);
+			if (componentView == null) continue;
+			componentView.setTag(data.mainData);
+		}
 	}
 	
 	private void k(String var1) {
@@ -3585,7 +3911,7 @@ var13.into(var14);*/
 	}
 	
 	private void l() {
-		ArrayList var4 = ma.a(this.f).f(this.m.getJavaName());
+		ArrayList var4 = ma.a(this.f).f(this.getJavaName());
 		Iterator var7 = var4.iterator();
 		int var3 = 0;
 		int var2 = 0;
@@ -3771,7 +4097,7 @@ var13.into(var14);*/
 	}
 	
 	private void r() {
-		ArrayList var1 = ma.a(this.f).h(this.m.getJavaName());
+		ArrayList var1 = ma.a(this.f).h(this.getJavaName());
 		Iterator var2 = var1.iterator();
 		
 		while(var2.hasNext()) {
@@ -3785,7 +4111,7 @@ var13.into(var14);*/
 	private void s() {
 		HashMap var4 = new HashMap();
 		lw var7 = ma.a(this.f);
-		String var5 = this.m.getJavaName();
+		String var5 = this.getJavaName();
 		StringBuilder var6 = new StringBuilder();
 		var6.append(this.g);
 		var6.append("_");
@@ -3807,6 +4133,12 @@ var13.into(var14);*/
 				}
 				
 				var14 = this.a(var13);
+				if (var13.isCustomBlock) {
+					var14.z = var13.color;
+					var14.isCustomBlock = true;
+					var14.originalId = var13.originalId;
+					var14.setSpec(var13.spec);
+				}
 				var4.put((Integer)var14.getTag(), var14);
 				this.e.a = Math.max(this.e.a, (Integer)var14.getTag() + 1);
 				this.e.c(var14, 0, 0);
@@ -3878,7 +4210,7 @@ var13.into(var14);*/
 	private void t() {
 		ArrayList var1 = this.e.getBlocks();
 		lw var4 = ma.a(this.f);
-		String var3 = this.m.getJavaName();
+		String var3 = this.getJavaName();
 		StringBuilder var2 = new StringBuilder();
 		var2.append(this.g);
 		var2.append("_");
@@ -3889,41 +4221,67 @@ var13.into(var14);*/
 		ma.b(); // lw.b() → save
 		ma.c(); // ly.c() → save
 		ma.d(); // mb.a() → save
-		ma.e(); // lz.a() → saveif (widgetId != null) {
-		
-		if (widgetId != null && !widgetId.isEmpty()) {
+		ma.e(); // lz.a() → save
 
-    Qf.saveBlockLogicForWidget(
-        activityName,
-        widgetId,
-        getSourceCode()
-    );
+		// ── 1. Imports special case ───────────────────────────────────────────
+		if ("Imports".equals(h)) {
+			ProjectLogicRepository.setImports(activityName, getSourceCode());
+			BlockStorage.save(
+				this.g + "_" + this.h + "_" + this.activityName,
+				blocks
+			);
+			return;
+		}
 
-} else if (type != null && !type.isEmpty()) {
+		// ── 2. Resolved source code ───────────────────────────────────────────
+		String sourceCode = getSourceCode();
 
-    Qf.saveBlockLogicForEvent(
-        activityName,
-        type,
-        getSourceCode()
-    );
+		// ── 3. System event (events.json) check ───────────────────────────────
+		// g = widget/component id (e.g. "button1", "WebView"), h = event name (e.g. "onClick", "onProgressChanged")
+		// Agar h kisi SystemEvent ke naam se match karta hai toh uska code template
+		// %s placeholder mein sourceCode inject karke project store mein save karo.
+		com.nexusteam.blacklogics.utils.EventUtils.SystemEvent sysEvent =
+			com.nexusteam.blacklogics.utils.EventUtils.findSystemEventByName(h);
 
-} else {
+		if (sysEvent != null) {
+			// Template mein %s / %1$s = user ka logic (sourceCode)
+			String resolvedCode = sysEvent.buildCode(sourceCode);
 
-    Qf.saveBlockLogic(
-        activityName,
-        getSourceCode()
-    );
-}
+			// Project event store mein save karo (activity_eventName key se)
+			com.nexusteam.blacklogics.utils.EventUtils.saveSystemEventToProject(
+				this.f,        // sc_id
+				sysEvent,
+				activityName,
+				resolvedCode
+			);
 
-        
-        //showMessage(getSourceCode());
-        FileUtil.writeFile(FileUtil.getExternalStorageDir().concat("code/code.txt"), getSourceCode());
-		
-		BlockStorage.save(
-		this.g + "_" + this.h + "_" + this.activityName,
-		blocks
+			// ProjectLogicRepository mein bhi sync karo taaki JavaCodeBuilder
+			// getBlockLogicForEvent() se yeh logic padh sake
+			Qf.saveBlockLogicForEvent(activityName, h, sourceCode);
+
+		} else if (widgetId != null && !widgetId.isEmpty()) {
+			// ── 4. Widget event (onClick, onLongClick etc.) ───────────────────
+			Qf.saveBlockLogicForWidget(activityName, widgetId, sourceCode);
+
+		} else if (type != null && !type.isEmpty()) {
+			// ── 5. Typed event (component/lifecycle event string) ─────────────
+			Qf.saveBlockLogicForEvent(activityName, type, sourceCode);
+
+		} else {
+			// ── 6. Default — main initializeLogic block ───────────────────────
+			Qf.saveBlockLogic(activityName, sourceCode);
+		}
+
+		// ── 7. Debug dump + BlockStorage persist ─────────────────────────────
+		FileUtil.writeFile(
+			FileUtil.getExternalStorageDir().concat("code/code.txt"),
+			sourceCode
 		);
-		
+
+		BlockStorage.save(
+			this.g + "_" + this.h + "_" + this.activityName,
+			blocks
+		);
 	}
 	
 	private void u() {
@@ -4023,11 +4381,22 @@ var13.into(var14);*/
 	
 	public void a(int var1, int var2) {
 		this.c.a();
+		
+		if (var1 >= 9) {
+			loadCustomBlocks(var1, var2);
+			return;
+		}
+		
+		
 		switch(var1) {
 			case 0:
-			this.c(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_panel_button_add_variable), "variableAdd");
-			this.c(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_panel_button_remove_variable), "variableRemove");
-			this.k();
+			if (h.equals("Imports")) {
+				this.b(" ", "addSourceDirectly");
+			} else {
+				this.c(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_panel_button_add_variable), "variableAdd");
+				this.c(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_panel_button_remove_variable), "variableRemove");
+				this.k();
+			}
 			break;
 			case 1:
 			this.c(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_panel_button_add_list), "listAdd");
@@ -4225,7 +4594,7 @@ var13.into(var14);*/
 			this.b(" ", "doToast");
 			this.b(" ", "copyToClipboard");
 			this.b(" ", "setTitle");
-			if (ma.a(this.f).g(getJavaName(), 1)) {
+			if (ma.a(this.f).g(activityName, 1)) {
 				this.b(" ", "intentSetAction");
 				this.b(" ", "intentSetData");
 				if (ff.a(this.f) || ff.b(this.f)) {
@@ -4242,13 +4611,13 @@ var13.into(var14);*/
 				this.b("f", "finishActivity");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 2)) {
+			if (ma.a(this.f).g(activityName, 2)) {
 				this.b("s", "fileGetData");
 				this.b(" ", "fileSetData");
 				this.b(" ", "fileRemoveData");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 3)) {
+			if (ma.a(this.f).g(activityName, 3)) {
 				this.b(" ", "calendarGetNow");
 				this.b(" ", "calendarAdd");
 				this.b(" ", "calendarSet");
@@ -4258,17 +4627,17 @@ var13.into(var14);*/
 				this.b(" ", "calendarSetTime");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 4)) {
+			if (ma.a(this.f).g(activityName, 4)) {
 				this.b(" ", "vibratorAction");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 5)) {
+			if (ma.a(this.f).g(activityName, 5)) {
 				this.b("c", "timerAfter");
 				this.b("c", "timerEvery");
 				this.b(" ", "timerCancel");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 7)) {
+			if (ma.a(this.f).g(activityName, 7)) {
 				this.b(" ", "dialogSetTitle");
 				this.b(" ", "dialogSetMessage");
 				this.b("c", "dialogOkButton");
@@ -4277,7 +4646,7 @@ var13.into(var14);*/
 				this.b(" ", "dialogShow");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 8)) {
+			if (ma.a(this.f).g(activityName, 8)) {
 				this.b(" ", "mediaplayerCreate");
 				this.b(" ", "mediaplayerStart");
 				this.b(" ", "mediaplayerPause");
@@ -4291,14 +4660,14 @@ var13.into(var14);*/
 				this.b(" ", "mediaplayerRelease");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 9)) {
+			if (ma.a(this.f).g(activityName, 9)) {
 				this.b(" ", "soundpoolCreate");
 				this.b("d", "soundpoolLoad");
 				this.b("d", "soundpoolStreamPlay");
 				this.b(" ", "soundpoolStreamStop");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 10)) {
+			if (ma.a(this.f).g(activityName, 10)) {
 				this.b(" ", "objectanimatorSetTarget");
 				this.b(" ", "objectanimatorSetProperty");
 				this.b(" ", "objectanimatorSetValue");
@@ -4312,7 +4681,7 @@ var13.into(var14);*/
 				this.b("b", "objectanimatorIsRunning");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 6)) {
+			if (ma.a(this.f).g(activityName, 6)) {
 				this.b(" ", "firebaseAdd");
 				this.b(" ", "firebasePush");
 				this.b("s", "firebaseGetPushKey");
@@ -4322,7 +4691,7 @@ var13.into(var14);*/
 				this.b(" ", "firebaseStopListen");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 12)) {
+			if (ma.a(this.f).g(activityName, 12)) {
 				this.b(" ", "firebaseauthCreateUser");
 				this.b(" ", "firebaseauthSignInUser");
 				this.b(" ", "firebaseauthSignInAnonymously");
@@ -4333,38 +4702,38 @@ var13.into(var14);*/
 				this.b(" ", "firebaseauthSignOutUser");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 11)) {
+			if (ma.a(this.f).g(activityName, 11)) {
 				this.b(" ", "gyroscopeStartListen");
 				this.b(" ", "gyroscopeStopListen");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 13)) {
+			if (ma.a(this.f).g(activityName, 13)) {
 				this.b(" ", "interstitialadCreate");
 				this.b(" ", "interstitialadLoadAd");
 				this.b(" ", "interstitialadShow");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 14)) {
+			if (ma.a(this.f).g(activityName, 14)) {
 				this.b(" ", "firebasestorageUploadFile");
 				this.b(" ", "firebasestorageDownloadFile");
 				this.b(" ", "firebasestorageDelete");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 15)) {
+			if (ma.a(this.f).g(activityName, 15)) {
 				this.b(" ", "camerastarttakepicture");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 16)) {
+			if (ma.a(this.f).g(activityName, 16)) {
 				this.b(" ", "filepickerstartpickfiles");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 17)) {
+			if (ma.a(this.f).g(activityName, 17)) {
 				this.b(" ", "requestnetworkSetParams");
 				this.b(" ", "requestnetworkSetHeaders");
 				this.b(" ", "requestnetworkStartRequestNetwork");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 18)) {
+			if (ma.a(this.f).g(activityName, 18)) {
 				this.b(" ", "textToSpeechSetPitch");
 				this.b(" ", "textToSpeechSetSpeechRate");
 				this.b(" ", "textToSpeechSpeak");
@@ -4373,13 +4742,13 @@ var13.into(var14);*/
 				this.b(" ", "textToSpeechShutdown");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 19)) {
+			if (ma.a(this.f).g(activityName, 19)) {
 				this.b(" ", "speechToTextStartListening");
 				this.b(" ", "speechToTextStopListening");
 				this.b(" ", "speechToTextShutdown");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 20)) {
+			if (ma.a(this.f).g(activityName, 20)) {
 				this.b(" ", "bluetoothConnectReadyConnection");
 				this.b(" ", "bluetoothConnectReadyConnectionToUuid");
 				this.b(" ", "bluetoothConnectStartConnection");
@@ -4393,7 +4762,7 @@ var13.into(var14);*/
 				this.b("s", "bluetoothConnectGetRandomUuid");
 			}
 			
-			if (ma.a(this.f).g(getJavaName(), 21)) {
+			if (ma.a(this.f).g(activityName, 21)) {
 				this.b(" ", "locationManagerRequestLocationUpdates");
 				this.b(" ", "locationManagerRemoveUpdates");
 			}
@@ -4408,8 +4777,8 @@ var13.into(var14);*/
 	}
 	
 	protected void a(int var1, String var2) {
-		ma.a(this.f).a(this.m.getJavaName(), var1, var2);
-		BlockStorage.addVariable(this.m.getJavaName(), new VariableData(var1, var2, ""));
+		ma.a(this.f).a(this.getJavaName(), var1, var2);
+		BlockStorage.addVariable(this.getJavaName(), new VariableData(var1, var2, ""));
 		this.a(0, -1147626);
 	}
 	
@@ -4725,13 +5094,13 @@ this.startActivity(var2);*/
 	}
 	
 	protected void a(String var1, String var2) {
-		ma.a(this.f).c(this.m.getJavaName(), var1, var2);
+		ma.a(this.f).c(this.getJavaName(), var1, var2);
 		ArrayList<Pair<String, String>> list =
-		BlockStorage.loadFunctions(this.m.getJavaName());
+		BlockStorage.loadFunctions(this.getJavaName());
 		
 		list.add(new Pair<>(var1, var2));
 		
-		BlockStorage.saveFunctions(this.m.getJavaName(), list);
+		BlockStorage.saveFunctions(this.getJavaName(), list);
 		this.a(8, -7711273);
 	}
 	
@@ -4802,7 +5171,7 @@ this.startActivity(var2);*/
 	}
 	
 	protected void b(int var1, String var2) {
-		ma.a(this.f).b(this.m.getJavaName(), var1, var2);
+		ma.a(this.f).b(this.getJavaName(), var1, var2);
 		this.a(1, -3384542);
 	}
 	
@@ -4823,7 +5192,7 @@ this.startActivity(var2);*/
 	}
 	
 	protected void b(String var1) {
-		ma.a(this.f).f(this.m.getJavaName(), var1);
+		ma.a(this.f).f(this.getJavaName(), var1);
 		this.a(0, -1147626);
 	}
 	
@@ -4848,7 +5217,7 @@ this.startActivity(var2);*/
 	}
 	
 	protected void c(String var1) {
-		ma.a(this.f).g(this.m.getJavaName(), var1);
+		ma.a(this.f).g(this.getJavaName(), var1);
 		this.a(1, -3384542);
 	}
 	
@@ -4860,36 +5229,83 @@ this.startActivity(var2);*/
 		boolean var4 = var1.getMenuName().equals("varInt");
 		int var2 = 0;
 		ArrayList var5;
-		if (var4) {
+		
+		// 🔥 PEHLE CUSTOM COMPONENTS CHECK KARO
+		ComponentManager cm = ComponentManager.getInstance();
+		cm.refreshCustomComponents();
+		List<ComponentBean> customComponents = cm.getCustomComponents();
+		
+		boolean isCustomComponent = false;
+		String customComponentType = "";
+		
+		// Pehle BlockStorage se check karo - koi stored component is menuName se match karta hai?
+		ArrayList<ComponentData> storedComps = BlockStorage.loadComponents(this.activityName);
+		
+		for (int j = 0; j < storedComps.size(); j++) {
+			ComponentData data = storedComps.get(j);
+			// data.extraData = typeName (exactly as saved from component.json)
+			if (data.extraData != null && data.extraData.equals(var1.getMenuName())) {
+				isCustomComponent = true;
+				customComponentType = data.extraData;
+				break;
+			}
+		}
+		
+		// Agar direct match nahi mila, ComponentManager se bhi check karo
+		if (!isCustomComponent) {
+			List<ComponentBean> customComponents1 = cm.getCustomComponents();
+			for (int i = 0; i < customComponents1.size(); i++) {
+				ComponentBean comp = customComponents1.get(i);
+				if (comp.typeName != null && comp.typeName.equals(var1.getMenuName())) {
+					isCustomComponent = true;
+					customComponentType = comp.typeName;
+					break;
+				}
+			}
+		}
+		
+		// 🔥 CUSTOM COMPONENT HANDLING
+		if (isCustomComponent) {
+			var7.a("Select " + customComponentType);
+			var5 = new ArrayList();
+			
+			// Sirf matching type ke instances add karo
+			for (int j = 0; j < storedComps.size(); j++) {
+				ComponentData data = storedComps.get(j);
+				if (data.extraData != null && data.extraData.equals(customComponentType)) {
+					var5.add(data.mainData); // "fpP", "dk" etc instance names
+				}
+			}
+		} else if (var4) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_variable_number));
-			var5 = ma.a(this.f).a(this.m.getJavaName(), 1);
+			var5 = ma.a(this.f).a(this.getJavaName(), 1);
 		} else if (var1.getMenuName().equals("varBool")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_variable_boolean));
-			var5 = ma.a(this.f).a(this.m.getJavaName(), 0);
+			var5 = ma.a(this.f).a(this.getJavaName(), 0);
 		} else if (var1.getMenuName().equals("varStr")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_variable_string));
-			var5 = ma.a(this.f).a(this.m.getJavaName(), 2);
+			var5 = ma.a(this.f).a(this.getJavaName(), 2);
 		} else if (var1.getMenuName().equals("varMap")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_variable_map));
-			var5 = ma.a(this.f).a(this.m.getJavaName(), 3);
+			var5 = ma.a(this.f).a(this.getJavaName(), 3);
 		} else if (var1.getMenuName().equals("listInt")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_list_number));
-			var5 = ma.a(this.f).b(this.m.getJavaName(), 1);
+			var5 = ma.a(this.f).b(this.getJavaName(), 1);
 		} else if (var1.getMenuName().equals("listStr")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_list_string));
-			var5 = ma.a(this.f).b(this.m.getJavaName(), 2);
+			var5 = ma.a(this.f).b(this.getJavaName(), 2);
 		} else if (var1.getMenuName().equals("listMap")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_list_map));
-			var5 = ma.a(this.f).b(this.m.getJavaName(), 3);
+			var5 = ma.a(this.f).b(this.getJavaName(), 3);
 		} else if (var1.getMenuName().equals("list")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_list));
-			var5 = ma.a(this.f).g(this.m.getJavaName());
+			var5 = ma.a(this.f).g(this.activityName);
 		} else if (var1.getMenuName().equals("intent")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_intent));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 1);
+			var5 = ma.a(this.f).e(this.activityName, 1);
 		} else if (var1.getMenuName().equals("file")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_file));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 2);
+			var5 = ma.a(this.f).e(this.activityName, 2);
 		} else if (var1.getMenuName().equals("intentAction")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_intent_action));
 			var5 = new ArrayList(Arrays.asList(fc.a()));
@@ -4898,55 +5314,44 @@ this.startActivity(var2);*/
 			var5 = new ArrayList(Arrays.asList(fc.b()));
 		} else if (var1.getMenuName().equals("activity")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_activity));
-		/*	Iterator var10 = ma.b(this.f).a().iterator();
-			
-			while(true) {
-				var5 = var6;
-				if (!var10.hasNext()) {
-					break;
-				}
-				
-				ProjectFileBean var13 = (ProjectFileBean)var10.next();
-				var6.add(var13.getJavaName().substring(0, var13.getJavaName().indexOf(".java")));
-			}*/
-            var5 = var6;
-            List<String> activityNames = complex.getActivityNames();
+			var5 = var6;
+			List<String> activityNames = complex.getActivityNames();
 			for (String activityName : activityNames) {
-				var6.add(activityName); // activityName is already without .java extension
+				var6.add(activityName);
 			}
 		} else if (var1.getMenuName().equals("calendar")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_calendar));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 3);
+			var5 = ma.a(this.f).e(this.activityName, 3);
 		} else if (var1.getMenuName().equals("calendarField")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_calendar_field));
 			var5 = new ArrayList(Arrays.asList(fc.e));
 		} else if (var1.getMenuName().equals("vibrator")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_vibrator));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 4);
+			var5 = ma.a(this.f).e(this.activityName, 4);
 		} else if (var1.getMenuName().equals("timer")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_timer));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 5);
+			var5 = ma.a(this.f).e(this.activityName, 5);
 		} else if (var1.getMenuName().equals("firebase")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_firebase));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 6);
+			var5 = ma.a(this.f).e(this.activityName, 6);
 		} else if (var1.getMenuName().equals("firebaseauth")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_component_firebaseauth_title_select_firebase_auth));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 12);
+			var5 = ma.a(this.f).e(this.activityName, 12);
 		} else if (var1.getMenuName().equals("firebasestorage")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_firebasestorage));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 14);
+			var5 = ma.a(this.f).e(this.activityName, 14);
 		} else if (var1.getMenuName().equals("dialog")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_dialog));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 7);
+			var5 = ma.a(this.f).e(this.activityName, 7);
 		} else if (var1.getMenuName().equals("mediaplayer")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_mediaplayer));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 8);
+			var5 = ma.a(this.f).e(this.activityName, 8);
 		} else if (var1.getMenuName().equals("soundpool")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_soundpool));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 9);
+			var5 = ma.a(this.f).e(this.activityName, 9);
 		} else if (var1.getMenuName().equals("objectanimator")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_objectanimator));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 10);
+			var5 = ma.a(this.f).e(this.activityName, 10);
 		} else if (var1.getMenuName().equals("aniRepeatMode")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_animator_repeat_mode));
 			var5 = new ArrayList(Arrays.asList(fc.j));
@@ -4964,25 +5369,22 @@ this.startActivity(var2);*/
 			var5 = new ArrayList(Arrays.asList(fc.i));
 		} else if (var1.getMenuName().equals("gyroscope")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_gyroscope));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 11);
+			var5 = ma.a(this.f).e(this.activityName, 11);
 		} else if (var1.getMenuName().equals("interstitialad")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_interstitialad));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 13);
-		} else if (var1.getMenuName().equals("firebasestorage")) {
-			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_firebasestorage));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 14);
+			var5 = ma.a(this.f).e(this.activityName, 13);
 		} else if (var1.getMenuName().equals("camera")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_camera));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 15);
+			var5 = ma.a(this.f).e(this.activityName, 15);
 		} else if (var1.getMenuName().equals("filepicker")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_filepicker));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 16);
+			var5 = ma.a(this.f).e(this.activityName, 16);
 		} else if (var1.getMenuName().equals("directoryType")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_directory_type));
 			var5 = new ArrayList(Arrays.asList(fc.l));
 		} else if (var1.getMenuName().equals("requestnetwork")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_request_network));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 17);
+			var5 = ma.a(this.f).e(this.activityName, 17);
 		} else if (var1.getMenuName().equals("method")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_request_network_method));
 			var5 = new ArrayList(Arrays.asList(fc.n));
@@ -4991,16 +5393,16 @@ this.startActivity(var2);*/
 			var5 = new ArrayList(Arrays.asList(fc.o));
 		} else if (var1.getMenuName().equals("texttospeech")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_text_to_speech));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 18);
+			var5 = ma.a(this.f).e(this.activityName, 18);
 		} else if (var1.getMenuName().equals("speechtotext")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_speech_to_text));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 19);
+			var5 = ma.a(this.f).e(this.activityName, 19);
 		} else if (var1.getMenuName().equals("bluetoothconnect")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_bluetooth_connect));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 20);
+			var5 = ma.a(this.f).e(this.activityName, 20);
 		} else if (var1.getMenuName().equals("locationmanager")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_component_location_manager));
-			var5 = ma.a(this.f).e(this.m.getJavaName(), 21);
+			var5 = ma.a(this.f).e(this.activityName, 21);
 		} else if (var1.getMenuName().equals("providerType")) {
 			var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_location_manager_provider_type));
 			var5 = new ArrayList(Arrays.asList(fc.p));
@@ -5015,8 +5417,8 @@ this.startActivity(var2);*/
 			}
 		}
 		
+		// Radio buttons add karo
 		Iterator var14 = var5.iterator();
-		
 		while(var14.hasNext()) {
 			String var11 = (String)var14.next();
 			RadioButton var12 = this.e(var11);
@@ -5036,7 +5438,6 @@ this.startActivity(var2);*/
 		var7.b(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.common_word_cancel), new LogicEditorActivity$17(this, var7));
 		var7.show();
 	}
-	
 	public boolean d() {
 		int var2 = this.e.getChildCount();
 		
@@ -5055,31 +5456,93 @@ this.startActivity(var2);*/
 		View var6 = ViewHelper.a(this, com.nexusteam.blacklogics.R.layout.property_popup_selector_single);
 		ViewGroup var8 = (ViewGroup)var6.findViewById(com.nexusteam.blacklogics.R.id.rg_content);
 		new ArrayList();
-		String var5 = this.m.getXmlName();
-		String var4 = var5;
+		
+		// 🔥 1. XML name decide karo
+		String xmlName = this.activityName;
+		//    Toast.makeText(this, "Activity XML: " + xmlName, Toast.LENGTH_SHORT).show();
+		
 		if (this.h.equals("onBindCustomView")) {
-			ViewBean var9 = ma.a(this.f).e(this.m.getXmlName(), this.g);
-			var4 = var5;
-			if (var9.customView != null) {
-				var4 = ProjectFileBean.getXmlName(var9.customView);
+			
+			//Toast.makeText(this, "CustomView mode", Toast.LENGTH_SHORT).show();
+			
+			ViewBean currentView = ViewParser.getInstance().getViewBean(xmlName, this.g);
+			
+			/*    if (currentView != null) {
+Toast.makeText(this, "CurrentView found: " + currentView.id, Toast.LENGTH_SHORT).show();
+} else {
+Toast.makeText(this, "CurrentView NULL", Toast.LENGTH_SHORT).show();
+}*/			
+			
+			if (currentView != null && currentView.customView != null && currentView.customView.length() > 0) {
+				
+				xmlName = ProjectFileBean.getXmlName(currentView.customView);
+				//    Toast.makeText(this, "Custom XML: " + xmlName, Toast.LENGTH_SHORT).show();
+				
+			} else {
+				
+				//Toast.makeText(this, "Fallback method", Toast.LENGTH_SHORT).show();
+				
+				ViewBean var9 = ma.a(this.f).e(getXmlName(), this.g);
+				
+				if (var9 != null && var9.customView != null) {
+					xmlName = ProjectFileBean.getXmlName(var9.customView);
+					//    Toast.makeText(this, "Fallback XML: " + xmlName, Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 		
-		var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.logic_editor_title_select_view));
-		var5 = var1.getClassInfo().a();
-		ArrayList var10 = ma.a(this.f).c(var4, var5);
-		Iterator var11 = var10.iterator();
+		var7.a(StringResourceManager.a().a(this.getApplicationContext(),
+		com.nexusteam.blacklogics.R.string.logic_editor_title_select_view));
 		
-		while(var11.hasNext()) {
-			Pair var12 = (Pair)var11.next();
-			RadioButton var13 = this.d(ViewBean.getViewTypeName((Integer)var12.first), (String)var12.second);
+		// 🔥 2. View type
+		String viewType = var1.getClassInfo().a();
+		//Toast.makeText(this, "ViewType: " + viewType, Toast.LENGTH_SHORT).show();
+		
+		// 🔥 3. Views list
+		ArrayList<Pair<Integer, String>> viewList =
+		ViewParser.getInstance().getViewsByType(xmlName, viewType);
+		
+		if (viewList == null) {
+			//    Toast.makeText(this, "ViewParser NULL", Toast.LENGTH_SHORT).show();
+		} else {
+			//    Toast.makeText(this, "ViewParser size: " + viewList.size(), Toast.LENGTH_SHORT).show();
+		}
+		
+		// fallback
+		if (viewList == null || viewList.isEmpty()) {
+			
+			//    Toast.makeText(this, "Using fallback ma()", Toast.LENGTH_SHORT).show();
+			
+			viewList = ma.a(this.f).c(xmlName, viewType);
+			
+			if (viewList != null) {
+				//    Toast.makeText(this, "Fallback size: " + viewList.size(), Toast.LENGTH_SHORT).show();
+			}
+		}
+		
+		// 🔥 4. Radio buttons
+		Iterator var11 = viewList.iterator();
+		while (var11.hasNext()) {
+			
+			Pair var12 = (Pair) var11.next();
+			
+			//    Toast.makeText(this, "View: " + var12.second, Toast.LENGTH_SHORT).show();
+			
+			RadioButton var13 = this.d(
+			ViewBean.getViewTypeName((Integer) var12.first),
+			(String) var12.second
+			);
+			
 			var8.addView(var13);
 		}
 		
+		// 🔥 5. Selected value
 		int var3 = var8.getChildCount();
 		
-		for(int var2 = 0; var2 < var3; ++var2) {
-			RadioButton var14 = (RadioButton)var8.getChildAt(var2);
+		for (int var2 = 0; var2 < var3; ++var2) {
+			
+			RadioButton var14 = (RadioButton) var8.getChildAt(var2);
+			
 			if (var1.getArgValue().toString().equals(var14.getTag().toString())) {
 				var14.setChecked(true);
 				break;
@@ -5087,8 +5550,15 @@ this.startActivity(var2);*/
 		}
 		
 		var7.a(var6);
-		var7.a(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.common_word_select), new LogicEditorActivity$18(this, var8, var1, var7));
-		var7.b(StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.common_word_cancel), new LogicEditorActivity$19(this, var7));
+		
+		var7.a(StringResourceManager.a().a(this.getApplicationContext(),
+		com.nexusteam.blacklogics.R.string.common_word_select),
+		new LogicEditorActivity$18(this, var8, var1, var7));
+		
+		var7.b(StringResourceManager.a().a(this.getApplicationContext(),
+		com.nexusteam.blacklogics.R.string.common_word_cancel),
+		new LogicEditorActivity$19(this, var7));
+		
 		var7.show();
 	}
 	
@@ -5111,22 +5581,22 @@ this.startActivity(var2);*/
 		lu.a(this.f).c(this.h());
 		super.finish();
 	}
-    
-    private String getSourceCode() {
-        es projectSettings = new es();
-       ArrayList<BlockBean> blocks = this.e.getBlocks();
-
-if (blocks == null || blocks.isEmpty()) {
-    return "// No blocks found";
-}
-
-hb generator = new hb(this.h, projectSettings, activityName, blocks);
-
-String javaCode = generator.a();
-
-return javaCode;
-
-    }
+	
+	private String getSourceCode() {
+		es projectSettings = new es();
+		ArrayList<BlockBean> blocks = this.e.getBlocks();
+		
+		if (blocks == null || blocks.isEmpty()) {
+			return "";
+		}
+		
+		hb generator = new hb(this.h, projectSettings, activityName, blocks);
+		
+		String javaCode = generator.a();
+		
+		return javaCode;
+		
+	}
 	
 	protected void onActivityResult(int var1, int var2, Intent var3) {
 		super.onActivityResult(var1, var2, var3);
@@ -5179,14 +5649,16 @@ return javaCode;
 						var3 = new Intent(this.getApplicationContext(), MakeBlockActivity.class);
 						var3.putExtra("sc_id", this.f);
 						var3.putExtra("project_file", this.m);
-						var3.setFlags(536870912);						
-						this.startActivityForResult(var3, 222);					
+						var3.putExtra("activityName", this.activityName);
+						var3.setFlags(536870912);                        
+						this.startActivityForResult(var3, 222);                    
 					} else if (var1.getTag().equals("componentAdd")) {
 						var3 = new Intent(this.getApplicationContext(), ComponentAddActivity.class);
 						var3.putExtra("sc_id", this.f);
 						var3.putExtra("project_file", this.m);
-						var3.putExtra("filename", this.m.getJavaName());
-						this.startActivityForResult(var3, 224);						
+						var3.putExtra("filename", this.getJavaName());
+						var3.putExtra("activityName", this.activityName);
+						this.startActivityForResult(var3, 224);                        
 					} else if (var1.getTag().equals("blockImport")) {
 						this.D();
 					} else if (var1.getTag().equals("sharedMoreBlock")) {
@@ -5224,23 +5696,18 @@ this.startActivityForResult(var3, 464);*/
 			this.finish();
 		}
 		
-		if (var1 == null) {
-			this.f = this.getIntent().getStringExtra("sc_id");
-			this.g = this.getIntent().getStringExtra("id");
-			this.h = this.getIntent().getStringExtra("event");
-			this.m = (ProjectFileBean)this.getIntent().getParcelableExtra("project_file");
-		} else {
-			this.f = var1.getString("sc_id");
-			this.g = var1.getString("id");
-			this.h = var1.getString("event");
-			this.m = (ProjectFileBean)var1.getParcelable("project_file");
-		}
-        
-        complex = new Complex();
-        complex.setId(this.f);
-        
-        String projectDataDir = com.nexusteam.internal.fe.d(this.f);
-        Qf.setPath(projectDataDir);
+		readExtras(var1);
+		
+		complex = new Complex();
+		complex.setId(this.f);
+		
+		ViewParser.getInstance().init(this.f, this.activityName);
+		
+		// 2. Load data - सब हो जाएगा
+		ArrayList<ViewBean> beans = ViewParser.getInstance().loadBeanData();
+		
+		String projectDataDir = com.nexusteam.internal.fe.d(this.f);
+		Qf.setPath(projectDataDir);
 		
 		if (getIntent().hasExtra("type")) {
 			this.type = getIntent().getStringExtra("type");
@@ -5248,10 +5715,6 @@ this.startActivityForResult(var3, 464);*/
 		
 		if (getIntent().hasExtra("widgetid")) {
 			this.widgetId = getIntent().getStringExtra("widgetid");
-		}
-        
-        if (getIntent().hasExtra("activityName")) {
-			this.activityName = getIntent().getStringExtra("activityName");
 		}
 		
 		BlockStorage.setScId(this.f);
@@ -5332,87 +5795,168 @@ this.startActivityForResult(var3, 464);*/
 	
 	private void loadFunctionsIntoMemory() {
 		Object[] o = BlockStorage.readAll();
+		
 		HashMap<String, ArrayList<Pair<String, String>>> functions =
 		(HashMap<String, ArrayList<Pair<String, String>>>) o[1];
 		
 		ArrayList<Pair<String, String>> list =
-		functions.get(this.m.getJavaName());
+		functions.get(this.getJavaName());
 		
 		if (list != null) {
+			
+			HashSet<String> added = new HashSet<>();
+			
 			for (Pair<String, String> p : list) {
-				ma.a(this.f).c(this.m.getJavaName(), p.first, p.second);
+				
+				String key = p.first + "_" + p.second;
+				
+				if (added.contains(key)) continue;
+				
+				added.add(key);
+				
+				ma.a(this.f).c(this.getJavaName(), p.first, p.second);
 			}
+			
 		}
 	}
 	
-	private void loadComponenetsIntoMemory() {
-	    // 1. Read all data from disk
-Object[] allData = BlockStorage.readAll();
-// 4. Components
-HashMap<String, ComponentData> components = (HashMap<String, ComponentData>) allData[2];
-
-// 5. Populate runtime cache (ma) for components
-for (String activityName : components.keySet()) {
-    ComponentData data = components.get(activityName);
-    // this.m = project ID, activityName = activity key
-    ma.a(this.f).a(activityName, data.type, data.mainData, data.extraData);
-}
-
-}
-
-private void saveAllVariablesToStorage() {
-    lw runtimeCache = ma.a(this.f);
-    ArrayList<VariableData> variables = new ArrayList<VariableData>();
-    
-    // Get all variables (primitives) from this.d HashMap using e() method
-    ArrayList<Pair<Integer, String>> allVars = runtimeCache.e(this.m.getJavaName());
-    for (int i = 0; i < allVars.size(); i++) {
-        Pair<Integer, String> p = allVars.get(i);
-        int type = p.first; // 0=boolean, 1=int, 2=string, 3=map
-        String name = p.second;
-        variables.add(new VariableData(type, name, ""));
-    }
-    
-    // Get all list variables from this.e HashMap using f() method
-    ArrayList<Pair<Integer, String>> allLists = runtimeCache.f(this.m.getJavaName());
-    for (int i = 0; i < allLists.size(); i++) {
-        Pair<Integer, String> p = allLists.get(i);
-        int listType = p.first; // 1=listInt, 2=listStr, 3=listMap
-        // Convert to our storage types: 4=listInt, 5=listStr, 6=listMap
-        int storageType = listType + 3;
-        String name = p.second;
-        variables.add(new VariableData(storageType, name, ""));
-    }
-    
-    BlockStorage.saveVariables(this.m.getJavaName(), variables);
-}
-
-// Method to load variables from storage to runtime
-private void loadVariablesIntoMemory() {
-    Object[] o = BlockStorage.readAll();
-    HashMap<String, ArrayList<VariableData>> variables = 
-        (HashMap<String, ArrayList<VariableData>>) o[3];
-    
-    ArrayList<VariableData> list = variables.get(this.m.getJavaName());
-    
-    if (list != null) {
-        for (int i = 0; i < list.size(); i++) {
-            VariableData v = list.get(i);
-            
-            if (v.type <= 3) { // Primitive variable (0-3)
-                // Add to runtime using a() method
-               // runtimeCache.a(this.m.getJavaName(), v.type, v.name);
-                ma.a(this.f).a(this.m.getJavaName(), v.type, v.name);
-            } else { // List variable (4-6)
-                // Convert back: 4->1, 5->2, 6->3
-                int listType = v.type - 3;
-                // Add to runtime using b() method for lists
-              //  runtimeCache.b(this.m.getJavaName(), listType, v.name);
-                ma.a(this.f).a(this.m.getJavaName(), listType, v.name);
-            }
-        }
-    }
-}
+	private void readExtras(Bundle var1) {
+		
+		Intent intent = getIntent();
+		Bundle bundle = var1;
+		
+		if (bundle == null && intent != null) {
+			bundle = intent.getExtras();
+		}
+		
+		if (bundle == null) {
+			// last fallback – sab null safe
+			f = null;
+			g = null;
+			h = null;
+			m = null;
+			return;
+		}
+		
+		f = bundle.getString("sc_id", null);
+		g = bundle.getString("id", null);
+		h = bundle.getString("event", null);
+		
+		if (getIntent().hasExtra("activityName")) {
+			this.activityName = getIntent().getStringExtra("activityName");
+		}
+		
+		try {
+			m = bundle.getParcelable("project_file");
+		} catch (Exception e) {
+			m = null;
+		}
+	}
+	
+	private void loadComponenetsIntoMemory() { 
+		
+		Object[] allData = BlockStorage.readAll();
+		
+		HashMap<String, ArrayList<ComponentData>> components =
+		(HashMap<String, ArrayList<ComponentData>>) allData[2];
+		
+		for (String activityName : components.keySet()) {
+			
+			ArrayList<ComponentData> list = components.get(activityName);
+			
+			if (list == null) continue;
+			
+			HashSet<String> added = new HashSet<>();
+			
+			for (int i = 0; i < list.size(); i++) {
+				
+				ComponentData data = list.get(i);
+				
+				String key = data.type + "_" + data.mainData + "_" + data.extraData;
+				
+				if (added.contains(key)) continue;
+				
+				added.add(key);
+				
+				ma.a(this.f).a(
+				activityName,
+				data.type,
+				data.mainData,
+				data.extraData
+				);
+				
+			}
+			
+		}
+	}
+	
+	private void saveAllVariablesToStorage() {
+		lw runtimeCache = ma.a(this.f);
+		ArrayList<VariableData> variables = new ArrayList<VariableData>();
+		
+		
+		ArrayList<Pair<Integer, String>> allVars = runtimeCache.e(this.getJavaName());
+		for (int i = 0; i < allVars.size(); i++) {
+			Pair<Integer, String> p = allVars.get(i);
+			int type = p.first; // 0=boolean, 1=int, 2=string, 3=map
+			String name = p.second;
+			variables.add(new VariableData(type, name, ""));
+		}
+		
+		
+		ArrayList<Pair<Integer, String>> allLists = runtimeCache.f(this.getJavaName());
+		for (int i = 0; i < allLists.size(); i++) {
+			Pair<Integer, String> p = allLists.get(i);
+			int listType = p.first; // 1=listInt, 2=listStr, 3=listMap
+			
+			int storageType = listType + 3;
+			String name = p.second;
+			variables.add(new VariableData(storageType, name, ""));
+		}
+		
+		BlockStorage.saveVariables(this.getJavaName(), variables);
+	}
+	
+	
+	private void loadVariablesIntoMemory() {
+		
+		Object[] o = BlockStorage.readAll();
+		
+		HashMap<String, ArrayList<VariableData>> variables =
+		(HashMap<String, ArrayList<VariableData>>) o[3];
+		
+		ArrayList<VariableData> list = variables.get(this.getJavaName());
+		
+		if (list != null) {
+			
+			HashSet<String> added = new HashSet<>();
+			
+			for (int i = 0; i < list.size(); i++) {
+				
+				VariableData v = list.get(i);
+				
+				String key = v.type + "_" + v.name;
+				
+				if (added.contains(key)) continue;
+				
+				added.add(key);
+				
+				if (v.type <= 3) {
+					
+					ma.a(this.f).a(this.getJavaName(), v.type, v.name);
+					
+				} else {
+					
+					int listType = v.type - 3;
+					
+					ma.a(this.f).a(this.getJavaName(), listType, v.name);
+					
+				}
+				
+			}
+			
+		}
+	}
 	public void onDestroy() {
 		super.onDestroy();
 	}
@@ -5438,18 +5982,32 @@ private void loadVariablesIntoMemory() {
 	protected void onPostCreate(@Nullable Bundle var1) {
 		super.onPostCreate(var1);
 		String var8;
-		if (this.h.equals("moreBlock")) {
-			var8 = ma.a(this.f).i(this.m.getJavaName(), this.g);
-			String var5 = StringResourceManager.a().a(this.getApplicationContext(), com.nexusteam.blacklogics.R.string.root_spec_common_define);
-			StringBuilder var6 = new StringBuilder();
-			var6.append(var5);
-			var6.append(" ");
-			var6.append(var8);
-			this.i = var6.toString();
-		} else if (this.g.equals("_fab")) {
-			this.i = StringResourceManager.a().a(this.getApplicationContext(), "fab", this.h);
+		String safeH = (this.h != null) ? this.h : "";
+		String safeG = (this.g != null) ? this.g : "";
+		
+		ComponentManager.getInstance().refreshCustomComponents();
+		loadFunctionsIntoMemory();
+		loadComponenetsIntoMemory();
+		loadVariablesIntoMemory();
+		
+		if (safeH.equals("moreBlock")) {
+		    var8 = ma.a(this.f).i(this.getJavaName(), safeG);
+			String var5 = StringResourceManager.a()
+			.a(this.getApplicationContext(),
+			com.nexusteam.blacklogics.R.string.root_spec_common_define);
+			this.i = var5 + " " + var8;
+		} else if (safeG.equals("_fab")) {
+			this.i = StringResourceManager.a().a(this.getApplicationContext(), "fab", safeH);
 		} else {
-			this.i = StringResourceManager.a().a(this.getApplicationContext(), this.g, this.h);
+			this.i = StringResourceManager.a().a(this.getApplicationContext(), safeG, safeH);
+		}
+		
+		// If i is null or empty, set fallback
+		if (this.i == null || this.i.isEmpty()) {
+			String fallback = StringResourceManager.a()
+			.a(this.getApplicationContext(),
+			com.nexusteam.blacklogics.R.string.root_spec_common_define);
+			this.i = fallback + " " + safeG + " " + safeH;
 		}
 		
 		this.e.a(this.i, this.h);
@@ -5497,26 +6055,37 @@ private void loadVariablesIntoMemory() {
 		this.e.getRoot().b();
 		this.a(this.getResources().getConfiguration().orientation);
 		this.a(0, -1147626);
-		// ===== REAL LOAD FROM FILE =====
-		ArrayList<BlockBean> saved =
-		BlockStorage.load(
+		
+		
+		ArrayList<BlockBean> saved = BlockStorage.load(
 		this.g + "_" + this.h + "_" + this.activityName
 		);
 		
 		if (saved != null && !saved.isEmpty()) {
 			lw cache = ma.a(this.f);
 			cache.a(
-			this.m.getJavaName(),
+			this.getJavaName(),
 			this.g + "_" + this.h,
 			saved
 			);
+			
+			// ✅ CUSTOM BLOCKS RESTORE KARO
+			/*  for (BlockBean bean : saved) {
+if (bean.isCustomBlock) {
+fm block = this.e.c(bean.id);
+if (block != null) {
+block.z = bean.color;  // Color restore
+block.isCustomBlock = true;
+block.originalId = bean.originalId;
+block.setSpec(bean.spec);  // Spec restore
+}
+}
+}*/			
 		}
 		
-		this.s();
+		this.s();  // Blocks create honge
+		
 		this.y();
-		loadFunctionsIntoMemory();
-		loadComponenetsIntoMemory();
-		loadVariablesIntoMemory();
 	}
 	
 	public void onResume() {
@@ -5525,8 +6094,8 @@ private void loadVariablesIntoMemory() {
 			this.finish();
 		}
 		
-		// this.J.setScreenName(this.getClass().getSimpleName().toString());
-		//this.J.send((new ScreenViewBuilder()).build());
+		
+		
 	}
 	
 	protected void onSaveInstanceState(Bundle var1) {
@@ -5537,7 +6106,7 @@ private void loadVariablesIntoMemory() {
 		super.onSaveInstanceState(var1);
 		ArrayList var3 = this.e.getBlocks();
 		lw var2 = ma.a(this.f);
-		String var4 = this.m.getJavaName();
+		String var4 = this.getJavaName();
 		StringBuilder var5 = new StringBuilder();
 		var5.append(this.g);
 		var5.append("_");
@@ -5564,6 +6133,7 @@ private void loadVariablesIntoMemory() {
 			this.t = motionEvent.getRawX();
 			this.u = motionEvent.getRawY();
 			this.p = view2;
+			Log.d("BLOCK_TOUCH", "ACTION_DOWN block=" + view2);
 			return true;
 		}
 		BlockBean blockBean3 = null;
@@ -5623,6 +6193,7 @@ eventBuilder.setCategory("editor");
 eventBuilder.setAction("block");
 eventBuilder.setLabel("Block drop");
 this.J.send(eventBuilder.build());*/			
+			Log.d("BLOCK_TOUCH", "ACTION_UP drop detected");
 			this.p = null;
 			this.U.removeCallbacks(this.V);
 			if (!this.x) {
@@ -5808,16 +6379,20 @@ this.J.send(eventBuilder.build());*/
 					int addTargetId2 = this.e.getAddTargetId();
 					BlockBean clone4 = addTargetId2 >= 0 ? this.e.a(addTargetId2).getBean().clone() : null;
 					ArrayList<BlockBean> a5 = a(((fp) view2).getData(), this.y[0], this.y[1], true);
+					Log.d("BLOCK_TOUCH", "Generated beans size=" + a5.size());
 					if (a5.size() > 0) {
+						Log.d("BLOCK_TOUCH", "Block list empty!");
 						a(this.e.c(a5.get(0).id), this.y[0], this.y[1], true);
 						if (addTargetId2 >= 0) {
 							blockBean3 = this.e.a(addTargetId2).getBean().clone();
 						}
 						int[] iArr6 = new int[2];
 						this.e.getLocationOnScreen(iArr6);
+						Log.d("BLOCK_TOUCH", "Adding block to workspace");
 						lu.a(this.f).a(h(), a5, this.y[0] - iArr6[0], this.y[1] - iArr6[1], clone4, blockBean3);
 						a();
 					}
+					Log.d("BLOCK_TOUCH", "CUSTOM BLOCK DROP type2 detected");
 				} else {
 					this.e.a(fmVar7, 0);
 					int intValue2 = Integer.valueOf(fmVar7.getBean().id).intValue();
@@ -5991,16 +6566,116 @@ this.J.send(eventBuilder.build());*/
 		}
 	}
 	
-	// Helper method bana lo ek baar
-private String getJavaName() {
-/*    if (m != null) {
-        return m.getJavaName();  // "MainActivity.java"
-    }*/
-    if (activityName != null) {
-        return activityName.endsWith(".java") ? activityName : activityName + ".java";
-    }
-    return null;
-}
+	
+	public String getJavaName() {
+		/*    if (m != null) {
+return getJavaName();  // "MainActivity.java"
+}*/		
+		if (activityName != null) {
+			return activityName.endsWith(".java") ? activityName : activityName + ".java";
+		}
+		return null;
+	}
+	
+	public String getXmlName() {
+		if (activityName == null) return null;
+		
+		// Remove .java if present
+		String name = activityName.replace(".java", "");
+		
+		// Convert CamelCase to snake_case
+		StringBuilder xmlName = new StringBuilder();
+		
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			
+			if (Character.isUpperCase(c)) {
+				if (i != 0) {
+					xmlName.append("_");
+				}
+				xmlName.append(Character.toLowerCase(c));
+			} else {
+				xmlName.append(c);
+			}
+		}
+		
+		return xmlName.toString() + ".xml";
+	}
+	
+	private void loadCustomBlocks(int paletteIndex, int defaultColor) {
+		try {
+			Log.d("CUSTOM_BLOCK", "Loading custom blocks...");
+			
+			BufferedReader br = new BufferedReader(new FileReader(BLOCK_PATH));
+			StringBuilder sb = new StringBuilder();
+			String line;
+			
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+			br.close();
+			
+			JSONArray arr = new JSONArray(sb.toString());
+			Log.d("CUSTOM_BLOCK", "Total blocks in JSON = " + arr.length());
+			
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject obj = arr.getJSONObject(i);
+				
+				String code = obj.getString("code");
+				String type = obj.getString("type");
+				String spec = obj.getString("spec");
+				String name = obj.getString("name");
+				int palette = obj.getInt("palette");
+				
+				Log.d("CUSTOM_BLOCK", "Block Found → name=" + name + " spec=" + spec);
+				
+				int color = defaultColor;
+				if (obj.has("color")) {
+					String c = obj.getString("color");
+					if (c.startsWith("#"))
+					color = Color.parseColor(c);
+					else
+					color = Integer.parseInt(c);
+				}
+				
+				if (palette == paletteIndex) {
+					Log.d("CUSTOM_BLOCK", "Palette matched → creating block");
+					
+					// Use PaletteBlock's a() method to create block
+					fm block = (fm) this.c.a(spec, type, code);
+					
+					// Set all important fields
+					block.setSpec(spec);
+					block.z = color;
+					block.w = type;
+					block.b = code;
+					
+					// CRITICAL: Use NEGATIVE ID to identify custom blocks
+					// This will be used in fq.c() to preserve data
+					int uniqueId = -2000 - i;  // Negative IDs for palette blocks
+					block.setTag(uniqueId);
+					
+					block.setClickable(true);
+					block.setOnTouchListener(this);
+					
+					block.setBlockType(1);  // Palette block
+					
+					// Force refresh to create parameter blocks
+					block.b();  // This calls fm.b() which positions all children
+					
+					Log.d("CUSTOM_BLOCK", "Block created successfully → id=" + uniqueId + 
+					" opcode=" + block.b + " type=" + block.w + " spec=" + block.a +
+					" color=" + block.z);
+				}
+			}
+			
+			Log.d("CUSTOM_BLOCK", "Custom block loading finished");
+			
+		} catch (Exception e) {
+			Log.e("CUSTOM_BLOCK", "ERROR = " + e.toString());
+		}
+	}
+	
 	
 	class b extends jq {
 		final LogicEditorActivity a;

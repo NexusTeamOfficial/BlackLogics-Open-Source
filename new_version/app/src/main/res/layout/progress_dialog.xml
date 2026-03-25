@@ -1,0 +1,28 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp">
+	<TextView
+		android:id="@+id/textview6"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Progress"
+		android:textSize="12sp"
+		android:textStyle="bold"
+		android:textColor="#000000" />
+	<EditText
+		android:id="@+id/progress_input"
+		android:focusable="false"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="12sp"
+		android:textColor="#000000"
+		android:hint="Enter progress (e.g., 50)"
+		android:textColorHint="#607D8B"
+		android:inputType="number" />
+</LinearLayout>

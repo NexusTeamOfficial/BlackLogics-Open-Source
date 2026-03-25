@@ -81,7 +81,7 @@ public class DragListener implements View.OnDragListener {
                         newView.setMinimumHeight((int) SketchwareUtil.getDip(context, 30));
                         newView.setMinimumWidth((int) SketchwareUtil.getDip(context, 30));
                         
-                        viewEditor._rearrangeListener(newView);
+                      //  viewEditor._rearrangeListener(newView);
                         newView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

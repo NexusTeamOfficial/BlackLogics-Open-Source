@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
-	android:background="#F9FAFB">
+	android:background="?attr/colorSurface">
 	<ScrollView
 		android:id="@+id/vscroll"
 		android:layout_width="match_parent"
@@ -33,8 +33,7 @@
 				android:layout_height="wrap_content"
 				android:paddingBottom="16dp"
 				android:text="@string/app_export_path_desc"
-				android:textSize="14sp"
-				android:textColor="#607D8B" />
+				android:textSize="14sp" />
 			<TextView
 				android:id="@+id/textview5"
 				android:layout_width="wrap_content"
@@ -48,7 +47,9 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="12dp"
-				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+				app:boxStrokeColor="?attr/colorPrimary"
+				app:hintTextColor="?attr/colorPrimary">
 				<EditText
 					android:id="@+id/edittext_name"
 					android:layout_width="match_parent"
@@ -62,7 +63,9 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="12dp"
 				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-				app:passwordToggleEnabled="true">
+				app:passwordToggleEnabled="true"
+				app:boxStrokeColor="?attr/colorPrimary"
+				app:hintTextColor="?attr/colorPrimary">
 				<EditText
 					android:id="@+id/edittext_password"
 					android:layout_width="match_parent"
@@ -76,7 +79,9 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="12dp"
-				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+				app:boxStrokeColor="?attr/colorPrimary"
+				app:hintTextColor="?attr/colorPrimary">
 				<EditText
 					android:id="@+id/edittext_alias"
 					android:layout_width="match_parent"
@@ -89,7 +94,9 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="20dp"
-				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+				app:boxStrokeColor="?attr/colorPrimary"
+				app:hintTextColor="?attr/colorPrimary">
 				<EditText
 					android:id="@+id/edittext_validity"
 					android:layout_width="match_parent"
@@ -118,8 +125,10 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
+					android:layout_marginEnd="8dp"
 					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-					android:layout_marginEnd="8dp">
+					app:boxStrokeColor="?attr/colorPrimary"
+					app:hintTextColor="?attr/colorPrimary">
 					<EditText
 						android:id="@+id/edittext_org"
 						android:layout_width="match_parent"
@@ -132,8 +141,10 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
+					android:layout_marginStart="8dp"
 					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-					android:layout_marginStart="8dp">
+					app:boxStrokeColor="?attr/colorPrimary"
+					app:hintTextColor="?attr/colorPrimary">
 					<EditText
 						android:id="@+id/edittext_orgunit"
 						android:layout_width="match_parent"
@@ -154,8 +165,10 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
+					android:layout_marginEnd="8dp"
 					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-					android:layout_marginEnd="8dp">
+					app:boxStrokeColor="?attr/colorPrimary"
+					app:hintTextColor="?attr/colorPrimary">
 					<EditText
 						android:id="@+id/edittext_city"
 						android:layout_width="match_parent"
@@ -168,8 +181,10 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
+					android:layout_marginStart="8dp"
 					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-					android:layout_marginStart="8dp">
+					app:boxStrokeColor="?attr/colorPrimary"
+					app:hintTextColor="?attr/colorPrimary">
 					<EditText
 						android:id="@+id/edittext_state"
 						android:layout_width="match_parent"
@@ -182,7 +197,9 @@
 				android:id="@+id/textinputlayout27"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+				style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+				app:boxStrokeColor="?attr/colorPrimary"
+				app:hintTextColor="?attr/colorPrimary">
 				<EditText
 					android:id="@+id/edittext_country"
 					android:layout_width="match_parent"
@@ -192,6 +209,12 @@
 					android:inputType="textCapCharacters"
 					android:maxLength="2" />
 			</com.google.android.material.textfield.TextInputLayout>
+			<com.nexusteam.blacklogics.widget.AdLayout
+				android:id="@+id/adLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				app:bannerAdUnitId="ca-app-pub-2903137488772866/3754424748"
+				app:interstitialAdUnitId="ca-app-pub-2903137488772866/3754424748" />
 		</LinearLayout>
 	</ScrollView>
 	<LinearLayout
@@ -199,6 +222,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:padding="12dp"
+		android:background="?attr/colorSurface"
 		android:orientation="horizontal"
 		android:gravity="end">
 		<com.google.android.material.button.MaterialButton
@@ -207,7 +231,8 @@
 			android:layout_height="wrap_content"
 			android:text="@string/cancel"
 			android:textSize="12sp"
-			style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+			style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+			app:strokeColor="?attr/colorPrimary" />
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/create"
 			android:layout_width="wrap_content"
@@ -215,6 +240,7 @@
 			android:text="@string/common_word_create"
 			android:textSize="12sp"
 			android:layout_marginStart="12dp"
-			style="@style/Widget.MaterialComponents.Button" />
+			style="@style/Widget.MaterialComponents.Button"
+			app:backgroundTint="?attr/colorPrimary" />
 	</LinearLayout>
 </LinearLayout>

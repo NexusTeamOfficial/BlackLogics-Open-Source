@@ -11,6 +11,7 @@ import android.net.*;
 import android.os.*;
 import android.text.*;
 import android.text.style.*;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
@@ -153,7 +154,13 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
             @Override
             public void onClick(View _view) {
                 if (saveView()) {
-                    showMessage("XML saved successfully!");
+                    // Save hone ke baad ViewEditor canvas ko turant update karo
+                    String xml = editor.getText().toString().trim();
+                    Intent broadcastIntent = new Intent(ViewEditor.ACTION_XML_SYNC);
+                    broadcastIntent.putExtra(ViewEditor.EXTRA_XML, xml);
+                    LocalBroadcastManager.getInstance(ViewCodeEditorActivity.this)
+                        .sendBroadcast(broadcastIntent);
+                    showMessage("Saved & canvas updated!");
                 }
             }
         });

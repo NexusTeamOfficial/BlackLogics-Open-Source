@@ -272,5 +272,55 @@
       "member_name": "setFillViewport",
       "argument_type": "boolean"
     }
+  ],
+  "android.widget.ListView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this ListView adapter item layout"
+    }
+  ],
+  "android.widget.GridView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this GridView adapter item layout"
+    }
+  ],
+  "android.widget.ExpandableListView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this ExpandableListView item layout"
+    }
+  ],
+  "android.widget.Spinner": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this Spinner item layout"
+    }
+  ],
+  "androidx.recyclerview.widget.RecyclerView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this RecyclerView item layout"
+    }
   ]
 }

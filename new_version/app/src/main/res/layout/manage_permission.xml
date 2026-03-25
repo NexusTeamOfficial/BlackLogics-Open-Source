@@ -1,0 +1,40 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<include layout="@layout/toolbar_improved" />
+	<RelativeLayout
+		android:id="@+id/relativelayout2"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<LinearLayout
+			android:id="@+id/managepermissionLinearLayout1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:padding="10.0dip">
+			<SearchView
+				android:id="@+id/search_perm"
+				android:focusable="false"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear4"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_below="@id/managepermissionLinearLayout1">
+			<ListView
+				android:id="@+id/main_content"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:choiceMode="none"
+				android:dividerHeight="2.0dip"
+				android:divider="#ffa8a8a8" />
+		</LinearLayout>
+	</RelativeLayout>
+</LinearLayout>

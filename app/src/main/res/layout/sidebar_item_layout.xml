@@ -14,6 +14,7 @@
 		android:layout_height="24dp"
 		android:scaleType="fitCenter"
 		android:src="@android:drawable/ic_menu_info_details"
+		android:tint="?attr/colorPrimary"
 		android:focusable="false" />
 	<TextView
 		android:id="@+id/sidebar_item_title"
@@ -22,6 +23,6 @@
 		android:layout_marginTop="4dp"
 		android:text="@string/sidebar_item_title"
 		android:textSize="12sp"
-		android:textColor="@android:color/black"
+		android:fontFamily="@font/roboto_regular"
 		android:focusable="false" />
 </LinearLayout>

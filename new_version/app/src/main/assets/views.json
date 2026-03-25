@@ -1,0 +1,257 @@
+[
+  // ========== LAYOUTS ==========
+  {
+    "name": "LinearLayout",
+    "class_path": "android.widget.LinearLayout",
+    "icon": "widget_linear_horizontal"
+  },
+  {
+    "name": "RelativeLayout", 
+    "class_path": "android.widget.RelativeLayout",
+    "icon": "relativelayout"
+  },
+  {
+    "name": "FrameLayout",
+    "class_path": "android.widget.FrameLayout",
+    "icon": "widget_frame_layout"
+  },
+  {
+    "name": "GridLayout",
+    "class_path": "android.widget.GridLayout",
+    "icon": "default_image"
+  },
+  {
+    "name": "TableLayout",
+    "class_path": "android.widget.TableLayout",
+    "icon": "default_image"
+  },
+  {
+    "name": "ConstraintLayout",
+    "class_path": "androidx.constraintlayout.widget.ConstraintLayout",
+    "icon": "default_image"
+  },
+  {
+    "name": "MotionLayout",
+    "class_path": "androidx.constraintlayout.motion.widget.MotionLayout",
+    "icon": "icon_auto_awesome_motion_round"
+  },
+  {
+    "name": "CoordinatorLayout",
+    "class_path": "androidx.coordinatorlayout.widget.CoordinatorLayout",
+    "icon": "default_image"
+  },
+ 
+
+  // ========== BASIC WIDGETS ==========
+  {
+    "name": "TextView",
+    "class_path": "android.widget.TextView",
+    "icon": "widget_text_view",
+    "initial_attributes": {
+      "android:text": "TextView"
+    }
+  },
+  {
+    "name": "Button",
+    "class_path": "android.widget.Button",
+    "icon": "widget_button",
+    "initial_attributes": {
+      "android:text": "Button"
+    }
+  },
+  {
+    "name": "EditText",
+    "class_path": "android.widget.EditText",
+    "icon": "widget_edit_text",
+    "initial_attributes": {
+      "android:hint": "Enter text"
+    }
+  },
+  {
+    "name": "ImageView",
+    "class_path": "android.widget.ImageView",
+    "icon": "widget_image_view",
+    "initial_attributes": {
+      "android:src": "@drawable/default_image"
+    }
+  },
+  {
+    "name": "ImageButton",
+    "class_path": "android.widget.ImageButton",
+    "icon": "widget_image_view"
+  },
+  {
+    "name": "CheckBox",
+    "class_path": "android.widget.CheckBox",
+    "icon": "widget_check_box",
+    "initial_attributes": {
+      "android:text": "CheckBox"
+    }
+  },
+  {
+    "name": "RadioButton",
+    "class_path": "android.widget.RadioButton",
+    "icon": "widget_radio_button",
+    "initial_attributes": {
+      "android:text": "RadioButton"
+    }
+  },
+  {
+    "name": "ToggleButton",
+    "class_path": "android.widget.ToggleButton",
+    "icon": "widget_button"
+  },
+  {
+    "name": "Switch",
+    "class_path": "android.widget.Switch",
+    "icon": "widget_switch",
+    "initial_attributes": {
+      "android:text": "Switch"
+    }
+  },
+  {
+    "name": "SeekBar",
+    "class_path": "android.widget.SeekBar",
+    "icon": "widget_seek_bar"
+  },
+  {
+    "name": "ProgressBar",
+    "class_path": "android.widget.ProgressBar",
+    "icon": "widget_progress_bar"
+  },
+  {
+    "name": "RatingBar",
+    "class_path": "android.widget.RatingBar",
+    "icon": "star_blank"
+  },
+  {
+    "name": "Spinner",
+    "class_path": "android.widget.Spinner",
+    "icon": "icon_format_list_bulleted_round"
+  },
+  {
+    "name": "WebView",
+    "class_path": "android.webkit.WebView",
+    "icon": "widget_web_view"
+  },
+  {
+    "name": "VideoView",
+    "class_path": "android.widget.VideoView",
+    "icon": "widget_video_view"
+  },
+
+  // ========== SCROLLING VIEWS ==========
+  {
+    "name": "ScrollView",
+    "class_path": "android.widget.ScrollView",
+    "icon": "widget_scrollview"
+  },
+  {
+    "name": "HorizontalScrollView",
+    "class_path": "android.widget.HorizontalScrollView",
+    "icon": "widget_horizontalscrollview"
+  },
+  {
+    "name": "NestedScrollView",
+    "class_path": "androidx.core.widget.NestedScrollView",
+    "icon": "widget_scrollview"
+  },
+
+  // ========== ANDROIDX COMPONENTS ==========
+  {
+    "name": "RecyclerView",
+    "class_path": "androidx.recyclerview.widget.RecyclerView",
+    "icon": "icon_view_list_round"
+  },
+  {
+    "name": "ViewPager",
+    "class_path": "androidx.viewpager.widget.ViewPager",
+    "icon": "widget_view_pager"
+  },
+  {
+    "name": "ViewPager2",
+    "class_path": "androidx.viewpager2.widget.ViewPager2",
+    "icon": "widget_view_pager"
+  },
+  {
+    "name": "CardView",
+    "class_path": "androidx.cardview.widget.CardView",
+    "icon": "icon_border_style_round"
+  },
+  {
+    "name": "CollapsingToolbarLayout",
+    "class_path": "com.google.android.material.appbar.CollapsingToolbarLayout",
+    "icon": "default_image"
+  },
+
+  // ========== MATERIAL COMPONENTS ==========
+  {
+    "name": "MaterialButton",
+    "class_path": "com.google.android.material.button.MaterialButton",
+    "icon": "widget_button",
+    "initial_attributes": {
+      "android:text": "Material Button"
+    }
+  },
+  {
+    "name": "TextInputLayout",
+    "class_path": "com.google.android.material.textfield.TextInputLayout",
+    "icon": "default_image",
+    "initial_attributes": {
+      "hint": "TextInputLayout"
+    }
+  },
+  {
+    "name": "BottomNavigationView",
+    "class_path": "com.google.android.material.bottomnavigation.BottomNavigationView",
+    "icon": "default_image"
+  },
+  {
+    "name": "NavigationView",
+    "class_path": "com.google.android.material.navigation.NavigationView",
+    "icon": "default_image"
+  },
+  {
+    "name": "TabLayout",
+    "class_path": "com.google.android.material.tabs.TabLayout",
+    "icon": "icon_tab_round"
+  },
+  {
+    "name": "Chip",
+    "class_path": "com.google.android.material.chip.Chip",
+    "icon": "default_image",
+    "initial_attributes": {
+      "android:text": "Chip"
+    }
+  },
+  {
+    "name": "ChipGroup",
+    "class_path": "com.google.android.material.chip.ChipGroup",
+    "icon": "default_image"
+  },
+  {
+    "name": "MaterialCardView",
+    "class_path": "com.google.android.material.card.MaterialCardView",
+    "icon": "default_image"
+  },
+  {
+    "name": "MaterialSwitch",
+    "class_path": "com.google.android.material.switchmaterial.SwitchMaterial",
+    "icon": "default_image"
+  },
+
+  // ========== CUSTOM VIEWS ==========
+  {
+    "name": "LottieAnimationView",
+    "class_path": "com.airbnb.lottie.LottieAnimationView",
+    "icon": "icon_animation_round"
+  },
+  {
+    "name": "CircleImageView",
+    "class_path": "de.hdodenhof.circleimageview.CircleImageView",
+    "icon": "widget_circle_image",
+    "initial_attributes": {
+      "android:src": "@drawable/default_image"
+    }
+  }
+]

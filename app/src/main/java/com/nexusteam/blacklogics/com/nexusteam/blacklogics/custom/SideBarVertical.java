@@ -68,7 +68,7 @@ public class SideBarVertical extends LinearLayout {
 */    
     private void init(Context context, @Nullable AttributeSet attrs) {
         setOrientation(VERTICAL);
-        setBackgroundColor(isDarkTheme ? Color.DKGRAY : ContextCompat.getColor(context, android.R.color.white));
+     //   setBackgroundColor(isDarkTheme ? Color.DKGRAY : ContextCompat.getColor(context, android.R.color.white));
         int padding = dpToPx(8);
         setPadding(padding, padding, padding, padding);
         

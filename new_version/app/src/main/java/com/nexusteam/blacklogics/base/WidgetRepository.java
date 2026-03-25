@@ -1,0 +1,630 @@
+// WidgetRepository.java
+package com.shapun.layouteditor.managers;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import com.shapun.layouteditor.IdManager;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.shapun.layouteditor.models.WidgetBlueprint;
+import com.shapun.layouteditor.Attribute;
+import com.shapun.layouteditor.AttributeSet;
+import com.nexusteam.blacklogics.FileUtil;
+import com.shapun.layouteditor.utils.ReflectionUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+public class WidgetRepository {
+    private static final String TAG = "WidgetRepository";
+    private static WidgetRepository instance;
+    
+    // Global storage paths
+    private static final String REPOSITORY_ROOT = "/storage/emulated/0/.blacklogics/repository/";
+    private static final String BLUEPRINTS_DIR = REPOSITORY_ROOT + "blueprints/";
+    private static final String THUMBNAILS_DIR = REPOSITORY_ROOT + "thumbnails/";
+    private static final String CATALOG_FILE = REPOSITORY_ROOT + "widget_catalog.json";
+    
+    private Context context;
+    private Gson gson;
+    private Map<String, WidgetBlueprint> blueprintMap;      // id -> blueprint
+    private List<WidgetBlueprint> recentBlueprints;         // Recently used
+    private List<WidgetBlueprint> favoriteBlueprints;       // Favorites
+    private RepositoryChangeListener changeListener;
+    
+    public interface RepositoryChangeListener {
+        void onRepositoryChanged();
+        void onBlueprintAdded(WidgetBlueprint blueprint);
+        void onBlueprintRemoved(String blueprintId);
+        void onBlueprintUpdated(WidgetBlueprint blueprint);
+    }
+    
+    private WidgetRepository(Context context) {
+        this.context = context.getApplicationContext();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        this.blueprintMap = new HashMap<>();
+        this.recentBlueprints = new ArrayList<>();
+        this.favoriteBlueprints = new ArrayList<>();
+        initializeRepository();
+    }
+    
+    public static synchronized WidgetRepository getInstance(Context context) {
+        if (instance == null) {
+            instance = new WidgetRepository(context);
+        }
+        return instance;
+    }
+    
+    private void initializeRepository() {
+        // Create directories
+        createDirectory(REPOSITORY_ROOT);
+        createDirectory(BLUEPRINTS_DIR);
+        createDirectory(THUMBNAILS_DIR);
+        
+        // Load catalog
+        loadCatalog();
+    }
+    
+    private void createDirectory(String path) {
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+    }
+    
+    private void loadCatalog() {
+        try {
+            File catalogFile = new File(CATALOG_FILE);
+            if (catalogFile.exists()) {
+                String content = FileUtil.readFile(CATALOG_FILE);
+                Type type = new TypeToken<List<WidgetBlueprint>>(){}.getType();
+                List<WidgetBlueprint> blueprints = gson.fromJson(content, type);
+                
+                blueprintMap.clear();
+                recentBlueprints.clear();
+                favoriteBlueprints.clear();
+                
+                if (blueprints != null) {
+                    for (WidgetBlueprint blueprint : blueprints) {
+                        blueprintMap.put(blueprint.getBlueprintId(), blueprint);
+                        
+                        // Add to recent list (last 20)
+                        if (recentBlueprints.size() < 20) {
+                            recentBlueprints.add(blueprint);
+                        }
+                        
+                        // Add to favorites if marked
+                        if (blueprint.isFavorite()) {
+                            favoriteBlueprints.add(blueprint);
+                        }
+                    }
+                }
+                
+                // Sort recent by timestamp
+                sortRecentBlueprints();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading catalog", e);
+        }
+    }
+    
+    private void saveCatalog() {
+        try {
+            List<WidgetBlueprint> allBlueprints = new ArrayList<>(blueprintMap.values());
+            String content = gson.toJson(allBlueprints);
+            FileUtil.writeFile(CATALOG_FILE, content);
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving catalog", e);
+        }
+    }
+    
+    private void sortRecentBlueprints() {
+        Collections.sort(recentBlueprints, new Comparator<WidgetBlueprint>() {
+            @Override
+            public int compare(WidgetBlueprint b1, WidgetBlueprint b2) {
+                // Sort by last modified, newest first
+                return Long.compare(b2.getLastModifiedTimestamp(), 
+                                   b1.getLastModifiedTimestamp());
+            }
+        });
+    }
+    
+    /**
+     * Save a widget to the global repository
+     */
+    public String saveWidgetToRepository(String displayName, View view, 
+                                          AttributeSet attributeSet, 
+                                          String description, 
+                                          List<String> tags) {
+        try {
+            // Create blueprint from view
+            WidgetBlueprint blueprint = createBlueprintFromView(
+                displayName, view, attributeSet, description, tags
+            );
+            
+            // Save individual blueprint file
+            String blueprintPath = BLUEPRINTS_DIR + blueprint.getBlueprintId() + ".json";
+            FileUtil.writeFile(blueprintPath, gson.toJson(blueprint));
+            
+            // Generate and save thumbnail
+            generateAndSaveThumbnail(view, blueprint.getBlueprintId());
+            
+            // Add to catalog
+            blueprintMap.put(blueprint.getBlueprintId(), blueprint);
+            recentBlueprints.add(0, blueprint); // Add to top
+            if (recentBlueprints.size() > 50) {
+                recentBlueprints.remove(recentBlueprints.size() - 1);
+            }
+            
+            saveCatalog();
+            
+            // Notify listener
+            if (changeListener != null) {
+                changeListener.onBlueprintAdded(blueprint);
+                changeListener.onRepositoryChanged();
+            }
+            
+            return blueprint.getBlueprintId();
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving widget to repository", e);
+            return null;
+        }
+    }
+    
+    private WidgetBlueprint createBlueprintFromView(String displayName, 
+                                                     View view, 
+                                                     AttributeSet attributeSet,
+                                                     String description,
+                                                     List<String> tags) {
+        WidgetBlueprint blueprint = new WidgetBlueprint();
+        blueprint.setDisplayName(displayName);
+        blueprint.setWidgetClass(view.getClass().getName());
+        blueprint.setDescription(description);
+        
+        if (tags != null) {
+            blueprint.setTags(tags);
+        }
+        
+        // Save attributes
+        if (attributeSet != null) {
+            for (Attribute attr : attributeSet.getAttributes()) {
+                blueprint.addAttribute(attr.getName(), attr.getValue());
+            }
+        }
+        
+        // Save layout params
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        if (params != null) {
+            // Width
+            if (params.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+                blueprint.addLayoutParam("layout_width", "match_parent");
+            } else if (params.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                blueprint.addLayoutParam("layout_width", "wrap_content");
+            } else {
+                blueprint.addLayoutParam("layout_width", String.valueOf(params.width) + "px");
+            }
+            
+            // Height
+            if (params.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+                blueprint.addLayoutParam("layout_height", "match_parent");
+            } else if (params.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                blueprint.addLayoutParam("layout_height", "wrap_content");
+            } else {
+                blueprint.addLayoutParam("layout_height", String.valueOf(params.height) + "px");
+            }
+        }
+        
+        // Save padding
+        blueprint.addLayoutParam("padding_left", String.valueOf(view.getPaddingLeft()));
+        blueprint.addLayoutParam("padding_top", String.valueOf(view.getPaddingTop()));
+        blueprint.addLayoutParam("padding_right", String.valueOf(view.getPaddingRight()));
+        blueprint.addLayoutParam("padding_bottom", String.valueOf(view.getPaddingBottom()));
+        
+        // Save children if ViewGroup
+        if (view instanceof ViewGroup) {
+            saveChildBlueprints((ViewGroup) view, blueprint);
+        }
+        
+        return blueprint;
+    }
+    
+    private void saveChildBlueprints(ViewGroup viewGroup, WidgetBlueprint parentBlueprint) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View child = viewGroup.getChildAt(i);
+            
+            // Skip placeholder views
+            if (child.getClass().getSimpleName().contains("Placeholder")) {
+                continue;
+            }
+            
+            // Recursively create child blueprint
+            WidgetBlueprint childBlueprint = new WidgetBlueprint();
+            childBlueprint.setDisplayName(parentBlueprint.getDisplayName() + "_child_" + i);
+            childBlueprint.setWidgetClass(child.getClass().getName());
+            
+            // Save child attributes (simplified)
+            String idName = IdManager.getInstance().getId(child);
+
+if(idName != null){
+    childBlueprint.addAttribute("android:id","@+id/" + idName);
+}
+            
+            // Recursively save grandchildren
+            if (child instanceof ViewGroup) {
+                saveChildBlueprints((ViewGroup) child, childBlueprint);
+            }
+            
+            parentBlueprint.addChildBlueprint(childBlueprint);
+        }
+    }
+    
+    private void generateAndSaveThumbnail(View view, String blueprintId) {
+        try {
+            // Create bitmap from view
+            view.setDrawingCacheEnabled(true);
+            view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+            view.buildDrawingCache();
+            
+            Bitmap bitmap = view.getDrawingCache();
+            if (bitmap != null) {
+                // Scale to thumbnail size (200px max)
+                int maxSize = 200;
+                int width = bitmap.getWidth();
+                int height = bitmap.getHeight();
+                
+                float scale = Math.min((float) maxSize / width, (float) maxSize / height);
+                int newWidth = Math.round(width * scale);
+                int newHeight = Math.round(height * scale);
+                
+                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+                
+                // Save to file
+                String thumbnailPath = THUMBNAILS_DIR + blueprintId + ".png";
+                FileOutputStream out = new FileOutputStream(thumbnailPath);
+                scaledBitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                out.close();
+                
+                // Update blueprint
+                WidgetBlueprint blueprint = blueprintMap.get(blueprintId);
+                if (blueprint != null) {
+                    blueprint.setThumbnailPath(thumbnailPath);
+                }
+                
+                scaledBitmap.recycle();
+            }
+            
+            view.setDrawingCacheEnabled(false);
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error generating thumbnail", e);
+        }
+    }
+    
+    /**
+     * Load a widget from repository by ID
+     */
+    public View loadWidgetFromRepository(String blueprintId, Context context) {
+        try {
+            WidgetBlueprint blueprint = blueprintMap.get(blueprintId);
+            if (blueprint == null) {
+                // Try to load from individual file
+                String blueprintPath = BLUEPRINTS_DIR + blueprintId + ".json";
+                File blueprintFile = new File(blueprintPath);
+                if (blueprintFile.exists()) {
+                    String content = FileUtil.readFile(blueprintPath);
+                    blueprint = gson.fromJson(content, WidgetBlueprint.class);
+                    if (blueprint != null) {
+                        blueprintMap.put(blueprintId, blueprint);
+                    }
+                }
+            }
+            
+            if (blueprint != null) {
+                // Increment usage count
+                blueprint.incrementUsageCount();
+                saveCatalog();
+                
+                // Create view from blueprint
+                return createViewFromBlueprint(blueprint, context);
+            }
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading widget from repository", e);
+        }
+        
+        return null;
+    }
+    
+    private View createViewFromBlueprint(WidgetBlueprint blueprint, Context context) {
+        try {
+            // Create view instance
+            View view = ReflectionUtils.createView(context, blueprint.getWidgetClass());
+            if (view == null) {
+                return null;
+            }
+            
+            // Apply attributes
+            Map<String, String> attributes = blueprint.getAttributes();
+            if (attributes != null) {
+                for (Map.Entry<String, String> entry : attributes.entrySet()) {
+                    applyAttributeToView(view, entry.getKey(), entry.getValue());
+                }
+            }
+            
+            // Apply layout params
+            ViewGroup.LayoutParams params = createLayoutParams(blueprint, context);
+            if (params != null) {
+                view.setLayoutParams(params);
+            }
+            
+            // Apply padding
+            applyPadding(view, blueprint);
+            
+            // Add children
+            List<WidgetBlueprint> children = blueprint.getChildBlueprints();
+            if (children != null && !children.isEmpty() && view instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) view;
+                for (WidgetBlueprint childBlueprint : children) {
+                    View childView = createViewFromBlueprint(childBlueprint, context);
+                    if (childView != null) {
+                        viewGroup.addView(childView);
+                    }
+                }
+            }
+            
+            return view;
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating view from blueprint", e);
+            return null;
+        }
+    }
+    
+    private void applyAttributeToView(View view, String key, String value) {
+        // Simplified attribute application
+        // In real implementation, use your existing attribute system
+        try {
+            if ("android:text".equals(key) && view instanceof android.widget.TextView) {
+                ((android.widget.TextView) view).setText(value);
+            } else if ("android:textSize".equals(key) && view instanceof android.widget.TextView) {
+                String numValue = value.replace("sp", "").replace("dp", "").trim();
+                float size = Float.parseFloat(numValue);
+                ((android.widget.TextView) view).setTextSize(size);
+            } else if ("android:textColor".equals(key) && view instanceof android.widget.TextView) {
+                try {
+                    int color = android.graphics.Color.parseColor(value);
+                    ((android.widget.TextView) view).setTextColor(color);
+                } catch (Exception e) {}
+            }
+            // Add more attribute handlers as needed
+        } catch (Exception e) {
+            Log.e(TAG, "Error applying attribute: " + key, e);
+        }
+    }
+    
+    private ViewGroup.LayoutParams createLayoutParams(WidgetBlueprint blueprint, Context context) {
+        Map<String, String> layoutParams = blueprint.getLayoutParams();
+        if (layoutParams == null) {
+            return new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        }
+        
+        int width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        
+        String widthStr = layoutParams.get("layout_width");
+        if (widthStr != null) {
+            if ("match_parent".equals(widthStr)) {
+                width = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else if ("wrap_content".equals(widthStr)) {
+                width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            } else {
+                try {
+                    width = Integer.parseInt(widthStr.replace("px", "").trim());
+                } catch (Exception e) {}
+            }
+        }
+        
+        String heightStr = layoutParams.get("layout_height");
+        if (heightStr != null) {
+            if ("match_parent".equals(heightStr)) {
+                height = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else if ("wrap_content".equals(heightStr)) {
+                height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            } else {
+                try {
+                    height = Integer.parseInt(heightStr.replace("px", "").trim());
+                } catch (Exception e) {}
+            }
+        }
+        
+        return new ViewGroup.LayoutParams(width, height);
+    }
+    
+    private void applyPadding(View view, WidgetBlueprint blueprint) {
+        Map<String, String> layoutParams = blueprint.getLayoutParams();
+        if (layoutParams != null) {
+            try {
+                int left = parseIntSafe(layoutParams.get("padding_left"));
+                int top = parseIntSafe(layoutParams.get("padding_top"));
+                int right = parseIntSafe(layoutParams.get("padding_right"));
+                int bottom = parseIntSafe(layoutParams.get("padding_bottom"));
+                
+                if (left != 0 || top != 0 || right != 0 || bottom != 0) {
+                    view.setPadding(left, top, right, bottom);
+                }
+            } catch (Exception e) {}
+        }
+    }
+    
+    private int parseIntSafe(String value) {
+        if (value == null) return 0;
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+    
+    /**
+     * Get all widgets in repository
+     */
+    public List<WidgetBlueprint> getAllWidgets() {
+        return new ArrayList<>(blueprintMap.values());
+    }
+    
+    /**
+     * Get recently used widgets
+     */
+    public List<WidgetBlueprint> getRecentWidgets(int limit) {
+        if (limit <= 0) limit = 20;
+        return recentBlueprints.size() > limit ? 
+               recentBlueprints.subList(0, limit) : 
+               new ArrayList<>(recentBlueprints);
+    }
+    
+    /**
+     * Get favorite widgets
+     */
+    public List<WidgetBlueprint> getFavoriteWidgets() {
+        return new ArrayList<>(favoriteBlueprints);
+    }
+    
+    /**
+     * Search widgets by name, type, or tags
+     */
+    public List<WidgetBlueprint> searchWidgets(String query) {
+        List<WidgetBlueprint> results = new ArrayList<>();
+        if (query == null || query.isEmpty()) {
+            return results;
+        }
+        
+        String lowerQuery = query.toLowerCase();
+        for (WidgetBlueprint blueprint : blueprintMap.values()) {
+            // Search in display name
+            if (blueprint.getDisplayName() != null && 
+                blueprint.getDisplayName().toLowerCase().contains(lowerQuery)) {
+                results.add(blueprint);
+                continue;
+            }
+            
+            // Search in widget type
+            if (blueprint.getWidgetType() != null && 
+                blueprint.getWidgetType().toLowerCase().contains(lowerQuery)) {
+                results.add(blueprint);
+                continue;
+            }
+            
+            // Search in tags
+            if (blueprint.getTags() != null) {
+                for (String tag : blueprint.getTags()) {
+                    if (tag.toLowerCase().contains(lowerQuery)) {
+                        results.add(blueprint);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return results;
+    }
+    
+    /**
+     * Delete widget from repository
+     */
+    public boolean deleteWidget(String blueprintId) {
+        try {
+            WidgetBlueprint blueprint = blueprintMap.remove(blueprintId);
+            if (blueprint != null) {
+                // Delete blueprint file
+                String blueprintPath = BLUEPRINTS_DIR + blueprintId + ".json";
+                File blueprintFile = new File(blueprintPath);
+                if (blueprintFile.exists()) {
+                    blueprintFile.delete();
+                }
+                
+                // Delete thumbnail
+                String thumbnailPath = THUMBNAILS_DIR + blueprintId + ".png";
+                File thumbnailFile = new File(thumbnailPath);
+                if (thumbnailFile.exists()) {
+                    thumbnailFile.delete();
+                }
+                
+                // Remove from recent and favorites
+                recentBlueprints.remove(blueprint);
+                favoriteBlueprints.remove(blueprint);
+                
+                // Save catalog
+                saveCatalog();
+                
+                // Notify listener
+                if (changeListener != null) {
+                    changeListener.onBlueprintRemoved(blueprintId);
+                    changeListener.onRepositoryChanged();
+                }
+                
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error deleting widget", e);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Toggle favorite status
+     */
+    public void toggleFavorite(String blueprintId) {
+        WidgetBlueprint blueprint = blueprintMap.get(blueprintId);
+        if (blueprint != null) {
+            boolean newFavorite = !blueprint.isFavorite();
+            blueprint.setFavorite(newFavorite);
+            
+            if (newFavorite) {
+                if (!favoriteBlueprints.contains(blueprint)) {
+                    favoriteBlueprints.add(blueprint);
+                }
+            } else {
+                favoriteBlueprints.remove(blueprint);
+            }
+            
+            saveCatalog();
+            
+            if (changeListener != null) {
+                changeListener.onBlueprintUpdated(blueprint);
+                changeListener.onRepositoryChanged();
+            }
+        }
+    }
+    
+    /**
+     * Set change listener
+     */
+    public void setChangeListener(RepositoryChangeListener listener) {
+        this.changeListener = listener;
+    }
+}

@@ -28,10 +28,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -42,6 +46,7 @@ import com.google.android.material.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -209,40 +214,70 @@ public class SrcViewerActivity extends AppCompatActivity {
 		String cleanName = item.replace(".java", "").replace(".xml", "").trim();
 		
 		if (item.endsWith(".java")) {
-			// Get the real layout name for this Java class
-			String layoutName = getLayoutName(cleanName);
+			// For Java files, cleanName is the class name (e.g., "MainActivity")
+			String layoutName = getLayoutName(cleanName); // This returns XML filename
 			
 			if (layoutName != null && !layoutName.isEmpty()) {
 				String javaContent = codeGenerator.generateCompleteJavaCode(cleanName, layoutName);
 				if (javaContent != null && !javaContent.isEmpty()) {
 					editor.setEditorLanguage(new JavaLanguage());
 					editor.setText(javaContent);
-				} else {
 				}
-			} else {
 			}
 			
 		} else if (item.endsWith(".xml")) {
-			String xmlContent = codeGenerator.getLayoutXml(cleanName);
-			if (xmlContent != null && !xmlContent.isEmpty()) {
-				editor.setText(xmlContent);
+			// For XML files, we need the Java class name, not the XML filename
+			String javaClassName = findJavaClassForXml(cleanName);
+			if (javaClassName != null) {
+				String xmlContent = codeGenerator.getLayoutXml(javaClassName);
+				if (xmlContent != null && !xmlContent.isEmpty()) {
+					editor.setText(xmlContent);
+				} else {
+					editor.setText("// XML content is empty for: " + cleanName + " (using class: " + javaClassName + ")");
+				}
 			} else {
-				editor.setText("// XML content is empty for layout: " + cleanName);
+				editor.setText("// No Java class found for XML: " + cleanName);
 			}
 		}
 	}
 	
 	/**
+ * Find Java class name that corresponds to an XML filename
+ */
+	private String findJavaClassForXml(String xmlFileName) {
+		if (complex.javaItems == null || complex.javaItems.isEmpty()) return null;
+		
+		// First, try to find matching Java class
+		for (String javaName : complex.javaItems) {
+			String cleanJavaName = javaName.replace(".java", "").trim();
+			
+			// Common patterns: activity_main.xml -> MainActivity
+			if (xmlFileName.equalsIgnoreCase("activity_" + cleanJavaName.toLowerCase()) ||
+			xmlFileName.equalsIgnoreCase("fragment_" + cleanJavaName.toLowerCase()) ||
+			xmlFileName.equalsIgnoreCase("dialog_" + cleanJavaName.toLowerCase()) ||
+			xmlFileName.toLowerCase().contains(cleanJavaName.toLowerCase()) ||
+			cleanJavaName.toLowerCase().contains(xmlFileName.toLowerCase())) {
+				return cleanJavaName;
+			}
+		}
+		
+		// Fallback: return first Java class
+		return complex.javaItems.get(0).replace(".java", "").trim();
+	}
+	
+	/**
  * Finds the real XML layout name corresponding to a Java class.
- * It searches the project XML items and matches by convention.
  */
 	private String getLayoutName(String javaClassName) {
 		if (complex.xmlItems == null || complex.xmlItems.isEmpty()) return null;
 		
 		for (String xmlItem : complex.xmlItems) {
-			String cleanXmlName = xmlItem;
+			String cleanXmlName = xmlItem.replace(".xml", "").trim();
 			// Check if the XML name matches class name convention
-			if (cleanXmlName.equalsIgnoreCase(javaClassName) || cleanXmlName.toLowerCase().contains(javaClassName.toLowerCase())) {
+			if (cleanXmlName.equalsIgnoreCase(javaClassName) || 
+			cleanXmlName.toLowerCase().contains(javaClassName.toLowerCase()) ||
+			("activity_" + javaClassName.toLowerCase()).equals(cleanXmlName.toLowerCase()) ||
+			("fragment_" + javaClassName.toLowerCase()).equals(cleanXmlName.toLowerCase())) {
 				return cleanXmlName;
 			}
 		}
@@ -250,7 +285,6 @@ public class SrcViewerActivity extends AppCompatActivity {
 		// fallback: return first XML layout if nothing matches
 		return complex.xmlItems.isEmpty() ? null : complex.xmlItems.get(0).replace(".xml", "").trim();
 	}
-	
 	{
 	}
 	

@@ -1,52 +1,68 @@
 package com.nexusteam.sdk.util;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
 import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * AdvancedRefactor.java - Professional Refactoring Tool like Android Studio
- * Handles package renaming, import updates, directory restructuring
+ * Uses JavaParser 3.15.21 for safe and accurate refactoring
  */
 public class AdvancedRefactor {
-    
-    private static final String LINE_SEPARATOR = System.lineSeparator();
-    private boolean dryRun;
-    private List<String> processedFiles;
-    private Map<String, RefactorStats> stats;
-    
+
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private final boolean dryRun;
+    private final List<String> processedFiles;
+    private final Map<String, RefactorStats> stats;
+    private final JavaParser javaParser;
+
     public AdvancedRefactor() {
         this(false);
     }
-    
+
     public AdvancedRefactor(boolean dryRun) {
         this.dryRun = dryRun;
         this.processedFiles = new ArrayList<>();
         this.stats = new HashMap<>();
+        this.javaParser = new JavaParser();
     }
-    
+
     /**
      * Rename package completely - updates all files and directory structure
-     * Like Android Studio's Refactor -> Rename Package
      */
     public PackageRenameResult renamePackage(String projectRoot, String oldPackage, String newPackage) {
         System.out.println("Renaming package: " + oldPackage + " -> " + newPackage);
         PackageRenameResult result = new PackageRenameResult(oldPackage, newPackage);
-        
+
         File root = new File(projectRoot);
         if (!root.exists()) {
             result.addError("Project root does not exist: " + projectRoot);
             return result;
         }
-        
-        // Convert package names to paths
+
         String oldPath = oldPackage.replace('.', File.separatorChar);
         String newPath = newPackage.replace('.', File.separatorChar);
-        
-        // Find all Java/Kotlin files
+
         List<File> allFiles = findAllFiles(root, new String[]{".java", ".kt"});
-        
-        // First pass: Update package declarations and imports in all files
+
+        // First pass: Update package declarations
         for (File file : allFiles) {
             try {
                 updatePackageInFile(file, oldPackage, newPackage, result);
@@ -54,117 +70,103 @@ public class AdvancedRefactor {
                 result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
             }
         }
-        
-        // Second pass: Move directories to new package structure
+
+        // Second pass: Move directories
         movePackageDirectories(root, oldPath, newPath, result);
-        
-        // Third pass: Update all import statements that might reference the old package
+
+        // Third pass: Update imports in all files
         for (File file : findAllFiles(root, new String[]{".java", ".kt", ".xml", ".gradle"})) {
             try {
-                updateImportsInFile(file, oldPackage, newPackage, result);
+                if (file.getName().endsWith(".java")) {
+                    updateImportsInJavaFile(file, oldPackage, newPackage, result);
+                } else {
+                    updateImportsInFile(file, oldPackage, newPackage, result);
+                }
             } catch (IOException e) {
                 result.addError("Error updating imports in " + file.getPath() + ": " + e.getMessage());
             }
         }
-        
+
         return result;
     }
-    
+
     /**
-     * Update package declaration in a single file
+     * Update package declaration using JavaParser
      */
-    private void updatePackageInFile(File file, String oldPackage, String newPackage, PackageRenameResult result) 
+    private void updatePackageInFile(File file, String oldPackage, String newPackage, PackageRenameResult result)
             throws IOException {
-        String content = readFile(file);
-        String original = content;
+        if (!file.getName().endsWith(".java")) return;
+
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        Optional<PackageDeclaration> pkgDecl = cu.getPackageDeclaration();
         
-        // Pattern for package declaration
-        Pattern packagePattern = Pattern.compile(
-            "^\\s*package\\s+" + Pattern.quote(oldPackage) + "\\s*;?\\s*$",
-            Pattern.MULTILINE
-        );
-        
-        Matcher matcher = packagePattern.matcher(content);
-        if (matcher.find()) {
-            String newPackageDecl = "package " + newPackage + 
-                                   (content.contains(";") ? ";" : "");
-            content = matcher.replaceFirst(newPackageDecl);
-            
-            if (!content.equals(original)) {
+        if (pkgDecl.isPresent()) {
+            String currentPkg = pkgDecl.get().getName().toString();
+            if (currentPkg.equals(oldPackage)) {
+                pkgDecl.get().setName(newPackage);
+
                 if (!dryRun) {
-                    writeFile(file, content);
+                    writeCompilationUnit(file, cu);
                 }
                 result.addUpdatedFile(file.getPath(), "package");
                 processedFiles.add(file.getPath());
             }
         }
     }
-    
+
     /**
-     * Update import statements in a file
+     * Update imports in Java file using JavaParser
      */
-    private void updateImportsInFile(File file, String oldPackage, String newPackage, PackageRenameResult result) 
+    private void updateImportsInJavaFile(File file, String oldPackage, String newPackage, PackageRenameResult result)
+            throws IOException {
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        boolean modified = false;
+        List<ImportDeclaration> imports = cu.getImports();
+        
+        for (ImportDeclaration imp : imports) {
+            String importName = imp.getName().toString();
+            if (importName.startsWith(oldPackage + ".")) {
+                String newImport = importName.replaceFirst(Pattern.quote(oldPackage), newPackage);
+                imp.setName(newImport);
+                modified = true;
+                result.incrementImportUpdates();
+            }
+        }
+
+        if (modified && !dryRun) {
+            writeCompilationUnit(file, cu);
+            result.addUpdatedFile(file.getPath(), "imports");
+        }
+    }
+
+    /**
+     * Update imports in non-Java files (Kotlin, XML, Gradle)
+     */
+    private void updateImportsInFile(File file, String oldPackage, String newPackage, PackageRenameResult result)
             throws IOException {
         String content = readFile(file);
         String original = content;
-        
-        // Update import statements
-        String oldPackagePattern = Pattern.quote(oldPackage);
-        
-        // Handle regular imports
-        Pattern importPattern = Pattern.compile(
-            "import\\s+(" + oldPackagePattern + "\\.[^;]+);"
-        );
-        Matcher matcher = importPattern.matcher(content);
-        StringBuffer sb = new StringBuffer();
-        
-        while (matcher.find()) {
-            String fullImport = matcher.group(1);
-            String newImport = fullImport.replaceFirst(oldPackagePattern, newPackage);
-            matcher.appendReplacement(sb, "import " + newImport + ";");
-            result.incrementImportUpdates();
-        }
-        matcher.appendTail(sb);
-        content = sb.toString();
-        
-        // Handle static imports
-        Pattern staticImportPattern = Pattern.compile(
-            "import\\s+static\\s+(" + oldPackagePattern + "\\.[^;]+);"
-        );
-        matcher = staticImportPattern.matcher(content);
-        sb = new StringBuffer();
-        
-        while (matcher.find()) {
-            String fullImport = matcher.group(1);
-            String newImport = fullImport.replaceFirst(oldPackagePattern, newPackage);
-            matcher.appendReplacement(sb, "import static " + newImport + ";");
-            result.incrementImportUpdates();
-        }
-        matcher.appendTail(sb);
-        content = sb.toString();
-        
-        // Handle wildcard imports
-        Pattern wildcardPattern = Pattern.compile(
-            "import\\s+" + oldPackagePattern + "\\.\\*;"
-        );
-        content = wildcardPattern.matcher(content).replaceAll("import " + newPackage + ".*;");
-        
-        // Handle imports without semicolon (Kotlin)
-        Pattern ktImportPattern = Pattern.compile(
-            "import\\s+(" + oldPackagePattern + "\\.[^\n]+)"
-        );
-        matcher = ktImportPattern.matcher(content);
-        sb = new StringBuffer();
-        
-        while (matcher.find()) {
-            String fullImport = matcher.group(1);
-            String newImport = fullImport.replaceFirst(oldPackagePattern, newPackage);
-            matcher.appendReplacement(sb, "import " + newImport);
-            result.incrementImportUpdates();
-        }
-        matcher.appendTail(sb);
-        content = sb.toString();
-        
+
+        String oldPkgPattern = Pattern.quote(oldPackage);
+        content = content.replaceAll("import\\s+" + oldPkgPattern + "\\.([^;]+);",
+                "import " + newPackage + ".$1;");
+        content = content.replaceAll("import\\s+static\\s+" + oldPkgPattern + "\\.([^;]+);",
+                "import static " + newPackage + ".$1;");
+        content = content.replaceAll("import\\s+" + oldPkgPattern + "\\.\\*;",
+                "import " + newPackage + ".*;");
+        content = content.replaceAll("import\\s+(" + oldPkgPattern + "\\.[^\\n]+)",
+                "import " + newPackage + ".$1");
+
         if (!content.equals(original)) {
             if (!dryRun) {
                 writeFile(file, content);
@@ -172,21 +174,19 @@ public class AdvancedRefactor {
             result.addUpdatedFile(file.getPath(), "imports");
         }
     }
-    
+
     /**
      * Move directories to reflect new package structure
      */
     private void movePackageDirectories(File root, String oldPath, String newPath, PackageRenameResult result) {
-        // Find all directories that contain the old package path
         List<File> packageDirs = findDirectoriesContaining(root, oldPath);
-        
+
         for (File dir : packageDirs) {
             String dirPath = dir.getAbsolutePath();
             if (dirPath.contains(oldPath)) {
                 String newDirPath = dirPath.replace(oldPath, newPath);
                 File newDir = new File(newDirPath);
-                
-                // Create parent directories if needed
+
                 if (!dryRun) {
                     newDir.getParentFile().mkdirs();
                     if (dir.renameTo(newDir)) {
@@ -200,85 +200,28 @@ public class AdvancedRefactor {
             }
         }
     }
-    
-    /**
-     * Update import statements across the entire project
-     */
-    public ImportUpdateResult updateImports(String projectRoot, String oldImport, String newImport) {
-        ImportUpdateResult result = new ImportUpdateResult(oldImport, newImport);
-        
-        List<File> files = findAllFiles(new File(projectRoot), 
-            new String[]{".java", ".kt", ".xml", ".gradle"});
-        
-        for (File file : files) {
-            try {
-                String content = readFile(file);
-                String original = content;
-                
-                // Update import statements
-                String importPattern = "import\\s+" + Pattern.quote(oldImport) + "\\s*;?";
-                content = content.replaceAll(importPattern, "import " + newImport + 
-                                            (original.contains(";") ? ";" : ""));
-                
-                // Update fully qualified class names
-                String fqnPattern = "\\b" + Pattern.quote(oldImport) + "\\.[A-Z]";
-                // This is simplified - full implementation would need AST parsing
-                
-                if (!content.equals(original)) {
-                    if (!dryRun) {
-                        writeFile(file, content);
-                    }
-                    result.addUpdatedFile(file.getPath());
-                    processedFiles.add(file.getPath());
-                    
-                    // Count replacements
-                    int diff = countDifferences(original, content);
-                    result.addReplacements(diff);
-                }
-            } catch (IOException e) {
-                result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
-            }
-        }
-        
-        return result;
-    }
-    
+
     /**
      * Rename class with full refactoring - updates all references
      */
     public ClassRenameResult renameClass(String projectRoot, String oldClassName, String newClassName) {
         ClassRenameResult result = new ClassRenameResult(oldClassName, newClassName);
-        
-        List<File> files = findAllFiles(new File(projectRoot), 
-            new String[]{".java", ".kt", ".xml", ".gradle"});
-        
-        // First pass: Find and update the class file itself
+
+        List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt", ".xml", ".gradle"});
+
+        // First pass: Find and update the class file
         File classFile = findClassFile(projectRoot, oldClassName);
         if (classFile != null) {
             try {
-                // Update class declaration in the file
-                String content = readFile(classFile);
-                String original = content;
-                
-                // Update class declaration
-                String classPattern = "(class|interface|enum)\\s+" + 
-                                     Pattern.quote(oldClassName) + "\\b";
-                content = content.replaceAll(classPattern, "$1 " + newClassName);
-                
-                // Update constructor names
-                String constructorPattern = "\\b" + Pattern.quote(oldClassName) + "\\s*\\(";
-                content = content.replaceAll(constructorPattern, newClassName + "(");
-                
-                if (!content.equals(original)) {
-                    if (!dryRun) {
-                        writeFile(classFile, content);
-                    }
-                    result.setClassFileUpdated(true);
+                if (classFile.getName().endsWith(".java")) {
+                    updateClassInJavaFile(classFile, oldClassName, newClassName, result);
+                } else {
+                    updateClassInKotlinFile(classFile, oldClassName, newClassName, result);
                 }
-                
+
                 // Rename the file
-                File newFile = new File(classFile.getParent(), 
-                    newClassName + getFileExtension(classFile.getName()));
+                File newFile = new File(classFile.getParent(),
+                        newClassName + getFileExtension(classFile.getName()));
                 if (!dryRun) {
                     if (classFile.renameTo(newFile)) {
                         result.setNewFilePath(newFile.getAbsolutePath());
@@ -286,208 +229,417 @@ public class AdvancedRefactor {
                 } else {
                     result.setNewFilePath(newFile.getAbsolutePath());
                 }
-                
+
             } catch (IOException e) {
                 result.addError("Error updating class file: " + e.getMessage());
             }
         }
-        
-        // Second pass: Update all references to this class
+
+        // Second pass: Update all references
         for (File file : files) {
             if (file.equals(classFile)) continue;
-            
+
             try {
-                String content = readFile(file);
-                String original = content;
-                
-                // Update class references
-                String refPattern = "\\b" + Pattern.quote(oldClassName) + "\\b";
-                content = content.replaceAll(refPattern, newClassName);
-                
-                // Update import statements that might use this class
-                String importPattern = "import\\s+.*\\." + Pattern.quote(oldClassName) + "\\s*;?";
-                content = content.replaceAll(importPattern, 
-                    "import " + getPackageFromImport(original, oldClassName) + "." + newClassName + 
-                    (original.contains(";") ? ";" : ""));
-                
-                if (!content.equals(original)) {
-                    if (!dryRun) {
-                        writeFile(file, content);
-                    }
-                    result.addReferencingFile(file.getPath());
-                    
-                    int diff = countDifferences(original, content);
-                    result.addReplacements(diff);
+                if (file.getName().endsWith(".java")) {
+                    updateClassReferencesInJavaFile(file, oldClassName, newClassName, result);
+                } else {
+                    updateClassReferencesInFile(file, oldClassName, newClassName, result);
                 }
             } catch (IOException e) {
                 result.addError("Error updating references in " + file.getPath() + ": " + e.getMessage());
             }
         }
-        
+
         return result;
     }
-    
+
+    /**
+     * Update class in Java file using JavaParser
+     */
+    private void updateClassInJavaFile(File file, String oldClassName, String newClassName, ClassRenameResult result)
+            throws IOException {
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        List<ClassOrInterfaceDeclaration> classes = cu.getNodesByType(ClassOrInterfaceDeclaration.class);
+        
+        for (ClassOrInterfaceDeclaration c : classes) {
+            if (c.getName().toString().equals(oldClassName)) {
+                c.setName(newClassName);
+                result.setClassFileUpdated(true);
+
+                if (!dryRun) {
+                    writeCompilationUnit(file, cu);
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Update class references in Java file using JavaParser
+     */
+    private void updateClassReferencesInJavaFile(File file, String oldClassName, String newClassName,
+                                                 ClassRenameResult result) throws IOException {
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        ClassReferenceVisitor visitor = new ClassReferenceVisitor(oldClassName, newClassName);
+        visitor.visit(cu, null);
+
+        if (visitor.isModified() && !dryRun) {
+            writeCompilationUnit(file, cu);
+            result.addReferencingFile(file.getPath());
+            result.addReplacements(visitor.getReplacements());
+        }
+    }
+
+    /**
+     * Visitor to find and replace class references
+     */
+    private static class ClassReferenceVisitor extends VoidVisitorAdapter<Void> {
+        private final String oldClassName;
+        private final String newClassName;
+        private boolean modified = false;
+        private int replacements = 0;
+
+        public ClassReferenceVisitor(String oldClassName, String newClassName) {
+            this.oldClassName = oldClassName;
+            this.newClassName = newClassName;
+        }
+
+        @Override
+        public void visit(NameExpr n, Void arg) {
+            if (n.getName().toString().equals(oldClassName)) {
+                n.setName(newClassName);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        @Override
+        public void visit(ImportDeclaration n, Void arg) {
+            String importName = n.getName().toString();
+            if (importName.endsWith("." + oldClassName)) {
+                String newImport = importName.replaceFirst(Pattern.quote("." + oldClassName) + "$", "." + newClassName);
+                n.setName(newImport);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        public boolean isModified() { return modified; }
+        public int getReplacements() { return replacements; }
+    }
+
+    /**
+     * Rename method across the project
+     */
+    public MethodRenameResult renameMethod(String projectRoot, String oldMethod, String newMethod) {
+        MethodRenameResult result = new MethodRenameResult(oldMethod, newMethod);
+
+        List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt"});
+
+        for (File file : files) {
+            try {
+                if (file.getName().endsWith(".java")) {
+                    renameMethodInJavaFile(file, oldMethod, newMethod, result);
+                } else {
+                    renameMethodInKotlinFile(file, oldMethod, newMethod, result);
+                }
+            } catch (IOException e) {
+                result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Rename method in Java file using JavaParser
+     */
+    private void renameMethodInJavaFile(File file, String oldMethod, String newMethod, MethodRenameResult result)
+            throws IOException {
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        MethodRenameVisitor visitor = new MethodRenameVisitor(oldMethod, newMethod);
+        visitor.visit(cu, null);
+
+        if (visitor.isModified() && !dryRun) {
+            writeCompilationUnit(file, cu);
+            result.addUpdatedFile(file.getPath());
+            result.addReplacements(visitor.getReplacements());
+        }
+    }
+
+    /**
+     * Visitor to rename methods
+     */
+    private static class MethodRenameVisitor extends VoidVisitorAdapter<Void> {
+        private final String oldMethod;
+        private final String newMethod;
+        private boolean modified = false;
+        private int replacements = 0;
+
+        public MethodRenameVisitor(String oldMethod, String newMethod) {
+            this.oldMethod = oldMethod;
+            this.newMethod = newMethod;
+        }
+
+        @Override
+        public void visit(MethodDeclaration n, Void arg) {
+            if (n.getName().toString().equals(oldMethod)) {
+                n.setName(newMethod);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        @Override
+        public void visit(MethodCallExpr n, Void arg) {
+            if (n.getName().toString().equals(oldMethod)) {
+                n.setName(newMethod);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        public boolean isModified() { return modified; }
+        public int getReplacements() { return replacements; }
+    }
+
+    /**
+     * Rename variable across the project
+     */
+    public VariableRenameResult renameVariable(String projectRoot, String oldVar, String newVar) {
+        VariableRenameResult result = new VariableRenameResult(oldVar, newVar);
+
+        List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt"});
+
+        for (File file : files) {
+            try {
+                if (file.getName().endsWith(".java")) {
+                    renameVariableInJavaFile(file, oldVar, newVar, result);
+                } else {
+                    renameVariableInKotlinFile(file, oldVar, newVar, result);
+                }
+            } catch (IOException e) {
+                result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Rename variable in Java file using JavaParser
+     */
+    private void renameVariableInJavaFile(File file, String oldVar, String newVar, VariableRenameResult result)
+            throws IOException {
+        ParseResult<CompilationUnit> parseResult = javaParser.parse(file);
+        if (!parseResult.isSuccessful() || !parseResult.getResult().isPresent()) {
+            return;
+        }
+
+        CompilationUnit cu = parseResult.getResult().get();
+        VariableRenameVisitor visitor = new VariableRenameVisitor(oldVar, newVar);
+        visitor.visit(cu, null);
+
+        if (visitor.isModified() && !dryRun) {
+            writeCompilationUnit(file, cu);
+            result.addUpdatedFile(file.getPath());
+            result.addReplacements(visitor.getReplacements());
+        }
+    }
+
+    /**
+     * Visitor to rename variables
+     */
+    private static class VariableRenameVisitor extends VoidVisitorAdapter<Void> {
+        private final String oldVar;
+        private final String newVar;
+        private boolean modified = false;
+        private int replacements = 0;
+
+        public VariableRenameVisitor(String oldVar, String newVar) {
+            this.oldVar = oldVar;
+            this.newVar = newVar;
+        }
+
+        @Override
+        public void visit(VariableDeclarator n, Void arg) {
+            if (n.getName().toString().equals(oldVar)) {
+                n.setName(newVar);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        @Override
+        public void visit(NameExpr n, Void arg) {
+            if (n.getName().toString().equals(oldVar)) {
+                n.setName(newVar);
+                modified = true;
+                replacements++;
+            }
+            super.visit(n, arg);
+        }
+
+        public boolean isModified() { return modified; }
+        public int getReplacements() { return replacements; }
+    }
+
     /**
      * Batch refactoring from configuration file
-     * Config format: operation:old:new
-     * operations: package, import, class, method, variable
      */
-    public BatchRefactorResult batchRefactor(String configFilePath, String projectRoot) 
+    public BatchRefactorResult batchRefactor(String configFilePath, String projectRoot)
             throws IOException {
         BatchRefactorResult result = new BatchRefactorResult();
-        
+
         List<RefactorConfig> configs = loadConfig(configFilePath);
-        
+
         for (RefactorConfig config : configs) {
             System.out.println("\nExecuting: " + config);
-            
-            switch(config.getOperation()) {
+
+            switch (config.getOperation()) {
                 case "package":
-                    PackageRenameResult pkgResult = renamePackage(projectRoot, 
-                        config.getOldValue(), config.getNewValue());
+                    PackageRenameResult pkgResult = renamePackage(projectRoot,
+                            config.getOldValue(), config.getNewValue());
                     result.addPackageResult(pkgResult);
                     break;
-                    
-                case "import":
-                    ImportUpdateResult importResult = updateImports(projectRoot,
-                        config.getOldValue(), config.getNewValue());
-                    result.addImportResult(importResult);
-                    break;
-                    
+
                 case "class":
                     ClassRenameResult classResult = renameClass(projectRoot,
-                        config.getOldValue(), config.getNewValue());
+                            config.getOldValue(), config.getNewValue());
                     result.addClassResult(classResult);
                     break;
-                    
+
                 case "method":
-                    // Method rename implementation
                     MethodRenameResult methodResult = renameMethod(projectRoot,
-                        config.getOldValue(), config.getNewValue());
+                            config.getOldValue(), config.getNewValue());
                     result.addMethodResult(methodResult);
                     break;
-                    
+
                 case "variable":
-                    // Variable rename implementation
                     VariableRenameResult varResult = renameVariable(projectRoot,
-                        config.getOldValue(), config.getNewValue());
+                            config.getOldValue(), config.getNewValue());
                     result.addVariableResult(varResult);
                     break;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
-     * Rename method across the project
+     * Write compilation unit back to file
      */
-    private MethodRenameResult renameMethod(String projectRoot, String oldMethod, String newMethod) {
-        MethodRenameResult result = new MethodRenameResult(oldMethod, newMethod);
-        
-        List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt"});
-        
-        for (File file : files) {
-            try {
-                String content = readFile(file);
-                String original = content;
-                
-                // Method call pattern
-                String methodCallPattern = "\\b" + Pattern.quote(oldMethod) + "\\s*\\(";
-                content = content.replaceAll(methodCallPattern, newMethod + "(");
-                
-                // Method declaration pattern (simplified)
-                String methodDeclPattern = "(public|private|protected|static|final|abstract)?\\s+" +
-                    "[\\w<>\\[\\]]+\\s+" + Pattern.quote(oldMethod) + "\\s*\\(";
-                content = content.replaceAll(methodDeclPattern, "$1 " + newMethod + "(");
-                
-                if (!content.equals(original)) {
-                    if (!dryRun) {
-                        writeFile(file, content);
-                    }
-                    result.addUpdatedFile(file.getPath());
-                    
-                    int diff = countDifferences(original, content);
-                    result.addReplacements(diff);
-                }
-            } catch (IOException e) {
-                result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
-            }
+    private void writeCompilationUnit(File file, CompilationUnit cu) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file);
+             OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+             BufferedWriter writer = new BufferedWriter(osw)) {
+            writer.write(cu.toString());
         }
-        
-        return result;
     }
-    
-    /**
-     * Rename variable across the project (with scope awareness)
-     */
-    private VariableRenameResult renameVariable(String projectRoot, String oldVar, String newVar) {
-        VariableRenameResult result = new VariableRenameResult(oldVar, newVar);
-        
-        List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt"});
-        
-        for (File file : files) {
-            try {
-                String content = readFile(file);
-                String original = content;
-                
-                // This is simplified - proper variable renaming needs scope analysis
-                String varPattern = "\\b" + Pattern.quote(oldVar) + "\\b";
-                
-                // Don't replace in strings and comments
-                String[] lines = content.split(LINE_SEPARATOR);
-                StringBuilder sb = new StringBuilder();
-                boolean inComment = false;
-                
-                for (String line : lines) {
-                    String trimmed = line.trim();
-                    
-                    if (trimmed.startsWith("/*")) inComment = true;
-                    if (inComment) {
-                        sb.append(line).append(LINE_SEPARATOR);
-                        if (trimmed.endsWith("*/")) inComment = false;
-                        continue;
-                    }
-                    
-                    if (trimmed.startsWith("//")) {
-                        sb.append(line).append(LINE_SEPARATOR);
-                        continue;
-                    }
-                    
-                    // Simple replacement - in production, use proper parsing
-                    line = line.replaceAll(varPattern, newVar);
-                    sb.append(line).append(LINE_SEPARATOR);
-                }
-                
-                content = sb.toString();
-                
-                if (!content.equals(original)) {
-                    if (!dryRun) {
-                        writeFile(file, content);
-                    }
-                    result.addUpdatedFile(file.getPath());
-                    
-                    int diff = countDifferences(original, content);
-                    result.addReplacements(diff);
-                }
-            } catch (IOException e) {
-                result.addError("Error processing " + file.getPath() + ": " + e.getMessage());
+
+    // ==================== Kotlin placeholders (simplified) ====================
+
+    private void updateClassInKotlinFile(File file, String oldClass, String newClass, ClassRenameResult result)
+            throws IOException {
+        String content = readFile(file);
+        String original = content;
+
+        content = content.replaceAll("class\\s+" + Pattern.quote(oldClass) + "\\b",
+                "class " + newClass);
+        content = content.replaceAll("interface\\s+" + Pattern.quote(oldClass) + "\\b",
+                "interface " + newClass);
+
+        if (!content.equals(original)) {
+            if (!dryRun) {
+                writeFile(file, content);
             }
+            result.setClassFileUpdated(true);
         }
-        
-        return result;
     }
-    
-    /**
-     * Find all files with given extensions
-     */
+
+    private void updateClassReferencesInFile(File file, String oldClass, String newClass, ClassRenameResult result)
+            throws IOException {
+        String content = readFile(file);
+        String original = content;
+
+        content = content.replaceAll("\\b" + Pattern.quote(oldClass) + "\\b", newClass);
+
+        if (!content.equals(original)) {
+            if (!dryRun) {
+                writeFile(file, content);
+            }
+            result.addReferencingFile(file.getPath());
+        }
+    }
+
+    private void renameMethodInKotlinFile(File file, String oldMethod, String newMethod, MethodRenameResult result)
+            throws IOException {
+        String content = readFile(file);
+        String original = content;
+
+        content = content.replaceAll("fun\\s+" + Pattern.quote(oldMethod) + "\\s*\\(",
+                "fun " + newMethod + "(");
+        content = content.replaceAll("\\b" + Pattern.quote(oldMethod) + "\\s*\\(", newMethod + "(");
+
+        if (!content.equals(original)) {
+            if (!dryRun) {
+                writeFile(file, content);
+            }
+            result.addUpdatedFile(file.getPath());
+            int diff = countDifferences(original, content);
+            result.addReplacements(diff);
+        }
+    }
+
+    private void renameVariableInKotlinFile(File file, String oldVar, String newVar, VariableRenameResult result)
+            throws IOException {
+        String content = readFile(file);
+        String original = content;
+
+        content = content.replaceAll("var\\s+" + Pattern.quote(oldVar) + "\\b",
+                "var " + newVar);
+        content = content.replaceAll("val\\s+" + Pattern.quote(oldVar) + "\\b",
+                "val " + newVar);
+        content = content.replaceAll("\\b" + Pattern.quote(oldVar) + "\\b", newVar);
+
+        if (!content.equals(original)) {
+            if (!dryRun) {
+                writeFile(file, content);
+            }
+            result.addUpdatedFile(file.getPath());
+            int diff = countDifferences(original, content);
+            result.addReplacements(diff);
+        }
+    }
+
+    // ==================== Utility methods ====================
+
     private List<File> findAllFiles(File dir, String[] extensions) {
         List<File> files = new ArrayList<>();
-        
         if (!dir.exists() || !dir.isDirectory()) {
             return files;
         }
-        
+
         File[] listFiles = dir.listFiles();
         if (listFiles != null) {
             for (File file : listFiles) {
@@ -503,19 +655,15 @@ public class AdvancedRefactor {
                 }
             }
         }
-        
         return files;
     }
-    
-    /**
-     * Find directories containing a specific path segment
-     */
+
     private List<File> findDirectoriesContaining(File root, String pathSegment) {
         List<File> result = new ArrayList<>();
         findDirectoriesContainingRecursive(root, pathSegment, result);
         return result;
     }
-    
+
     private void findDirectoriesContainingRecursive(File dir, String pathSegment, List<File> result) {
         File[] files = dir.listFiles();
         if (files != null) {
@@ -529,50 +677,30 @@ public class AdvancedRefactor {
             }
         }
     }
-    
-    /**
-     * Find class file by name
-     */
+
     private File findClassFile(String projectRoot, String className) {
         List<File> files = findAllFiles(new File(projectRoot), new String[]{".java", ".kt"});
         for (File file : files) {
             String fileName = file.getName();
-            String nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
-            if (nameWithoutExt.equals(className)) {
-                return file;
+            int lastDot = fileName.lastIndexOf('.');
+            if (lastDot > 0) {
+                String nameWithoutExt = fileName.substring(0, lastDot);
+                if (nameWithoutExt.equals(className)) {
+                    return file;
+                }
             }
         }
         return null;
     }
-    
-    /**
-     * Get file extension
-     */
+
     private String getFileExtension(String fileName) {
         int lastDot = fileName.lastIndexOf('.');
         return lastDot > 0 ? fileName.substring(lastDot) : "";
     }
-    
-    /**
-     * Extract package from import statement
-     */
-    private String getPackageFromImport(String content, String className) {
-        Pattern pattern = Pattern.compile("import\\s+([\\w.]+)\\.?" + 
-            Pattern.quote(className) + "\\s*;");
-        Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return "";
-    }
-    
-    /**
-     * Read file content
-     */
+
     private String readFile(File file) throws IOException {
         StringBuilder content = new StringBuilder();
         BufferedReader reader = null;
-        
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
             String line;
@@ -584,16 +712,11 @@ public class AdvancedRefactor {
                 reader.close();
             }
         }
-        
         return content.toString();
     }
-    
-    /**
-     * Write file content
-     */
+
     private void writeFile(File file, String content) throws IOException {
         BufferedWriter writer = null;
-        
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
             writer.write(content);
@@ -603,48 +726,35 @@ public class AdvancedRefactor {
             }
         }
     }
-    
-    /**
-     * Count differences between two strings (simplified)
-     */
+
     private int countDifferences(String original, String modified) {
         if (original.equals(modified)) return 0;
-        
         String[] originalLines = original.split(LINE_SEPARATOR);
         String[] modifiedLines = modified.split(LINE_SEPARATOR);
-        
         int diffCount = 0;
         int minLines = Math.min(originalLines.length, modifiedLines.length);
-        
         for (int i = 0; i < minLines; i++) {
             if (!originalLines[i].equals(modifiedLines[i])) {
                 diffCount++;
             }
         }
-        
-        return diffCount;
+        return diffCount + Math.abs(originalLines.length - modifiedLines.length);
     }
-    
-    /**
-     * Load batch configuration
-     */
+
     private List<RefactorConfig> loadConfig(String configFilePath) throws IOException {
         List<RefactorConfig> configs = new ArrayList<>();
         File file = new File(configFilePath);
-        
         if (!file.exists()) {
             throw new IOException("Config file not found: " + configFilePath);
         }
-        
+
         String content = readFile(file);
         String[] lines = content.split(LINE_SEPARATOR);
-        
         for (String line : lines) {
             line = line.trim();
             if (line.isEmpty() || line.startsWith("#")) {
                 continue;
             }
-            
             String[] parts = line.split(":");
             if (parts.length >= 3) {
                 String operation = parts[0].trim();
@@ -653,20 +763,19 @@ public class AdvancedRefactor {
                 configs.add(new RefactorConfig(operation, oldValue, newValue));
             }
         }
-        
         return configs;
     }
-    
+
     // ==================== Result Classes ====================
-    
+
     public static class PackageRenameResult {
-        private String oldPackage;
-        private String newPackage;
-        private List<String> updatedFiles;
-        private List<String> movedDirectories;
-        private List<String> errors;
+        private final String oldPackage;
+        private final String newPackage;
+        private final List<String> updatedFiles;
+        private final List<String> movedDirectories;
+        private final List<String> errors;
         private int importUpdates;
-        
+
         public PackageRenameResult(String oldPackage, String newPackage) {
             this.oldPackage = oldPackage;
             this.newPackage = newPackage;
@@ -675,23 +784,23 @@ public class AdvancedRefactor {
             this.errors = new ArrayList<>();
             this.importUpdates = 0;
         }
-        
+
         public void addUpdatedFile(String file, String type) {
             updatedFiles.add(file + " (" + type + ")");
         }
-        
+
         public void addMovedDirectory(String oldPath, String newPath) {
             movedDirectories.add(oldPath + " -> " + newPath);
         }
-        
+
         public void addError(String error) {
             errors.add(error);
         }
-        
+
         public void incrementImportUpdates() {
             importUpdates++;
         }
-        
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -700,73 +809,26 @@ public class AdvancedRefactor {
             sb.append("Files updated: ").append(updatedFiles.size()).append("\n");
             sb.append("Directories moved: ").append(movedDirectories.size()).append("\n");
             sb.append("Import updates: ").append(importUpdates).append("\n");
-            
+
             if (!errors.isEmpty()) {
                 sb.append("Errors:\n");
                 for (String error : errors) {
                     sb.append("  - ").append(error).append("\n");
                 }
             }
-            
             return sb.toString();
         }
     }
-    
-    public static class ImportUpdateResult {
-        private String oldImport;
-        private String newImport;
-        private List<String> updatedFiles;
-        private List<String> errors;
-        private int totalReplacements;
-        
-        public ImportUpdateResult(String oldImport, String newImport) {
-            this.oldImport = oldImport;
-            this.newImport = newImport;
-            this.updatedFiles = new ArrayList<>();
-            this.errors = new ArrayList<>();
-            this.totalReplacements = 0;
-        }
-        
-        public void addUpdatedFile(String file) {
-            updatedFiles.add(file);
-        }
-        
-        public void addError(String error) {
-            errors.add(error);
-        }
-        
-        public void addReplacements(int count) {
-            totalReplacements += count;
-        }
-        
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n=== Import Update Result ===\n");
-            sb.append("Import: ").append(oldImport).append(" -> ").append(newImport).append("\n");
-            sb.append("Files updated: ").append(updatedFiles.size()).append("\n");
-            sb.append("Total replacements: ").append(totalReplacements).append("\n");
-            
-            if (!errors.isEmpty()) {
-                sb.append("Errors:\n");
-                for (String error : errors) {
-                    sb.append("  - ").append(error).append("\n");
-                }
-            }
-            
-            return sb.toString();
-        }
-    }
-    
+
     public static class ClassRenameResult {
-        private String oldClass;
-        private String newClass;
+        private final String oldClass;
+        private final String newClass;
         private boolean classFileUpdated;
         private String newFilePath;
-        private List<String> referencingFiles;
-        private List<String> errors;
+        private final List<String> referencingFiles;
+        private final List<String> errors;
         private int totalReplacements;
-        
+
         public ClassRenameResult(String oldClass, String newClass) {
             this.oldClass = oldClass;
             this.newClass = newClass;
@@ -774,27 +836,13 @@ public class AdvancedRefactor {
             this.errors = new ArrayList<>();
             this.totalReplacements = 0;
         }
-        
-        public void setClassFileUpdated(boolean updated) {
-            this.classFileUpdated = updated;
-        }
-        
-        public void setNewFilePath(String path) {
-            this.newFilePath = path;
-        }
-        
-        public void addReferencingFile(String file) {
-            referencingFiles.add(file);
-        }
-        
-        public void addError(String error) {
-            errors.add(error);
-        }
-        
-        public void addReplacements(int count) {
-            totalReplacements += count;
-        }
-        
+
+        public void setClassFileUpdated(boolean updated) { this.classFileUpdated = updated; }
+        public void setNewFilePath(String path) { this.newFilePath = path; }
+        public void addReferencingFile(String file) { referencingFiles.add(file); }
+        public void addError(String error) { errors.add(error); }
+        public void addReplacements(int count) { totalReplacements += count; }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -806,25 +854,24 @@ public class AdvancedRefactor {
             }
             sb.append("Referencing files: ").append(referencingFiles.size()).append("\n");
             sb.append("Total replacements: ").append(totalReplacements).append("\n");
-            
+
             if (!errors.isEmpty()) {
                 sb.append("Errors:\n");
                 for (String error : errors) {
                     sb.append("  - ").append(error).append("\n");
                 }
             }
-            
             return sb.toString();
         }
     }
-    
+
     public static class MethodRenameResult {
-        private String oldMethod;
-        private String newMethod;
-        private List<String> updatedFiles;
-        private List<String> errors;
+        private final String oldMethod;
+        private final String newMethod;
+        private final List<String> updatedFiles;
+        private final List<String> errors;
         private int totalReplacements;
-        
+
         public MethodRenameResult(String oldMethod, String newMethod) {
             this.oldMethod = oldMethod;
             this.newMethod = newMethod;
@@ -832,19 +879,11 @@ public class AdvancedRefactor {
             this.errors = new ArrayList<>();
             this.totalReplacements = 0;
         }
-        
-        public void addUpdatedFile(String file) {
-            updatedFiles.add(file);
-        }
-        
-        public void addError(String error) {
-            errors.add(error);
-        }
-        
-        public void addReplacements(int count) {
-            totalReplacements += count;
-        }
-        
+
+        public void addUpdatedFile(String file) { updatedFiles.add(file); }
+        public void addError(String error) { errors.add(error); }
+        public void addReplacements(int count) { totalReplacements += count; }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -852,25 +891,24 @@ public class AdvancedRefactor {
             sb.append("Method: ").append(oldMethod).append(" -> ").append(newMethod).append("\n");
             sb.append("Files updated: ").append(updatedFiles.size()).append("\n");
             sb.append("Total replacements: ").append(totalReplacements).append("\n");
-            
+
             if (!errors.isEmpty()) {
                 sb.append("Errors:\n");
                 for (String error : errors) {
                     sb.append("  - ").append(error).append("\n");
                 }
             }
-            
             return sb.toString();
         }
     }
-    
+
     public static class VariableRenameResult {
-        private String oldVar;
-        private String newVar;
-        private List<String> updatedFiles;
-        private List<String> errors;
+        private final String oldVar;
+        private final String newVar;
+        private final List<String> updatedFiles;
+        private final List<String> errors;
         private int totalReplacements;
-        
+
         public VariableRenameResult(String oldVar, String newVar) {
             this.oldVar = oldVar;
             this.newVar = newVar;
@@ -878,19 +916,11 @@ public class AdvancedRefactor {
             this.errors = new ArrayList<>();
             this.totalReplacements = 0;
         }
-        
-        public void addUpdatedFile(String file) {
-            updatedFiles.add(file);
-        }
-        
-        public void addError(String error) {
-            errors.add(error);
-        }
-        
-        public void addReplacements(int count) {
-            totalReplacements += count;
-        }
-        
+
+        public void addUpdatedFile(String file) { updatedFiles.add(file); }
+        public void addError(String error) { errors.add(error); }
+        public void addReplacements(int count) { totalReplacements += count; }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -898,122 +928,90 @@ public class AdvancedRefactor {
             sb.append("Variable: ").append(oldVar).append(" -> ").append(newVar).append("\n");
             sb.append("Files updated: ").append(updatedFiles.size()).append("\n");
             sb.append("Total replacements: ").append(totalReplacements).append("\n");
-            
+
             if (!errors.isEmpty()) {
                 sb.append("Errors:\n");
                 for (String error : errors) {
                     sb.append("  - ").append(error).append("\n");
                 }
             }
-            
             return sb.toString();
         }
     }
-    
+
     public static class BatchRefactorResult {
-        private List<PackageRenameResult> packageResults;
-        private List<ImportUpdateResult> importResults;
-        private List<ClassRenameResult> classResults;
-        private List<MethodRenameResult> methodResults;
-        private List<VariableRenameResult> variableResults;
-        
+        private final List<PackageRenameResult> packageResults;
+        private final List<ClassRenameResult> classResults;
+        private final List<MethodRenameResult> methodResults;
+        private final List<VariableRenameResult> variableResults;
+
         public BatchRefactorResult() {
             this.packageResults = new ArrayList<>();
-            this.importResults = new ArrayList<>();
             this.classResults = new ArrayList<>();
             this.methodResults = new ArrayList<>();
             this.variableResults = new ArrayList<>();
         }
-        
-        public void addPackageResult(PackageRenameResult result) {
-            packageResults.add(result);
-        }
-        
-        public void addImportResult(ImportUpdateResult result) {
-            importResults.add(result);
-        }
-        
-        public void addClassResult(ClassRenameResult result) {
-            classResults.add(result);
-        }
-        
-        public void addMethodResult(MethodRenameResult result) {
-            methodResults.add(result);
-        }
-        
-        public void addVariableResult(VariableRenameResult result) {
-            variableResults.add(result);
-        }
-        
+
+        public void addPackageResult(PackageRenameResult result) { packageResults.add(result); }
+        public void addClassResult(ClassRenameResult result) { classResults.add(result); }
+        public void addMethodResult(MethodRenameResult result) { methodResults.add(result); }
+        public void addVariableResult(VariableRenameResult result) { variableResults.add(result); }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("\n========================================\n");
             sb.append("        BATCH REFACTOR RESULTS          \n");
             sb.append("========================================\n");
-            
+
             sb.append("\nPackage Renames: ").append(packageResults.size());
-            for (PackageRenameResult r : packageResults) {
-                sb.append(r.toString());
-            }
-            
-            sb.append("\nImport Updates: ").append(importResults.size());
-            for (ImportUpdateResult r : importResults) {
-                sb.append(r.toString());
-            }
-            
+            for (PackageRenameResult r : packageResults) sb.append(r.toString());
+
             sb.append("\nClass Renames: ").append(classResults.size());
-            for (ClassRenameResult r : classResults) {
-                sb.append(r.toString());
-            }
-            
+            for (ClassRenameResult r : classResults) sb.append(r.toString());
+
             sb.append("\nMethod Renames: ").append(methodResults.size());
-            for (MethodRenameResult r : methodResults) {
-                sb.append(r.toString());
-            }
-            
+            for (MethodRenameResult r : methodResults) sb.append(r.toString());
+
             sb.append("\nVariable Renames: ").append(variableResults.size());
-            for (VariableRenameResult r : variableResults) {
-                sb.append(r.toString());
-            }
-            
+            for (VariableRenameResult r : variableResults) sb.append(r.toString());
+
             return sb.toString();
         }
     }
-    
+
     public static class RefactorConfig {
-        private String operation;
-        private String oldValue;
-        private String newValue;
-        
+        private final String operation;
+        private final String oldValue;
+        private final String newValue;
+
         public RefactorConfig(String operation, String oldValue, String newValue) {
             this.operation = operation;
             this.oldValue = oldValue;
             this.newValue = newValue;
         }
-        
+
         public String getOperation() { return operation; }
         public String getOldValue() { return oldValue; }
         public String getNewValue() { return newValue; }
-        
+
         @Override
         public String toString() {
             return operation + ": " + oldValue + " -> " + newValue;
         }
     }
-    
+
     public static class RefactorStats {
         private int filesProcessed;
         private int replacements;
-        
+
         public RefactorStats() {
             this.filesProcessed = 0;
             this.replacements = 0;
         }
-        
+
         public void incrementFiles() { filesProcessed++; }
         public void addReplacements(int count) { replacements += count; }
-        
         public int getFilesProcessed() { return filesProcessed; }
         public int getReplacements() { return replacements; }
     }

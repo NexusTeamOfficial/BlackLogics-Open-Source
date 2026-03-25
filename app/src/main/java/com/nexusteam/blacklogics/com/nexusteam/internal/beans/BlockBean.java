@@ -40,6 +40,13 @@ public class BlockBean extends SelectableBean implements Parcelable {
     @Expose
     public String typeName;
     
+    // ✅ CUSTOM BLOCK FIELDS - ADD KARO
+    @Expose
+    public boolean isCustomBlock;
+    
+    @Expose
+    public int originalId;
+    
     public int describeContents() {
         return 0;
     }
@@ -52,6 +59,8 @@ public class BlockBean extends SelectableBean implements Parcelable {
         this.subStack1 = -1;
         this.subStack2 = -1;
         this.nextBlock = -1;
+        this.isCustomBlock = false;
+        this.originalId = -1;
     }
     
     public BlockBean(String str, String str2, String str3, String str4) {
@@ -68,6 +77,8 @@ public class BlockBean extends SelectableBean implements Parcelable {
         this.subStack1 = -1;
         this.subStack2 = -1;
         this.nextBlock = -1;
+        this.isCustomBlock = false;
+        this.originalId = -1;
         buildClassInfo();
     }
     
@@ -82,6 +93,11 @@ public class BlockBean extends SelectableBean implements Parcelable {
         this.subStack1 = parcel.readInt();
         this.subStack2 = parcel.readInt();
         this.nextBlock = parcel.readInt();
+        
+        // ✅ READ CUSTOM FIELDS
+        this.isCustomBlock = parcel.readByte() != 0;
+        this.originalId = parcel.readInt();
+        
         buildClassInfo();
     }
     
@@ -95,7 +111,7 @@ public class BlockBean extends SelectableBean implements Parcelable {
         if ((this.spec != null && !this.spec.equals(blockBean.spec)) || !this.type.equals(blockBean.type)) {
             return false;
         }
-        if ((this.typeName != null && !this.typeName.equals(blockBean.typeName)) || !this.opCode.equals(blockBean.opCode) || this.color != blockBean.color || this.subStack1 != blockBean.subStack1 || this.subStack2 != blockBean.subStack2 || this.nextBlock != blockBean.nextBlock) {
+        if ((this.typeName != null && !this.typeName.equals(blockBean.typeName)) || !this.opCode.equals(blockBean.opCode) || this.color != blockBean.color || this.subStack1 != blockBean.subStack1 || this.subStack2 != blockBean.subStack2 || this.nextBlock != blockBean.nextBlock || this.isCustomBlock != blockBean.isCustomBlock || this.originalId != blockBean.originalId) {
             return false;
         }
         if (this.parameters != null && this.parameters.size() != blockBean.parameters.size()) {
@@ -122,7 +138,11 @@ public class BlockBean extends SelectableBean implements Parcelable {
         out.writeInt(this.subStack2);
         out.writeInt(this.nextBlock);
         
-
+        // ✅ WRITE CUSTOM FIELDS - PEHLE
+        out.writeBoolean(this.isCustomBlock);
+        out.writeInt(this.originalId);
+        
+        // ✅ PHIR PARAMETERS
         if (this.parameters == null) {
             out.writeInt(0);
         } else {
@@ -133,7 +153,6 @@ public class BlockBean extends SelectableBean implements Parcelable {
         }
     }
     
-
     public void readFromStream(java.io.DataInputStream in) throws java.io.IOException {
         this.id = in.readUTF();
         this.spec = in.readUTF();
@@ -145,14 +164,17 @@ public class BlockBean extends SelectableBean implements Parcelable {
         this.subStack2 = in.readInt();
         this.nextBlock = in.readInt();
         
-
+        // ✅ READ CUSTOM FIELDS - PEHLE
+        this.isCustomBlock = in.readBoolean();
+        this.originalId = in.readInt();
+        
+        // ✅ PHIR PARAMETERS
         int size = in.readInt();
         this.parameters = new java.util.ArrayList<>();
         for (int i = 0; i < size; i++) {
             this.parameters.add(in.readUTF());
         }
         
-
         buildClassInfo();
     }
     
@@ -186,6 +208,11 @@ public class BlockBean extends SelectableBean implements Parcelable {
         this.subStack1 = blockBean.subStack1;
         this.subStack2 = blockBean.subStack2;
         this.nextBlock = blockBean.nextBlock;
+        
+        // ✅ COPY CUSTOM FIELDS
+        this.isCustomBlock = blockBean.isCustomBlock;
+        this.originalId = blockBean.originalId;
+        
         buildClassInfo();
     }
     
@@ -206,6 +233,10 @@ public class BlockBean extends SelectableBean implements Parcelable {
         parcel.writeInt(this.subStack1);
         parcel.writeInt(this.subStack2);
         parcel.writeInt(this.nextBlock);
+        
+        // ✅ WRITE CUSTOM FIELDS TO PARCEL
+        parcel.writeByte((byte) (this.isCustomBlock ? 1 : 0));
+        parcel.writeInt(this.originalId);
     }
     
     public static Parcelable.Creator<BlockBean> getCreator() {

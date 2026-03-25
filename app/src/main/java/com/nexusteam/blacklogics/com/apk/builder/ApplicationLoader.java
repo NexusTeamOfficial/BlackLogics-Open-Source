@@ -17,6 +17,7 @@ import android.os.SystemClock;
 import androidx.multidex.MultiDex;
 
 import com.nexusteam.internal.CrashHandler;
+import com.nexusteam.blacklogics.DesignActivity;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,174 +38,178 @@ public class ApplicationLoader extends Application {
 	private static final String LAST_CRASH = "last_crash_time";
 	
 	@Override
-protected void attachBaseContext(android.content.Context base) {
-
-    android.content.SharedPreferences sp =
-            base.getSharedPreferences(
-                    "LANG",
-                    android.content.Context.MODE_PRIVATE
-            );
-
-    String lang = sp.getString("lang", "en");
-
-    android.content.Context localeContext =
-            com.nexusteam.blacklogics.utils.LocaleHelper
-                    .setLocale(base, lang);
-
-    super.attachBaseContext(localeContext);
-
-    androidx.multidex.MultiDex.install(localeContext);
-}
+	protected void attachBaseContext(android.content.Context base) {
+		
+		android.content.SharedPreferences sp =
+		base.getSharedPreferences(
+		"LANG",
+		android.content.Context.MODE_PRIVATE
+		);
+		
+		String lang = sp.getString("lang", "en");
+		
+		android.content.Context localeContext =
+		com.nexusteam.blacklogics.utils.LocaleHelper
+		.setLocale(base, lang);
+		
+		super.attachBaseContext(localeContext);
+		
+		androidx.multidex.MultiDex.install(localeContext);
+	}
 	@Override
-public void onCreate() {
-applyTheme();
-    super.onCreate();
-
-    com.apk.builder.ApplicationLoader.applicationContext = this;
-    com.apk.builder.ApplicationLoader.applicationHandler =
-            new android.os.Handler(getMainLooper());
-
-    com.apk.builder.ApplicationLoader.complex
-            .setC(getApplicationContext());
-
-    registerActivityLifecycleCallbacks(
-        new android.app.Application.ActivityLifecycleCallbacks() {
-
-            @Override
-            public void onActivityCreated(
-                    final android.app.Activity activity,
-                    android.os.Bundle savedInstanceState) {
-
-                // ✅ Edge-to-edge ONLY Android 11+
-                if (android.os.Build.VERSION.SDK_INT >= 30) {
-                    activity.getWindow()
-                            .setDecorFitsSystemWindows(false);
-                }
-
-                final android.view.View rootView =
-                        activity.findViewById(android.R.id.content);
-
-                if (rootView != null &&
-                    android.os.Build.VERSION.SDK_INT >= 30) {
-
-                    rootView.setOnApplyWindowInsetsListener(
-                        new android.view.View.OnApplyWindowInsetsListener() {
-                            @Override
-                            public android.view.WindowInsets onApplyWindowInsets(
-                                    android.view.View v,
-                                    android.view.WindowInsets insets) {
-
-                                android.graphics.Insets bars =
-                                        insets.getInsets(
-                                                android.view.WindowInsets
-                                                        .Type.systemBars());
-
-                                v.setPadding(
-                                        bars.left,
-                                        bars.top,
-                                        bars.right,
-                                        bars.bottom
-                                );
-                                return insets;
-                            }
-                        }
-                    );
-                }
-            }
-
-            @Override
-            public void onActivityStarted(android.app.Activity activity) {
-                com.nexusteam.internal.AppLifecycleTracker
-                        .setCurrentActivity(activity);
-            }
-
-            @Override
-            public void onActivityResumed(android.app.Activity activity) {
-                com.nexusteam.internal.AppLifecycleTracker
-                        .setCurrentActivity(activity);
-            }
-
-            @Override public void onActivityPaused(android.app.Activity activity) {}
-            @Override public void onActivityStopped(android.app.Activity activity) {}
-            @Override public void onActivitySaveInstanceState(
-                    android.app.Activity activity,
-                    android.os.Bundle outState) {}
-            @Override public void onActivityDestroyed(android.app.Activity activity) {}
-        }
-    );
-
-    // ✅ SINGLE crash handler (Android 8–16)
-    uncaughtExceptionHandler =
-            Thread.getDefaultUncaughtExceptionHandler();
-
-    Thread.setDefaultUncaughtExceptionHandler(
-        new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable ex) {
-                try {
-                    if (isCrashLoop()) {
-                        uncaughtExceptionHandler
-                                .uncaughtException(thread, ex);
-                        return;
-                    }
-
-                    Throwable root = getRootCause(ex);
-                    String report = buildCrashReport(ex, root);
-
-                    android.content.Intent intent =
-                            new android.content.Intent(
-                                    getApplicationContext(),
-                                    com.nexusteam.blacklogics.DebugActivity.class
-                            );
-                    intent.setFlags(
-                            android.content.Intent.FLAG_ACTIVITY_NEW_TASK |
-                            android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    );
-                    intent.putExtra("error", report);
-
-                    int piFlags =
-                            android.app.PendingIntent.FLAG_ONE_SHOT;
-                    if (android.os.Build.VERSION.SDK_INT >= 23) {
-                        piFlags |= android.app.PendingIntent.FLAG_IMMUTABLE;
-                    }
-
-                    android.app.PendingIntent pendingIntent =
-                            android.app.PendingIntent.getActivity(
-                                    getApplicationContext(),
-                                    11111,
-                                    intent,
-                                    piFlags
-                            );
-
-                    android.app.AlarmManager am =
-                            (android.app.AlarmManager)
-                                    getSystemService(
-                                            android.content.Context.ALARM_SERVICE
-                                    );
-
-                    if (am != null) {
-                        am.setExact(
-                                android.app.AlarmManager
-                                        .ELAPSED_REALTIME_WAKEUP,
-                                android.os.SystemClock
-                                        .elapsedRealtime() + 800,
-                                pendingIntent
-                        );
-                    }
-
-                } catch (Throwable ignored) {}
-
-                android.os.Process.killProcess(
-                        android.os.Process.myPid());
-                System.exit(2);
-            }
-        }
-    );
-    
-    Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
-
-    //applyTheme();
-}
+	public void onCreate() {
+		applyTheme();
+		super.onCreate();
+		
+		com.apk.builder.ApplicationLoader.applicationContext = this;
+		com.apk.builder.ApplicationLoader.applicationHandler =
+		new android.os.Handler(getMainLooper());
+		
+		com.apk.builder.ApplicationLoader.complex
+		.setC(getApplicationContext());
+		
+		registerActivityLifecycleCallbacks(
+		new android.app.Application.ActivityLifecycleCallbacks() {
+			
+			@Override
+			public void onActivityCreated(
+			final android.app.Activity activity,
+			android.os.Bundle savedInstanceState) {
+				
+				// ✅ Edge-to-edge ONLY Android 11+
+				if (android.os.Build.VERSION.SDK_INT >= 30) {
+					activity.getWindow()
+					.setDecorFitsSystemWindows(false);
+				}
+				
+				final android.view.View rootView =
+				activity.findViewById(android.R.id.content);
+				
+				if (rootView != null &&
+				android.os.Build.VERSION.SDK_INT >= 30) {
+					
+					rootView.setOnApplyWindowInsetsListener(
+					new android.view.View.OnApplyWindowInsetsListener() {
+						@Override
+						public android.view.WindowInsets onApplyWindowInsets(
+						android.view.View v,
+						android.view.WindowInsets insets) {
+							
+							if (activity instanceof DesignActivity) {
+								return insets;
+							}
+							
+							android.graphics.Insets bars =
+							insets.getInsets(
+							android.view.WindowInsets
+							.Type.systemBars());
+							
+							v.setPadding(
+							bars.left,
+							bars.top,
+							bars.right,
+							bars.bottom
+							);
+							return insets;
+						}
+					}
+					);
+				}
+			}
+			
+			@Override
+			public void onActivityStarted(android.app.Activity activity) {
+				com.nexusteam.internal.AppLifecycleTracker
+				.setCurrentActivity(activity);
+			}
+			
+			@Override
+			public void onActivityResumed(android.app.Activity activity) {
+				com.nexusteam.internal.AppLifecycleTracker
+				.setCurrentActivity(activity);
+			}
+			
+			@Override public void onActivityPaused(android.app.Activity activity) {}
+			@Override public void onActivityStopped(android.app.Activity activity) {}
+			@Override public void onActivitySaveInstanceState(
+			android.app.Activity activity,
+			android.os.Bundle outState) {}
+			@Override public void onActivityDestroyed(android.app.Activity activity) {}
+		}
+		);
+		
+		// ✅ SINGLE crash handler (Android 8–16)
+		uncaughtExceptionHandler =
+		Thread.getDefaultUncaughtExceptionHandler();
+		
+		Thread.setDefaultUncaughtExceptionHandler(
+		new Thread.UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread thread, Throwable ex) {
+				try {
+					if (isCrashLoop()) {
+						uncaughtExceptionHandler
+						.uncaughtException(thread, ex);
+						return;
+					}
+					
+					Throwable root = getRootCause(ex);
+					String report = buildCrashReport(ex, root);
+					
+					android.content.Intent intent =
+					new android.content.Intent(
+					getApplicationContext(),
+					com.nexusteam.blacklogics.DebugActivity.class
+					);
+					intent.setFlags(
+					android.content.Intent.FLAG_ACTIVITY_NEW_TASK |
+					android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+					);
+					intent.putExtra("error", report);
+					
+					int piFlags =
+					android.app.PendingIntent.FLAG_ONE_SHOT;
+					if (android.os.Build.VERSION.SDK_INT >= 23) {
+						piFlags |= android.app.PendingIntent.FLAG_IMMUTABLE;
+					}
+					
+					android.app.PendingIntent pendingIntent =
+					android.app.PendingIntent.getActivity(
+					getApplicationContext(),
+					11111,
+					intent,
+					piFlags
+					);
+					
+					android.app.AlarmManager am =
+					(android.app.AlarmManager)
+					getSystemService(
+					android.content.Context.ALARM_SERVICE
+					);
+					
+					if (am != null) {
+						am.setExact(
+						android.app.AlarmManager
+						.ELAPSED_REALTIME_WAKEUP,
+						android.os.SystemClock
+						.elapsedRealtime() + 800,
+						pendingIntent
+						);
+					}
+					
+				} catch (Throwable ignored) {}
+				
+				android.os.Process.killProcess(
+				android.os.Process.myPid());
+				System.exit(2);
+			}
+		}
+		);
+		
+		Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
+		
+		//applyTheme();
+	}
 	
 	
 	private String buildCrashReport(Throwable ex, Throwable root) {
@@ -288,31 +293,17 @@ applyTheme();
 	
 	
 	private void applyTheme() {
-    SharedPreferences prefs =
-            getSharedPreferences("AppSettings", MODE_PRIVATE);
-
-    int themeMode = prefs.getInt("theme_mode", 0);
-
-    switch (themeMode) {
-        case 1:
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_NO
-            );
-            break;
-
-        case 2:
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES
-            );
-            break;
-
-        default:
-            AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            );
-            break;
-    }
-}
+		SharedPreferences prefs =
+		getSharedPreferences("AppSettings", MODE_PRIVATE);
+		
+		boolean isDark = prefs.getBoolean("dark_mode", false);
+		
+		AppCompatDelegate.setDefaultNightMode(
+		isDark
+		? AppCompatDelegate.MODE_NIGHT_YES
+		: AppCompatDelegate.MODE_NIGHT_NO
+		);
+	}
 	
 	
 	

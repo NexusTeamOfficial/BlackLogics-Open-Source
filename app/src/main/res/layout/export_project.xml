@@ -149,5 +149,11 @@
 					style="@style/Widget.MaterialComponents.Button" />
 			</LinearLayout>
 		</LinearLayout>
+		<com.google.android.gms.ads.AdView
+			android:id="@+id/adview1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:adSize="SMART_BANNER"
+			app:adUnitId="ca-app-pub-2903137488772866/3754424748" />
 	</LinearLayout>
 </LinearLayout>

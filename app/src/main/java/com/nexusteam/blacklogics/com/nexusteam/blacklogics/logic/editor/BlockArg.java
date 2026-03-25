@@ -75,6 +75,8 @@ public class BlockArg extends BlockBase {
     private ViewEditor viewEditor;
     private boolean isMain = false;
     
+    public String expectedType = null;
+    
     xr widgetHelper;
     
     private Complex complex;
@@ -87,6 +89,7 @@ public class BlockArg extends BlockBase {
         this.init(var1);
         
         this.complex = new Complex();
+        this.expectedType = null;
         
         if (ProjectDataHelper.getScId(var1) != null && !ProjectDataHelper.getScId(var1).isEmpty()) {
             this.complex.setId(ProjectDataHelper.getScId(var1));

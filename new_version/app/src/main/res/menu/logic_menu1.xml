@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:icon="@drawable/ic_content_copy_white_24dp" android:id="@+id/menu_block_copy" android:orderInCategory="1" android:title="@string/title_block_copy" app:showAsAction="always" />
+    <item android:icon="@drawable/ic_content_paste_grey600_24dp" android:id="@+id/menu_block_paste" android:orderInCategory="1" android:title="@string/title_block_paste" app:showAsAction="always" />
+     <item android:icon="@drawable/block_flled_white" android:id="@+id/menu_show_source" android:orderInCategory="1" android:title="Show Source Code" app:showAsAction="always" />
+</menu>
+
+

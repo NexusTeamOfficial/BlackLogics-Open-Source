@@ -67,7 +67,7 @@ public class BlockPane extends RelativeLayout {
         this.possibleTargets.add(obj);
     }
 
-    private boolean dropCompatible(Block block, View view) {
+   /* private boolean dropCompatible(Block block, View view) {
         if (block.isReporter) {
             String str = block.mType;
             if ((view instanceof BlockBase) && !((BlockBase) view).mType.equals(str)) {
@@ -75,7 +75,59 @@ public class BlockPane extends RelativeLayout {
             }
         }
         return true;
+    }*/
+    private boolean dropCompatible(Block block, View view) {
+    // Command blocks → koi restriction nahi (normal behaviour)
+    if (!block.isReporter) {
+        return true;
     }
+
+    // Reporter block sirf BlockArg slot mein ja sakta hai
+    if (!(view instanceof BlockArg)) {
+        return false;
+    }
+
+    BlockArg slot = (BlockArg) view;
+
+    // Slot mein koi expected type nahi → sab allowed
+    if (slot.expectedType == null || slot.expectedType.isEmpty()) {
+        return true;
+    }
+
+    String draggedType = block.mType;
+
+    // ──────────────────────────────────────────────
+    // Core matching rules
+    // ──────────────────────────────────────────────
+
+    // 1. Exact match
+    if (slot.expectedType.equals(draggedType)) {
+        return true;
+    }
+
+    // 2. Any component wildcard
+    if (slot.expectedType.equals("m.anycomponent")) {
+        return draggedType != null && draggedType.startsWith("m.");
+    }
+
+    // 3. View family (bahut common use-case)
+    if (slot.expectedType.equals("m.view")) {
+        if (draggedType == null) return false;
+        return draggedType.startsWith("m.") &&
+               !draggedType.contains("layout") &&     // optional: layouts exclude
+               !draggedType.contains("adapter");      // optional: adapters exclude
+    }
+
+    // 4. Text components group (agar future mein chahiye)
+    if (slot.expectedType.equals("m.textcomponent")) {
+        return "m.textview".equals(draggedType) ||
+               "m.edittext".equals(draggedType) ||
+               "m.button".equals(draggedType);
+    }
+
+    // Default: sirf exact match allowed
+    return false;
+}
 
     private void findCommandTargetsIn(Block block, Block block2, boolean z) {
         while (block2.getVisibility() != 8) {
@@ -609,6 +661,18 @@ public class BlockPane extends RelativeLayout {
     public void updateFeedbackFor(Block block, int i, int i2) {
         getLocationOnScreen(this.posArea);
         this.nearestTarget = nearestTargetForBlockIn(block, i, i2);
+
+    // NAYA: reporter block ke case mein compatibility check
+    if (block.isReporter && this.nearestTarget != null) {
+        View target = (View) this.nearestTarget[1];
+        if (target instanceof BlockArg) {
+            if (!dropCompatible(block, target)) {
+                this.nearestTarget = null;
+                // Optional: red highlight / shake animation trigger kar sakte ho
+                // Log.d("BlockPane", "Drop rejected: slot=" + ((BlockArg)target).expectedType + ", dragged=" + block.mType);
+            }
+        }
+    }
         if (block.canHaveSubstack1() && -1 == block.subStack1 && this.nearestTarget != null) {
             Block block2 = (Block) this.nearestTarget[INSERT_ABOVE];
             switch (((Integer) this.nearestTarget[INSERT_SUB1]).intValue()) {

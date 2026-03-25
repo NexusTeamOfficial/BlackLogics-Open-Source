@@ -5,13 +5,22 @@ import java.util.ArrayList;
 import android.view.View;
 import android.view.ViewGroup;
 
-public  class IdManager {
+public class IdManager {
+    
+    private static IdManager instance; // Add singleton instance
     
     public HashMap<View,String> mViewIdMap ;
     
     IdManager(){
         mViewIdMap= new HashMap<>();
-        
+    }
+    
+    // Add getInstance() method
+    public static synchronized IdManager getInstance() {
+        if (instance == null) {
+            instance = new IdManager();
+        }
+        return instance;
     }
     
     public View getView(String id){
@@ -52,8 +61,6 @@ public  class IdManager {
         addNewId(view, id);
     }
     
-    
-    
     public void addNewId(View view,String s){
         if(isIdUsed(s))throw new IllegalArgumentException(s+" is already in use"); 
 
@@ -73,7 +80,6 @@ public  class IdManager {
         mViewIdMap.remove(view);
     }
     
-
     public void remove(View view,boolean recursive){
         mViewIdMap.remove(view);
 
@@ -99,7 +105,6 @@ public  class IdManager {
         return list;
     }
     
-    
     public ArrayList<String> getIds(){
         ArrayList<String> list = new ArrayList<>();
         for (View view :mViewIdMap.keySet() ) {  
@@ -116,7 +121,6 @@ public  class IdManager {
         return mViewIdMap.containsKey(view);
     }
     
-    
     public String generate(View view) {
         return generateNewId(view);
     }
@@ -124,6 +128,4 @@ public  class IdManager {
     public void bind(View view, String id) {
         addNewId(view, id);
     }
-    
-    
 }

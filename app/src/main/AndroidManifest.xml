@@ -155,6 +155,16 @@
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true" />
 		<activity
+			android:name=".AndroidManifestEditorActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true" />
+		<activity
+			android:name=".DonateActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true" />
+		<activity
 			android:name=".DebugActivity"
 			android:screenOrientation="portrait"
 			android:theme="@style/AppTheme.DebugActivity" />
@@ -366,9 +376,6 @@
 			android:name="com.besome.blacklogics.block_manager.BlocksManagerActivity"
 			android:configChanges="orientation|screenSize" />
 		<activity
-			android:name="com.nexusteam.internal.os.layouteditor.color.ColorPickerActivity"
-			android:configChanges="orientation|screenSize" />
-		<activity
 			android:name="com.nexusteam.internal.os.layouteditor.widget.WidgetCircleImageView"
 			android:configChanges="orientation|screenSize" />
 		<activity
@@ -405,9 +412,6 @@
 			android:name="com.nexusteam.internal.editor.makeblock.MakeBlockActivity"
 			android:configChanges="orientation|screenSize" />
 		<activity
-			android:name="LogicEditorActivity"
-			android:configChanges="orientation|screenSize" />
-		<activity
 			android:name="com.nexusteam.sdk.code.SrcCodeEditor"
 			android:configChanges="orientation|screenSize" />
 		<activity
@@ -428,6 +432,15 @@
 		<activity
 			android:name="com.nexusteam.sdk.nativelib.ManageNativelibsActivity"
 			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.internal.os.layouteditor.color.ColorPickerActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.CustomAttributesEditorActivity"
+			android:configChanges="orientation|screenSize" />
+		<activity
+			android:name="com.nexusteam.blacklogics.activities.OssLicenseActivity"
+			android:configChanges="orientation|screenSize" />
 		<uses-library
 			android:name="org.apache.http.legacy"
 			android:required="false" />
@@ -446,16 +459,6 @@
     android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
     android:hardwareAccelerated="true"
     android:supportsPictureInPicture="true" />
-    <provider
-android:name="androidx.core.content.FileProvider"
-android:authorities="com.nexusteam.blacklogics.provider"
-android:exported="false"
-android:grantUriPermissions="true">
-
-<meta-data
-android:name="android.support.FILE_PROVIDER_PATHS"
-android:resource="@xml/provider_paths" />
-</provider>
 <receiver 
     android:name="com.besome.blacklogics.lib.log.BlackLogReceiver"
     android:enabled="true"
@@ -469,19 +472,25 @@ android:resource="@xml/provider_paths" />
 	android:theme="@style/LogcatActivityTheme"
 	android:windowSoftInputMode="stateHidden" />
     
-<provider
-    android:name="androidx.core.content.FileProvider"
-    android:authorities="com.nexusteam.blacklogics.provider"
-    android:exported="false"
-    android:grantUriPermissions="true">
-    <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
-</provider>    
+ <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.nexusteam.blacklogics.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
 <activity
     android:name="com.nexusteam.internal.editor.LogicEditorActivity"
     android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
     android:hardwareAccelerated="true"
+	android:exported="true"
     android:supportsPictureInPicture="true" />
+<activity
+    android:name="com.nexusteam.internal.os.layouteditor.color.ColorPickerActivity"
+    android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+    android:hardwareAccelerated="true"
+    android:supportsPictureInPicture="true" />    
 	</application>
 </manifest>

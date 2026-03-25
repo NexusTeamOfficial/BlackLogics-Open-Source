@@ -29,10 +29,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -40,9 +44,12 @@ import com.github.angads25.filepicker.*;
 import com.google.android.flexbox.*;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
+import com.google.android.material.card.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.nexusteam.blacklogics.widget.AdLayout;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -65,20 +72,27 @@ public class ResourceEncryptActivity extends AppCompatActivity {
 	private String projectId = "";
 	private boolean isEncryptEnabled = false;
 	
-	private LinearLayout linear_main;
-	private ScrollView vscroll_encrypt;
-	private LinearLayout linear_content;
+	private ScrollView vscroll2;
+	private LinearLayout linear10;
+	private MaterialCardView cardview4;
+	private MaterialCardView cardview5;
+	private MaterialCardView cardview6;
+	private AdLayout adLayout;
+	private LinearLayout linear11;
 	private Switch sw_encrypt_enabled;
-	private LinearLayout linear6;
-	private TextView textview8;
-	private LinearLayout ln_encrypt_key;
-	private LinearLayout linear7;
-	private ImageView imageview4;
+	private LinearLayout linear12;
+	private ImageView imageview3;
+	private TextView textview5;
+	private LinearLayout linear13;
+	private TextView textview6;
 	private TextView textview7;
+	private LinearLayout linear14;
+	private LinearLayout linear15;
+	private LinearLayout linear16;
 	private TextView textview9;
 	private ImageView btn_edit_key;
-	private ImageView imageview5;
-	private TextView textview10;
+	private ImageView imageview4;
+	private TextView textview8;
 	
 	@Override
 	protected void onCreate(Bundle _savedInstanceState) {
@@ -95,20 +109,27 @@ public class ResourceEncryptActivity extends AppCompatActivity {
 		projectId = getIntent().getStringExtra("sc_id");
 		projectSettings = new rs(projectId);
 		projectSettings.load(this);
-		linear_main = findViewById(R.id.linear_main);
-		vscroll_encrypt = findViewById(R.id.vscroll_encrypt);
-		linear_content = findViewById(R.id.linear_content);
+		vscroll2 = findViewById(R.id.vscroll2);
+		linear10 = findViewById(R.id.linear10);
+		cardview4 = findViewById(R.id.cardview4);
+		cardview5 = findViewById(R.id.cardview5);
+		cardview6 = findViewById(R.id.cardview6);
+		adLayout = findViewById(R.id.adLayout);
+		linear11 = findViewById(R.id.linear11);
 		sw_encrypt_enabled = findViewById(R.id.sw_encrypt_enabled);
-		linear6 = findViewById(R.id.linear6);
-		textview8 = findViewById(R.id.textview8);
-		ln_encrypt_key = findViewById(R.id.ln_encrypt_key);
-		linear7 = findViewById(R.id.linear7);
-		imageview4 = findViewById(R.id.imageview4);
+		linear12 = findViewById(R.id.linear12);
+		imageview3 = findViewById(R.id.imageview3);
+		textview5 = findViewById(R.id.textview5);
+		linear13 = findViewById(R.id.linear13);
+		textview6 = findViewById(R.id.textview6);
 		textview7 = findViewById(R.id.textview7);
+		linear14 = findViewById(R.id.linear14);
+		linear15 = findViewById(R.id.linear15);
+		linear16 = findViewById(R.id.linear16);
 		textview9 = findViewById(R.id.textview9);
 		btn_edit_key = findViewById(R.id.btn_edit_key);
-		imageview5 = findViewById(R.id.imageview5);
-		textview10 = findViewById(R.id.textview10);
+		imageview4 = findViewById(R.id.imageview4);
+		textview8 = findViewById(R.id.textview8);
 		
 		sw_encrypt_enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
@@ -121,6 +142,7 @@ public class ResourceEncryptActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
+		adLayout.loadBannerAd();
 		ImageView back = findViewById(R.id.ig_toolbar_back);
 		TextView title = findViewById(R.id.tx_toolbar_title);
 		ImageView loadFile = findViewById(R.id.ig_toolbar_load_file);

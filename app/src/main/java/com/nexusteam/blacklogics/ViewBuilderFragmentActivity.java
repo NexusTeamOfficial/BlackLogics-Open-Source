@@ -27,10 +27,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -42,6 +46,7 @@ import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
 import com.shapun.layouteditor.ViewEditor;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -60,7 +65,8 @@ import org.json.*;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.shapun.layouteditor.ViewEditor;
-import com.besome.blacklogics.development.Complex;
+import com.besome.blacklogics.development.Complex;
+import com.nexusteam.blacklogics.sdk.util.ActivityConfig;
 
 public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.OnWidgetAdd {
 	
@@ -72,6 +78,7 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	public static String sc_id = "601";
 	public String layoutName = "main";
 	public String activityName = "MainActivity";
+	private ActivityConfig activityConfig;
 	
 	private ArrayList<HashMap<String, Object>> viewsList = new ArrayList<>();
 	private ArrayList<String> typeList = new ArrayList<>();
@@ -97,13 +104,15 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	
 	private void initialize(Bundle _savedInstanceState, View _view) {
 		instance = this;
-		try {
+		try{
 			projectPath = requireActivity().getIntent().getStringExtra("projectPath");
 			sc_id = requireActivity().getIntent().getStringExtra("sc_id");
 			scName = requireActivity().getIntent().getStringExtra("scName");
-		} catch (Exception e) {
+		}catch(Exception e){
 			SketchwareUtil.showMessage(getContext().getApplicationContext(), e.toString());
 		}
+		activityConfig = new ActivityConfig();
+		activityConfig.init(getContext(), sc_id);
 		lin_toolbar = _view.findViewById(R.id.lin_toolbar);
 		viewEditor = _view.findViewById(R.id.viewEditor);
 		img_views = _view.findViewById(R.id.img_views);
@@ -115,18 +124,18 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	}
 	
 	private void initializeLogic() {
-		try {
+		try{
 			projectPath = requireActivity().getIntent().getStringExtra("projectPath");
 			sc_id = requireActivity().getIntent().getStringExtra("sc_id");
 			scName = requireActivity().getIntent().getStringExtra("scName");
-		} catch (Exception e) {
+		}catch(Exception e){
 			SketchwareUtil.showMessage(getContext().getApplicationContext(), e.toString());
 		}
 		viewEditor.tv_view_name.setText(DesignActivity.abc.activityBean.getLayoutName() + ".xml");
 		String projectDataDir = com.nexusteam.internal.fe.d(sc_id);
 		viewEditor.setPath(projectDataDir);
 		viewEditor.setScId(sc_id);
-		viewEditor.a(DesignActivity.ll_properties);
+		viewEditor.setAttributesContainer(DesignActivity.ll_properties);
 		viewEditor.setDesignActivity(DesignActivity.abc);
 		u();
 		loadLayout();
@@ -138,13 +147,13 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 		Complex c= new Complex();
 		//c.setC(DesignActivity.abc);
 		c.setId(sc_id);
-		boolean isToolbarEnable = c.isToolbarEnabled(activityName);
+		boolean isToolbarEnable = activityConfig.hasToolbar(DesignActivity.abc.activityBean.getActivityName());
 		if (isToolbarEnable) {
 			viewEditor.phone_action_bar.setVisibility(View.VISIBLE);
 		} else {
 			viewEditor.phone_action_bar.setVisibility(View.GONE);
 		}
-		boolean isFabEnable = c.getEnableFabBoolean(activityName);
+		boolean isFabEnable = activityConfig.hasFab(activityName);
 		if (isFabEnable) {
 			enableFAB(true);
 		} else {
@@ -153,54 +162,147 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	}
 	
 	public void enableFAB(boolean enable) {
-		/*    if (fab == null) {
-        fab = new LinearLayout(getContext());
-        fab.setId(R.id._fab);
-        fab.setBackgroundResource(R.drawable.circle_background);
-        fab.setGravity(Gravity.CENTER);
-        fab.setOrientation(LinearLayout.VERTICAL);
-
-        // Set size manually - make final since it's used in inner class
-        final int size = getDp(35);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-        fab.setLayoutParams(params);
-
-        ImageView plusIcon = new ImageView(getContext());
-        plusIcon.setImageResource(R.drawable.ic_plus);
-        plusIcon.setLayoutParams(new LinearLayout.LayoutParams(
-            getDp(24),
-            getDp(24)
-        ));
-        plusIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.white));
-        fab.addView(plusIcon);
-
-        // Add to root layout
-        viewEditor.editorLayout.addView(fab);
-
-        // Wait until layout is ready, then move it - replace lambda with anonymous class
-        viewEditor.editorLayout.getViewTreeObserver().addOnGlobalLayoutListener(
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    // Make margin final too
-                    final int margin = getDp(16);
-                    int parentWidth = viewEditor.editorLayout.getWidth();
-                    int parentHeight = viewEditor.editorLayout.getHeight();
-
-                    fab.setX(parentWidth - size - margin);
-                    fab.setY(parentHeight - size - margin);
-                    
-                    // Optional: remove listener after first layout
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                        viewEditor.editorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    } else {
-                        viewEditor.editorLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    }
-                }
-            });
-    }
-
-    fab.setVisibility(enable ? View.VISIBLE : View.GONE);*/
+		if (fab == null) {
+			// Create FAB LinearLayout
+			fab = new LinearLayout(getContext());
+			fab.setId(R.id._fab);
+			fab.setBackgroundResource(R.drawable.circle_background);
+			fab.setGravity(Gravity.CENTER);
+			fab.setOrientation(LinearLayout.VERTICAL);
+			
+			// Set layout parameters
+			final int size = getDp(56); // Standard FAB size 56dp
+			
+			// Use ViewGroup.LayoutParams for LinearLayout
+			LinearLayout.LayoutParams fabParams = new LinearLayout.LayoutParams(size, size);
+			fab.setLayoutParams(fabParams);
+			
+			// Add margin to FAB (optional)
+			int margin = getDp(16);
+			if (Build.VERSION.SDK_INT >= 17) {
+				ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+				marginParams.setMargins(0, 0, margin, margin);
+				fab.setLayoutParams(marginParams);
+			}
+			
+			// Create plus icon
+			ImageView plusIcon = new ImageView(getContext());
+			
+			// Set image resource - use ic_add instead of ic_plus (standard Android icon)
+			if (Build.VERSION.SDK_INT >= 21) {
+				plusIcon.setImageResource(android.R.drawable.ic_input_add);
+			} else {
+				// Fallback for older versions
+				plusIcon.setImageResource(android.R.drawable.ic_menu_add);
+			}
+			
+			// Set icon layout params
+			int iconSize = getDp(24);
+			LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(iconSize, iconSize);
+			plusIcon.setLayoutParams(iconParams);
+			
+			// Set icon color to white
+			if (Build.VERSION.SDK_INT >= 21) {
+				plusIcon.setColorFilter(Color.WHITE);
+			} else {
+				// For older versions, use a ColorFilter
+				plusIcon.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+			}
+			
+			// Add icon to FAB
+			fab.addView(plusIcon);
+			
+			// Add FAB to editor layout
+			viewEditor.editorLayout.addView(fab);
+			
+			// Position FAB at bottom-right
+			positionFabAtBottomRight();
+		}
+		
+		// Show/hide FAB based on enable parameter
+		if (fab != null) {
+			fab.setVisibility(enable ? View.VISIBLE : View.GONE);
+		}
+	}
+	
+	/**
+ * Position FAB at bottom-right corner
+ */
+	private void positionFabAtBottomRight() {
+		if (fab == null || viewEditor == null || viewEditor.editorLayout == null) {
+			return;
+		}
+		
+		// Use ViewTreeObserver to position after layout
+		viewEditor.editorLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+		new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				if (fab == null || viewEditor == null || viewEditor.editorLayout == null) {
+					return;
+				}
+				
+				int parentWidth = viewEditor.editorLayout.getWidth();
+				int parentHeight = viewEditor.editorLayout.getHeight();
+				int fabWidth = fab.getWidth();
+				int fabHeight = fab.getHeight();
+				int margin = getDp(16);
+				
+				// Calculate position
+				float x = parentWidth - fabWidth - margin;
+				float y = parentHeight - fabHeight - margin;
+				
+				// Set position
+				if (Build.VERSION.SDK_INT >= 11) {
+					fab.setX(x);
+					fab.setY(y);
+				} else {
+					// For older versions, use LayoutParams
+					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) fab.getLayoutParams();
+					params.leftMargin = (int) x;
+					params.topMargin = (int) y;
+					fab.setLayoutParams(params);
+				}
+				
+				// Remove listener to avoid multiple calls
+				if (Build.VERSION.SDK_INT >= 16) {
+					viewEditor.editorLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+				} else {
+					viewEditor.editorLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				}
+			}
+		});
+	}
+	
+	/**
+ * Vibrate on FAB click
+ */
+	private void vibrate() {
+		if (vib != null) {
+			vib.vibrate(50); // 50ms vibration
+		}
+	}
+	
+	/**
+ * Refresh FAB position when orientation changes
+ */
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Reposition FAB after configuration change
+		if (fab != null && fab.getVisibility() == View.VISIBLE) {
+			positionFabAtBottomRight();
+		}
+	}
+	
+	/**
+ * Check if FAB should be shown based on activity config
+ */
+	private void updateFabFromConfig() {
+		if (activityConfig != null) {
+			boolean shouldShowFab = activityConfig.hasFab(activityName);
+			enableFAB(shouldShowFab);
+		}
 	}
 	
 	public int getDp(float dp) {
@@ -231,6 +333,14 @@ public class ViewBuilderFragmentActivity extends Fragment implements ViewEditor.
 	
 	public void showMessage(String a) {
 		
+	}
+	
+	/**
+ * Call this after loading layout to update FAB state
+ */
+	public void refreshUI() {
+		updateFabFromConfig();
+		positionFabAtBottomRight();
 	}
 	{
 	}

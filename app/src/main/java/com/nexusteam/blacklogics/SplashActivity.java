@@ -37,10 +37,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.lottie.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -48,9 +53,11 @@ import com.github.angads25.filepicker.*;
 import com.google.android.flexbox.*;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
+import com.google.android.material.card.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -72,14 +79,17 @@ public class SplashActivity extends AppCompatActivity {
 	
 	private Timer _timer = new Timer();
 	
+	private MaterialCardView cardview4;
 	private LinearLayout baseLayout;
 	private View baseSpace1;
 	private FrameLayout frame_layout2;
+	private FrameLayout linear1;
 	private TextView baseTag;
 	private View baseSpace2;
 	private TextView baseGodTag;
 	private View circleEffect;
 	private ImageView baseIcon;
+	private LottieAnimationView boot;
 	
 	private Intent bI = new Intent();
 	private TimerTask bT;
@@ -98,14 +108,17 @@ public class SplashActivity extends AppCompatActivity {
 	}
 	
 	private void initialize(Bundle _savedInstanceState) {
+		cardview4 = findViewById(R.id.cardview4);
 		baseLayout = findViewById(R.id.baseLayout);
 		baseSpace1 = findViewById(R.id.baseSpace1);
 		frame_layout2 = findViewById(R.id.frame_layout2);
+		linear1 = findViewById(R.id.linear1);
 		baseTag = findViewById(R.id.baseTag);
 		baseSpace2 = findViewById(R.id.baseSpace2);
 		baseGodTag = findViewById(R.id.baseGodTag);
 		circleEffect = findViewById(R.id.circleEffect);
 		baseIcon = findViewById(R.id.baseIcon);
+		boot = findViewById(R.id.boot);
 		d = new AlertDialog.Builder(this);
 	}
 	

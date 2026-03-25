@@ -28,10 +28,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -44,6 +48,8 @@ import com.google.android.material.textfield.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.nexusteam.blacklogics.widget.AdLayout;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -75,6 +81,7 @@ public class NewKeyStoreActivity extends AppCompatActivity {
 	private LinearLayout linear6;
 	private LinearLayout linear7;
 	private TextInputLayout textinputlayout27;
+	private AdLayout adLayout;
 	private EditText edittext_name;
 	private EditText edittext_password;
 	private EditText edittext_alias;
@@ -117,6 +124,7 @@ public class NewKeyStoreActivity extends AppCompatActivity {
 		linear6 = findViewById(R.id.linear6);
 		linear7 = findViewById(R.id.linear7);
 		textinputlayout27 = findViewById(R.id.textinputlayout27);
+		adLayout = findViewById(R.id.adLayout);
 		edittext_name = findViewById(R.id.edittext_name);
 		edittext_password = findViewById(R.id.edittext_password);
 		edittext_alias = findViewById(R.id.edittext_alias);
@@ -142,6 +150,7 @@ public class NewKeyStoreActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
+		adLayout.loadBannerAd();
 		create.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

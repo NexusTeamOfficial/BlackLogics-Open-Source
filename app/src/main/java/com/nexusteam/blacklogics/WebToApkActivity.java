@@ -27,6 +27,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,6 +38,7 @@ import androidx.recyclerview.widget.*;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -48,6 +52,8 @@ import com.google.android.material.textfield.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.nexusteam.blacklogics.widget.AdLayout;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -105,6 +111,7 @@ public class WebToApkActivity extends AppCompatActivity {
 	private SwitchMaterial switch_cleartext;
 	private RecyclerView recyclerview1;
 	private MaterialButton btn_build_apk;
+	private AdLayout adLayout;
 	private TextInputEditText appName;
 	private TextInputEditText pkgName;
 	private TextInputEditText edittext3;
@@ -142,6 +149,7 @@ public class WebToApkActivity extends AppCompatActivity {
 		switch_cleartext = findViewById(R.id.switch_cleartext);
 		recyclerview1 = findViewById(R.id.recyclerview1);
 		btn_build_apk = findViewById(R.id.btn_build_apk);
+		adLayout = findViewById(R.id.adLayout);
 		appName = findViewById(R.id.appName);
 		pkgName = findViewById(R.id.pkgName);
 		edittext3 = findViewById(R.id.edittext3);
@@ -245,6 +253,7 @@ public class WebToApkActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
+		adLayout.loadBannerAd();
 		ImageView back = findViewById(R.id.ig_toolbar_back);
 		TextView title = findViewById(R.id.tx_toolbar_title);
 		ImageView loadFile = findViewById(R.id.ig_toolbar_load_file);

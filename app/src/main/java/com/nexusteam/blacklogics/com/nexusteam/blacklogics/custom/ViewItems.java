@@ -20,9 +20,8 @@ public class ViewItems extends LinearLayout {
     private ArrayAdapter<String> adapter;
     private IdManager idManager;
     private OnViewChangeListener listener;
-
-    // 🔑 ye flag auto-callback rokne ke liye
     private boolean suppressCallback = false;
+    private String currentlySelectedId = null; // Track current selection
 
     public ViewItems(Context context) {
         super(context);
@@ -59,21 +58,24 @@ public class ViewItems extends LinearLayout {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                // ❌ programmatic change ignore
+                // ❌ Programmatic change ignore
                 if (suppressCallback) return;
-
-                // ❌ layout / refresh ke time ignore
-                if (!spinner.hasFocus()) return;
 
                 if (idManager == null || listener == null) return;
 
                 String selectedId = adapter.getItem(position);
                 if (selectedId == null) return;
 
+                // Don't trigger if same as currently selected
+                if (selectedId.equals(currentlySelectedId)) return;
+
                 View selectedView = idManager.getView(selectedId);
                 if (selectedView == null) return;
 
+                // Update tracking
+                currentlySelectedId = selectedId;
+
+                // Notify listener
                 listener.onViewChanged(selectedView, selectedId);
             }
 
@@ -83,18 +85,15 @@ public class ViewItems extends LinearLayout {
         });
     }
 
-    // 🔗 IdManager set
     public void setIdManager(IdManager manager) {
         this.idManager = manager;
         refreshIds();
     }
 
-    // 🔗 Listener set
     public void setOnViewChangeListener(OnViewChangeListener listener) {
         this.listener = listener;
     }
 
-    // 🔄 IDs refresh (NO auto select)
     public void refreshIds() {
         if (idManager == null) return;
 
@@ -105,7 +104,20 @@ public class ViewItems extends LinearLayout {
         adapter.addAll(ids);
         adapter.notifyDataSetChanged();
 
-        // spinner ko shant hone ka time do
+        // Restore selection if possible
+        if (currentlySelectedId != null && ids.contains(currentlySelectedId)) {
+            final int index = adapter.getPosition(currentlySelectedId);
+            if (index >= 0) {
+                spinner.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        spinner.setSelection(index, false);
+                    }
+                });
+            }
+        }
+
+        // Re-enable callbacks
         spinner.post(new Runnable() {
             @Override
             public void run() {
@@ -114,19 +126,18 @@ public class ViewItems extends LinearLayout {
         });
     }
 
-    // ❌ YE USE MAT KARNA (callback fire karta hai)
-    
     public void selectId(String id) {
         selectIdSilently(id);
     }
-    
 
-    // ✅ SAFE selection (silent)
     public void selectIdSilently(final String id) {
         if (id == null) return;
 
         final int index = adapter.getPosition(id);
         if (index < 0) return;
+
+        // Update tracking
+        currentlySelectedId = id;
 
         suppressCallback = true;
         spinner.post(new Runnable() {
@@ -136,5 +147,10 @@ public class ViewItems extends LinearLayout {
                 suppressCallback = false;
             }
         });
+    }
+
+    // Add this method to force a complete refresh
+    public void forceRefresh() {
+        refreshIds();
     }
 }

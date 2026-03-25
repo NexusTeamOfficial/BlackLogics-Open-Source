@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/md_theme_light_surface"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/md_theme_light_outline"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row: Library Name + License Badge -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Color dot / icon -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:cardBackgroundColor="@color/md_theme_light_secondaryContainer"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <TextView
+                    android:id="@+id/tv_icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="📦"
+                    android:textSize="17sp" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Library name + author -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/tv_lib_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Library Name"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_light_onSurface"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/tv_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Author"
+                    android:textSize="12sp"
+                    android:textColor="@color/md_theme_light_onSurfaceVariant"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+            <!-- License type chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_license_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apache 2.0"
+                android:textSize="11sp"
+                android:textColor="@color/md_theme_light_onSecondaryContainer"
+                app:chipBackgroundColor="@color/md_theme_light_secondaryContainer"
+                app:chipStrokeWidth="0dp"
+                android:clickable="false"
+                android:focusable="false" />
+
+        </LinearLayout>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/md_theme_light_outline"
+            android:alpha="0.2" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description of the library usage."
+            android:textSize="12sp"
+            android:textColor="@color/md_theme_light_onSurfaceVariant"
+            android:lineSpacingMultiplier="1.4" />
+
+        <!-- Copyright line -->
+        <TextView
+            android:id="@+id/tv_copyright"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Copyright © Author"
+            android:textSize="11sp"
+            android:textColor="@color/md_theme_light_secondary"
+            android:fontFamily="monospace" />
+
+        <!-- URL -->
+        <TextView
+            android:id="@+id/tv_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="https://github.com/..."
+            android:textSize="11sp"
+            android:textColor="@color/md_theme_light_primary"
+            android:fontFamily="monospace"
+            android:autoLink="web" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

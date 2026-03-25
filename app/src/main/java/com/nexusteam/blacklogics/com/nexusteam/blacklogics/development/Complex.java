@@ -2558,146 +2558,105 @@ xmlSpinner.setOnItemSelectedListener(listener);
     }
     
     
-    
     public void setupViewAdapter(RecyclerView recyclerView, OnViewItemClickListener listener) {
-        List<ViewItem> items = new ArrayList<ViewItem>();
+    List<ViewItem> items = createViewItemsFromJson();
+    
+    ViewAdapter adapter = new ViewAdapter(items, listener);
+    recyclerView.setLayoutManager(
+        new LinearLayoutManager(recyclerView.getContext())
+    );
+    recyclerView.setAdapter(adapter);
+}
+
+public void refreshViewAdapter(RecyclerView recyclerView) {
+    if (recyclerView.getAdapter() instanceof ViewAdapter) {
+        ViewAdapter adapter = (ViewAdapter) recyclerView.getAdapter();
+        List<ViewItem> newItems = createViewItemsFromJson();
         
-        try {
-            JSONObject metaData = jsonData.optJSONObject("meta");
-            if (metaData == null) return;
-            
-            JSONArray xNameArray = metaData.has("xName")
+        adapter.items = newItems;
+        adapter.notifyDataSetChanged();
+    }
+}
+
+private List<ViewItem> createViewItemsFromJson() {
+    // Set use kiya taaki duplicates na aaye
+    Set<ViewItem> itemSet = new HashSet<ViewItem>();
+    
+    try {
+        JSONObject metaData = jsonData.optJSONObject("meta");
+        if (metaData == null) return new ArrayList<ViewItem>();
+        
+        JSONArray xNameArray = metaData.has("xName")
             ? metaData.getJSONArray("xName")
             : new JSONArray();
-            
-            JSONArray acNameArray = metaData.has("acName")
+        
+        JSONArray acNameArray = metaData.has("acName")
             ? metaData.getJSONArray("acName")
             : new JSONArray();
+        
+        // Pehle dono wale add karo
+        int maxLength = Math.min(xNameArray.length(), acNameArray.length());
+        for (int i = 0; i < maxLength; i++) {
+            String xmlName = decodeData(xNameArray.getString(i));
+            String javaName = decodeData(acNameArray.getString(i));
             
-            int maxLength = Math.min(xNameArray.length(), acNameArray.length());
-            for (int i = 0; i < maxLength; i++) {
-                String xmlName = decodeData(xNameArray.getString(i));
-                String javaName = decodeData(acNameArray.getString(i));
-                
-                items.add(new ViewItem(
+            ViewItem item = new ViewItem(
                 xmlName.replace(".xml", ""),
                 xmlName,
                 javaName.replace(".java", ""),
                 javaName
-                ));
-            }
-            
-            for (int i = maxLength; i < xNameArray.length(); i++) {
-                String xmlName = decodeData(xNameArray.getString(i));
-                items.add(new ViewItem(
+            );
+            itemSet.add(item); // Set duplicate automatically hata dega
+        }
+        
+        // Ab sirf XML wale add karo (jo already Set mein nahi honge)
+        for (int i = maxLength; i < xNameArray.length(); i++) {
+            String xmlName = decodeData(xNameArray.getString(i));
+            ViewItem item = new ViewItem(
                 xmlName.replace(".xml", ""),
                 xmlName,
                 "",
                 ""
-                ));
-            }
-            
-            for (int i = maxLength; i < acNameArray.length(); i++) {
-                String javaName = decodeData(acNameArray.getString(i));
-                items.add(new ViewItem(
+            );
+            itemSet.add(item);
+        }
+        
+        // Ab sirf Java wale add karo (jo already Set mein nahi honge)
+        for (int i = maxLength; i < acNameArray.length(); i++) {
+            String javaName = decodeData(acNameArray.getString(i));
+            ViewItem item = new ViewItem(
                 "",
                 "",
                 javaName.replace(".java", ""),
                 javaName
-                ));
-            }
-            
-        } catch (JSONException e) {
-            e.printStackTrace();
+            );
+            itemSet.add(item);
         }
         
-        Collections.sort(items, new java.util.Comparator<ViewItem>() {
-            @Override
-            public int compare(ViewItem a, ViewItem b) {
-                String aName = a.getXmlName().isEmpty()
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+    
+    // Set ko List mein convert karo sorting ke liye
+    List<ViewItem> items = new ArrayList<ViewItem>(itemSet);
+    
+    Collections.sort(items, new java.util.Comparator<ViewItem>() {
+        @Override
+        public int compare(ViewItem a, ViewItem b) {
+            String aName = a.getXmlName().isEmpty()
                 ? a.getJavaName()
                 : a.getXmlName();
-                
-                String bName = b.getXmlName().isEmpty()
+            
+            String bName = b.getXmlName().isEmpty()
                 ? b.getJavaName()
                 : b.getXmlName();
-                
-                return aName.compareToIgnoreCase(bName);
-            }
-        });
-        
-        ViewAdapter adapter = new ViewAdapter(items, listener);
-        recyclerView.setLayoutManager(
-        new LinearLayoutManager(recyclerView.getContext())
-        );
-        recyclerView.setAdapter(adapter);
-    }
-    
-    
-    public void refreshViewAdapter(RecyclerView recyclerView) {
-        if (recyclerView.getAdapter() instanceof ViewAdapter) {
-            ViewAdapter adapter = (ViewAdapter) recyclerView.getAdapter();
-            List<ViewItem> newItems = new ArrayList<>();
             
-            try {
-                JSONObject metaData = jsonData.optJSONObject("meta");
-                if (metaData == null) return;
-                
-                JSONArray xNameArray = metaData.has("xName") ? metaData.getJSONArray("xName") : new JSONArray();
-                JSONArray acNameArray = metaData.has("acName") ? metaData.getJSONArray("acName") : new JSONArray();
-                
-                int maxLength = Math.min(xNameArray.length(), acNameArray.length());
-                for (int i = 0; i < maxLength; i++) {
-                    String xmlName = decodeData(xNameArray.getString(i));
-                    String javaName = decodeData(acNameArray.getString(i));
-                    
-                    newItems.add(new ViewItem(
-                    xmlName.replace(".xml", ""),
-                    xmlName,
-                    javaName.replace(".java", ""),
-                    javaName
-                    ));
-                }
-                
-                for (int i = maxLength; i < xNameArray.length(); i++) {
-                    String xmlName = decodeData(xNameArray.getString(i));
-                    newItems.add(new ViewItem(
-                    xmlName.replace(".xml", ""),
-                    xmlName,
-                    "",
-                    ""
-                    ));
-                }
-                
-                for (int i = maxLength; i < acNameArray.length(); i++) {
-                    String javaName = decodeData(acNameArray.getString(i));
-                    newItems.add(new ViewItem(
-                    "",
-                    "",
-                    javaName.replace(".java", ""),
-                    javaName
-                    ));
-                }
-                
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            
-            Collections.sort(newItems, new java.util.Comparator<ViewItem>() {
-                @Override
-                public int compare(ViewItem a, ViewItem b) {
-                    String aName = a.getXmlName().isEmpty() ? a.getJavaName() : a.getXmlName();
-                    String bName = b.getXmlName().isEmpty() ? b.getJavaName() : b.getXmlName();
-                    return aName.compareToIgnoreCase(bName);
-                }
-            });
-            
-            adapter.items = newItems;
-            adapter.notifyDataSetChanged();
+            return aName.compareToIgnoreCase(bName);
         }
-    }
+    });
     
-    
+    return items;
+}
     public String getJavaContent(String javaName) {
         if (javaName.endsWith(".java")) {
             javaName = javaName.replace(".java", "");

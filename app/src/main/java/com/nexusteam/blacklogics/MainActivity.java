@@ -38,7 +38,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.*;
 import androidx.core.view.GravityCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.customview.*;
+import androidx.draganddrop.*;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -49,13 +52,16 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
 import com.github.angads25.filepicker.*;
 import com.google.android.flexbox.*;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
 import com.google.android.material.appbar.AppBarLayout;
@@ -67,6 +73,8 @@ import com.google.android.material.textview.MaterialTextView;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.nexusteam.blacklogics.widget.AdLayout;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -76,6 +84,7 @@ import java.io.*;
 import java.io.InputStream;
 import java.text.*;
 import java.util.*;
+import java.util.HashMap;
 import java.util.regex.*;
 import org.antlr.v4.runtime.*;
 import org.benf.cfr.reader.*;
@@ -89,6 +98,8 @@ import com.besome.blacklogics.model.*;
 import com.nexusteam.blacklogics.manager.BackupManager;
 import com.besome.blacklogics.util.FileHandler;
 import com.besome.blacklogics.beans.ProjectActivityBean;
+import com.nexusteam.blacklogics.sdk.util.BlockWrite;
+import com.nexusteam.blacklogics.ui.CrashLogUpdateNotice;
 // Android core
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -115,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 	public ProjectAdapter adapter;
 	public ProjectActivityBean bean;
 	public BackupManager backUpRestore;
+	private BlockWrite blockWrite;
+	private HashMap<String, Object> e = new HashMap<>();
 	
 	private SwipeRefreshLayout swipeRefresh;
 	private NestedScrollView baseDesign;
@@ -126,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 	private CircleImageView circleimageview2;
 	private ShapeableImageView circleimageview1;
 	private RecyclerView baseRecycler;
+	private AdLayout adLayout;
 	private SearchView searchBar;
 	private ImageView baseMenu;
 	private ImageView baseTop;
@@ -133,42 +147,56 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 	private LinearLayout linear3;
 	private ShapeableImageView imageview1;
 	private MaterialTextView textview1;
-	private LinearLayout _drawer_linear1;
+	private LinearLayout _drawer_linear_header;
 	private ScrollView _drawer_vscroll1;
-	private LinearLayout _drawer_linear2;
-	private LinearLayout _drawer_linear24;
-	private LinearLayout _drawer_linear28;
-	private LinearLayout _drawer_linear_profiless;
+	private View _drawer_view20;
+	private LinearLayout _drawer_linear21;
+	private CircleImageView _drawer_profileImage;
 	private TextView _drawer_names;
-	private LinearLayout _drawer_about;
-	private LinearLayout _drawer_Changelog;
-	private LinearLayout _drawer_Setting;
-	private LinearLayout _drawer_Programs;
-	private LinearLayout _drawer_developer;
-	private LinearLayout _drawer_Create;
-	private LinearLayout _drawer_webtoapktool;
-	private LinearLayout _drawer_linear36;
-	private LinearLayout _drawer_linear13;
+	private TextView _drawer_userEmail;
+	private LinearLayout _drawer_linear11;
+	private MaterialCardView _drawer_about;
+	private MaterialCardView _drawer_Changelog;
+	private MaterialCardView _drawer_Setting;
+	private MaterialCardView _drawer_Programs;
+	private MaterialCardView _drawer_developer;
+	private MaterialCardView _drawer_Create;
+	private MaterialCardView _drawer_webtoapktool;
+	private MaterialCardView _drawer_donate;
+	private LinearLayout _drawer_linear12;
 	private ImageView _drawer_imageview10;
 	private TextView _drawer_textview18;
+	private LinearLayout _drawer_linear13;
 	private ImageView _drawer_imageview6;
 	private TextView _drawer_textview13;
+	private LinearLayout _drawer_linear14;
 	private ImageView _drawer_imageview12;
 	private TextView _drawer_textview21;
+	private LinearLayout _drawer_linear15;
 	private ImageView _drawer_imageview14;
 	private TextView _drawer_textview23;
+	private LinearLayout _drawer_linear16;
 	private ImageView _drawer_imageview15;
 	private TextView _drawer_textview24;
+	private LinearLayout _drawer_linear17;
 	private ImageView _drawer_imageview16;
 	private TextView _drawer_textview25;
+	private LinearLayout _drawer_linear18;
 	private ImageView _drawer_imagevieejw16;
 	private TextView _drawer_textviesw25;
-	private ImageView _drawer_facebook;
-	private ImageView _drawer_Program;
-	private ImageView _drawer_youtube;
+	private LinearLayout _drawer_linear19;
+	private ImageView _drawer_imageview18;
+	private TextView _drawer_textview27;
+	private MaterialCardView _drawer_facebook;
+	private MaterialCardView _drawer_Program;
+	private MaterialCardView _drawer_youtube;
+	private ImageView _drawer_imageview4;
+	private ImageView _drawer_imageview5;
+	private ImageView _drawer_imageview7;
 	
 	private Intent i = new Intent();
 	private Intent a = new Intent();
+	private Intent ip = new Intent();
 	
 	@Override
 	protected void onCreate(Bundle _savedInstanceState) {
@@ -212,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 		circleimageview2 = findViewById(R.id.circleimageview2);
 		circleimageview1 = findViewById(R.id.circleimageview1);
 		baseRecycler = findViewById(R.id.baseRecycler);
+		adLayout = findViewById(R.id.adLayout);
 		searchBar = findViewById(R.id.searchBar);
 		baseMenu = findViewById(R.id.baseMenu);
 		baseTop = findViewById(R.id.baseTop);
@@ -219,13 +248,14 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 		linear3 = findViewById(R.id.linear3);
 		imageview1 = findViewById(R.id.imageview1);
 		textview1 = findViewById(R.id.textview1);
-		_drawer_linear1 = _nav_view.findViewById(R.id.linear1);
+		_drawer_linear_header = _nav_view.findViewById(R.id.linear_header);
 		_drawer_vscroll1 = _nav_view.findViewById(R.id.vscroll1);
-		_drawer_linear2 = _nav_view.findViewById(R.id.linear2);
-		_drawer_linear24 = _nav_view.findViewById(R.id.linear24);
-		_drawer_linear28 = _nav_view.findViewById(R.id.linear28);
-		_drawer_linear_profiless = _nav_view.findViewById(R.id.linear_profiless);
+		_drawer_view20 = _nav_view.findViewById(R.id.view20);
+		_drawer_linear21 = _nav_view.findViewById(R.id.linear21);
+		_drawer_profileImage = _nav_view.findViewById(R.id.profileImage);
 		_drawer_names = _nav_view.findViewById(R.id.names);
+		_drawer_userEmail = _nav_view.findViewById(R.id.userEmail);
+		_drawer_linear11 = _nav_view.findViewById(R.id.linear11);
 		_drawer_about = _nav_view.findViewById(R.id.about);
 		_drawer_Changelog = _nav_view.findViewById(R.id.Changelog);
 		_drawer_Setting = _nav_view.findViewById(R.id.Setting);
@@ -233,30 +263,72 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 		_drawer_developer = _nav_view.findViewById(R.id.developer);
 		_drawer_Create = _nav_view.findViewById(R.id.Create);
 		_drawer_webtoapktool = _nav_view.findViewById(R.id.webtoapktool);
-		_drawer_linear36 = _nav_view.findViewById(R.id.linear36);
-		_drawer_linear13 = _nav_view.findViewById(R.id.linear13);
+		_drawer_donate = _nav_view.findViewById(R.id.donate);
+		_drawer_linear12 = _nav_view.findViewById(R.id.linear12);
 		_drawer_imageview10 = _nav_view.findViewById(R.id.imageview10);
 		_drawer_textview18 = _nav_view.findViewById(R.id.textview18);
+		_drawer_linear13 = _nav_view.findViewById(R.id.linear13);
 		_drawer_imageview6 = _nav_view.findViewById(R.id.imageview6);
 		_drawer_textview13 = _nav_view.findViewById(R.id.textview13);
+		_drawer_linear14 = _nav_view.findViewById(R.id.linear14);
 		_drawer_imageview12 = _nav_view.findViewById(R.id.imageview12);
 		_drawer_textview21 = _nav_view.findViewById(R.id.textview21);
+		_drawer_linear15 = _nav_view.findViewById(R.id.linear15);
 		_drawer_imageview14 = _nav_view.findViewById(R.id.imageview14);
 		_drawer_textview23 = _nav_view.findViewById(R.id.textview23);
+		_drawer_linear16 = _nav_view.findViewById(R.id.linear16);
 		_drawer_imageview15 = _nav_view.findViewById(R.id.imageview15);
 		_drawer_textview24 = _nav_view.findViewById(R.id.textview24);
+		_drawer_linear17 = _nav_view.findViewById(R.id.linear17);
 		_drawer_imageview16 = _nav_view.findViewById(R.id.imageview16);
 		_drawer_textview25 = _nav_view.findViewById(R.id.textview25);
+		_drawer_linear18 = _nav_view.findViewById(R.id.linear18);
 		_drawer_imagevieejw16 = _nav_view.findViewById(R.id.imagevieejw16);
 		_drawer_textviesw25 = _nav_view.findViewById(R.id.textviesw25);
+		_drawer_linear19 = _nav_view.findViewById(R.id.linear19);
+		_drawer_imageview18 = _nav_view.findViewById(R.id.imageview18);
+		_drawer_textview27 = _nav_view.findViewById(R.id.textview27);
 		_drawer_facebook = _nav_view.findViewById(R.id.facebook);
 		_drawer_Program = _nav_view.findViewById(R.id.Program);
 		_drawer_youtube = _nav_view.findViewById(R.id.youtube);
+		_drawer_imageview4 = _nav_view.findViewById(R.id.imageview4);
+		_drawer_imageview5 = _nav_view.findViewById(R.id.imageview5);
+		_drawer_imageview7 = _nav_view.findViewById(R.id.imageview7);
 		
 		linear1.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
 				backUpRestore.restore();
+				SketchwareUtil.showMessage(getApplicationContext(), "Click");
+			}
+		});
+		
+		adview1.setAdListener(new AdListener() {
+			@Override
+			public void onAdLoaded() {
+				
+			}
+			
+			@Override
+			public void onAdFailedToLoad(LoadAdError _param1) {
+				final int _errorCode = _param1.getCode();
+				final String _errorMessage = _param1.getMessage();
+				
+			}
+			
+			@Override
+			public void onAdOpened() {
+				
+			}
+			
+			@Override
+			public void onAdClicked() {
+				
+			}
+			
+			@Override
+			public void onAdClosed() {
+				
 			}
 		});
 		
@@ -337,10 +409,40 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 				startActivity(intent);
 			}
 		});
+		
+		_drawer_linear19.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				ip.setClass(getApplicationContext(), DonateActivity.class);
+				startActivity(ip);
+			}
+		});
 	}
 	
 	private void initializeLogic() {
 		_create_paths();
+		blockWrite = new BlockWrite(this, new BlockWrite.BlockWriteCallback() {
+			@Override
+			public void onSuccess(String message) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						//	Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+			
+			@Override
+			public void onError(String error) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						//	Toast.makeText(MainActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		});
+		
 		final LinearLayout _nav_view = (LinearLayout) findViewById(R.id._nav_view); _nav_view.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
 		backUpRestore = new BackupManager(this);
 		baseRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -419,6 +521,7 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 			}
 		});
 		
+		CrashLogUpdateNotice.showIfNeeded(this);
 		baseSearch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _view) {
@@ -461,6 +564,36 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 	@Override
 	public void onStart() {
 		super.onStart();
+		blockWrite.writeMathBlocks();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		adLayout.setOnAdLoadedListener(new AdLayout.OnAdLoadedListener() {
+			@Override
+			public void onLoaded() {
+				// Ad successfully load ho gayi
+				Log.d("MainActivity", "Ad loaded successfully!");
+				Toast.makeText(MainActivity.this, "Ad Loaded!", Toast.LENGTH_SHORT).show();
+				
+				// Agar chahe to yahan banner ko visible karo
+				adLayout.setVisibility(View.VISIBLE);
+			}
+		});
+		
+		adLayout.setOnAdFailedListener(new AdLayout.OnAdFailedListener() {
+			@Override
+			public void onFailed(String error) {
+				// Ad load karne mein error aayi
+				Log.e("MainActivity", "Ad failed to load: " + error);
+				Toast.makeText(MainActivity.this, "Ad Failed: " + error, Toast.LENGTH_SHORT).show();
+				
+				// Error par banner ko hide kar do
+				adLayout.setVisibility(View.GONE);
+			}
+		});
+		adLayout.loadBannerAd();
 		
 	}
 	
@@ -477,14 +610,6 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 		super.onPause();
 		if (adview1 != null) {
 			adview1.pause();
-		}
-	}
-	
-	@Override
-	public void onResume() {
-		super.onResume();
-		if (adview1 != null) {
-			adview1.resume();
 		}
 	}
 	public void _b() {
@@ -538,6 +663,7 @@ public class MainActivity extends AppCompatActivity implements CreateProjectDial
 		if (checkStoragePermission()) {
 			if (adapter != null) {
 				adapter.refresh();
+				blockWrite.writeMathBlocks();
 			}
 		} else {
 			// requestPermission();

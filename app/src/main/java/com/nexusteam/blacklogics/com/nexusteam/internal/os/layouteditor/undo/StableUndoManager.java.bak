@@ -1,0 +1,347 @@
+/*
+ * MIT License (Modified) — Nexus Edition
+ * Copyright (c) 2025 NexusTeam & SmartIndiaGaming
+ */
+
+package com.nexusteam.internal.os.layouteditor.undo;
+
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * StableUndoManager — Command Pattern based, per-activity undo/redo stack.
+ *
+ * <p>Old UndoManager ke problems:
+ * <ul>
+ *   <li>ViewAction.Builder mein old/new parent track nahi hota tha → undo ke baad view galat jagah</li>
+ *   <li>pushAction thread-safe nahi tha → concurrent modification crash</li>
+ *   <li>Singleton lekin activity-wise stack alag nahi tha properly</li>
+ * </ul>
+ *
+ * <p>Is naye implementation mein:
+ * <ul>
+ *   <li>Har action ek {@link EditorCommand} hai jisme do() aur undo() dono defined hain</li>
+ *   <li>Per-activity stacks, max 50 steps</li>
+ *   <li>Thread-safe via synchronized blocks</li>
+ *   <li>ViewEditor se directly compatible — existing undo()/redo() calls kaam karenge</li>
+ * </ul>
+ *
+ * @author NexusTeam & SmartIndiaGaming
+ * @version 3.0.0
+ */
+public class StableUndoManager {
+
+    // ============================================================
+    // Command Interface
+    // ============================================================
+
+    /**
+     * Every undoable action implements this. Both execute() and undo() must be
+     * idempotent-safe — calling them when the state is already correct should not crash.
+     */
+    public interface EditorCommand {
+        /** Re-applies this action (used for redo). */
+        void execute();
+
+        /** Reverts this action. */
+        void undo();
+
+        /** Short human-readable label for debugging. */
+        String getDescription();
+    }
+
+    // ============================================================
+    // Built-in Commands
+    // ============================================================
+
+    /**
+     * ADD_VIEW command: undo removes the view from parent; redo adds it back.
+     */
+    public static class AddViewCommand implements EditorCommand {
+        private final View view;
+        private final ViewGroup parent;
+        private final int index;
+        private final String description;
+
+        public AddViewCommand(View view, ViewGroup parent, int index) {
+            this.view        = view;
+            this.parent      = parent;
+            this.index       = index;
+            this.description = "Add " + view.getClass().getSimpleName();
+        }
+
+        @Override
+        public void execute() {
+            if (view.getParent() != null) return;
+            int safeIndex = Math.min(index, parent.getChildCount());
+            parent.addView(view, safeIndex);
+        }
+
+        @Override
+        public void undo() {
+            if (view.getParent() == parent) {
+                parent.removeView(view);
+            }
+        }
+
+        @Override
+        public String getDescription() { return description; }
+    }
+
+    /**
+     * REMOVE_VIEW command: undo adds the view back to its old parent at old index.
+     */
+    public static class RemoveViewCommand implements EditorCommand {
+        private final View view;
+        private final ViewGroup oldParent;
+        private final int oldIndex;
+        private final String description;
+
+        public RemoveViewCommand(View view, ViewGroup oldParent, int oldIndex) {
+            this.view        = view;
+            this.oldParent   = oldParent;
+            this.oldIndex    = oldIndex;
+            this.description = "Remove " + view.getClass().getSimpleName();
+        }
+
+        @Override
+        public void execute() {
+            if (view.getParent() == oldParent) oldParent.removeView(view);
+        }
+
+        @Override
+        public void undo() {
+            if (view.getParent() != null) return;
+            int safeIndex = Math.min(oldIndex, oldParent.getChildCount());
+            oldParent.addView(view, safeIndex);
+        }
+
+        @Override
+        public String getDescription() { return description; }
+    }
+
+    /**
+     * MOVE_VIEW command: undo moves view back to oldParent/oldIndex.
+     */
+    public static class MoveViewCommand implements EditorCommand {
+        private final View view;
+        private final ViewGroup oldParent;
+        private final int oldIndex;
+        private final ViewGroup newParent;
+        private final int newIndex;
+
+        public MoveViewCommand(View view,
+                               ViewGroup oldParent, int oldIndex,
+                               ViewGroup newParent, int newIndex) {
+            this.view      = view;
+            this.oldParent = oldParent;
+            this.oldIndex  = oldIndex;
+            this.newParent = newParent;
+            this.newIndex  = newIndex;
+        }
+
+        @Override
+        public void execute() {
+            if (view.getParent() instanceof ViewGroup) {
+                ((ViewGroup) view.getParent()).removeView(view);
+            }
+            int safeIndex = Math.min(newIndex, newParent.getChildCount());
+            newParent.addView(view, safeIndex);
+        }
+
+        @Override
+        public void undo() {
+            if (view.getParent() instanceof ViewGroup) {
+                ((ViewGroup) view.getParent()).removeView(view);
+            }
+            int safeIndex = Math.min(oldIndex, oldParent.getChildCount());
+            oldParent.addView(view, safeIndex);
+        }
+
+        @Override
+        public String getDescription() {
+            return "Move " + view.getClass().getSimpleName();
+        }
+    }
+
+    /**
+     * ATTRIBUTE_CHANGE command: undo restores old value, redo applies new value.
+     */
+    public static class AttributeChangeCommand implements EditorCommand {
+        public interface AttributeApplier {
+            void apply(View view, String attrName, String attrValue);
+        }
+
+        private final View view;
+        private final String attrName;
+        private final String oldValue;   // null = attribute nahi tha
+        private final String newValue;
+        private final AttributeApplier applier;
+
+        public AttributeChangeCommand(View view, String attrName,
+                                      String oldValue, String newValue,
+                                      AttributeApplier applier) {
+            this.view     = view;
+            this.attrName = attrName;
+            this.oldValue = oldValue;
+            this.newValue = newValue;
+            this.applier  = applier;
+        }
+
+        @Override
+        public void execute() {
+            if (newValue != null) applier.apply(view, attrName, newValue);
+        }
+
+        @Override
+        public void undo() {
+            if (oldValue != null) applier.apply(view, attrName, oldValue);
+        }
+
+        @Override
+        public String getDescription() {
+            return "Change " + attrName;
+        }
+    }
+
+    // ============================================================
+    // Singleton
+    // ============================================================
+
+    private static volatile StableUndoManager instance;
+
+    public static StableUndoManager getInstance() {
+        if (instance == null) {
+            synchronized (StableUndoManager.class) {
+                if (instance == null) instance = new StableUndoManager();
+            }
+        }
+        return instance;
+    }
+
+    private StableUndoManager() {}
+
+    // ============================================================
+    // Per-Activity Stacks
+    // ============================================================
+
+    private static final int MAX_STACK_SIZE = 50;
+
+    // activityName → undo stack
+    private final Map<String, Deque<EditorCommand>> undoStacks = new HashMap<>();
+    // activityName → redo stack
+    private final Map<String, Deque<EditorCommand>> redoStacks = new HashMap<>();
+
+    private Deque<EditorCommand> undoStack(String activity) {
+        synchronized (this) {
+            if (!undoStacks.containsKey(activity)) {
+                undoStacks.put(activity, new ArrayDeque<EditorCommand>());
+            }
+            return undoStacks.get(activity);
+        }
+    }
+
+    private Deque<EditorCommand> redoStack(String activity) {
+        synchronized (this) {
+            if (!redoStacks.containsKey(activity)) {
+                redoStacks.put(activity, new ArrayDeque<EditorCommand>());
+            }
+            return redoStacks.get(activity);
+        }
+    }
+
+    // ============================================================
+    // Public API
+    // ============================================================
+
+    /**
+     * Push a new command onto the undo stack for the given activity.
+     * Clears the redo stack (new action = future redo history gone).
+     *
+     * @param activityName the current layout/activity name
+     * @param command      the command to record
+     */
+    public synchronized void push(String activityName, EditorCommand command) {
+        Deque<EditorCommand> stack = undoStack(activityName);
+        stack.push(command);
+        // Trim to max size
+        while (stack.size() > MAX_STACK_SIZE) {
+            ((ArrayDeque<EditorCommand>) stack).removeLast();
+        }
+        // New action aane ke baad redo stack clear
+        redoStack(activityName).clear();
+    }
+
+    /**
+     * Undo the last action for the given activity.
+     *
+     * @return true if an action was undone
+     */
+    public synchronized boolean undo(String activityName) {
+        Deque<EditorCommand> uStack = undoStack(activityName);
+        Deque<EditorCommand> rStack = redoStack(activityName);
+        if (uStack.isEmpty()) return false;
+
+        EditorCommand cmd = uStack.pop();
+        try {
+            cmd.undo();
+        } catch (Exception e) {
+            // Undo fail hua — log karo lekin crash mat karo
+            android.util.Log.e("StableUndoManager", "undo() failed: " + e.getMessage(), e);
+        }
+        rStack.push(cmd);
+        return true;
+    }
+
+    /**
+     * Redo the last undone action for the given activity.
+     *
+     * @return true if an action was redone
+     */
+    public synchronized boolean redo(String activityName) {
+        Deque<EditorCommand> uStack = undoStack(activityName);
+        Deque<EditorCommand> rStack = redoStack(activityName);
+        if (rStack.isEmpty()) return false;
+
+        EditorCommand cmd = rStack.pop();
+        try {
+            cmd.execute();
+        } catch (Exception e) {
+            android.util.Log.e("StableUndoManager", "redo() failed: " + e.getMessage(), e);
+        }
+        uStack.push(cmd);
+        return true;
+    }
+
+    /** @return true if undo is available for this activity */
+    public synchronized boolean canUndo(String activityName) {
+        return !undoStack(activityName).isEmpty();
+    }
+
+    /** @return true if redo is available for this activity */
+    public synchronized boolean canRedo(String activityName) {
+        return !redoStack(activityName).isEmpty();
+    }
+
+    /** Undo stack ka size (for UI badge/indicator) */
+    public synchronized int undoCount(String activityName) {
+        return undoStack(activityName).size();
+    }
+
+    /** Clears all undo+redo history for a specific activity (e.g., on layout load). */
+    public synchronized void clearHistory(String activityName) {
+        undoStack(activityName).clear();
+        redoStack(activityName).clear();
+    }
+
+    /** Clears all history across all activities (e.g., on project close). */
+    public synchronized void clearAll() {
+        undoStacks.clear();
+        redoStacks.clear();
+    }
+}

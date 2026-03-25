@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AttributeSet {
-    HashMap<String,Attribute> attrsMap;
+    HashMap<String, Attribute> attrsMap;
     
     public AttributeSet(){
         attrsMap = new HashMap<>();
     }
+    
     public void add(Attribute attr){
-        attrsMap.put(attr.getName(),attr);
+        attrsMap.put(attr.getName(), attr);
     }
     
     public void remove(String attrName){
@@ -23,18 +24,44 @@ public class AttributeSet {
     }
     
     public ArrayList<Attribute> getAttributes(){
-        ArrayList<Attribute> list = new ArrayList<>();
-        for(String key:attrsMap.keySet())list.add(attrsMap.get(key));
-        return list;
+        return new ArrayList<>(attrsMap.values());
+    }
+    
+    // Check if any attribute is converted
+    public boolean hasConvertedWidget() {
+        for(Attribute attr : attrsMap.values()) {
+            if(attr.isConverted()) return true;
+        }
+        return false;
+    }
+    
+    // Visual editor ke liye - preview tag do
+    public String getPreviewTag(String defaultTag) {
+        for(Attribute attr : attrsMap.values()) {
+            if(attr.isConverted()) {
+                return attr.getPreviewTag();
+            }
+        }
+        return defaultTag;
+    }
+    
+    // XML generation ke liye - converted tag do
+    public String getConvertedTag(String defaultTag) {
+        for(Attribute attr : attrsMap.values()) {
+            if(attr.isConverted()) {
+                return attr.getConvertedTag();
+            }
+        }
+        return defaultTag;
     }
     
     @Override 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(String key:attrsMap.keySet()){
-            sb.append(attrsMap.get(key).toString());
+        for(Attribute attr : attrsMap.values()){
+            sb.append(attr.toString());
             sb.append("\n");
-            }
-        return sb.toString().trim();
         }
+        return sb.toString().trim();
+    }
 }

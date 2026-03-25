@@ -1,0 +1,81 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:background="#454473"
+		android:gravity="center_horizontal"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/linear2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:background="#454473"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<EditText
+				android:id="@+id/name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:textSize="12sp"
+				android:textColor="#FFFFFF"
+				android:hint="name"
+				android:textColorHint="#607D8B"
+				android:layout_weight="1"
+				android:focusable="true" />
+			<EditText
+				android:id="@+id/bcolor"
+				android:layout_width="80dp"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="#FFFFFF"
+				android:textSize="12sp"
+				android:textColor="#FFFFFF"
+				android:hint="color"
+				android:textColorHint="#607D8B"
+				android:enabled="false"
+				android:focusable="false" />
+			<ImageView
+				android:id="@+id/pick"
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:src="@drawable/ic_colorize_black"
+				android:scaleType="fitCenter"
+				android:focusable="false" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal">
+			<Button
+				android:id="@+id/create"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="Create"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textColor="#000000" />
+			<Button
+				android:id="@+id/cancel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="Cancel"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textColor="#000000" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

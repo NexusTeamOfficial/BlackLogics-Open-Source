@@ -29,6 +29,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ScrollView;
+
 import com.github.angads25.filepicker.controller.DialogSelectionListener;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -43,6 +46,8 @@ import com.nexusteam.sdk.lib.FilePathUtil;
 import com.nexusteam.sdk.lib.FileResConfig;
 import com.nexusteam.sdk.lib.FileUtil;
 import com.nexusteam.sdk.util.Helper;
+import com.nexusteam.sdk.util.AdvancedRefactor;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -51,7 +56,6 @@ import java.util.regex.Pattern;
 
 public class ManageJavaActivity extends Activity {
     
-
     private static final String PACKAGE_DECL_REGEX = "package (.*?);?\\n";
     
     private static final String ACTIVITY_TEMPLATE =
@@ -136,6 +140,7 @@ public class ManageJavaActivity extends Activity {
         ImageView back = findViewById(R.id.ig_toolbar_back);
         TextView title = findViewById(R.id.tx_toolbar_title);
         ImageView loadFile = findViewById(R.id.ig_toolbar_load_file);
+        ImageView refactorIcon = findViewById(R.id.ig_toolbar_refactor);
         
         FloatingActionButton fab = findViewById(R.id.fab_plus);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +168,17 @@ public class ManageJavaActivity extends Activity {
             }
         });
         
+        // Setup refactor icon
+        if (refactorIcon != null) {
+            refactorIcon.setVisibility(View.VISIBLE);
+            Helper.applyRippleToToolbarView(refactorIcon);
+            refactorIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showRefactorDialog();
+                }
+            });
+        }
     }
     
     private String getCurrentPkgName() {
@@ -301,7 +317,7 @@ public class ManageJavaActivity extends Activity {
         
         properties.selection_mode = DialogConfigs.MULTI_MODE;
         properties.selection_type = DialogConfigs.FILE_SELECT;
-        properties.root = externalStorageDir:
+        properties.root = externalStorageDir;
         properties.error_dir = externalStorageDir;
         properties.offset = externalStorageDir;
         properties.extensions = new String[]{"java", "kt"};
@@ -509,6 +525,177 @@ public class ManageJavaActivity extends Activity {
         
         noteNoFiles.setVisibility(currentTree.size() == 0 ? View.VISIBLE : View.GONE);
     }
+    
+    // ==================== REFACTOR METHODS ====================
+    
+    private void showRefactorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_refactor, null);
+        
+        final EditText etOldPackage = dialogView.findViewById(R.id.et_old_package);
+        final EditText etNewPackage = dialogView.findViewById(R.id.et_new_package);
+        final CheckBox cbDryRun = dialogView.findViewById(R.id.cb_dry_run);
+        final CheckBox cbUpdateImports = dialogView.findViewById(R.id.cb_update_imports);
+        final CheckBox cbMoveFiles = dialogView.findViewById(R.id.cb_move_files);
+        final TextView tvPreview = dialogView.findViewById(R.id.tv_preview);
+        final ScrollView previewScroll = dialogView.findViewById(R.id.preview_scroll);
+        final Button btnPreview = dialogView.findViewById(R.id.btn_preview);
+        final Button btnExecute = dialogView.findViewById(R.id.btn_execute);
+        final Button btnCancel = dialogView.findViewById(R.id.btn_cancel);
+        
+        // Set current package as default
+        String currentPkg = getCurrentPkgName();
+        etOldPackage.setText(currentPkg);
+        etNewPackage.setText(currentPkg);
+        
+        final AlertDialog dialog = builder.setView(dialogView)
+                .setTitle("Refactor Package")
+                .setCancelable(true)
+                .create();
+        
+        btnPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String oldPkg = etOldPackage.getText().toString().trim();
+                String newPkg = etNewPackage.getText().toString().trim();
+                
+                if (oldPkg.isEmpty() || newPkg.isEmpty()) {
+                    SketchwareUtil.toastError("Please enter both package names");
+                    return;
+                }
+                
+                // Show preview
+                previewScroll.setVisibility(View.VISIBLE);
+                StringBuilder preview = new StringBuilder();
+                preview.append("📋 PREVIEW OF CHANGES (DRY RUN)\n\n");
+                preview.append("Old Package: ").append(oldPkg).append("\n");
+                preview.append("New Package: ").append(newPkg).append("\n");
+                preview.append("================================\n\n");
+                preview.append("Files to be affected:\n");
+                
+                // List files that will be updated
+                File javaDir = new File(fpu.getPathJava(sc_id));
+                listFilesForPreview(javaDir, preview, oldPkg);
+                
+                if (preview.toString().contains("No files found")) {
+                    preview.append("\n⚠ No files found with package: ").append(oldPkg);
+                }
+                
+                tvPreview.setText(preview.toString());
+            }
+        });
+        
+        btnExecute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String oldPkg = etOldPackage.getText().toString().trim();
+                String newPkg = etNewPackage.getText().toString().trim();
+                
+                if (oldPkg.isEmpty() || newPkg.isEmpty()) {
+                    SketchwareUtil.toastError("Please enter both package names");
+                    return;
+                }
+                
+                boolean dryRun = cbDryRun.isChecked();
+                boolean updateImports = cbUpdateImports.isChecked();
+                boolean moveFiles = cbMoveFiles.isChecked();
+                
+                // Execute refactoring
+                executeRefactor(oldPkg, newPkg, dryRun, updateImports, moveFiles, dialog);
+            }
+        });
+        
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        
+        dialog.show();
+    }
+    
+    private void listFilesForPreview(File dir, StringBuilder preview, String oldPkg) {
+        File[] files = dir.listFiles();
+        boolean found = false;
+        
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    listFilesForPreview(file, preview, oldPkg);
+                } else if (file.getName().endsWith(".java") || file.getName().endsWith(".kt")) {
+                    String content = FileUtil.readFile(file.getAbsolutePath());
+                    if (content.contains("package " + oldPkg)) {
+                        preview.append("  📄 ").append(file.getAbsolutePath()).append("\n");
+                        found = true;
+                    }
+                }
+            }
+        }
+        
+        if (!found && dir == new File(fpu.getPathJava(sc_id))) {
+            preview.append("  No files found\n");
+        }
+    }
+    
+    private void executeRefactor(String oldPkg, String newPkg, boolean dryRun, 
+                                boolean updateImports, boolean moveFiles, AlertDialog dialog) {
+        try {
+            AdvancedRefactor refactor = new AdvancedRefactor(dryRun);
+            
+            // Get project root (java directory parent)
+            String projectRoot = fpu.getPathJava(sc_id);
+            
+            SketchwareUtil.toast("Starting refactor " + (dryRun ? "(DRY RUN)..." : "..."));
+            
+            // Execute package rename
+            AdvancedRefactor.PackageRenameResult result = refactor.renamePackage(
+                projectRoot, oldPkg, newPkg);
+            
+            // Show results in a dialog
+            showRefactorResults(result, dryRun);
+            
+            if (!dryRun) {
+                refresh(); // Refresh the file list
+                SketchwareUtil.toast("✅ Refactor completed successfully!");
+            }
+            
+            dialog.dismiss();
+            
+        } catch (Exception e) {
+            SketchwareUtil.toastError("❌ Refactor failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private void showRefactorResults(AdvancedRefactor.PackageRenameResult result, boolean dryRun) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_refactor_results, null);
+        
+        TextView tvResults = view.findViewById(R.id.tv_results);
+        Button btnOk = view.findViewById(R.id.btn_ok);
+        
+        StringBuilder results = new StringBuilder();
+        results.append(dryRun ? "🔍 DRY RUN RESULTS\n\n" : "✅ REFACTOR COMPLETED\n\n");
+        results.append(result.toString());
+        
+        tvResults.setText(results.toString());
+        
+        final AlertDialog resultDialog = builder.setView(view)
+                .setCancelable(false)
+                .create();
+        
+        btnOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resultDialog.dismiss();
+            }
+        });
+        
+        resultDialog.show();
+    }
+    
+    // ==================== ADAPTER CLASS ====================
     
     private class MyAdapter extends BaseAdapter {
         

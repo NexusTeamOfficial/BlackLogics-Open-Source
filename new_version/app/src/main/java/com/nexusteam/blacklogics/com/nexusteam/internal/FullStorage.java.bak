@@ -1,0 +1,210 @@
+package com.nexusteam.internal;
+
+import android.util.Log;
+import android.util.Pair;
+
+import com.nexusteam.internal.model.ComponentData;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public final class FullStorage {
+
+    private static final String BASE = "/storage/emulated/0/.blacklogics/data/";
+    private static final String FILE = "project.dat";
+    private static final int VERSION = 2; // bump version since now it includes components
+    private static final byte[] MASK_KEY = "NEXUS_PRIVATE_KEY_123".getBytes();
+    private static String sc;
+
+    private static File file() {
+        File d = new File(BASE + sc);
+        if (!d.exists()) d.mkdirs();
+        return new File(d, FILE);
+    }
+    
+    public static void setScId(String sc) {
+       FullStorage.sc = sc;
+    }   
+
+    private static byte[] applyMask(byte[] data) {
+        byte[] result = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            result[i] = (byte) (data[i] ^ MASK_KEY[i % MASK_KEY.length]);
+        }
+        return result;
+    }
+
+    /* ================= WRITE ================= */
+    public static void writeAll(
+            HashMap<String, ArrayList<BlockBean>> blocks,
+            HashMap<String, ArrayList<Pair<String, String>>> functions,
+            HashMap<String, ComponentData> components
+    ) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             DataOutputStream out = new DataOutputStream(bos)) {
+
+            out.writeInt(VERSION);
+
+            // -------- BLOCKS --------
+            out.writeInt(blocks.size());
+            for (String key : blocks.keySet()) {
+                out.writeUTF(key);
+                ArrayList<BlockBean> list = blocks.get(key);
+                out.writeInt(list == null ? 0 : list.size());
+                if (list != null) {
+                    for (BlockBean b : list) {
+                        b.writeToStream(out);
+                    }
+                }
+            }
+
+            // -------- FUNCTIONS --------
+            out.writeInt(functions.size());
+            for (String key : functions.keySet()) {
+                out.writeUTF(key);
+                ArrayList<Pair<String, String>> list = functions.get(key);
+                out.writeInt(list == null ? 0 : list.size());
+                if (list != null) {
+                    for (Pair<String, String> p : list) {
+                        out.writeUTF(p.first);
+                        out.writeUTF(p.second);
+                    }
+                }
+            }
+
+            // -------- COMPONENTS --------
+            out.writeInt(components.size());
+            for (String key : components.keySet()) {
+                out.writeUTF(key);
+                ComponentData c = components.get(key);
+                out.writeInt(c.type);
+                out.writeUTF(c.mainData != null ? c.mainData : "");
+                out.writeUTF(c.extraData != null ? c.extraData : "");
+            }
+
+            out.flush();
+
+            // Mask & write to disk
+            byte[] encrypted = applyMask(bos.toByteArray());
+            try (FileOutputStream fos = new FileOutputStream(file())) {
+                fos.write(encrypted);
+            }
+
+        } catch (Exception e) {
+            Log.e("FullStorage", "WRITE ERROR", e);
+        }
+    }
+
+    /* ================= READ ================= */
+    public static Object[] readAll() {
+        HashMap<String, ArrayList<BlockBean>> blocks = new HashMap<>();
+        HashMap<String, ArrayList<Pair<String, String>>> functions = new HashMap<>();
+        HashMap<String, ComponentData> components = new HashMap<>();
+
+        File f = file();
+        if (!f.exists()) return new Object[]{blocks, functions, components};
+
+        try {
+            byte[] fileData = new byte[(int) f.length()];
+            try (FileInputStream fis = new FileInputStream(f)) {
+                fis.read(fileData);
+            }
+
+            byte[] decrypted = applyMask(fileData);
+            try (DataInputStream in = new DataInputStream(new ByteArrayInputStream(decrypted))) {
+                int version = in.readInt();
+
+                // -------- BLOCKS --------
+                int bc = in.readInt();
+                for (int i = 0; i < bc; i++) {
+                    String key = in.readUTF();
+                    int size = in.readInt();
+                    ArrayList<BlockBean> list = new ArrayList<>();
+                    for (int j = 0; j < size; j++) {
+                        BlockBean b = new BlockBean();
+                        b.readFromStream(in);
+                        list.add(b);
+                    }
+                    blocks.put(key, list);
+                }
+
+                // -------- FUNCTIONS --------
+                int fc = in.readInt();
+                for (int i = 0; i < fc; i++) {
+                    String key = in.readUTF();
+                    int size = in.readInt();
+                    ArrayList<Pair<String, String>> list = new ArrayList<>();
+                    for (int j = 0; j < size; j++) {
+                        list.add(new Pair<>(in.readUTF(), in.readUTF()));
+                    }
+                    functions.put(key, list);
+                }
+
+                // -------- COMPONENTS --------
+                int cc = in.readInt();
+                for (int i = 0; i < cc; i++) {
+                    String key = in.readUTF();
+                    int type = in.readInt();
+                    String mainData = in.readUTF();
+                    String extraData = in.readUTF();
+                    components.put(key, new ComponentData(type, mainData, extraData));
+                }
+            }
+
+        } catch (Exception e) {
+            Log.e("FullStorage", "READ ERROR", e);
+        }
+
+        return new Object[]{blocks, functions, components};
+    }
+
+    /* ================= PUBLIC API ================= */
+    public static void saveBlock(String key, ArrayList<BlockBean> list) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ComponentData> components = (HashMap<String, ComponentData>) o[2];
+        blocks.put(key, list);
+        writeAll(blocks, functions, components);
+    }
+
+    public static ArrayList<BlockBean> loadBlock(String key) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        ArrayList<BlockBean> list = blocks.get(key);
+        return list == null ? new ArrayList<>() : list;
+    }
+
+    public static void saveFunction(String key, ArrayList<Pair<String, String>> list) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ComponentData> components = (HashMap<String, ComponentData>) o[2];
+        functions.put(key, list);
+        writeAll(blocks, functions, components);
+    }
+
+    public static ArrayList<Pair<String, String>> loadFunction(String key) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        ArrayList<Pair<String, String>> list = functions.get(key);
+        return list == null ? new ArrayList<>() : list;
+    }
+
+    public static void saveComponent(String key, ComponentData data) {
+        Object[] o = readAll();
+        HashMap<String, ArrayList<BlockBean>> blocks = (HashMap<String, ArrayList<BlockBean>>) o[0];
+        HashMap<String, ArrayList<Pair<String, String>>> functions = (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        HashMap<String, ComponentData> components = (HashMap<String, ComponentData>) o[2];
+        components.put(key, data);
+        writeAll(blocks, functions, components);
+    }
+
+    public static ComponentData loadComponent(String key) {
+        Object[] o = readAll();
+        HashMap<String, ComponentData> components = (HashMap<String, ComponentData>) o[2];
+        ComponentData data = components.get(key);
+        return data == null ? new ComponentData(0, "", "") : data;
+    }
+}

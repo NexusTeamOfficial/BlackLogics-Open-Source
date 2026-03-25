@@ -309,7 +309,7 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
     private JSONArray readProjectJson() {
         try {
 
-            String filePath = "/storage/emulated/0/" +
+            String filePath = "/storage/emulated/0" +
             "/.blacklogics/data/" + sc_id + "/root_layout.json";
             File file = new File(filePath);
             
@@ -373,7 +373,7 @@ public class ViewCodeEditorActivity extends AppCompatActivity {
             JSONArray jsonArray = readProjectJson(); // Existing data read karein
             updateActivityXmlInJson(activityName, xmlContent, jsonArray); // Data update karein
             
-            String savePath = "/storage/emulated/0/" +
+            String savePath = "/storage/emulated/0" +
             "/.blacklogics/data/" + sc_id + "/root_layout.json";
             File file = new File(savePath);
             file.getParentFile().mkdirs();

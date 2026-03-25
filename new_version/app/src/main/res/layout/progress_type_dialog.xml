@@ -1,0 +1,40 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="16dp">
+	<TextView
+		android:id="@+id/textview4"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Progress Type"
+		android:textSize="12sp"
+		android:textStyle="bold"
+		android:textColor="#000000" />
+	<RadioGroup
+		android:id="@+id/radiogroup2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<RadioButton
+			android:id="@+id/radio_horizontal"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Horizontal"
+			android:textSize="12sp"
+			android:textColor="#000000" />
+		<RadioButton
+			android:id="@+id/radio_circular"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Circular"
+			android:textSize="12sp"
+			android:textColor="#000000" />
+	</RadioGroup>
+</LinearLayout>

@@ -479,4 +479,239 @@ public final class BlockStorage {
         return new ComponentData(0, "", "");
         
     }
+    /**
+ * Clear all components for a specific activity
+ */
+public static void clearComponents(String activityName) {
+    Object[] o = readAll();
+    
+    HashMap<String, ArrayList<BlockBean>> blocks =
+        (HashMap<String, ArrayList<BlockBean>>) o[0];
+    
+    HashMap<String, ArrayList<Pair<String, String>>> functions =
+        (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+    
+    HashMap<String, ArrayList<ComponentData>> components =
+        (HashMap<String, ArrayList<ComponentData>>) o[2];
+    
+    HashMap<String, ArrayList<VariableData>> variables =
+        (HashMap<String, ArrayList<VariableData>>) o[3];
+    
+    // Set empty list for this activity
+    components.put(activityName, new ArrayList<ComponentData>());
+    
+    writeAll(blocks, functions, components, variables);
+}
+
+    /* ================= COMPONENT EVENT METHODS ================= */
+    
+    /**
+     * Save an event for a specific component
+     */
+    public static void saveComponentEvent(String componentId, String eventName) {
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+            (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+            (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+            (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+            (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        // Create a separate map for component events (using index 4 in readAll)
+        // Since we don't have a separate events map, we'll store events with the component data
+        // But to avoid modifying structure, let's create a new map for events
+        
+        // Actually, let's use a separate key format: "component_events_" + componentId
+        // We'll store in functions map as it's flexible
+        
+        String eventsKey = "component_events_" + componentId;
+        ArrayList<Pair<String, String>> eventsList = functions.get(eventsKey);
+        
+        if (eventsList == null) {
+            eventsList = new ArrayList<Pair<String, String>>();
+        }
+        
+        // Check if already exists
+        boolean exists = false;
+        for (int i = 0; i < eventsList.size(); i++) {
+            Pair<String, String> p = eventsList.get(i);
+            if (p.second.equals(eventName)) {
+                exists = true;
+                break;
+            }
+        }
+        
+        if (!exists) {
+            eventsList.add(new Pair<String, String>("event", eventName));
+            functions.put(eventsKey, eventsList);
+            writeAll(blocks, functions, components, variables);
+        }
+    }
+    
+    /**
+     * Load events for a specific component
+     */
+    public static ArrayList<String> loadComponentEvents(String componentId) {
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+            (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        String eventsKey = "component_events_" + componentId;
+        ArrayList<Pair<String, String>> eventsList = functions.get(eventsKey);
+        
+        ArrayList<String> result = new ArrayList<String>();
+        
+        if (eventsList != null) {
+            for (int i = 0; i < eventsList.size(); i++) {
+                Pair<String, String> p = eventsList.get(i);
+                result.add(p.second);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Remove a specific component by ID (used in delete confirmation)
+     */
+    public static void removeComponent(String activityName, String componentId) {
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+            (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+            (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+            (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+            (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<ComponentData> list = components.get(activityName);
+        
+        if (list != null) {
+            ArrayList<ComponentData> newList = new ArrayList<ComponentData>();
+            
+            for (int i = 0; i < list.size(); i++) {
+                ComponentData data = list.get(i);
+                
+                // mainData is the component ID
+                if (!data.mainData.equals(componentId)) {
+                    newList.add(data);
+                }
+            }
+            
+            components.put(activityName, newList);
+            writeAll(blocks, functions, components, variables);
+            
+            // Also remove events for this component
+            String eventsKey = "component_events_" + componentId;
+            functions.remove(eventsKey);
+            
+            // Write again after removing events
+            writeAll(blocks, functions, components, variables);
+        }
+    }
+    
+    /**
+     * Add or update component (used when adding new component)
+     */
+    public static void updateComponent(String activityName, ComponentData data) {
+        Object[] o = readAll();
+        
+        HashMap<String, ArrayList<BlockBean>> blocks =
+            (HashMap<String, ArrayList<BlockBean>>) o[0];
+        
+        HashMap<String, ArrayList<Pair<String, String>>> functions =
+            (HashMap<String, ArrayList<Pair<String, String>>>) o[1];
+        
+        HashMap<String, ArrayList<ComponentData>> components =
+            (HashMap<String, ArrayList<ComponentData>>) o[2];
+        
+        HashMap<String, ArrayList<VariableData>> variables =
+            (HashMap<String, ArrayList<VariableData>>) o[3];
+        
+        ArrayList<ComponentData> list = components.get(activityName);
+        
+        if (list == null) {
+            list = new ArrayList<ComponentData>();
+        }
+        
+        // Check if component with same ID exists
+        boolean found = false;
+        for (int i = 0; i < list.size(); i++) {
+            ComponentData existing = list.get(i);
+            if (existing.mainData.equals(data.mainData)) {
+                // Update existing
+                list.set(i, data);
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
+            list.add(data);
+        }
+        
+        components.put(activityName, list);
+        writeAll(blocks, functions, components, variables);
+    }
+    
+    /**
+     * Get a specific component by ID
+     */
+    public static ComponentData getComponent(String activityName, String componentId) {
+        ArrayList<ComponentData> list = loadComponents(activityName);
+        
+        for (int i = 0; i < list.size(); i++) {
+            ComponentData data = list.get(i);
+            if (data.mainData.equals(componentId)) {
+                return data;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Check if a component exists
+     */
+    public static boolean componentExists(String activityName, String componentId) {
+        return getComponent(activityName, componentId) != null;
+    }
+    
+    /**
+     * Get all components of a specific type
+     */
+    public static ArrayList<ComponentData> getComponentsByType(String activityName, int type) {
+        ArrayList<ComponentData> list = loadComponents(activityName);
+        ArrayList<ComponentData> result = new ArrayList<ComponentData>();
+        
+        for (int i = 0; i < list.size(); i++) {
+            ComponentData data = list.get(i);
+            if (data.type == type) {
+                result.add(data);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Get component count for an activity
+     */
+    public static int getComponentCount(String activityName) {
+        ArrayList<ComponentData> list = loadComponents(activityName);
+        return list.size();
+    }
+
 }

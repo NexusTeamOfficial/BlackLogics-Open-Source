@@ -31,17 +31,17 @@ public class CreateCustomViewDialog {
         
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(
-            new ColorDrawable(Color.TRANSPARENT)
+                new ColorDrawable(Color.TRANSPARENT)
             );
             dialog.getWindow().setDimAmount(0.5f);
         }
         
         final TextInputEditText editText =
-        dialog.findViewById(R.id.edittext3);
+            dialog.findViewById(R.id.edittext3);
         MaterialButton cancelButton =
-        dialog.findViewById(R.id.button5);
+            dialog.findViewById(R.id.button5);
         MaterialButton addButton =
-        dialog.findViewById(R.id.button6);
+            dialog.findViewById(R.id.button6);
         
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);
@@ -58,8 +58,8 @@ public class CreateCustomViewDialog {
             public void onClick(View v) {
                 
                 String viewName = editText.getText()
-                .toString()
-                .trim();
+                    .toString()
+                    .trim();
                 
                 if (viewName.isEmpty()) {
                     toast("Please enter a view name");
@@ -71,18 +71,83 @@ public class CreateCustomViewDialog {
                     return;
                 }
                 
-                if (activity.complex.hasCustomView(viewName)) {
+                if (complex.hasCustomView(viewName)) {
                     toast("View name already exists");
                     return;
                 }
                 
-                complex.setCustomViewName(viewName);
+                // FIXED: Only add to custom views, not to normal views
+                // Remove the line that sets custom view name which also adds to xName/acName
+                // complex.setCustomViewName(viewName);
+                
+                // Instead, directly add to custom views array only
+                addToCustomViewsOnly(viewName);
+                
                 dialog.dismiss();
+                toast("Custom view '" + viewName + "' created successfully");
             }
         });
         
-        
         dialog.show();
+    }
+    
+    /**
+     * Add view only to custom views array, not to normal views
+     */
+    private void addToCustomViewsOnly(String viewName) {
+        try {
+            org.json.JSONObject jsonData = complex.jsonData;
+            org.json.JSONObject temp = new org.json.JSONObject(jsonData.toString());
+            org.json.JSONObject metaData = temp.optJSONObject("meta");
+            if (metaData == null) metaData = new org.json.JSONObject();
+            
+            // Only add to customViews array, NOT to xName/acName
+            org.json.JSONArray customViewArray = metaData.optJSONArray("customViews");
+            if (customViewArray == null) customViewArray = new org.json.JSONArray();
+            
+            String encodedViewName = complex.encodeData(viewName);
+            if (!arrayContains(customViewArray, encodedViewName)) {
+                customViewArray.put(encodedViewName);
+            }
+            
+            metaData.put("customViews", customViewArray);
+            
+            // Create default XML file for the custom view (optional)
+            String xmlFileName = viewName.toLowerCase() + ".xml";
+            String defaultXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<merge xmlns:android=\"http://schemas.android.com/apk/res/android\">\n\n" +
+                "</merge>";
+            
+            // Save XML to a separate location or just store in the custom view data
+            // We're not adding to xName array, so we need to store it elsewhere
+            org.json.JSONObject customViewData = metaData.optJSONObject("customViewData");
+            if (customViewData == null) customViewData = new org.json.JSONObject();
+            customViewData.put(encodedViewName, complex.encodeData(defaultXml));
+            metaData.put("customViewData", customViewData);
+            
+            temp.put("meta", metaData);
+            complex.jsonData = temp;
+            complex.saveJson();
+            
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Helper method to check if JSONArray contains a value
+     */
+    private boolean arrayContains(org.json.JSONArray array, String value) {
+        try {
+            for (int i = 0; i < array.length(); i++) {
+                if (array.getString(i).equals(value)) {
+                    return true;
+                }
+            }
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
     
     private void toast(String msg) {

@@ -20,10 +20,10 @@ import android.view.View.*;
 import android.view.animation.*;
 import android.webkit.*;
 import android.widget.*;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Switch;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.*;
 import androidx.appcompat.*;
@@ -31,10 +31,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -43,9 +47,13 @@ import com.google.android.flexbox.*;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
 import com.google.android.material.button.*;
+import com.google.android.material.card.*;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.nexusteam.blacklogics.widget.AdLayout;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -69,20 +77,35 @@ public class AppSettingsActivity extends AppCompatActivity {
 	
 	private CompoundButton.OnCheckedChangeListener languageListener;
 	
+	private ScrollView vscroll2;
 	private LinearLayout linear1;
-	private LinearLayout blockManagerLayout;
-	private LinearLayout linear5;
-	private Switch switch1;
-	private Switch switch2;
+	private TextView textview7;
+	private MaterialCardView blockManagerCard;
+	private MaterialCardView aboutAppCard;
+	private TextView textview8;
+	private MaterialCardView cardview2;
 	private MaterialButton materialbutton1;
+	private AdLayout adLayout;
+	private Button button1;
+	private Button button2;
+	private LinearLayout linear11;
 	private ImageView blockManager;
 	private LinearLayout linear3;
 	private TextView blocksManagerTitle;
 	private TextView blockManagerDesc;
+	private LinearLayout linear12;
 	private ImageView imageview1;
 	private LinearLayout linear6;
 	private TextView textview1;
 	private TextView textview2;
+	private LinearLayout linear13;
+	private LinearLayout linear14;
+	private View view15;
+	private LinearLayout linear16;
+	private TextView textview9;
+	private SwitchMaterial switch1;
+	private TextView textview10;
+	private TextView languageValue;
 	
 	private SharedPreferences prefs;
 	private com.google.android.material.bottomsheet.BottomSheetDialog bottomTestSheet;
@@ -110,48 +133,36 @@ public class AppSettingsActivity extends AppCompatActivity {
 			}
 		};
 		
+		vscroll2 = findViewById(R.id.vscroll2);
 		linear1 = findViewById(R.id.linear1);
-		blockManagerLayout = findViewById(R.id.blockManagerLayout);
-		linear5 = findViewById(R.id.linear5);
-		switch1 = findViewById(R.id.switch1);
-		switch2 = findViewById(R.id.switch2);
+		textview7 = findViewById(R.id.textview7);
+		blockManagerCard = findViewById(R.id.blockManagerCard);
+		aboutAppCard = findViewById(R.id.aboutAppCard);
+		textview8 = findViewById(R.id.textview8);
+		cardview2 = findViewById(R.id.cardview2);
 		materialbutton1 = findViewById(R.id.materialbutton1);
+		adLayout = findViewById(R.id.adLayout);
+		button1 = findViewById(R.id.button1);
+		button2 = findViewById(R.id.button2);
+		linear11 = findViewById(R.id.linear11);
 		blockManager = findViewById(R.id.blockManager);
 		linear3 = findViewById(R.id.linear3);
 		blocksManagerTitle = findViewById(R.id.blocksManagerTitle);
 		blockManagerDesc = findViewById(R.id.blockManagerDesc);
+		linear12 = findViewById(R.id.linear12);
 		imageview1 = findViewById(R.id.imageview1);
 		linear6 = findViewById(R.id.linear6);
 		textview1 = findViewById(R.id.textview1);
 		textview2 = findViewById(R.id.textview2);
+		linear13 = findViewById(R.id.linear13);
+		linear14 = findViewById(R.id.linear14);
+		view15 = findViewById(R.id.view15);
+		linear16 = findViewById(R.id.linear16);
+		textview9 = findViewById(R.id.textview9);
+		switch1 = findViewById(R.id.switch1);
+		textview10 = findViewById(R.id.textview10);
+		languageValue = findViewById(R.id.languageValue);
 		prefs = getSharedPreferences("AppSettings", Activity.MODE_PRIVATE);
-		
-		blockManagerLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View _view) {
-				Intent intent = new Intent(getApplicationContext(), com.besome.blacklogics.block_manager.BlocksManagerActivity.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-				startActivity(intent);
-			}
-		});
-		
-		switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton _param1, boolean _param2) {
-				final boolean _isChecked = _param2;
-				boolean isChecked = _isChecked;
-				
-				SharedPreferences.Editor editor = prefs.edit();
-				editor.putInt("theme_mode", isChecked ? 2 : 0);
-				editor.apply();
-				
-				AppCompatDelegate.setDefaultNightMode(
-				isChecked
-				? AppCompatDelegate.MODE_NIGHT_YES
-				: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-				);
-			}
-		});
 		
 		materialbutton1.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -163,6 +174,29 @@ public class AppSettingsActivity extends AppCompatActivity {
 				bottomTestSheet.getWindow().findViewById(R.id.design_bottom_sheet).setBackgroundResource(android.R.color.transparent);
 				bottomTestSheet.setCancelable(true);
 				bottomTestSheet.show();
+			}
+		});
+		
+		button1.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				com.nexusteam.blacklogics.lib.language.LanguageManager.changeLanguage(AppSettingsActivity.this, "en");
+			}
+		});
+		
+		button2.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				com.nexusteam.blacklogics.lib.language.LanguageManager.changeLanguage(AppSettingsActivity.this, "hi");
+			}
+		});
+		
+		linear11.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View _view) {
+				Intent intent = new Intent(getApplicationContext(), com.besome.blacklogics.block_manager.BlocksManagerActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				startActivity(intent);
 			}
 		});
 	}
@@ -179,13 +213,31 @@ public class AppSettingsActivity extends AppCompatActivity {
 		loadFile.setImageResource(R.drawable.ic_more_vert_black);
 		loadFile.setVisibility(View.GONE);
 		Helper.applyRippleToToolbarView(loadFile);
-		int themeMode = prefs.getInt("theme_mode", 0);
-		boolean isDark = (themeMode == 2);
+		boolean isDarkMode = prefs.getBoolean("dark_mode", false);
+		switch1.setChecked(isDarkMode);
+		
+		switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton _param1, boolean _param2) {
+				final boolean _isChecked = _param2;
+				SharedPreferences.Editor editor = prefs.edit();
+				editor.putBoolean("dark_mode", _isChecked);
+				editor.apply();
+				
+				// Apply dark mode
+				if (_isChecked) {
+					AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+				} else {
+					AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+				}
+			}
+		});
+		
 		String lang = com.nexusteam.blacklogics.lib.language.LanguageManager.getLanguage(this);
-		switch2.setOnCheckedChangeListener(null);
-		switch2.setChecked("hi".equals(lang));
-		switch2.setOnCheckedChangeListener(languageListener);
-		switch1.setChecked(isDark);
+		/*switch2.setOnCheckedChangeListener(null);
+switch2.setChecked("hi".equals(lang));
+switch2.setOnCheckedChangeListener(languageListener);*/
+		adLayout.loadBannerAd();
 	}
 	
 	

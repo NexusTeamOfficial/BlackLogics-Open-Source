@@ -27,21 +27,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.multidex.*;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
 import com.github.angads25.filepicker.*;
 import com.google.android.flexbox.*;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
 import com.google.android.material.button.*;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -71,6 +78,7 @@ public class ExportProjectActivity extends AppCompatActivity {
 	
 	private LinearLayout linear1;
 	private LinearLayout linear2;
+	private AdView adview1;
 	private LinearLayout linear3;
 	private LinearLayout btn_layout;
 	private LinearLayout progress;
@@ -106,6 +114,7 @@ public class ExportProjectActivity extends AppCompatActivity {
 		sc_id = getIntent().getStringExtra("sc_id");
 		linear1 = findViewById(R.id.linear1);
 		linear2 = findViewById(R.id.linear2);
+		adview1 = findViewById(R.id.adview1);
 		linear3 = findViewById(R.id.linear3);
 		btn_layout = findViewById(R.id.btn_layout);
 		progress = findViewById(R.id.progress);
@@ -132,6 +141,10 @@ public class ExportProjectActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
+		{
+			AdRequest adRequest = new AdRequest.Builder().build();
+			adview1.loadAd(adRequest);
+		}
 		ImageView back = findViewById(R.id.ig_toolbar_back);
 		TextView title = findViewById(R.id.tx_toolbar_title);
 		ImageView loadFile = findViewById(R.id.ig_toolbar_load_file);
@@ -156,6 +169,30 @@ public class ExportProjectActivity extends AppCompatActivity {
 		_AVLd("JavaLibrary");
 	}
 	
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		if (adview1 != null) {
+			adview1.destroy();
+		}
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (adview1 != null) {
+			adview1.pause();
+		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (adview1 != null) {
+			adview1.resume();
+		}
+	}
 	public void _a() {
 	}
 	private void startExport() {

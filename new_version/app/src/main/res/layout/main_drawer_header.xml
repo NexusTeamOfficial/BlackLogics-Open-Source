@@ -1,0 +1,25 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/layout_main_drawer_header"
+	android:layout_width="320dp"
+	android:layout_height="wrap_content"
+	android:background="#fffafafa"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="200dp"
+		android:paddingLeft="16dp"
+		android:paddingTop="8dp"
+		android:paddingRight="16dp"
+		android:paddingBottom="8dp"
+		android:background="@drawable/side_menu_bg_puzzle"
+		android:gravity="bottom"
+		android:orientation="vertical"
+		android:elevation="8dp"
+		android:focusable="true"
+		android:paddingStart="16dp"
+		android:paddingEnd="16dp" />
+</LinearLayout>

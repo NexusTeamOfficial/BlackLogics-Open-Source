@@ -3,12 +3,15 @@ package com.nexusteam.blacklogics;
 import android.animation.*;
 import android.app.*;
 import android.content.*;
+import android.content.Intent;
 import android.content.res.*;
 import android.graphics.*;
 import android.graphics.drawable.*;
 import android.media.*;
 import android.net.*;
+import android.net.Uri;
 import android.os.*;
+import android.os.Bundle;
 import android.text.*;
 import android.text.style.*;
 import android.util.*;
@@ -32,7 +35,10 @@ import androidx.constraintlayout.widget.*;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.*;
 import androidx.core.view.GravityCompat;
+import androidx.customview.*;
+import androidx.draganddrop.*;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -45,6 +51,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnAdapterChangeListener;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -60,18 +67,22 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.*;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.*;
+import com.google.android.material.card.*;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
+import com.google.android.material.textfield.*;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
 import io.github.rosemoe.sora.langs.java.*;
 import io.github.rosemoe.sora.langs.textmate.*;
 import java.io.*;
+import java.io.InputStream;
 import java.text.*;
 import java.util.*;
 import java.util.ArrayList;
@@ -129,6 +140,7 @@ import com.apk.builder.model.BuildSettings.DexCompilerType;
 import com.google.android.material.snackbar.Snackbar;
 import com.besome.blacklogics.model.DesignDataManager;
 import com.besome.blacklogics.util.FileHandler;
+import com.nexusteam.blacklogics.beans.SelectedActivityState;
 import com.besome.blacklogics.image_manager.ManageImageActivity;
 import com.besome.blacklogics.font_manager.ManageFontActivity;
 import com.besome.blacklogics.sound_manager.ManageSoundActivity;
@@ -169,6 +181,7 @@ import com.nexusteam.sdk.activities.tools.ConfigActivity;
 import androidx.core.content.ContextCompat;
 import com.nexusteam.sdk.project.proguard.ManageProguardActivity;
 import com.nexusteam.sdk.project.stringfog.ManageStringfogActivity;
+import com.nexusteam.blacklogics.generator.source.SourceCodeGenerator;
 import android.util.Log;
 import java.net.URI;
 import java.io.File;
@@ -278,6 +291,8 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 	public ActivityData activityData;
 	public OnActivityNameChangeListener activityNameChangeListener;
 	private DesignAdapterFragmentAdapter designAdapterFragmentAdapter;
+	private SelectedActivityState currentState = new SelectedActivityState();
+	private boolean isSpinnerUpdatingProgrammatically = false;
 	
 	private ArrayList<String> s = new ArrayList<>();
 	
@@ -287,8 +302,8 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 	private ViewPager customViewPager;
 	private RecyclerView ah;
 	private LinearLayoutCompat anchor;
-	private LinearLayoutCompat control_panel;
-	public static LinearLayoutCompat ll_properties;
+	private MaterialCardView controlPanelCard;
+	private MaterialCardView propertiesCard;
 	private CircleImageView circleimageview1;
 	public static LinearLayout linear18;
 	private ImageView img_icon;
@@ -305,15 +320,19 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 	private ImageView img_more;
 	private MaterialTextView tv_root_title;
 	private MaterialTextView tv_sub_title;
-	private AppCompatSpinner file_spinner;
+	private LinearLayoutCompat control_panel;
+	private TextInputLayout fileSpinnerLayout;
 	private ImageView project_detail;
 	private Space linear15;
 	private MaterialButton execute_button;
+	private AppCompatSpinner file_spinner;
+	public static LinearLayoutCompat ll_properties;
 	private DesignDrawer _drawer_drawer_layout_base_d;
 	
 	private InterstitialAd adS;
 	private InterstitialAdLoadCallback _adS_interstitial_ad_load_callback;
 	private FullScreenContentCallback _adS_full_screen_content_callback;
+	private Intent i = new Intent();
 	
 	@Override
 	protected void onCreate(Bundle _savedInstanceState) {
@@ -359,8 +378,8 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 		customViewPager = findViewById(R.id.customViewPager);
 		ah = findViewById(R.id.ah);
 		anchor = findViewById(R.id.anchor);
-		control_panel = findViewById(R.id.control_panel);
-		ll_properties = findViewById(R.id.ll_properties);
+		controlPanelCard = findViewById(R.id.controlPanelCard);
+		propertiesCard = findViewById(R.id.propertiesCard);
 		circleimageview1 = findViewById(R.id.circleimageview1);
 		linear18 = findViewById(R.id.linear18);
 		img_icon = findViewById(R.id.img_icon);
@@ -377,10 +396,13 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 		img_more = findViewById(R.id.img_more);
 		tv_root_title = findViewById(R.id.tv_root_title);
 		tv_sub_title = findViewById(R.id.tv_sub_title);
-		file_spinner = findViewById(R.id.file_spinner);
+		control_panel = findViewById(R.id.control_panel);
+		fileSpinnerLayout = findViewById(R.id.fileSpinnerLayout);
 		project_detail = findViewById(R.id.project_detail);
 		linear15 = findViewById(R.id.linear15);
 		execute_button = findViewById(R.id.execute_button);
+		file_spinner = findViewById(R.id.file_spinner);
+		ll_properties = findViewById(R.id.ll_properties);
 		_drawer_drawer_layout_base_d = _nav_view.findViewById(R.id.drawer_layout_base_d);
 		
 		img_icon.setOnClickListener(new View.OnClickListener() {
@@ -572,6 +594,7 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 	
 	private void initializeLogic() {
 		context = DesignActivity.this;
+		getSupportActionBar().hide();
 		complex = new Complex();
 		complex.setC(DesignActivity.this);
 		complex.setId(getIntent().getStringExtra("sc_id"));
@@ -745,6 +768,7 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 		outState.putString("currentLayout", defaultLayName);
 		outState.putString("sc_id", sc_id);
 		outState.putInt("currentTab", tab_layout.getSelectedTabPosition());
+		outState.putParcelable("selectedState", currentState);
 		outState.putString("activityName", activityBean.getActivityName());
 		outState.putString("layoutName", activityBean.getLayoutName());
 		super.onSaveInstanceState(outState);
@@ -762,6 +786,9 @@ public class DesignActivity extends BaseActivity implements CompilerLogListener,
 		if (activityBean == null) {
 			initializeActivityList(); // Re-load if null
 		}
+		SelectedActivityState saved = savedInstanceState.getParcelable("selectedState");
+		if (saved != null) currentState = saved;
+		
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 	
@@ -920,10 +947,10 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 	public void handleItemSelection(final ViewItem item) {
 		
 		/*   if (DesignActivity.abc != null) {
-        complex.setXmlCode(activityBean.getLayoutName(), getXmlCode());
-        complex.setJavaCode(activityBean.getActivityName(), getJavaCode());
-    }
-*/
+complex.setXmlCode(activityBean.getLayoutName(), getXmlCode());
+complex.setJavaCode(activityBean.getActivityName(), getJavaCode());
+}
+*/	
 		if (!isAdapterReady()) {
 			return;
 		}
@@ -1002,6 +1029,16 @@ ViewBuilderFragmentActivity activity = (ViewBuilderFragmentActivity) fragmentMan
 				});
 			}
 		}
+		
+		// handleItemSelection ke end mein yeh add karo
+		currentState = new SelectedActivityState(
+		item.getXmlName(),
+		item.getXmlFileName(),
+		item.getJavaName(),
+		item.getJavaFileName(),
+		savedXmlPosition,
+		savedJavaPosition
+		);
 	}
 	
 	private void updateActivityName(ViewBuilderFragmentActivity viewFragment, ViewItem item) {
@@ -1674,7 +1711,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		public Fragment getItem(int position) {
 			if (position == 0) return new ViewBuilderFragmentActivity();
 			if (position == 1) return new EventFragmentActivity();
-			if (position == 2) return new ComponentFragmentActivity();
+			if (position == 2) return new com.nexusteam.internal.editor.ComponentListFragment();
 			return new Fragment();
 		}
 		
@@ -1744,7 +1781,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		complex = new Complex();
 		complex.setId(sc_id);
 		complex.setPkgName(pkgName);
-		ProjectBuilder builder = new ProjectBuilder(this, complex, Environment.getExternalStorageDirectory().getAbsolutePath(), sc_id);
+		ProjectBuilder builder = new ProjectBuilder(this, complex, FileUtil.getExternalStorageDir(), sc_id);
 		builder.setContext(this);
 		builder.buildProject();
 		SystemLogPrinter.start(mLogger);
@@ -1998,6 +2035,16 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		startActivity(intent);
 	}
 	
+	/**
+* Opens {@link AndroidManifest Editor}.
+*/
+	public void toManifestEditor() {
+		Intent intent = new Intent(getApplicationContext(), AndroidManifestEditorActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		intent.putExtra("sc_id", sc_id);
+		startActivity(intent);
+	}
+	
 	{
 	}
 	
@@ -2051,18 +2098,6 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		
 		tab_layout.setupWithViewPager(customViewPager);
 		tab_layout.setInlineLabel(true);
-		
-		tab_layout.setTabTextColors(
-		ContextCompat.getColor(this, R.color.textColorSecondary),
-		ContextCompat.getColor(this, R.color.white)
-		);
-		
-		tab_layout.setSelectedTabIndicatorColor(
-		ContextCompat.getColor(this, R.color.tab_ripple)
-		);
-		
-		tab_layout.setSelectedTabIndicatorHeight(4);
-		
 	}
 	
 	
@@ -2136,6 +2171,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 		file_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if (isSpinnerUpdatingProgrammatically) return;
 				if (parent == null || position < 0 || position >= parent.getCount()) {
 					return;
 				}
@@ -2186,18 +2222,22 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 			@Override
 			public void onPageSelected(int position) {
 				pos = position;
+				
+				isSpinnerUpdatingProgrammatically = true; // 🔒 Lock
+				
 				if (position == 0) {
 					complex.setXmlAdapter(file_spinner);
-					file_spinner.setSelection(savedXmlPosition);
+					file_spinner.setSelection(currentState.getXmlSpinnerPosition());
 				} else {
 					complex.setJavaAdapter(file_spinner);
-					file_spinner.setSelection(savedJavaPosition);
+					file_spinner.setSelection(currentState.getJavaSpinnerPosition());
 				}
 				tab_layout.getTabAt(position).select();
 			}
 			@Override public void onPageScrolled(int pos, float offset, int offsetPx) {}
 			@Override public void onPageScrollStateChanged(int state) {}
 		});
+		
 	}
 	
 	
@@ -2253,7 +2293,7 @@ TUDO : EXTRA MATHODS FOR MORE BEST DEVELOPING THIS ALL MATHODS ME ADDED
 	}
 	
 	public String getJavaCode() {
-		yg codeGenerator = new yg(this, sc_id);
+		SourceCodeGenerator codeGenerator = new SourceCodeGenerator(this, sc_id);
 		return codeGenerator.generateCompleteJavaCode(activityBean.getActivityName(), activityBean.getLayoutName());
 	}
 	

@@ -23,13 +23,20 @@ import android.view.View.*;
 import android.view.animation.*;
 import android.webkit.*;
 import android.widget.*;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import androidx.annotation.*;
 import androidx.appcompat.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.solver.*;
 import androidx.constraintlayout.widget.*;
 import androidx.core.*;
+import androidx.customview.*;
+import androidx.draganddrop.*;
+import androidx.dynamicanimation.*;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +46,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.airbnb.viewmodeladapter.*;
 import com.bumptech.glide.*;
 import com.bumptech.glide.gifdecoder.*;
 import com.example.myapp.*;
@@ -46,10 +54,12 @@ import com.github.angads25.filepicker.*;
 import com.google.android.flexbox.*;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.*;
+import com.google.android.material.button.*;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.*;
 import com.googlecode.d2j.*;
 import com.larswerkman.holocolorpicker.*;
+import com.squareup.leakcanary.*;
 import de.hdodenhof.circleimageview.*;
 import io.github.rosemoe.editor.*;
 import io.github.rosemoe.sora.*;
@@ -93,7 +103,23 @@ public class ComponentFragmentActivity extends Fragment {
 	private String activityName = "";
 	
 	private LinearLayout baseComponentLayout;
+	private ScrollView emptyStateView;
 	private RecyclerView baseComponentRecycler;
+	private LinearLayout linear10;
+	private FrameLayout frame_layout11;
+	private TextView textview7;
+	private TextView textview8;
+	private LinearLayout linear13;
+	private CardView tipsCard;
+	private View view12;
+	private ImageView imageview2;
+	private MaterialButton addFirstComponentBtn;
+	private TextView learnMoreBtn;
+	private LinearLayout linear14;
+	private TextView textview9;
+	private TextView textview10;
+	private TextView textview11;
+	private TextView textview12;
 	
 	private Intent intent = new Intent();
 	private SharedPreferences prefs;
@@ -111,7 +137,23 @@ public class ComponentFragmentActivity extends Fragment {
 		componentFragmentActivity = this;
 		_fab = _view.findViewById(R.id._fab);
 		baseComponentLayout = _view.findViewById(R.id.baseComponentLayout);
+		emptyStateView = _view.findViewById(R.id.emptyStateView);
 		baseComponentRecycler = _view.findViewById(R.id.baseComponentRecycler);
+		linear10 = _view.findViewById(R.id.linear10);
+		frame_layout11 = _view.findViewById(R.id.frame_layout11);
+		textview7 = _view.findViewById(R.id.textview7);
+		textview8 = _view.findViewById(R.id.textview8);
+		linear13 = _view.findViewById(R.id.linear13);
+		tipsCard = _view.findViewById(R.id.tipsCard);
+		view12 = _view.findViewById(R.id.view12);
+		imageview2 = _view.findViewById(R.id.imageview2);
+		addFirstComponentBtn = _view.findViewById(R.id.addFirstComponentBtn);
+		learnMoreBtn = _view.findViewById(R.id.learnMoreBtn);
+		linear14 = _view.findViewById(R.id.linear14);
+		textview9 = _view.findViewById(R.id.textview9);
+		textview10 = _view.findViewById(R.id.textview10);
+		textview11 = _view.findViewById(R.id.textview11);
+		textview12 = _view.findViewById(R.id.textview12);
 		prefs = getContext().getSharedPreferences("AppSettings", Activity.MODE_PRIVATE);
 		
 		_fab.setOnClickListener(new View.OnClickListener() {
@@ -132,6 +174,7 @@ public class ComponentFragmentActivity extends Fragment {
 			activityName = activity;
 		}
 		this.c();
+		_updateEmptyState();
 	}
 	
 	
@@ -160,53 +203,20 @@ public class ComponentFragmentActivity extends Fragment {
 		baseComponentRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
 		adapter = new BaseComponentRecyclerAdapter(componentData);
 		baseComponentRecycler.setAdapter(adapter);
+		
+		_updateEmptyState();
 	}
 	
 	private void showComponentDialog() {
-		android.view.LayoutInflater inflater = getActivity().getLayoutInflater();
-		android.view.View dialogView = inflater.inflate(R.layout.component_selection_dialog, null);
-		
-		final android.widget.TextView title = dialogView.findViewById(R.id.dialog_title);
-		final android.widget.GridView componentGrid = dialogView.findViewById(R.id.component_grid);
-		title.setText("Select Component");
-		
-		final java.util.ArrayList<String> componentNames = new java.util.ArrayList<String>();
-		final java.util.ArrayList<ComponentData> components = ComponentList.getComponents();
-		for (ComponentData component : components) {
-			componentNames.add(component.getName());
-		}
-		
-		final android.widget.ArrayAdapter<String> adapter =
-		new android.widget.ArrayAdapter<String>(
-		getActivity(),
-		android.R.layout.simple_list_item_1,
-		componentNames
-		);
-		componentGrid.setAdapter(adapter);
-		
-		com.google.android.material.dialog.MaterialAlertDialogBuilder builder =
-		new com.google.android.material.dialog.MaterialAlertDialogBuilder(getActivity());
-		builder.setView(dialogView);
-		final androidx.appcompat.app.AlertDialog dialog = builder.create();
-		
-		componentGrid.setOnItemClickListener(
-		new android.widget.AdapterView.OnItemClickListener() {
+		AddComponentDialog dialog = new AddComponentDialog(getActivity(), 
+		new AddComponentDialog.OnComponentSelectedListener() {
 			@Override
-			public void onItemClick(
-			android.widget.AdapterView<?> parent,
-			android.view.View view,
-			int position,
-			long id
-			) {
-				dialog.dismiss();
-				showComponentDetailsDialog(components.get(position));
+			public void onComponentSelected(ComponentData component) {
+				showComponentDetailsDialog(component);
 			}
-		}
-		);
-		
+		});
 		dialog.show();
 	}
-	
 	
 	private void showComponentDetailsDialog(final ComponentData component) {
 		android.view.LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -248,6 +258,7 @@ public class ComponentFragmentActivity extends Fragment {
 					data.put("fieldName", fieldName);
 					componentData.add(data);
 					adapter.notifyDataSetChanged();
+					_updateEmptyState();
 					dialog.dismiss();
 					TheBlockLogicsUtil.showToast(getActivity(), "Component added successfully");
 				}
@@ -448,6 +459,81 @@ public class ComponentFragmentActivity extends Fragment {
 	{
 	}
 	
+	
+	public void _updateEmptyState() {
+		if (!isAdded() || getView() == null) {
+			return;
+		}
+		
+		View view = getView();
+		View emptyStateView = view.findViewById(R.id.emptyStateView);
+		RecyclerView recyclerView = view.findViewById(R.id.baseComponentRecycler);
+		
+		// Safety check - if views aren't found, return
+		if (emptyStateView == null || recyclerView == null) {
+			return;
+		}
+		
+		if (componentData == null || componentData.isEmpty()) {
+			emptyStateView.setVisibility(View.VISIBLE);
+			recyclerView.setVisibility(View.GONE);
+			
+			// Setup empty state click listeners
+			View addFirstBtn = view.findViewById(R.id.addFirstComponentBtn);
+			View learnMoreBtn = view.findViewById(R.id.learnMoreBtn);
+			final View tipsCard = view.findViewById(R.id.tipsCard);
+			
+			if (addFirstBtn != null) {
+				addFirstBtn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						showComponentDialog();
+					}
+				});
+			}
+			
+			if (learnMoreBtn != null && tipsCard != null) {
+				learnMoreBtn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						tipsCard.setVisibility(tipsCard.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+					}
+				});
+			}
+			
+			// Add animation
+			_animateEmptyState();
+			
+		} else {
+			emptyStateView.setVisibility(View.GONE);
+			recyclerView.setVisibility(View.VISIBLE);
+		}
+		
+	}
+	
+	
+	public void _animateEmptyState() {
+		if (!isAdded() || getView() == null) {
+			return;
+		}
+		
+		View emptyState = getView().findViewById(R.id.emptyStateView);
+		if (emptyState == null) {
+			return;
+		}
+		
+		ObjectAnimator scaleX = ObjectAnimator.ofFloat(emptyState, "scaleX", 0.9f, 1.0f);
+		ObjectAnimator scaleY = ObjectAnimator.ofFloat(emptyState, "scaleY", 0.9f, 1.0f);
+		ObjectAnimator alpha = ObjectAnimator.ofFloat(emptyState, "alpha", 0f, 1f);
+		
+		AnimatorSet set = new AnimatorSet();
+		set.playTogether(scaleX, scaleY, alpha);
+		set.setDuration(300);
+		set.setInterpolator(new AccelerateDecelerateInterpolator());
+		set.start();
+		
+	}
+	
 	public class BaseComponentRecyclerAdapter extends RecyclerView.Adapter<BaseComponentRecyclerAdapter.ViewHolder> {
 		
 		ArrayList<HashMap<String, Object>> _data;
@@ -469,15 +555,17 @@ public class ComponentFragmentActivity extends Fragment {
 		public void onBindViewHolder(ViewHolder _holder, final int _position) {
 			View _view = _holder.itemView;
 			
-			final LinearLayout base = _view.findViewById(R.id.base);
-			final LinearLayout baseOptions = _view.findViewById(R.id.baseOptions);
-			final LinearLayout baseComponentDeleteUi = _view.findViewById(R.id.baseComponentDeleteUi);
-			final LinearLayout baseIconUi = _view.findViewById(R.id.baseIconUi);
+			final com.google.android.material.card.MaterialCardView base = _view.findViewById(R.id.base);
+			final HorizontalScrollView hscroll2 = _view.findViewById(R.id.hscroll2);
+			final com.google.android.material.card.MaterialCardView baseComponentDeleteUi = _view.findViewById(R.id.baseComponentDeleteUi);
+			final LinearLayout linear3 = _view.findViewById(R.id.linear3);
+			final com.google.android.material.imageview.ShapeableImageView baseComponentIcon = _view.findViewById(R.id.baseComponentIcon);
 			final LinearLayout baseLayout = _view.findViewById(R.id.baseLayout);
-			final ImageView baseComponentMoreOptions = _view.findViewById(R.id.baseComponentMoreOptions);
-			final ImageView baseComponentIcon = _view.findViewById(R.id.baseComponentIcon);
+			final com.google.android.material.button.MaterialButton baseComponentMoreOptions = _view.findViewById(R.id.baseComponentMoreOptions);
 			final TextView baseComponentName = _view.findViewById(R.id.baseComponentName);
 			final TextView baseComponentSubName = _view.findViewById(R.id.baseComponentSubName);
+			final LinearLayout baseOptions = _view.findViewById(R.id.baseOptions);
+			final LinearLayout linear4 = _view.findViewById(R.id.linear4);
 			final ImageView baseDeleteIcon = _view.findViewById(R.id.baseDeleteIcon);
 			final TextView baseDeleteText = _view.findViewById(R.id.baseDeleteText);
 			
