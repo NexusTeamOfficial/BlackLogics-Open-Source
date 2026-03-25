@@ -60,7 +60,7 @@
 ### 🚀 New: Package Refactor Tool
 Safely rename package with automatic import updates and directory restructuring.
 
-![Refactor Package](screenshots/Screenshot_20260303_124642.jpg)
+![Refactor Package](screenshots/Screenshot_20260325_183757.jpg)
 
 ### 🔐 Advanced Dex Encryption (AiJiaMi Enterprise)
 
