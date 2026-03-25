@@ -39,7 +39,7 @@
   <tr>
     <td><img src="screenshots/Screenshot_20260325_183134.jpg" width="100%"/></td>
     <td><img src="screenshots/Screenshot_20260325_175720.jpg" width="100%"/></td>
-    <td><img src="screenshots/ss7.png" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20260325_183450.jpg" width="100%"/></td>
   </tr>
   <tr>
     <td align="center"><b>Visual UI Editor</b></td>
