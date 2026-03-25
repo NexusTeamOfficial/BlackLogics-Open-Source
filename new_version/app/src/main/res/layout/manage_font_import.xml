@@ -1,0 +1,140 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<RelativeLayout
+		android:id="@+id/relativelayout2"
+		android:layout_width="match_parent"
+		android:gravity="center_horizontal|center_vertical"
+		android:layout_height="?actionBarSize"
+		android:paddingLeft="14.0dip"
+		android:paddingTop="8.0dip"
+		android:paddingRight="14.0dip"
+		android:paddingBottom="8.0dip">
+		<ImageView
+			android:id="@+id/img_backbtn"
+			android:focusable="false"
+			android:src="@drawable/arrow_back_white_48dp"
+			android:scaleType="center"
+			android:layout_width="24.0dip"
+			android:layout_height="24.0dip"
+			android:layout_centerVertical="true"
+			android:layout_alignParentStart="true" />
+		<LinearLayout
+			android:id="@+id/linear13"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_centerInParent="true">
+			<TextView
+				android:id="@+id/tv_currentnum"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF"
+				android:textSize="16.0sp" />
+			<TextView
+				android:id="@+id/textview2"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text=" / "
+				android:textStyle="bold"
+				android:textColor="#FFFFFF"
+				android:textSize="16.0sp" />
+			<TextView
+				android:id="@+id/tv_totalnum"
+				android:focusable="false"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF"
+				android:textSize="16.0sp" />
+		</LinearLayout>
+		<TextView
+			android:id="@+id/tv_sendbtn"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+			android:textColor="#FFFFFF"
+			android:textSize="16.0sp"
+			android:layout_alignParentEnd="true"
+			android:layout_centerVertical="true" />
+	</RelativeLayout>
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/recycler_list"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginLeft="8.0dip"
+		android:layout_marginRight="8.0dip" />
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fillViewport="true">
+		<LinearLayout
+			android:id="@+id/linear14"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/text_font"
+				android:focusable="false"
+				android:layout_width="match_parent"
+				android:gravity="center_horizontal|center_vertical"
+				android:textColor="#FF8700"
+				android:layout_gravity="center_horizontal|center_vertical"
+				android:layout_height="320.0dip"
+				android:textSize="20.0sp" />
+			<LinearLayout
+				android:id="@+id/linear15"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+				<LinearLayout
+					android:id="@+id/linear16"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center_horizontal"
+					android:orientation="horizontal"
+					android:layout_marginLeft="16.0dip"
+					android:layout_marginRight="16.0dip">
+					<CheckBox
+						android:id="@+id/chk_samename"
+						android:focusable="false"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:textSize="12sp"
+						android:textColor="#000000" />
+					<TextView
+						android:id="@+id/tv_samename"
+						android:focusable="false"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:textColor="#000000"
+						android:textSize="12.0sp" />
+				</LinearLayout>
+				<com.besome.sketch.lib.ui.EasyDeleteEditText
+					android:id="@+id/ed_input"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="16.0dip"
+					android:layout_marginRight="16.0dip" />
+				<Button
+					android:id="@+id/btn_decide"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_marginLeft="16.0dip"
+					android:layout_marginRight="16.0dip"
+					android:theme="@style/AppTheme.Button.LightBlue" />
+			</LinearLayout>
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>

@@ -1,0 +1,109 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<androidx.appcompat.widget.Toolbar
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/actionBarSize"
+		android:background="?attr/colorPrimary" />
+	<Button
+		android:id="@+id/search_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:text="Search"
+		android:textSize="12sp"
+		android:textColor="@color/textColor"
+		android:layout_gravity="end" />
+	<LinearLayout
+		android:id="@+id/search_container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:orientation="vertical"
+		android:visibility="gone">
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/textinputlayout3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<EditText
+				android:id="@+id/search_edit_text"
+				android:focusable="false"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:textSize="12sp"
+				android:textColor="@color/textColor"
+				android:textColorHint="#607D8B" />
+		</com.google.android.material.textfield.TextInputLayout>
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear6"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:orientation="horizontal">
+		<Button
+			android:id="@+id/black_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Black"
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:layout_weight="1"
+			android:layout_marginEnd="4dp" />
+		<Button
+			android:id="@+id/white_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="White"
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:layout_weight="1"
+			android:layout_marginEnd="4dp" />
+		<Button
+			android:id="@+id/grey_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Grey"
+			android:textSize="12sp"
+			android:textColor="@color/textColor"
+			android:layout_weight="1" />
+	</LinearLayout>
+	<GridView
+		android:id="@+id/grid_view"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:padding="8dp"
+		android:layout_weight="1"
+		android:numColumns="auto_fit"
+		android:columnWidth="80dp"
+		android:stretchMode="columnWidth" />
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:padding="8dp"
+		android:orientation="horizontal">
+		<Button
+			android:id="@+id/cancel_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Cancel"
+			android:textSize="12sp"
+			android:textColor="#000000"
+			android:layout_weight="1"
+			android:layout_marginEnd="4dp" />
+		<Button
+			android:id="@+id/import_button"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="Import"
+			android:textSize="12sp"
+			android:textColor="#000000"
+			android:layout_weight="1" />
+	</LinearLayout>
+</LinearLayout>

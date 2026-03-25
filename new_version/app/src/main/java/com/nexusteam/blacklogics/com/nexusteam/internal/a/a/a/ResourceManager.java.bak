@@ -1,0 +1,252 @@
+package com.nexusteam.internal;
+
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Environment;
+
+import com.nexusteam.internal.beans.ProjectResourceBean;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class ResourceManager {
+    
+    private static ResourceManager instance;
+    private ExecutorService threadPool = Executors.newFixedThreadPool(3);
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    
+    // Base path
+    private static final String BASE_PATH = "/storage/emulated/0/.blacklogics/resources/";
+    
+    public interface SaveListener {
+        void onSuccess(int count);
+        void onFailure(String error);
+    }
+    
+    public interface LoadListener {
+        void onSuccess(ArrayList<ProjectResourceBean> resources);
+        void onFailure(String error);
+    }
+    
+    public interface ProgressListener {
+        void onProgress(int current, int total, String fileName);
+    }
+    
+    private ResourceManager() {}
+    
+    public static synchronized ResourceManager getInstance() {
+        if (instance == null) {
+            instance = new ResourceManager();
+        }
+        return instance;
+    }
+    
+    // Save images from specific path
+    public void saveImages(String projectId, SaveListener listener) {
+        String imagePath = BASE_PATH + "images/" + projectId + "/";
+        saveResourcesFromPath(imagePath, projectId, listener);
+    }
+    
+    // Save with progress
+    public void saveImagesWithProgress(String projectId, ProgressListener progress, SaveListener listener) {
+        String imagePath = BASE_PATH + "images/" + projectId + "/";
+        saveResourcesFromPathWithProgress(imagePath, projectId, progress, listener);
+    }
+    
+    // Load images for project
+    public void loadImages(String projectId, LoadListener listener) {
+        threadPool.execute(new LoadRunnable(projectId, listener));
+    }
+    
+    private void saveResourcesFromPath(String path, String projectId, SaveListener listener) {
+        new SaveTask(path, projectId, listener).executeOnExecutor(threadPool);
+    }
+    
+    private void saveResourcesFromPathWithProgress(String path, String projectId, 
+                                                  ProgressListener progress, SaveListener listener) {
+        new SaveTask(path, projectId, listener, progress).executeOnExecutor(threadPool);
+    }
+    
+    private class SaveTask extends AsyncTask<Void, Integer, SaveTask.Result> {
+        private String folderPath;
+        private String projectId;
+        private SaveListener callback;
+        private ProgressListener progressCallback;
+        private boolean cancelled;
+        
+        class Result {
+            boolean success;
+            int count;
+            String message;
+            
+            Result(boolean success, int count, String message) {
+                this.success = success;
+                this.count = count;
+                this.message = message;
+            }
+        }
+        
+        SaveTask(String folderPath, String projectId, SaveListener callback) {
+            this(folderPath, projectId, callback, null);
+        }
+        
+        SaveTask(String folderPath, String projectId, SaveListener callback, ProgressListener progress) {
+            this.folderPath = folderPath;
+            this.projectId = projectId;
+            this.callback = callback;
+            this.progressCallback = progress;
+        }
+        
+        @Override
+        protected Result doInBackground(Void... params) {
+            try {
+                if (cancelled) {
+                    return new Result(false, 0, "Cancelled");
+                }
+                
+                // Check if folder exists
+                File folder = new File(folderPath);
+                if (!folder.exists() || !folder.isDirectory()) {
+                    return new Result(false, 0, "Folder not found: " + folderPath);
+                }
+                
+                // Get all image files
+                File[] files = folder.listFiles();
+                if (files == null || files.length == 0) {
+                    return new Result(false, 0, "No files found");
+                }
+                
+                // Get resource manager
+                mb manager = ma.c(projectId);
+                if (manager == null) {
+                    return new Result(false, 0, "Manager is null");
+                }
+                
+                ArrayList<ProjectResourceBean> beans = new ArrayList<ProjectResourceBean>();
+                int total = files.length;
+                int validFiles = 0;
+                
+                for (int i = 0; i < total; i++) {
+                    if (cancelled) {
+                        return new Result(false, 0, "Cancelled");
+                    }
+                    
+                    File file = files[i];
+                    
+                    if (!file.isFile()) {
+                        continue;
+                    }
+                    
+                    // Check if image file
+                    String name = file.getName().toLowerCase();
+                    if (name.endsWith(".png") || name.endsWith(".jpg") || 
+                        name.endsWith(".jpeg") || name.endsWith(".gif")) {
+                        
+                        String fullName = file.getName();
+                        String resName = fullName;
+                        int dotIndex = fullName.lastIndexOf(".");
+                        if (dotIndex > 0) {
+                            resName = fullName.substring(0, dotIndex);
+                        }
+                        
+                        ProjectResourceBean bean = new ProjectResourceBean(1, resName, fullName);
+                        beans.add(bean);
+                        validFiles++;
+                        
+                        if (progressCallback != null) {
+                            publishProgress(validFiles, total, fullName);
+                        }
+                    }
+                }
+                
+                if (beans.isEmpty()) {
+                    return new Result(false, 0, "No valid image files");
+                }
+                
+                // Save to resource manager
+                manager.a(beans);
+                manager.h();
+                
+                return new Result(true, beans.size(), "Success");
+                
+            } catch (Exception e) {
+                return new Result(false, 0, e.getMessage());
+            }
+        }
+        
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            if (progressCallback != null && values.length >= 3) {
+                progressCallback.onProgress(values[0], values[1], String.valueOf(values[2]));
+            }
+        }
+        
+        @Override
+        protected void onPostExecute(Result result) {
+            if (callback == null) return;
+            
+            if (result.success) {
+                callback.onSuccess(result.count);
+            } else {
+                callback.onFailure(result.message);
+            }
+        }
+        
+        void cancel() {
+            cancelled = true;
+            cancel(true);
+        }
+    }
+    
+    private class LoadRunnable implements Runnable {
+        private String projectId;
+        private LoadListener listener;
+        
+        LoadRunnable(String projectId, LoadListener listener) {
+            this.projectId = projectId;
+            this.listener = listener;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                mb manager = ma.c(projectId);
+                
+                if (manager == null) {
+                    postError("Manager is null");
+                    return;
+                }
+                
+                manager.l();
+                
+                final ArrayList<ProjectResourceBean> resources = new ArrayList<ProjectResourceBean>();
+                
+                if (manager.f373a != null) {
+                    resources.addAll(manager.f373a);
+                }
+                
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onSuccess(resources);
+                    }
+                });
+                
+            } catch (Exception e) {
+                postError(e.getMessage());
+            }
+        }
+        
+        private void postError(final String error) {
+            mainHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onFailure(error);
+                }
+            });
+        }
+    }
+}

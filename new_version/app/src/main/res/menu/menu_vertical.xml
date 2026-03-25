@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_activity"
+        android:icon="@drawable/icon_recycling_round"
+        android:title="Activity" />
+
+    <item
+        android:id="@+id/nav_view"
+        android:icon="@drawable/icon_view_column_round"
+        android:title="View" />
+
+    <item
+        android:id="@+id/nav_moreblock"
+        android:icon="@drawable/block"
+        android:title="Moreblock" />
+
+</menu>

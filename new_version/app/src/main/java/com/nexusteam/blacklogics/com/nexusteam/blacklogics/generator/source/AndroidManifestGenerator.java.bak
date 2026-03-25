@@ -1,0 +1,861 @@
+package com.nexusteam.blacklogics.generator.source;
+
+import android.content.Context;
+import org.json.JSONObject;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Base64;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+public class AndroidManifestGenerator {
+    
+    private String packageName;
+    private String appName;
+    private String appIcon;
+    private String themeColor;
+    private boolean useAndroidX;
+    private String launcherActivity;
+    
+    private List<Map<String, Object>> activities  = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> services    = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> receivers   = new ArrayList<Map<String, Object>>();
+    private List<String>              permissions = new ArrayList<String>();
+    private Map<String, String>       attributes  = new HashMap<String, String>();
+    
+    // ─────────────────────────────────────────────
+    // Setters
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator setPackageName(String name) {
+        this.packageName = name;
+        return this;
+    }
+    
+    public AndroidManifestGenerator setAppName(String name) {
+        this.appName = name;
+        return this;
+    }
+    
+    public AndroidManifestGenerator setAppIcon(String icon) {
+        this.appIcon = icon;
+        return this;
+    }
+    
+    public AndroidManifestGenerator setThemeColor(String color) {
+        this.themeColor = color;
+        return this;
+    }
+    
+    public AndroidManifestGenerator setAndroidX(boolean enable) {
+        this.useAndroidX = enable;
+        if (enable) {
+            addActivity("androidx.activity.ComponentActivity", new HashMap<String, String>());
+            addActivity("androidx.appcompat.app.AppCompatActivity", new HashMap<String, String>());
+            addService("androidx.lifecycle.LifecycleService", new HashMap<String, String>());
+            addPermission("org.apache.http.legacy");
+        }
+        return this;
+    }
+    
+    // ─────────────────────────────────────────────
+    // Launcher - PERMANENT FIX
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator setLauncherActivity(String name) {
+        if (name == null || name.trim().isEmpty()) return this;
+        
+        String resolved = resolveActivityName(name.trim());
+        this.launcherActivity = resolved;
+        
+        // Ensure the activity exists and has launcher attributes
+        boolean found = false;
+        for (Map<String, Object> act : activities) {
+            if (resolved.equals(act.get("name"))) {
+                found = true;
+                Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+                if (attrs == null) {
+                    attrs = new HashMap<String, String>();
+                    act.put("attrs", attrs);
+                }
+                // Ensure launcher required attributes
+                attrs.put("exported", "true");
+                attrs.put("launchMode", "singleTop");
+                attrs.put("configChanges", "orientation|keyboardHidden|screenSize");
+                attrs.put("windowSoftInputMode", "adjustResize");
+                break;
+            }
+        }
+        
+        // If not found, add it with launcher attributes
+        if (!found) {
+            Map<String, String> launcherAttrs = new HashMap<String, String>();
+            launcherAttrs.put("exported", "true");
+            launcherAttrs.put("launchMode", "singleTop");
+            launcherAttrs.put("configChanges", "orientation|keyboardHidden|screenSize");
+            launcherAttrs.put("windowSoftInputMode", "adjustResize");
+            addActivity(resolved, launcherAttrs);
+        }
+        
+        return this;
+    }
+    
+    public String getLauncherActivity() {
+        return launcherActivity;
+    }
+    
+    private String resolveActivityName(String raw) {
+        if (raw == null || raw.trim().isEmpty()) return null;
+        raw = raw.trim();
+        
+        if (raw.startsWith(".")) return raw;
+        
+        // If already has package prefix, keep as is
+        if (raw.contains(".")) return raw;
+        
+        StringBuilder sb = new StringBuilder();
+        for (String part : raw.split("_")) {
+            if (!part.isEmpty()) {
+                sb.append(Character.toUpperCase(part.charAt(0)))
+                  .append(part.substring(1));
+            }
+        }
+        String camel = sb.toString();
+        
+        if (!camel.endsWith("Activity")) {
+            camel = camel + "Activity";
+        }
+        
+        return "." + camel;
+    }
+    
+    // ─────────────────────────────────────────────
+    // Add methods
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator addActivity(String name, Map<String, String> attrs) {
+        if (!exists(activities, name)) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("name", name);
+            map.put("attrs", attrs != null ? attrs : new HashMap<String, String>());
+            activities.add(map);
+        }
+        return this;
+    }
+    
+    public AndroidManifestGenerator addService(String name, Map<String, String> attrs) {
+        if (!exists(services, name)) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("name", name);
+            map.put("attrs", attrs != null ? attrs : new HashMap<String, String>());
+            services.add(map);
+        }
+        return this;
+    }
+    
+    public AndroidManifestGenerator addReceiver(String name, Map<String, String> attrs) {
+        if (!exists(receivers, name)) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("name", name);
+            map.put("attrs", attrs != null ? attrs : new HashMap<String, String>());
+            receivers.add(map);
+        }
+        return this;
+    }
+    
+    public AndroidManifestGenerator addPermission(String name) {
+        if (!permissions.contains(name)) permissions.add(name);
+        return this;
+    }
+    
+    public AndroidManifestGenerator setAttribute(String key, String value) {
+        attributes.put(key, value);
+        return this;
+    }
+    
+    public AndroidManifestGenerator addCustomAttribute(String activityName, String attrKey, String attrValue) {
+        String resolved = activityName.startsWith(".") ? activityName : resolveActivityName(activityName);
+        for (Map<String, Object> act : activities) {
+            if (resolved.equals(act.get("name"))) {
+                Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+                if (attrs == null) {
+                    attrs = new HashMap<String, String>();
+                    act.put("attrs", attrs);
+                }
+                attrs.put(attrKey, attrValue);
+                return this;
+            }
+        }
+        Map<String, String> attrs = new HashMap<String, String>();
+        attrs.put(attrKey, attrValue);
+        addActivity(resolved, attrs);
+        return this;
+    }
+    
+    // ─────────────────────────────────────────────
+    // Add Launcher Activity - PERMANENT
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator addLauncherActivity(String name) {
+        String resolved = resolveActivityName(name);
+        
+        Map<String, String> launcherAttrs = new HashMap<String, String>();
+        launcherAttrs.put("exported", "true");
+        launcherAttrs.put("launchMode", "singleTop");
+        launcherAttrs.put("configChanges", "orientation|keyboardHidden|screenSize");
+        launcherAttrs.put("windowSoftInputMode", "adjustResize");
+        
+        addActivity(resolved, launcherAttrs);
+        setLauncherActivity(resolved);
+        return this;
+    }
+    
+    // ─────────────────────────────────────────────
+    // Generate XML
+    // ─────────────────────────────────────────────
+    
+    public String generate() {
+        StringBuilder xml = new StringBuilder();
+        
+        xml.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+        xml.append("<manifest\n");
+        xml.append("    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n");
+        xml.append("    package=\"").append(safe(packageName)).append("\">\n");
+        xml.append("\n");
+        
+        if (!permissions.isEmpty()) {
+            for (String p : permissions) {
+                xml.append("    <uses-permission android:name=\"").append(p).append("\" />\n");
+            }
+            xml.append("\n");
+        }
+        
+        xml.append("    <application\n");
+        xml.append("        android:allowBackup=\"true\"\n");
+        xml.append("        android:icon=\"").append(safe(appIcon)).append("\"\n");
+        xml.append("        android:label=\"").append(safe(appName)).append("\"\n");
+        xml.append("        android:name=\".BlackApplication\"\n");
+        xml.append("        android:theme=\"@style/").append(safe(themeColor)).append("\"");
+        
+        if (!attributes.isEmpty()) {
+            xml.append("\n");
+            int i = 0;
+            for (Map.Entry<String, String> e : attributes.entrySet()) {
+                xml.append("        android:").append(e.getKey())
+                   .append("=\"").append(e.getValue()).append("\"");
+                if (i < attributes.size() - 1) xml.append("\n");
+                i++;
+            }
+        }
+        xml.append(">\n");
+        xml.append("\n");
+        
+        // Activities
+        for (Map<String, Object> act : activities) {
+            String actName = (String) act.get("name");
+            Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+            boolean isLauncher = actName != null && actName.equals(launcherActivity);
+            
+            xml.append("        <activity\n");
+            xml.append("            android:name=\"").append(actName).append("\"");
+            
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> a : attrs.entrySet()) {
+                    xml.append("\n            android:").append(a.getKey())
+                       .append("=\"").append(a.getValue()).append("\"");
+                }
+            }
+            
+            if (isLauncher) {
+                xml.append(">\n");
+                xml.append("            <intent-filter>\n");
+                xml.append("                <action android:name=\"android.intent.action.MAIN\" />\n");
+                xml.append("                <category android:name=\"android.intent.category.LAUNCHER\" />\n");
+                xml.append("            </intent-filter>\n");
+                xml.append("        </activity>\n");
+            } else {
+                xml.append(" />\n");
+            }
+            xml.append("\n");
+        }
+        
+        // Services
+        for (Map<String, Object> srv : services) {
+            String srvName = (String) srv.get("name");
+            Map<String, String> attrs = (Map<String, String>) srv.get("attrs");
+            xml.append("        <service\n");
+            xml.append("            android:name=\"").append(srvName).append("\"");
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> a : attrs.entrySet()) {
+                    xml.append("\n            android:").append(a.getKey())
+                       .append("=\"").append(a.getValue()).append("\"");
+                }
+            }
+            xml.append(" />\n\n");
+        }
+        
+        // Receivers
+        for (Map<String, Object> rec : receivers) {
+            String recName = (String) rec.get("name");
+            Map<String, String> attrs = (Map<String, String>) rec.get("attrs");
+            xml.append("        <receiver\n");
+            xml.append("            android:name=\"").append(recName).append("\"");
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> a : attrs.entrySet()) {
+                    xml.append("\n            android:").append(a.getKey())
+                       .append("=\"").append(a.getValue()).append("\"");
+                }
+            }
+            xml.append(" />\n\n");
+        }
+        
+        xml.append("    </application>\n");
+        xml.append("\n");
+        xml.append("</manifest>");
+        
+        return xml.toString();
+    }
+    
+    private String safe(String val) {
+        return val != null ? val : "";
+    }
+    
+    // ─────────────────────────────────────────────
+    // SAVE - FIXED WITH PERMANENT LAUNCHER
+    // ─────────────────────────────────────────────
+    
+    public void save(Context context, String sc_id) {
+        try {
+            File dir = new File("/storage/emulated/0/.blacklogics/data/" + sc_id);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            
+            File file = new File(dir, "logic");
+            
+            JSONObject json = new JSONObject();
+            if (file.exists()) {
+                String content = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+                if (content != null && !content.trim().isEmpty()) {
+                    json = new JSONObject(content);
+                }
+            }
+            
+            // Load existing manifest_data
+            Map<String, Object> data = new HashMap<String, Object>();
+            if (json.has("manifest_data")) {
+                String decoded = new String(Base64.getDecoder().decode(json.getString("manifest_data")), StandardCharsets.UTF_8);
+                if (decoded != null && !decoded.trim().isEmpty()) {
+                    data = new Gson().fromJson(decoded, new TypeToken<Map<String, Object>>(){}.getType());
+                }
+            }
+            
+            // Get or create manifest object
+            Map<String, Object> manifestObj = (Map<String, Object>) data.get("manifest");
+            if (manifestObj == null) {
+                manifestObj = new HashMap<String, Object>();
+                data.put("manifest", manifestObj);
+            }
+            
+            // Update basic info (only if not null)
+            if (packageName != null) manifestObj.put("package", packageName);
+            if (appName != null) manifestObj.put("appName", appName);
+            if (appIcon != null) manifestObj.put("appIcon", appIcon);
+            if (themeColor != null) manifestObj.put("themeColor", themeColor);
+            manifestObj.put("useAndroidX", useAndroidX);
+            
+            // CRITICAL FIX: Always save launcher activity permanently
+            if (launcherActivity != null && !launcherActivity.trim().isEmpty()) {
+                manifestObj.put("launcher", launcherActivity);
+            } else if (manifestObj.containsKey("launcher")) {
+                // Keep existing launcher if not set new
+                launcherActivity = (String) manifestObj.get("launcher");
+            }
+            
+            // MERGE ACTIVITIES (preserve existing)
+            List<Map<String, Object>> existingActivities = (List<Map<String, Object>>) manifestObj.get("activities");
+            if (existingActivities == null) {
+                existingActivities = new ArrayList<Map<String, Object>>();
+                manifestObj.put("activities", existingActivities);
+            }
+            
+            Set<String> existingActivityNames = new HashSet<String>();
+            for (Map<String, Object> act : existingActivities) {
+                String name = (String) act.get("name");
+                if (name != null) existingActivityNames.add(name);
+            }
+            
+            for (Map<String, Object> newAct : activities) {
+                String name = (String) newAct.get("name");
+                if (name != null && !existingActivityNames.contains(name)) {
+                    existingActivities.add(newAct);
+                    existingActivityNames.add(name);
+                } else if (name != null) {
+                    // Update existing activity attributes
+                    for (Map<String, Object> existingAct : existingActivities) {
+                        if (name.equals(existingAct.get("name"))) {
+                            Map<String, String> newAttrs = (Map<String, String>) newAct.get("attrs");
+                            Map<String, String> existingAttrs = (Map<String, String>) existingAct.get("attrs");
+                            if (newAttrs != null) {
+                                if (existingAttrs == null) {
+                                    existingAttrs = new HashMap<String, String>();
+                                    existingAct.put("attrs", existingAttrs);
+                                }
+                                existingAttrs.putAll(newAttrs);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // MERGE SERVICES
+            List<Map<String, Object>> existingServices = (List<Map<String, Object>>) manifestObj.get("services");
+            if (existingServices == null) {
+                existingServices = new ArrayList<Map<String, Object>>();
+                manifestObj.put("services", existingServices);
+            }
+            for (Map<String, Object> newSrv : services) {
+                if (!existsInList(existingServices, (String) newSrv.get("name"))) {
+                    existingServices.add(newSrv);
+                }
+            }
+            
+            // MERGE RECEIVERS
+            List<Map<String, Object>> existingReceivers = (List<Map<String, Object>>) manifestObj.get("receivers");
+            if (existingReceivers == null) {
+                existingReceivers = new ArrayList<Map<String, Object>>();
+                manifestObj.put("receivers", existingReceivers);
+            }
+            for (Map<String, Object> newRec : receivers) {
+                if (!existsInList(existingReceivers, (String) newRec.get("name"))) {
+                    existingReceivers.add(newRec);
+                }
+            }
+            
+            // MERGE PERMISSIONS
+            List<String> existingPermissions = (List<String>) manifestObj.get("permissions");
+            if (existingPermissions == null) {
+                existingPermissions = new ArrayList<String>();
+                manifestObj.put("permissions", existingPermissions);
+            }
+            for (String perm : permissions) {
+                if (!existingPermissions.contains(perm)) {
+                    existingPermissions.add(perm);
+                }
+            }
+            
+            // MERGE ATTRIBUTES
+            Map<String, String> existingAttributes = (Map<String, String>) manifestObj.get("attributes");
+            if (existingAttributes == null) {
+                existingAttributes = new HashMap<String, String>();
+                manifestObj.put("attributes", existingAttributes);
+            }
+            existingAttributes.putAll(attributes);
+            
+            // Save back to JSON
+            String base64 = Base64.getEncoder().encodeToString(
+                new Gson().toJson(data).getBytes(StandardCharsets.UTF_8));
+            json.put("manifest_data", base64);
+            
+            // Save launcher activity to separate file for backup
+            if (launcherActivity != null) {
+                File launcherFile = new File(dir, "launcher_activity");
+                try (FileOutputStream fos = new FileOutputStream(launcherFile)) {
+                    fos.write(launcherActivity.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+            
+            // Save permissions to separate file
+            File permFile = new File(dir, "permission");
+            try (FileOutputStream fos = new FileOutputStream(permFile)) {
+                fos.write(new Gson().toJson(existingPermissions).getBytes(StandardCharsets.UTF_8));
+            }
+            
+            // Save main file
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(json.toString().getBytes(StandardCharsets.UTF_8));
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.util.Log.e("MANIFEST_SAVE", "Save failed: " + e.getMessage(), e);
+        }
+    }
+    
+    // ─────────────────────────────────────────────
+    // LOAD - FIXED WITH PERMANENT LAUNCHER
+    // ─────────────────────────────────────────────
+    
+    public void load(Context context, String sc_id) {
+        try {
+            File dir = new File("/storage/emulated/0/.blacklogics/data/" + sc_id);
+            File file = new File(dir, "logic");
+            if (!file.exists()) return;
+            
+            JSONObject json = new JSONObject(new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+            
+            // Clear existing data
+            activities.clear();
+            services.clear();
+            receivers.clear();
+            permissions.clear();
+            attributes.clear();
+            launcherActivity = null;
+            
+            if (json.has("manifest_data")) {
+                String decoded = new String(Base64.getDecoder().decode(json.getString("manifest_data")), StandardCharsets.UTF_8);
+                Map<String, Object> data = new Gson().fromJson(decoded, new TypeToken<Map<String, Object>>(){}.getType());
+                Map<String, Object> m = (Map<String, Object>) data.get("manifest");
+                if (m != null) {
+                    if (m.get("package") != null) packageName = (String) m.get("package");
+                    if (m.get("appName") != null) appName = (String) m.get("appName");
+                    if (m.get("appIcon") != null) appIcon = (String) m.get("appIcon");
+                    if (m.get("themeColor") != null) themeColor = (String) m.get("themeColor");
+                    
+                    // CRITICAL FIX: Load launcher activity permanently
+                    if (m.get("launcher") != null) {
+                        launcherActivity = (String) m.get("launcher");
+                    }
+                    
+                    Object ax = m.get("useAndroidX");
+                    useAndroidX = ax != null && (Boolean) ax;
+                    
+                    Object activitiesObj = m.get("activities");
+                    if (activitiesObj instanceof List) {
+                        activities = (List<Map<String, Object>>) activitiesObj;
+                    } else {
+                        activities = new ArrayList<Map<String, Object>>();
+                    }
+                    
+                    Object servicesObj = m.get("services");
+                    if (servicesObj instanceof List) {
+                        services = (List<Map<String, Object>>) servicesObj;
+                    } else {
+                        services = new ArrayList<Map<String, Object>>();
+                    }
+                    
+                    Object receiversObj = m.get("receivers");
+                    if (receiversObj instanceof List) {
+                        receivers = (List<Map<String, Object>>) receiversObj;
+                    } else {
+                        receivers = new ArrayList<Map<String, Object>>();
+                    }
+                    
+                    Object permissionsObj = m.get("permissions");
+                    if (permissionsObj instanceof List) {
+                        permissions = (List<String>) permissionsObj;
+                    } else {
+                        permissions = new ArrayList<String>();
+                    }
+                    
+                    Object attributesObj = m.get("attributes");
+                    if (attributesObj instanceof Map) {
+                        attributes = (Map<String, String>) attributesObj;
+                    } else {
+                        attributes = new HashMap<String, String>();
+                    }
+                }
+            }
+            
+            // Load launcher from backup file if not found in main data
+            if (launcherActivity == null || launcherActivity.trim().isEmpty()) {
+                File launcherFile = new File(dir, "launcher_activity");
+                if (launcherFile.exists()) {
+                    String launcherContent = new String(Files.readAllBytes(launcherFile.toPath()), StandardCharsets.UTF_8);
+                    if (launcherContent != null && !launcherContent.trim().isEmpty()) {
+                        launcherActivity = launcherContent.trim();
+                    }
+                }
+            }
+            
+            // Load permissions from separate file if exists
+            File permFile = new File(dir, "permission");
+            if (permFile.exists()) {
+                String permJsonStr = new String(Files.readAllBytes(permFile.toPath()), StandardCharsets.UTF_8);
+                List<String> perms = new Gson().fromJson(permJsonStr, new TypeToken<List<String>>(){}.getType());
+                if (perms != null) {
+                    for (String perm : perms) {
+                        if (!permissions.contains(perm)) {
+                            permissions.add(perm);
+                        }
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            android.util.Log.e("MANIFEST_LOAD", "Load failed: " + e.getMessage(), e);
+        }
+    }
+    
+    // ─────────────────────────────────────────────
+    // Auto Register Activities
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator autoRegisterActivities(String sc_id) {
+        try {
+            File file = new File("/storage/emulated/0/.blacklogics/data/" + sc_id + "/java");
+            if (!file.exists()) return this;
+            
+            String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+            List<String> list = new Gson().fromJson(json, new TypeToken<List<String>>(){}.getType());
+            if (list == null) return this;
+            
+            Set<String> existingNames = new HashSet<String>();
+            for (Map<String, Object> act : activities) {
+                String name = (String) act.get("name");
+                if (name != null) {
+                    existingNames.add(name);
+                }
+            }
+            
+            for (String fullName : list) {
+                if (fullName == null || fullName.trim().isEmpty()) continue;
+                
+                String className = fullName.substring(fullName.lastIndexOf(".") + 1);
+                String manifestName = "." + className;
+                
+                if (existingNames.contains(manifestName)) {
+                    continue;
+                }
+                
+                Map<String, String> attrs = new HashMap<String, String>();
+                attrs.put("exported", "true");
+                attrs.put("configChanges", "orientation|keyboardHidden|screenSize");
+                attrs.put("windowSoftInputMode", "adjustResize");
+                
+                Map<String, Object> newActivity = new HashMap<String, Object>();
+                newActivity.put("name", manifestName);
+                newActivity.put("attrs", attrs);
+                activities.add(newActivity);
+                existingNames.add(manifestName);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+    
+    // ─────────────────────────────────────────────
+    // Extract Manifest
+    // ─────────────────────────────────────────────
+    
+    public void extractManifest(String sc_id, String outputPath) {
+        try {
+            load(null, sc_id);
+            String xml = generate();
+            File out = new File(outputPath + "/AndroidManifest.xml");
+            if (!out.getParentFile().exists()) out.getParentFile().mkdirs();
+            try (FileOutputStream fos = new FileOutputStream(out)) {
+                fos.write(xml.getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // ─────────────────────────────────────────────
+    // Clear Methods
+    // ─────────────────────────────────────────────
+    
+    public AndroidManifestGenerator clearCustomAttributes() {
+        for (Map<String, Object> act : activities) {
+            Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+            if (attrs != null) attrs.clear();
+        }
+        for (Map<String, Object> srv : services) {
+            Map<String, String> attrs = (Map<String, String>) srv.get("attrs");
+            if (attrs != null) attrs.clear();
+        }
+        for (Map<String, Object> rec : receivers) {
+            Map<String, String> attrs = (Map<String, String>) rec.get("attrs");
+            if (attrs != null) attrs.clear();
+        }
+        return this;
+    }
+    
+    public List<String> getCustomAttributesAsStrings() {
+        List<String> result = new ArrayList<String>();
+        
+        for (Map<String, Object> act : activities) {
+            String name = (String) act.get("name");
+            Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> entry : attrs.entrySet()) {
+                    result.add(name + ":" + entry.getKey() + "=" + entry.getValue());
+                }
+            }
+        }
+        
+        for (Map<String, Object> srv : services) {
+            String name = (String) srv.get("name");
+            Map<String, String> attrs = (Map<String, String>) srv.get("attrs");
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> entry : attrs.entrySet()) {
+                    result.add(name + ":" + entry.getKey() + "=" + entry.getValue());
+                }
+            }
+        }
+        
+        for (Map<String, Object> rec : receivers) {
+            String name = (String) rec.get("name");
+            Map<String, String> attrs = (Map<String, String>) rec.get("attrs");
+            if (attrs != null && !attrs.isEmpty()) {
+                for (Map.Entry<String, String> entry : attrs.entrySet()) {
+                    result.add(name + ":" + entry.getKey() + "=" + entry.getValue());
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    public AndroidManifestGenerator addCustomAttributesFromList(List<String> inputs) {
+        if (inputs == null) return this;
+        for (String input : inputs) {
+            addCustomAttributeFromString(input);
+        }
+        return this;
+    }
+    
+    public AndroidManifestGenerator addCustomAttributeFromString(String input) {
+        if (input == null || input.trim().isEmpty()) return this;
+        
+        String trimmed = input.trim();
+        int colonIndex = trimmed.indexOf(':');
+        int equalIndex = trimmed.indexOf('=', colonIndex);
+        
+        if (colonIndex == -1 || equalIndex == -1) {
+            return this;
+        }
+        
+        String componentName = trimmed.substring(0, colonIndex).trim();
+        String keyValue = trimmed.substring(colonIndex + 1).trim();
+        String key = keyValue.substring(0, equalIndex).trim();
+        String value = keyValue.substring(equalIndex + 1).trim();
+        
+        if (componentName.isEmpty() || key.isEmpty() || value.isEmpty()) {
+            return this;
+        }
+        
+        String resolved = resolveComponentName(componentName);
+        boolean found = false;
+        
+        for (Map<String, Object> act : activities) {
+            if (resolved.equals(act.get("name"))) {
+                Map<String, String> attrs = (Map<String, String>) act.get("attrs");
+                if (attrs == null) {
+                    attrs = new HashMap<String, String>();
+                    act.put("attrs", attrs);
+                }
+                attrs.put(key, value);
+                found = true;
+                break;
+            }
+        }
+        
+        if (!found) {
+            for (Map<String, Object> srv : services) {
+                if (resolved.equals(srv.get("name"))) {
+                    Map<String, String> attrs = (Map<String, String>) srv.get("attrs");
+                    if (attrs == null) {
+                        attrs = new HashMap<String, String>();
+                        srv.put("attrs", attrs);
+                    }
+                    attrs.put(key, value);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!found) {
+            for (Map<String, Object> rec : receivers) {
+                if (resolved.equals(rec.get("name"))) {
+                    Map<String, String> attrs = (Map<String, String>) rec.get("attrs");
+                    if (attrs == null) {
+                        attrs = new HashMap<String, String>();
+                        rec.put("attrs", attrs);
+                    }
+                    attrs.put(key, value);
+                    found = true;
+                    break;
+                }
+            }
+        }
+        
+        return this;
+    }
+    
+    private String resolveComponentName(String name) {
+        if (name == null || name.trim().isEmpty()) return null;
+        name = name.trim();
+        
+        if (name.startsWith(".")) return name;
+        if (name.contains(".")) return name;
+        
+        if (name.contains("_")) {
+            StringBuilder sb = new StringBuilder();
+            for (String part : name.split("_")) {
+                if (!part.isEmpty()) {
+                    sb.append(Character.toUpperCase(part.charAt(0)))
+                      .append(part.substring(1));
+                }
+            }
+            name = sb.toString();
+        } else {
+            if (!name.isEmpty() && Character.isLowerCase(name.charAt(0))) {
+                name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            }
+        }
+        
+        return "." + name;
+    }
+    
+    public String getPackageName() {
+        return packageName;
+    }
+    
+    public AndroidManifestGenerator addCustomAttributes(List<String> attrs) {
+    if (attrs == null) {
+        return this;
+    }
+    
+    for (String attr : attrs) {
+        addCustomAttribute(attr);
+    }
+    
+    return this;
+}
+
+    
+    // ─────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────
+    
+    private boolean exists(List<Map<String, Object>> list, String name) {
+        for (Map<String, Object> item : list) {
+            if (name.equals(item.get("name"))) return true;
+        }
+        return false;
+    }
+    
+    private boolean existsInList(List<Map<String, Object>> list, String name) {
+        for (Map<String, Object> item : list) {
+            if (name != null && name.equals(item.get("name"))) return true;
+        }
+        return false;
+    }
+    
+    private String resolveTheme(boolean toolbar, boolean status) {
+        if (toolbar && status) return "AppTheme";
+        if (toolbar) return "NoStatusBar";
+        if (status) return "NoActionBar";
+        return "FullScreen";
+    }
+}

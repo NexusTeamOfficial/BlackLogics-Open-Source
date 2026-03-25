@@ -1,0 +1,24 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/container_selected_events"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="8dp">
+	<TextView
+		android:id="@+id/textview2"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Selected Widgets and Events"
+		android:textSize="16sp"
+		android:textStyle="bold"
+		android:textColor="@color/textColor" />
+	<RecyclerView
+		android:id="@+id/rv_selected_events"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp" />
+</LinearLayout>

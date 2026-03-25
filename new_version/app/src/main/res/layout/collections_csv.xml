@@ -1,0 +1,62 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="3dp"
+		android:padding="8dp"
+		android:background="#FFFFFF"
+		android:orientation="horizontal" />
+	<LinearLayout
+		android:id="@+id/linear1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="4dp"
+		android:background="#29354B"
+		android:orientation="horizontal">
+		<LinearLayout
+			android:id="@+id/block"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="5dp"
+			android:background="@drawable/block"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<TextView
+				android:id="@+id/name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="TextView"
+				android:textSize="12sp"
+				android:textStyle="bold"
+				android:textColor="#FFFFFF"
+				android:focusable="false" />
+		</LinearLayout>
+		<ImageView
+			android:id="@+id/delete"
+			android:layout_width="40dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_delete"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+		<ImageView
+			android:id="@+id/info"
+			android:layout_width="40dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/warning"
+			android:scaleType="fitCenter"
+			android:focusable="false" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/linear3"
+		android:layout_width="match_parent"
+		android:layout_height="3dp"
+		android:padding="8dp"
+		android:background="#FFFFFF"
+		android:orientation="horizontal" />
+</LinearLayout>

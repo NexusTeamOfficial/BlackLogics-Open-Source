@@ -1,0 +1,2403 @@
+package com.nexusteam.blacklogics.generator.source;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.View;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.nexusteam.blacklogics.security.crypto.FileEncryptionUtil;
+import com.nexusteam.blacklogics.editor.layout.model.LayoutData;
+import com.nexusteam.blacklogics.editor.layout.LayoutLoader;
+import com.nexusteam.blacklogics.generator.source.model.ActivityStructureRegistry;
+import com.nexusteam.blacklogics.logic.ProjectLogicRepository;
+import com.nexusteam.blacklogics.generator.source.model.ActivityType;
+import com.nexusteam.blacklogics.generator.source.model.ActivityTypeRegistry;
+import com.nexusteam.blacklogics.model.DataModel;
+import com.shapun.layouteditor.utils.AttributeUtils;
+import android.util.Pair;
+import com.nexusteam.internal.BlockStorage;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.File;
+import java.io.StringReader;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayInputStream;
+import java.util.*;
+import java.util.regex.Pattern;
+
+public class JavaCodeBuilder {
+	
+	private static final Pattern ONE_LINE_IF_PATTERN = Pattern.compile("^if\\s*\\(.*\\)\\s*[^\\{;]+;\\s*$");
+	private static final Pattern DECREASE_INDENT_PATTERN = Pattern.compile("^(\\}|\\s*else(\\s+if)?|\\s*catch|\\s*finally|\\s*case |\\s*default:)");
+	private static final Pattern INCREASE_INDENT_PATTERN = Pattern.compile(".*\\{\\s*$");
+	private static final char[] ENC_PASSWORD =
+	"blacklogic_layout_secure".toCharArray();
+	private static String cachedLayoutJson = null;
+	private static long cacheLastModified = -1;
+	
+	// Add this at the class level
+	private static String currentScId = null;
+	private static Context currentContext = null;
+	
+	
+	public interface EventBinder {
+		void bind(StringBuilder javaCode, String widgetId, String logic);
+	}
+	
+	// Add this method to set context before code generation
+	public static void setCurrentProject(String sc_id, Context context) {
+		currentScId = sc_id;
+		currentContext = context;
+		// Load the registry data
+		if (context != null && sc_id != null) {
+			ActivityTypeRegistry.getInstance().load(context, sc_id);
+		}
+	}
+	
+	public static void addFieldsSection(StringBuilder javaCode, String activityName, String projectPath, String layoutPath) {
+		
+		if (currentContext != null && currentScId != null) {
+			ActivityTypeRegistry.getInstance().load(currentContext, currentScId);
+		}
+		
+		ActivityTypeRegistry registry = ActivityTypeRegistry.getInstance();
+		com.nexusteam.blacklogics.generator.source.model.ActivityConfig config = registry.getActivityConfig(activityName);
+		ActivityType activityType = (config != null) ? config.getType() : ActivityType.ACTIVITY;
+		
+		
+		if (activityType != null && activityType.isFragment()) {
+			javaCode.append("    private View rootView;\n");
+		}
+		
+		
+		if (activityType != null && activityType.isDialogFragment()) {
+			javaCode.append("    private AlertDialog.Builder alertBuilder;\n");
+			javaCode.append("    private AlertDialog alertDialog;\n");
+		}
+		
+		Map<String, String> widgets = extractWidgetsFromLayout(activityName, layoutPath);
+		for (Map.Entry<String, String> widget : widgets.entrySet()) {
+			javaCode.append("    private ").append(widget.getValue())
+			.append(" ").append(widget.getKey()).append(";\n");
+		}
+		// ✅ ListView detect karo — har ListView ke liye auto ArrayAdapter + ArrayList declare karo
+		for (Map.Entry<String, String> widget : widgets.entrySet()) {
+			if ("ListView".equals(widget.getValue())) {
+				String lvId = widget.getKey();
+				javaCode.append("    private ArrayAdapter<String> ").append(lvId).append("Adapter;\n");
+				javaCode.append("    private ArrayList<String> ").append(lvId).append("List = new ArrayList<String>();\n");
+			}
+		}
+		
+		// ✅ app:customView attribute — har adapter widget ke liye custom fields generate karo
+		Object[] cvFields = extractWidgetsAndCustomViews(activityName, layoutPath);
+		@SuppressWarnings("unchecked")
+		Map<String, String> widgetCustomViews = (Map<String, String>) cvFields[1];
+		for (Map.Entry<String, String> cvEntry : widgetCustomViews.entrySet()) {
+			String cvWidgetId   = cvEntry.getKey();
+			String cvName       = cvEntry.getValue();
+			String cvWidgetType = widgets.get(cvWidgetId);
+			javaCode.append(generateCustomViewAdapterFields(cvWidgetId, cvWidgetType, cvName));
+		}
+		
+		List<HashMap<String, String>> variables = ProjectLogicRepository.loadVariableLogic(activityName);
+		if (!variables.isEmpty()) {
+			for (HashMap<String, String> var : variables) {
+				String type = var.get("varTypeName");
+				String name = var.get("varName");
+				String value = getInitialValue(type);
+				javaCode.append("    private ").append(type).append(" ")
+				.append(name).append(" = ").append(value).append(";\n");
+			}
+		}
+		
+		List<HashMap<String, String>> components = ProjectLogicRepository.loadComponentLogic(activityName);
+		if (!components.isEmpty()) {
+			boolean timerDeclared = false;
+			boolean handlerDeclared = false;
+			boolean asynctaskDeclared = false;
+			
+			for (HashMap<String, String> comp : components) {
+				String type = comp.get("componentName");
+				String name = comp.get("fieldName");
+				
+				switch (type) {
+					case "Timer":
+					if (!timerDeclared) {
+						javaCode.append("    private Timer _timer = new Timer();\n");
+						timerDeclared = true;
+					}
+					javaCode.append("    private TimerTask ").append(name).append(";\n");
+					break;
+					
+					case "Handler":
+					if (!handlerDeclared) {
+						javaCode.append("    private Handler _handler = new Handler(Looper.getMainLooper());\n");
+						handlerDeclared = true;
+					}
+					javaCode.append("    private Runnable ").append(name).append(";\n");
+					break;
+					
+					case "AsyncTask":
+					if (!asynctaskDeclared) {
+						javaCode.append("    private AsyncTask ").append(name).append(";\n");
+						asynctaskDeclared = true;
+					}
+					// AsyncTask is typically anonymous, no separate field needed
+					break;
+					
+					case "Service":
+					javaCode.append("    private Intent ").append(name).append("ServiceIntent;\n");
+					break;
+					
+					case "BroadcastReceiver":
+					javaCode.append("    private BroadcastReceiver ").append(name).append(";\n");
+					break;
+					
+					case "ContentProvider":
+					javaCode.append("    private ContentResolver ").append(name).append("Resolver;\n");
+					break;
+					
+					case "ViewModel":
+					javaCode.append("    private ViewModel ").append(name).append(";\n");
+					break;
+					
+					case "LiveData":
+					javaCode.append("    private LiveData ").append(name).append(";\n");
+					break;
+					
+					case "Room":
+					javaCode.append("    private AppDatabase ").append(name).append("Database;\n");
+					break;
+					
+					case "WorkManager":
+					javaCode.append("    private WorkManager ").append(name).append("WorkManager;\n");
+					break;
+					
+					case "Camera":
+					javaCode.append("    private Camera ").append(name).append(";\n");
+					break;
+					
+					case "Camera2 API":
+					javaCode.append("    private CameraManager ").append(name).append("CameraManager;\n");
+					javaCode.append("    private String ").append(name).append("CameraId;\n");
+					break;
+					
+					case "FilePicker":
+					// ✅ FilePicker: request constant + filePath list — reference example jaisa
+					javaCode.append("    public final int ").append(name.toUpperCase()).append("_PICKER_REQUEST = ").append(1000 + components.indexOf(comp)).append(";\n");
+					javaCode.append("    private ArrayList<String> ").append(name).append("FilePath = new ArrayList<>();\n");
+					javaCode.append("    private Intent ").append(name).append(" = new Intent(Intent.ACTION_GET_CONTENT);\n");
+					break;
+					
+					case "SharedPreferences":
+					// ✅ SharedPreferences: field declare karo
+					javaCode.append("    private SharedPreferences ").append(name).append(";\n");
+					break;
+					
+					case "File":
+					// ✅ SharedPreferences: field declare karo
+					javaCode.append("    private SharedPreferences ").append(name).append(";\n");
+					break;
+					
+					case "Storage Access Framework":
+					javaCode.append("    private static final int ").append(name.toUpperCase()).append("_SAF_REQUEST = 2000;\n");
+					break;
+					
+					case "LocationManager":
+					javaCode.append("    private LocationManager ").append(name).append(";\n");
+					javaCode.append("    private LocationListener ").append(name).append("Listener;\n");
+					break;
+					
+					case "SensorManager":
+					javaCode.append("    private SensorManager ").append(name).append(";\n");
+					javaCode.append("    private Sensor ").append(name).append("Sensor;\n");
+					break;
+					
+					case "BluetoothAdapter":
+					javaCode.append("    private BluetoothAdapter ").append(name).append(";\n");
+					break;
+					
+					case "AlarmManager":
+					javaCode.append("    private AlarmManager ").append(name).append(";\n");
+					break;
+					
+					case "JobScheduler":
+					javaCode.append("    private JobScheduler ").append(name).append(";\n");
+					break;
+					
+					case "ConnectivityManager":
+					javaCode.append("    private ConnectivityManager ").append(name).append(";\n");
+					break;
+					
+					case "PowerManager":
+					javaCode.append("    private PowerManager ").append(name).append(";\n");
+					javaCode.append("    private PowerManager.WakeLock ").append(name).append("WakeLock;\n");
+					break;
+					
+					case "ClipboardManager":
+					javaCode.append("    private ClipboardManager ").append(name).append(";\n");
+					break;
+					
+					case "PackageManager":
+					javaCode.append("    private PackageManager ").append(name).append(";\n");
+					break;
+					
+					case "DownloadManager":
+					javaCode.append("    private DownloadManager ").append(name).append(";\n");
+					break;
+					
+					case "Vibrator":
+					javaCode.append("    private Vibrator ").append(name).append(";\n");
+					break;
+					
+					case "AudioManager":
+					javaCode.append("    private AudioManager ").append(name).append(";\n");
+					break;
+					
+					case "AccountManager":
+					javaCode.append("    private AccountManager ").append(name).append(";\n");
+					break;
+					
+					case "TelephonyManager":
+					javaCode.append("    private TelephonyManager ").append(name).append(";\n");
+					break;
+					
+					case "InputMethodManager":
+					javaCode.append("    private InputMethodManager ").append(name).append(";\n");
+					break;
+					
+					case "WindowManager":
+					javaCode.append("    private WindowManager ").append(name).append(";\n");
+					break;
+					
+					case "ActivityManager":
+					javaCode.append("    private ActivityManager ").append(name).append(";\n");
+					break;
+					
+					case "AppOpsManager":
+					javaCode.append("    private AppOpsManager ").append(name).append(";\n");
+					break;
+					
+					case "AlertDialog.Builder":
+					javaCode.append("    private AlertDialog.Builder ").append(name).append(";\n");
+					break;
+					
+					case "BottomSheetDialog":
+					javaCode.append("    private BottomSheetDialog ").append(name).append(";\n");
+					break;
+					
+					case "ProgressDialog":
+					javaCode.append("    private ProgressDialog ").append(name).append(";\n");
+					break;
+					
+					case "DatePickerDialog":
+					javaCode.append("    private DatePickerDialog ").append(name).append(";\n");
+					break;
+					
+					case "TimePickerDialog":
+					javaCode.append("    private TimePickerDialog ").append(name).append(";\n");
+					break;
+					
+					case "ArrayAdapter":
+					javaCode.append("    private ArrayAdapter ").append(name).append(";\n");
+					break;
+					
+					case "AlertDialog":
+					javaCode.append("    private AlertDialog ").append(name).append(";\n");
+					break;
+					
+					default:
+					javaCode.append("    private ").append(type).append(" ").append(name).append(";\n");
+					break;
+				}
+			}
+		}
+		
+		javaCode.append("\n");
+	}
+	
+	public static void addOnCreateMethod(StringBuilder javaCode, String activityName, String layoutName) {
+		if (currentContext != null && currentScId != null) {
+			ActivityTypeRegistry.getInstance().load(currentContext, currentScId);
+		}
+		ActivityTypeRegistry registry = ActivityTypeRegistry.getInstance();
+		com.nexusteam.blacklogics.generator.source.model.ActivityConfig config = registry.getActivityConfig(activityName);
+		ActivityType activityType = (config != null) ? config.getType() : ActivityType.ACTIVITY;
+		
+		// ✅ FilePicker hai kya check karo — onCreate mein permission handling ke liye
+		boolean hasFilePicker = false;
+		List<HashMap<String, String>> components = ProjectLogicRepository.loadComponentLogic(activityName);
+		if (components != null) {
+			for (HashMap<String, String> comp : components) {
+				if ("FilePicker".equals(comp.get("componentName"))) {
+					hasFilePicker = true;
+					break;
+				}
+			}
+		}
+		
+		if (activityType != null && activityType.isFragment()) {
+			
+			javaCode.append("    @Override\n");
+			javaCode.append("    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {\n");
+			javaCode.append("        rootView = inflater.inflate(R.layout.").append(layoutName).append(", container, false);\n");
+			javaCode.append("        return rootView;\n");
+			javaCode.append("    }\n\n");
+			
+			
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onViewCreated(View view, Bundle savedInstanceState) {\n");
+			javaCode.append("        super.onViewCreated(view, savedInstanceState);\n");
+			javaCode.append("        initialize(savedInstanceState);\n");
+			javaCode.append("        initializeLogic();\n");
+			javaCode.append("    }\n\n");
+			
+			
+			if (activityType.isDialogFragment()) {
+				javaCode.append("    @Override\n");
+				javaCode.append("    public Dialog onCreateDialog(Bundle savedInstanceState) {\n");
+				javaCode.append("        alertBuilder = new AlertDialog.Builder(getActivity());\n");
+				javaCode.append("        LayoutInflater inflater = getActivity().getLayoutInflater();\n");
+				javaCode.append("        View dialogView = inflater.inflate(R.layout.").append(layoutName).append(", null);\n");
+				javaCode.append("        alertBuilder.setView(dialogView);\n");
+				javaCode.append("        rootView = dialogView;\n");
+				javaCode.append("        alertDialog = alertBuilder.create();\n");
+				javaCode.append("        return alertDialog;\n");
+				javaCode.append("    }\n\n");
+			}
+			
+		} else {
+			
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
+			javaCode.append("        super.onCreate(savedInstanceState);\n");
+			javaCode.append("        setContentView(R.layout.").append(layoutName).append(");\n");
+			javaCode.append("        initialize(savedInstanceState);\n");
+			
+			if (hasFilePicker) {
+				// ✅ FilePicker permission check — Android 11+ (API 30) READ_MEDIA_* bhi handle
+				javaCode.append("        if (Build.VERSION.SDK_INT >= 33) {\n");
+				javaCode.append("            // Android 13+ (API 33): READ_MEDIA_IMAGES/VIDEO/AUDIO\n");
+				javaCode.append("            String[] _permissions13 = {\n");
+				javaCode.append("                Manifest.permission.READ_MEDIA_IMAGES,\n");
+				javaCode.append("                Manifest.permission.READ_MEDIA_VIDEO,\n");
+				javaCode.append("                Manifest.permission.READ_MEDIA_AUDIO\n");
+				javaCode.append("            };\n");
+				javaCode.append("            boolean _needsRequest13 = false;\n");
+				javaCode.append("            for (String _perm : _permissions13) {\n");
+				javaCode.append("                if (checkSelfPermission(_perm) == PackageManager.PERMISSION_DENIED) {\n");
+				javaCode.append("                    _needsRequest13 = true;\n");
+				javaCode.append("                    break;\n");
+				javaCode.append("                }\n");
+				javaCode.append("            }\n");
+				javaCode.append("            if (_needsRequest13) {\n");
+				javaCode.append("                requestPermissions(_permissions13, 1000);\n");
+				javaCode.append("            } else {\n");
+				javaCode.append("                initializeLogic();\n");
+				javaCode.append("            }\n");
+				javaCode.append("        } else if (Build.VERSION.SDK_INT >= 23) {\n");
+				javaCode.append("            // Android 6-12: READ_EXTERNAL_STORAGE\n");
+				javaCode.append("            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {\n");
+				javaCode.append("                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1000);\n");
+				javaCode.append("            } else {\n");
+				javaCode.append("                initializeLogic();\n");
+				javaCode.append("            }\n");
+				javaCode.append("        } else {\n");
+				javaCode.append("            // Android < 6: permission not needed at runtime\n");
+				javaCode.append("            initializeLogic();\n");
+				javaCode.append("        }\n");
+			} else {
+				// Normal activity — seedha initializeLogic()
+				javaCode.append("        initializeLogic();\n");
+			}
+			
+			javaCode.append("    }\n\n");
+		}
+	}
+	
+	public static void addInitializeMethod(StringBuilder javaCode, String activityName, String projectPath, String layoutPath) {
+		ActivityTypeRegistry registry = ActivityTypeRegistry.getInstance();
+		com.nexusteam.blacklogics.generator.source.model.ActivityConfig config = registry.getActivityConfig(activityName);
+		ActivityType activityType = (config != null) ? config.getType() : ActivityType.ACTIVITY;
+		boolean isFragment = (activityType != null && activityType.isFragment());
+		
+		javaCode.append("    private void initialize(Bundle savedInstanceState) {\n");
+		
+		// Track which system objects need to be declared
+		boolean needsTimer = false;
+		boolean needsHandler = false;
+		boolean needsTimerTask = false;
+		boolean needsNotificationManager = false;
+		boolean needsCameraManager = false;
+		Set<String> declaredSharedPrefs = new HashSet<>(); // Track unique shared preferences
+		boolean needsFilePicker = false; // Track agar FilePicker hai toh permission block add karo
+		
+		// Initialize widgets from layout
+		Map<String, String> widgets = extractWidgetsFromLayout(activityName, layoutPath);
+		if (widgets != null && !widgets.isEmpty()) {
+			if (isFragment) {
+				javaCode.append("        if (rootView == null) return;\n\n");
+				for (String widgetId : widgets.keySet()) {
+					javaCode.append("        ").append(widgetId)
+					.append(" = rootView.findViewById(R.id.").append(widgetId).append(");\n");
+				}
+			} else {
+				for (String widgetId : widgets.keySet()) {
+					javaCode.append("        ").append(widgetId)
+					.append(" = findViewById(R.id.").append(widgetId).append(");\n");
+				}
+			}
+			javaCode.append("\n");
+		}
+		
+		// ✅ ListView: adapter initialize karo — har ListView ke liye
+		if (widgets != null) {
+			for (Map.Entry<String, String> widget : widgets.entrySet()) {
+				if ("ListView".equals(widget.getValue())) {
+					String lvId = widget.getKey();
+					// ArrayAdapter setup karo — simple_list_item_1 default layout
+					javaCode.append("        ").append(lvId).append("Adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ").append(lvId).append("List);\n");
+					javaCode.append("        ").append(lvId).append(".setAdapter(").append(lvId).append("Adapter);\n");
+					// Item click listener bhi add karo
+					javaCode.append("        ").append(lvId).append(".setOnItemClickListener(new AdapterView.OnItemClickListener() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onItemClick(AdapterView<?> _adView, View _v, int _position, long _id) {\n");
+					// User ka logic inject karo agar hai
+					String lvLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, lvId + "_onItemClick");
+					if (lvLogic != null && !lvLogic.isEmpty()) {
+						javaCode.append("                ").append(lvLogic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("            }\n");
+					javaCode.append("        });\n\n");
+				}
+			}
+		}
+		
+		// ✅ app:customView attribute — adapter init + inner class generate karo
+		Object[] cvInit = extractWidgetsAndCustomViews(activityName, layoutPath);
+		@SuppressWarnings("unchecked")
+		Map<String, String> cvInitMap = (Map<String, String>) cvInit[1];
+		for (Map.Entry<String, String> cvEntry : cvInitMap.entrySet()) {
+			String cvWidgetId   = cvEntry.getKey();
+			String cvName       = cvEntry.getValue();
+			String cvWidgetType = (widgets != null) ? widgets.get(cvWidgetId) : null;
+			javaCode.append(generateCustomViewAdapterInit(cvWidgetId, cvWidgetType, cvName, activityName));
+		}
+		
+		// Initialize components from logic repository
+		List<HashMap<String, String>> components = ProjectLogicRepository.loadComponentLogic(activityName);
+		if (components != null && !components.isEmpty()) {
+			// First pass: check for required system services
+			for (HashMap<String, String> comp : components) {
+				String type = comp.get("componentName");
+				if (type == null) continue;
+				
+				switch (type) {
+					case "Timer":
+					needsTimer = true;
+					break;
+					case "Handler":
+					needsHandler = true;
+					break;
+					case "Notification":
+					needsNotificationManager = true;
+					break;
+					case "Camera2 API":
+					needsCameraManager = true;
+					break;
+				}
+			}
+			
+			// Add required declarations if not already present in class
+			if (needsTimer) {
+				javaCode.append("        if (_timer == null) {\n");
+				javaCode.append("            _timer = new Timer();\n");
+				javaCode.append("        }\n");
+			}
+			if (needsHandler) {
+				javaCode.append("        if (_handler == null) {\n");
+				javaCode.append("            _handler = new Handler(Looper.getMainLooper());\n");
+				javaCode.append("        }\n");
+			}
+			if (needsNotificationManager) {
+				javaCode.append("        if (_notificationManager == null) {\n");
+				javaCode.append("            _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);\n");
+				javaCode.append("        }\n");
+			}
+			if (needsCameraManager) {
+				javaCode.append("        if (_cameraManager == null) {\n");
+				javaCode.append("            _cameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);\n");
+				javaCode.append("        }\n");
+			}
+			
+			if (needsTimer || needsHandler || needsNotificationManager || needsCameraManager) {
+				javaCode.append("\n");
+			}
+			
+			// Second pass: initialize components
+			for (HashMap<String, String> comp : components) {
+				String type = comp.get("componentName");
+				String name = comp.get("fieldName");
+				String extraData = comp.get("extraData");
+				
+				if (type == null || name == null) continue;
+				
+				String logic = ProjectLogicRepository.getBlockLogicForEvent(activityName, name);
+				
+				switch (type) {
+					case "Intent":
+					javaCode.append("        ").append(name).append(" = new Intent();\n");
+					break;
+					
+					case "Dialog":
+					javaCode.append("        ").append(name).append(" = new Dialog(this);\n");
+					break;
+					
+					case "ObjectAnimator":
+					javaCode.append("        ").append(name).append(" = new ObjectAnimator();\n");
+					break;
+					
+					case "Calendar":
+					javaCode.append("        ").append(name).append(" = Calendar.getInstance();\n");
+					break;
+					
+					case "Timer":
+					needsTimerTask = true;
+					javaCode.append("        ").append(name).append(" = new TimerTask() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void run() {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                ").append(logic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("            }\n");
+					javaCode.append("        };\n");
+					javaCode.append("        _timer.schedule(").append(name).append(", 0, 1000);\n");
+					break;
+					
+					case "Notification":
+					String notifName = name;
+					javaCode.append("        NotificationChannel ").append(notifName).append("Channel = new NotificationChannel(\n");
+					javaCode.append("                \"default_channel\", \n");
+					javaCode.append("                \"Default Channel\", \n");
+					javaCode.append("                NotificationManager.IMPORTANCE_DEFAULT\n");
+					javaCode.append("        );\n");
+					javaCode.append("        _notificationManager.createNotificationChannel(").append(notifName).append("Channel);\n");
+					javaCode.append("        Notification.Builder ").append(notifName).append("Builder = new Notification.Builder(this, \"default_channel\")\n");
+					javaCode.append("                .setContentTitle(\"Notification Title\")\n");
+					javaCode.append("                .setContentText(\"Notification Message\")\n");
+					javaCode.append("                .setSmallIcon(android.R.drawable.ic_dialog_info);\n");
+					javaCode.append("        ").append(notifName).append(" = ").append(notifName).append("Builder.build();\n");
+					break;
+					
+					case "AsyncTask":
+					javaCode.append("        ").append(name).append(" = new AsyncTask<Void, Void, Void>() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            protected Void doInBackground(Void... params) {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                ").append(logic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("                return null;\n");
+					javaCode.append("            }\n");
+					javaCode.append("        };\n");
+					break;
+					
+					case "Handler":
+					javaCode.append("        ").append(name).append(" = new Runnable() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void run() {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                ").append(logic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("            }\n");
+					javaCode.append("        };\n");
+					javaCode.append("        _handler.post(").append(name).append(");\n");
+					break;
+					
+					case "Service":
+					String serviceClass = extraData != null && !extraData.isEmpty() ? extraData : "MyService";
+					javaCode.append("        ").append(name).append("Intent = new Intent(this, ").append(serviceClass).append(".class);\n");
+					break;
+					
+					case "BroadcastReceiver":
+					javaCode.append("        ").append(name).append(" = new BroadcastReceiver() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onReceive(Context context, Intent intent) {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                ").append(logic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("            }\n");
+					javaCode.append("        };\n");
+					// Register receiver (optional - can be done in onResume)
+					javaCode.append("        // Don't forget to register this receiver in onResume() and unregister in onPause()\n");
+					break;
+					
+					case "ContentProvider":
+					javaCode.append("        ").append(name).append("Resolver = getContentResolver();\n");
+					break;
+					
+					case "ViewModel":
+					javaCode.append("        ").append(name).append(" = new ViewModelProvider(this).get(MyViewModel.class);\n");
+					break;
+					
+					case "LiveData":
+					javaCode.append("        ").append(name).append(" = new MutableLiveData<>();\n");
+					break;
+					
+					case "Room":
+					String dbName = extraData != null && !extraData.isEmpty() ? extraData : "app-database";
+					javaCode.append("        ").append(name).append("Database = Room.databaseBuilder(\n");
+					javaCode.append("                getApplicationContext(),\n");
+					javaCode.append("                AppDatabase.class,\n");
+					javaCode.append("                \"").append(dbName).append("\"\n");
+					javaCode.append("        ).build();\n");
+					break;
+					
+					case "WorkManager":
+					javaCode.append("        ").append(name).append("WorkManager = WorkManager.getInstance(this);\n");
+					break;
+					
+					case "MediaPlayer":
+					javaCode.append("        ").append(name).append(" = new MediaPlayer();\n");
+					break;
+					
+					case "Camera":
+					javaCode.append("        try {\n");
+					javaCode.append("            ").append(name).append(" = Camera.open();\n");
+					javaCode.append("        } catch (Exception e) {\n");
+					javaCode.append("            e.printStackTrace();\n");
+					javaCode.append("        }\n");
+					break;
+					
+					case "Camera2 API":
+					String cameraName = name;
+					javaCode.append("        try {\n");
+					javaCode.append("            String[] cameraIdList = _cameraManager.getCameraIdList();\n");
+					javaCode.append("            if (cameraIdList.length > 0) {\n");
+					javaCode.append("                ").append(cameraName).append("CameraId = cameraIdList[0];\n");
+					javaCode.append("            }\n");
+					javaCode.append("        } catch (Exception e) {\n");
+					javaCode.append("            e.printStackTrace();\n");
+					javaCode.append("        }\n");
+					break;
+					
+					case "LocationManager":
+					javaCode.append("        ").append(name).append(" = (LocationManager) getSystemService(Context.LOCATION_SERVICE);\n");
+					javaCode.append("        ").append(name).append("Listener = new LocationListener() {\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onLocationChanged(Location location) {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                ").append(logic.replace("\n", "\n                ")).append("\n");
+					}
+					javaCode.append("            }\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onStatusChanged(String provider, int status, Bundle extras) {}\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onProviderEnabled(String provider) {}\n");
+					javaCode.append("            @Override\n");
+					javaCode.append("            public void onProviderDisabled(String provider) {}\n");
+					javaCode.append("        };\n");
+					break;
+					
+					case "SensorManager":
+					javaCode.append("        ").append(name).append(" = (SensorManager) getSystemService(Context.SENSOR_SERVICE);\n");
+					javaCode.append("        ").append(name).append("Sensor = ").append(name).append(".getDefaultSensor(Sensor.TYPE_ACCELEROMETER);\n");
+					break;
+					
+					case "BluetoothAdapter":
+					javaCode.append("        ").append(name).append(" = BluetoothAdapter.getDefaultAdapter();\n");
+					break;
+					
+					case "AlarmManager":
+					javaCode.append("        ").append(name).append(" = (AlarmManager) getSystemService(Context.ALARM_SERVICE);\n");
+					break;
+					
+					case "JobScheduler":
+					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+						javaCode.append("        ").append(name).append(" = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);\n");
+					}
+					break;
+					
+					case "ConnectivityManager":
+					javaCode.append("        ").append(name).append(" = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);\n");
+					break;
+					
+					case "PowerManager":
+					javaCode.append("        ").append(name).append(" = (PowerManager) getSystemService(Context.POWER_SERVICE);\n");
+					javaCode.append("        ").append(name).append("WakeLock = ").append(name).append(".newWakeLock(\n");
+					javaCode.append("                PowerManager.PARTIAL_WAKE_LOCK,\n");
+					javaCode.append("                \"").append(name).append(":wakelocktag\"\n");
+					javaCode.append("        );\n");
+					break;
+					
+					case "ClipboardManager":
+					javaCode.append("        ").append(name).append(" = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);\n");
+					break;
+					
+					case "PackageManager":
+					javaCode.append("        ").append(name).append(" = getPackageManager();\n");
+					break;
+					
+					case "DownloadManager":
+					javaCode.append("        ").append(name).append(" = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);\n");
+					break;
+					
+					case "Vibrator":
+					javaCode.append("        ").append(name).append(" = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);\n");
+					break;
+					
+					case "AudioManager":
+					javaCode.append("        ").append(name).append(" = (AudioManager) getSystemService(Context.AUDIO_SERVICE);\n");
+					break;
+					
+					case "AccountManager":
+					javaCode.append("        ").append(name).append(" = AccountManager.get(this);\n");
+					break;
+					
+					case "TelephonyManager":
+					javaCode.append("        ").append(name).append(" = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);\n");
+					break;
+					
+					case "InputMethodManager":
+					javaCode.append("        ").append(name).append(" = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);\n");
+					break;
+					
+					case "WindowManager":
+					javaCode.append("        ").append(name).append(" = (WindowManager) getSystemService(Context.WINDOW_SERVICE);\n");
+					break;
+					
+					case "ActivityManager":
+					javaCode.append("        ").append(name).append(" = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);\n");
+					break;
+					
+					case "AppOpsManager":
+					if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+						javaCode.append("        ").append(name).append(" = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);\n");
+					}
+					break;
+					
+					case "AlertDialog.Builder":
+					javaCode.append("        ").append(name).append(" = new AlertDialog.Builder(this);\n");
+					break;
+					
+					case "BottomSheetDialog":
+					javaCode.append("        ").append(name).append(" = new BottomSheetDialog(this);\n");
+					break;
+					
+					case "ProgressDialog":
+					javaCode.append("        ").append(name).append(" = new ProgressDialog(this);\n");
+					javaCode.append("        ").append(name).append(".setMessage(\"Loading...\");\n");
+					javaCode.append("        ").append(name).append(".setCancelable(false);\n");
+					break;
+					
+					case "DatePickerDialog":
+					javaCode.append("        Calendar ").append(name).append("Calendar = Calendar.getInstance();\n");
+					javaCode.append("        ").append(name).append(" = new DatePickerDialog(this,\n");
+					javaCode.append("                new DatePickerDialog.OnDateSetListener() {\n");
+					javaCode.append("                    @Override\n");
+					javaCode.append("                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                        ").append(logic.replace("\n", "\n                        ")).append("\n");
+					}
+					javaCode.append("                    }\n");
+					javaCode.append("                },\n");
+					javaCode.append("                ").append(name).append("Calendar.get(Calendar.YEAR),\n");
+					javaCode.append("                ").append(name).append("Calendar.get(Calendar.MONTH),\n");
+					javaCode.append("                ").append(name).append("Calendar.get(Calendar.DAY_OF_MONTH));\n");
+					break;
+					
+					case "TimePickerDialog":
+					javaCode.append("        Calendar ").append(name).append("Calendar = Calendar.getInstance();\n");
+					javaCode.append("        ").append(name).append(" = new TimePickerDialog(this,\n");
+					javaCode.append("                new TimePickerDialog.OnTimeSetListener() {\n");
+					javaCode.append("                    @Override\n");
+					javaCode.append("                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {\n");
+					if (logic != null && !logic.isEmpty()) {
+						javaCode.append("                        ").append(logic.replace("\n", "\n                        ")).append("\n");
+					}
+					javaCode.append("                    }\n");
+					javaCode.append("                },\n");
+					javaCode.append("                ").append(name).append("Calendar.get(Calendar.HOUR_OF_DAY),\n");
+					javaCode.append("                ").append(name).append("Calendar.get(Calendar.MINUTE),\n");
+					javaCode.append("                true);\n");
+					break;
+					
+					case "ArrayAdapter":
+					javaCode.append("        ").append(name).append(" = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);\n");
+					break;
+					
+					case "FilePicker":
+					{
+						// ✅ FilePicker: MIME type set karo + multiple selection allow karo
+						String mimeType = (extraData != null && !extraData.trim().isEmpty()) ? extraData.trim() : "*/*";
+						needsFilePicker = true;
+						javaCode.append("        ").append(name).append(".setType(\"").append(mimeType).append("\");\n");
+						javaCode.append("        ").append(name).append(".putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);\n");
+					}
+					break;
+					
+					case "SharedPreferences":
+					// ✅ SharedPreferences real initialization — file name extraData se aata hai
+					String prefName = extraData != null && !extraData.trim().isEmpty() ? extraData : "app_prefs";
+					if (!declaredSharedPrefs.contains(prefName)) {
+						declaredSharedPrefs.add(prefName);
+						javaCode.append("        ").append(name).append(" = getSharedPreferences(\"").append(prefName).append("\", Context.MODE_PRIVATE);\n");
+					}
+					break;
+					case "File":
+					// ✅ SharedPreferences real initialization — file name extraData se aata hai
+					String prefname = extraData != null && !extraData.trim().isEmpty() ? extraData : "app_prefs";
+					if (!declaredSharedPrefs.contains(prefname)) {
+						declaredSharedPrefs.add(prefname);
+						javaCode.append("        ").append(name).append(" = getSharedPreferences(\"").append(prefname).append("\", Context.MODE_PRIVATE);\n");
+					}
+					break;
+					
+					case "AlertDialog":
+					javaCode.append("        AlertDialog.Builder ").append(name).append("Builder = new AlertDialog.Builder(this);\n");
+					break;
+					
+					default:
+					// Unknown component type - log warning but continue
+					System.err.println("Warning: Unknown component type: " + type);
+					break;
+				}
+			}
+		}
+		
+		// Add widget event bindings
+		addWidgetEventBindings(javaCode, activityName, layoutPath);
+		
+		javaCode.append("    }\n\n");
+		
+		// Add cleanup method for timers, etc.
+		if (needsTimer || needsHandler) {
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onDestroy() {\n");
+			javaCode.append("        super.onDestroy();\n");
+			if (needsTimer) {
+				javaCode.append("        if (_timer != null) {\n");
+				javaCode.append("            _timer.cancel();\n");
+				javaCode.append("            _timer = null;\n");
+				javaCode.append("        }\n");
+			}
+			if (needsHandler) {
+				javaCode.append("        if (_handler != null) {\n");
+				javaCode.append("            _handler.removeCallbacksAndMessages(null);\n");
+				javaCode.append("            _handler = null;\n");
+				javaCode.append("        }\n");
+			}
+			javaCode.append("    }\n\n");
+		}
+	}
+	
+	public static void addInitializeLogicMethod(StringBuilder javaCode, String activityName, String projectPath) {
+		String mainLogic = ProjectLogicRepository.getBlockLogics(activityName);
+		StringBuilder formattedLogic = new StringBuilder();
+		
+		if (mainLogic != null && !mainLogic.isEmpty()) {
+			formattedLogic.append("        ").append(mainLogic.replace("\n", "\n        "));
+		}
+		
+		javaCode.append("    private void initializeLogic() {\n");
+		javaCode.append(formattedLogic.toString()).append("\n");
+		javaCode.append("    }\n\n");
+	}
+	
+	public static void getBlockLogicForLifecycleEvent(StringBuilder javaCode, String activityName, String projectPath) {
+		try {
+			// ── Track karo kaunse events already generate ho chuke hain ────────
+			// Duplicate methods avoid karne ke liye
+			java.util.Set<String> generated = new java.util.HashSet<>();
+			
+			// ── Part A: lifecycle_events.json — user selected lifecycle events ─
+			String path = projectPath + "/events/lifecycle_events.json";
+			File file = new File(path);
+			
+			if (file.exists()) {
+				String json = new String(java.nio.file.Files.readAllBytes(file.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+				String decoded = new String(android.util.Base64.decode(json, android.util.Base64.DEFAULT), java.nio.charset.StandardCharsets.UTF_8);
+				
+				JSONObject allEvents = new JSONObject(decoded);
+				JSONArray activityEvents = allEvents.optJSONArray(activityName);
+				
+				if (activityEvents != null) {
+					for (int i = 0; i < activityEvents.length(); i++) {
+						String event = activityEvents.optString(i);
+						if (!generated.contains(event)) {
+							addLifecycleEvent(javaCode, activityName, event, projectPath);
+							generated.add(event);
+						}
+					}
+				}
+			}
+			
+			// ── Part B: Project events store — system events.json se jo events
+			// EventUtils.saveSystemEventToProject() ke zariye save hue hain ───
+			// Ye wo events hain jo events.json ke custom templates se aate hain
+			// (e.g. fetchFirebaseData, OnProgressChanged, SuperUser etc.)
+			String sc_id = extractProjectIdFromPath(projectPath);
+			if (sc_id != null) {
+				java.util.List<org.json.JSONObject> projectEvents =
+				com.nexusteam.blacklogics.utils.EventUtils.loadEventsForActivity(sc_id, activityName);
+				
+				for (org.json.JSONObject evObj : projectEvents) {
+					if (evObj == null) continue;
+					
+					String eventName    = evObj.optString("name", "");
+					String resolvedCode = evObj.optString("code", "");
+					String rawTemplate  = evObj.optString("rawTemplate", "");
+					
+					// Skip karo agar:
+					// 1. Already lifecycle_events.json se generate ho chuka hai
+					// 2. code field empty hai
+					// 3. Sirf "%s" hai (placeholder-only events jaise MoreBlockMaker)
+					if (generated.contains(eventName)) continue;
+					if (resolvedCode.isEmpty()) continue;
+					if (resolvedCode.trim().equals("%s")) continue;
+					
+					// ✅ FIX 1: Nested method bug —
+					// rawTemplate (events.json original code) se fresh resolve karo
+					// taaki method ke andar method kabhi na bane.
+					// Stale/pre-resolved resolvedCode directly append karne se
+					// nested method ban jaata tha jab %s empty tha.
+					com.nexusteam.blacklogics.utils.EventUtils.SystemEvent sysEvent =
+					com.nexusteam.blacklogics.utils.EventUtils.findSystemEventByName(eventName);
+					
+					String finalCode;
+					if (sysEvent != null && !sysEvent.code.isEmpty()) {
+						// ✅ Current block logic fresh fetch karo har build pe
+						String currentLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, eventName);
+						if (currentLogic == null) currentLogic = "";
+						finalCode = sysEvent.buildCode(currentLogic);
+					} else if (!rawTemplate.isEmpty()) {
+						// rawTemplate available hai lekin sysEvent nahi mila —
+						// rawTemplate se manually resolve karo
+						String currentLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, eventName);
+						if (currentLogic == null) currentLogic = "";
+						finalCode = com.nexusteam.blacklogics.utils.EventUtils
+						.resolvePlaceholders(rawTemplate, currentLogic);
+					} else {
+						// Last fallback: saved resolvedCode use karo
+						finalCode = resolvedCode;
+					}
+					
+					// ✅ FIX 2: Proper pretty-print — line-by-line indent
+					// Purana: replace("\n", "\n    ") pehli line ko indent nahi karta tha
+					// Naya: prettyIndent() har line ko sahi 4-space indent deta hai
+					javaCode.append(prettyIndent(finalCode, "    ")).append("\n\n");
+					
+					generated.add(eventName);
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void addCustomFunctions(StringBuilder javaCode, String activityName, String projectPath, String sc_id) {
+		try {
+			// Read the baselogic file where DesignDataManager stores data
+			File baseLogicFile = new File("/storage/emulated/0/.blacklogics/data/" + sc_id, "baselogic");
+			
+			if (!baseLogicFile.exists()) {
+				return;
+			}
+			
+			// Read and decode the file
+			String content = new String(
+			java.nio.file.Files.readAllBytes(baseLogicFile.toPath()),
+			java.nio.charset.StandardCharsets.UTF_8
+			);
+			
+			JSONObject logicJson = new JSONObject(content);
+			
+			if (!logicJson.has("block_data")) {
+				return;
+			}
+			
+			String encoded = logicJson.getString("block_data");
+			String decoded = new String(
+			android.util.Base64.decode(encoded, android.util.Base64.DEFAULT),
+			java.nio.charset.StandardCharsets.UTF_8
+			);
+			
+			// Parse the decoded JSON
+			JSONObject dataMap = new JSONObject(decoded);
+			
+			// Get functions from the stored data - CORRECTED FORMAT
+			if (dataMap.has("functions")) {
+				// In DesignDataManager, functions is a Map<String, ArrayList<Pair<String, String>>>
+				JSONObject functionsMap = dataMap.getJSONObject("functions");
+				
+				// For each activity in functions map
+				Iterator<String> activityKeys = functionsMap.keys();
+				while (activityKeys.hasNext()) {
+					String activityKey = activityKeys.next();
+					
+					// Check if this matches our activity
+					if (activityKey.equals(activityName)) {
+						// Get the array of pairs for this activity
+						// In JSON, ArrayList<Pair> becomes array of objects with "first" and "second"
+						JSONArray functionPairs = functionsMap.getJSONArray(activityKey);
+						
+						for (int i = 0; i < functionPairs.length(); i++) {
+							JSONObject functionPair = functionPairs.getJSONObject(i);
+							
+							// Each pair has "first" (function name) and "second" (function spec)
+							String functionName = functionPair.getString("first");
+							String functionSpec = functionPair.getString("second");
+							
+							// Parse the spec to get parameters
+							List<HashMap<String, String>> parameters = parseFunctionSpec(functionSpec);
+							
+							// Get the block logic for this function
+							String eventLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, functionName);
+							
+							// Generate the Java method
+							generateFunctionMethod(javaCode, functionName, "void", parameters, eventLogic);
+						}
+					}
+				}
+			}
+			
+			// Also check for functions from DesignActivity/ProjectLogicRepository (keep this)
+			List<HashMap<String, Object>> functions = ProjectLogicRepository.loadFunctions(activityName);
+			for (HashMap<String, Object> func : functions) {
+				String name = String.valueOf(func.get("functionName"));
+				String returnType = String.valueOf(func.get("returnType"));
+				String eventLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, name);
+				
+				@SuppressWarnings("unchecked")
+				List<HashMap<String, String>> parameters = 
+				(List<HashMap<String, String>>) func.get("parameters");
+				
+				generateFunctionMethod(javaCode, name, returnType, parameters, eventLogic);
+			}
+			
+		} catch (Exception e) {
+			Log.e("JavaCodeBuilder", "Error adding custom functions", e);
+		}
+	}
+	
+	private static List<HashMap<String, String>> parseFunctionSpec(String spec) {
+		List<HashMap<String, String>> parameters = new ArrayList<>();
+		
+		if (spec == null || spec.isEmpty()) {
+			return parameters;
+		}
+		
+		// Split the spec by spaces, but be careful with multiple spaces
+		String[] parts = spec.trim().split("\\s+");
+		
+		// Skip the first part (function name)
+		for (int i = 1; i < parts.length; i++) {
+			String part = parts[i];
+			
+			// Skip if it's just a label without parameter type
+			if (!part.contains("%")) {
+				continue;
+			}
+			
+			HashMap<String, String> param = new HashMap<>();
+			
+			if (part.startsWith("%b.")) {
+				param.put("type", "boolean");
+				param.put("name", part.substring(3)); // remove %b.
+				parameters.add(param);
+			} else if (part.startsWith("%d.")) {
+				param.put("type", "double");
+				param.put("name", part.substring(3)); // remove %d.
+				parameters.add(param);
+			} else if (part.startsWith("%s.")) {
+				param.put("type", "String");
+				param.put("name", part.substring(3)); // remove %s.
+				parameters.add(param);
+			}
+			// Skip labels or untyped parts
+		}
+		
+		return parameters;
+	}
+	
+	private static void generateFunctionMethod(StringBuilder javaCode, 
+	String functionName,
+	String returnType,
+	List<HashMap<String, String>> parameters,
+	String eventLogic) {
+		
+		// Format the method body
+		StringBuilder formattedLogic = new StringBuilder();
+		if (eventLogic != null && !eventLogic.isEmpty()) {
+			formattedLogic.append("        ").append(eventLogic.replace("\n", "\n        "));
+		}
+		
+		// Generate method signature
+		javaCode.append("    public ").append(returnType).append(" ").append(functionName).append("(");
+		
+		List<String> paramStrings = new ArrayList<>();
+		if (parameters != null) {
+			for (HashMap<String, String> param : parameters) {
+				String type = mapParameterType(param.get("type"));
+				String name = param.get("name");
+				paramStrings.add(type + " " + name);
+			}
+		}
+		
+		javaCode.append(String.join(", ", paramStrings)).append(") {\n");
+		
+		// Add the method body
+		if (formattedLogic.length() > 0) {
+			javaCode.append(formattedLogic.toString()).append("\n");
+		}
+		
+		// Add return statement if needed
+		if (!"void".equals(returnType)) {
+			javaCode.append("        return ").append(getDefaultReturnValue(returnType)).append(";\n");
+		}
+		
+		javaCode.append("    }\n\n");
+	}
+	
+	private static String mapParameterType(String type) {
+		if (type == null) return "Object";
+		
+		switch (type) {
+			case "boolean":
+			return "boolean";
+			case "double":
+			return "double";
+			case "String":
+			return "String";
+			default:
+			return "Object";
+		}
+	}
+	
+	public static void addUtilityMethods(StringBuilder javaCode, String projectPath) {
+		javaCode.append("    public void showMessage(String message) {\n");
+		javaCode.append("        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();\n");
+		javaCode.append("    }\n\n");
+		
+		if (new File(projectPath + "/permission").exists()) {
+			javaCode.append("    private void initPermissions() {\n");
+			javaCode.append("        // Initialize permissions here\n");
+			javaCode.append("    }\n\n");
+		}
+	}
+	
+	/**
+* ✅ NEW METHOD: FilePicker + Camera ke liye real onActivityResult generate karo
+* Reference example se exactly match karta hai
+*/	
+	public static void addOnActivityResultMethod(StringBuilder javaCode, String activityName) {
+		List<HashMap<String, String>> components = ProjectLogicRepository.loadComponentLogic(activityName);
+		if (components == null || components.isEmpty()) return;
+		
+		// Check karo koi FilePicker ya Camera component hai?
+		List<HashMap<String, String>> filePickerComps = new ArrayList<>();
+		List<HashMap<String, String>> cameraComps = new ArrayList<>();
+		
+		for (HashMap<String, String> comp : components) {
+			String type = comp.get("componentName");
+			if ("FilePicker".equals(type)) filePickerComps.add(comp);
+			if ("Camera".equals(type) || "Camera2 API".equals(type)) cameraComps.add(comp);
+		}
+		
+		if (filePickerComps.isEmpty() && cameraComps.isEmpty()) return;
+		
+		// onActivityResult method shuru karo
+		javaCode.append("    @Override\n");
+		javaCode.append("    protected void onActivityResult(int _requestCode, int _resultCode, Intent _data) {\n");
+		javaCode.append("        super.onActivityResult(_requestCode, _resultCode, _data);\n\n");
+		javaCode.append("        switch (_requestCode) {\n");
+		
+		// ✅ Har FilePicker ke liye ek case block — bilkul reference jaisa
+		int baseReqCode = 1000;
+		for (int i = 0; i < filePickerComps.size(); i++) {
+			HashMap<String, String> comp = filePickerComps.get(i);
+			String name = comp.get("fieldName");
+			String extraData = comp.get("extraData");
+			String mimeType = (extraData != null && !extraData.trim().isEmpty()) ? extraData.trim() : "*/*";
+			int reqCode = baseReqCode + i;
+			
+			// User ke block logic ko bhi include karo agar hai
+			String onSuccessLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, name + "_onSuccess");
+			String onCancelLogic  = ProjectLogicRepository.getBlockLogicForEvent(activityName, name + "_onCancel");
+			
+			javaCode.append("            case ").append(name.toUpperCase()).append("_PICKER_REQUEST:\n");
+			javaCode.append("            if (_resultCode == Activity.RESULT_OK) {\n");
+			javaCode.append("                ").append(name).append("FilePath = new ArrayList<>();\n");
+			javaCode.append("                if (_data != null) {\n");
+			javaCode.append("                    if (_data.getClipData() != null) {\n");
+			javaCode.append("                        for (int _index = 0; _index < _data.getClipData().getItemCount(); _index++) {\n");
+			javaCode.append("                            ClipData.Item _item = _data.getClipData().getItemAt(_index);\n");
+			javaCode.append("                            ").append(name).append("FilePath.add(FileUtil.convertUriToFilePath(getApplicationContext(), _item.getUri()));\n");
+			javaCode.append("                        }\n");
+			javaCode.append("                    } else {\n");
+			javaCode.append("                        ").append(name).append("FilePath.add(FileUtil.convertUriToFilePath(getApplicationContext(), _data.getData()));\n");
+			javaCode.append("                    }\n");
+			javaCode.append("                }\n");
+			// User ka success logic inject karo
+			if (onSuccessLogic != null && !onSuccessLogic.isEmpty()) {
+				javaCode.append("                ").append(onSuccessLogic.replace("\n", "\n                ")).append("\n");
+			}
+			javaCode.append("            } else {\n");
+			// User ka cancel logic inject karo
+			if (onCancelLogic != null && !onCancelLogic.isEmpty()) {
+				javaCode.append("                ").append(onCancelLogic.replace("\n", "\n                ")).append("\n");
+			}
+			javaCode.append("            }\n");
+			javaCode.append("            break;\n\n");
+		}
+		
+		// Camera ke liye bhi case block
+		for (HashMap<String, String> comp : cameraComps) {
+			String name = comp.get("fieldName");
+			String onSuccessLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, name + "_onSuccess");
+			
+			javaCode.append("            case ").append(name.toUpperCase()).append("_CAMERA_REQUEST:\n");
+			javaCode.append("            if (_resultCode == Activity.RESULT_OK) {\n");
+			javaCode.append("                if (_data != null && _data.getExtras() != null) {\n");
+			javaCode.append("                    Bitmap ").append(name).append("Bitmap = (Bitmap) _data.getExtras().get(\"data\");\n");
+			if (onSuccessLogic != null && !onSuccessLogic.isEmpty()) {
+				javaCode.append("                    ").append(onSuccessLogic.replace("\n", "\n                    ")).append("\n");
+			}
+			javaCode.append("                }\n");
+			javaCode.append("            }\n");
+			javaCode.append("            break;\n\n");
+		}
+		
+		javaCode.append("            default:\n");
+		javaCode.append("            break;\n");
+		javaCode.append("        }\n");
+		javaCode.append("    }\n\n");
+		
+		// ✅ onRequestPermissionsResult bhi generate karo agar FilePicker hai
+		if (!filePickerComps.isEmpty()) {
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {\n");
+			javaCode.append("        super.onRequestPermissionsResult(requestCode, permissions, grantResults);\n");
+			javaCode.append("        if (requestCode == 1000) {\n");
+			javaCode.append("            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {\n");
+			javaCode.append("                initializeLogic();\n");
+			javaCode.append("            }\n");
+			javaCode.append("        }\n");
+			javaCode.append("    }\n\n");
+			
+			// ✅ Permission check helper — Android 11+ ke saath
+			javaCode.append("    private void _checkStoragePermission(Intent pickerIntent, int requestCode) {\n");
+			javaCode.append("        if (Build.VERSION.SDK_INT >= 33) {\n");
+			javaCode.append("            String[] _perms = {Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO};\n");
+			javaCode.append("            boolean _need = false;\n");
+			javaCode.append("            for (String _p : _perms) { if (checkSelfPermission(_p) != PackageManager.PERMISSION_GRANTED) { _need = true; break; } }\n");
+			javaCode.append("            if (_need) { requestPermissions(_perms, requestCode); }\n");
+			javaCode.append("            else { startActivityForResult(pickerIntent, requestCode); }\n");
+			javaCode.append("        } else if (Build.VERSION.SDK_INT >= 23) {\n");
+			javaCode.append("            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {\n");
+			javaCode.append("                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, requestCode);\n");
+			javaCode.append("            } else {\n");
+			javaCode.append("                startActivityForResult(pickerIntent, requestCode);\n");
+			javaCode.append("            }\n");
+			javaCode.append("        } else {\n");
+			javaCode.append("            startActivityForResult(pickerIntent, requestCode);\n");
+			javaCode.append("        }\n");
+			javaCode.append("    }\n\n");
+		}
+	}
+	
+	private static void addWidgetEventBindings(StringBuilder javaCode, String activityName, String layoutPath) {
+		Map<String, String> widgetEvents = ProjectLogicRepository.getWidgetClickListeners(activityName);
+		Map<String, String> widgets = extractWidgetsFromLayout(activityName, layoutPath);
+		
+		for (String widgetId : widgets.keySet()) {
+			String logic = widgetEvents.get(widgetId);
+			if (logic == null || logic.trim().isEmpty()) continue;
+			
+			String widgetClassName = widgets.get(widgetId);
+			WidgetEventResolver.EventBinder binder = WidgetEventResolver.resolve(widgetClassName);
+			binder.bind(javaCode, widgetId, logic);
+		}
+	}
+	
+	private static Map<String, String> extractWidgetsFromLayout(
+	String activityName,
+	String layoutPath
+	) {
+		return LayoutLoader.extractWidgetsFromLayout(activityName, layoutPath);
+	}
+	
+	private static String readEncryptedJson(File file) throws Exception {
+		
+		long modified = file.lastModified();
+		
+		if (cachedLayoutJson != null && cacheLastModified == modified) {
+			return cachedLayoutJson;
+		}
+		
+		byte[] decrypted = FileEncryptionUtil.decryptFromFile(file, ENC_PASSWORD);
+		
+		String json = new String(decrypted, "UTF-8");
+		
+		cachedLayoutJson = json;
+		cacheLastModified = modified;
+		
+		return json;
+	}
+	
+	private static ArrayList<LayoutData> readEncryptedBinaryLayouts(File file)
+	throws Exception {
+		
+		byte[] decrypted =
+		FileEncryptionUtil.decryptFromFile(file, ENC_PASSWORD);
+		
+		ObjectInputStream ois =
+		new ObjectInputStream(
+		new ByteArrayInputStream(decrypted)
+		);
+		
+		Object obj = ois.readObject();
+		ois.close();
+		
+		if (!(obj instanceof ArrayList)) {
+			return new ArrayList<>();
+		}
+		
+		@SuppressWarnings("unchecked")
+		ArrayList<LayoutData> list =
+		(ArrayList<LayoutData>) obj;
+		
+		return list;
+	}
+	
+	
+	/**
+* XML layout parse karke do maps fill karta hai:
+*  - widgets           : widgetId -> widgetType       (e.g. "myList" -> "ListView")
+*  - widgetCustomViews : widgetId -> customViewName   (e.g. "myList" -> "ItemCard")
+*                        sirf woh widgets jinke liye user ne Custom View attribute set kiya
+*/	
+	private static void parseWidgetsFromXML(String xml,
+	Map<String, String> widgets,
+	Map<String, String> widgetCustomViews) {
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setInput(new StringReader(xml));
+			
+			int type;
+			while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+				if (type == XmlPullParser.START_TAG) {
+					String tag        = parser.getName();
+					String widgetType = mapTagToWidgetType(tag);
+					
+					String foundId         = null;
+					String foundCustomView = null;
+					
+					for (int i = 0; i < parser.getAttributeCount(); i++) {
+						String attrName  = parser.getAttributeName(i);
+						String attrValue = parser.getAttributeValue(i);
+						if ("android:id".equals(attrName)) {
+							foundId = AttributeUtils.getName(attrValue);
+						} else if ("app:customView".equals(attrName)) {
+							foundCustomView = attrValue.trim();
+						}
+					}
+					
+					if (foundId != null && !foundId.isEmpty()) {
+						widgets.put(foundId, widgetType);
+						if (foundCustomView != null && !foundCustomView.isEmpty()) {
+							widgetCustomViews.put(foundId, foundCustomView);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			Log.e("WidgetExtract", "parseWidgetsFromXML failed", e);
+		}
+	}
+	
+	/**
+* Layout XML parse karke widgets aur unke app:customView assignments dono return karta hai.
+* Java 7 compatible.
+*
+* @return Object[2]:
+*   [0] = Map<String,String>  widgetId -> widgetType
+*   [1] = Map<String,String>  widgetId -> customViewName  (only adapter widgets)
+*/	
+	@SuppressWarnings("unchecked")
+	private static Object[] extractWidgetsAndCustomViews(String activityName, String layoutPath) {
+		Map<String, String> widgets           = new LinkedHashMap<String, String>();
+		Map<String, String> widgetCustomViews = new LinkedHashMap<String, String>();
+		try {
+			String xml = LayoutLoader.getLayoutXml(activityName, layoutPath);
+			if (xml != null && !xml.isEmpty()) {
+				parseWidgetsFromXML(xml, widgets, widgetCustomViews);
+			}
+		} catch (Exception e) {
+			Log.e("JavaCodeBuilder", "extractWidgetsAndCustomViews failed", e);
+		}
+		return new Object[]{ widgets, widgetCustomViews };
+	}
+	
+	private String decodeUnicodeEscapes(String input) {
+		StringBuilder output = new StringBuilder();
+		int i = 0;
+		while (i < input.length()) {
+			if (input.charAt(i) == '\\' && i + 5 < input.length() && input.charAt(i + 1) == 'u') {
+				try {
+					String hex = input.substring(i + 2, i + 6);
+					char unicodeChar = (char) Integer.parseInt(hex, 16);
+					output.append(unicodeChar);
+					i += 6;
+				} catch (NumberFormatException e) {
+					output.append(input.charAt(i));
+					i++;
+				}
+			} else {
+				output.append(input.charAt(i));
+				i++;
+			}
+		}
+		return output.toString();
+	}
+	
+	private String extractTagName(String xmlLine) {
+		int tagStart = xmlLine.indexOf("<") + 1;
+		if (tagStart == 0) return "View";
+		
+		if (xmlLine.charAt(tagStart) == '?') return "View"; // Skip XML declaration
+		
+		int tagEnd = xmlLine.length();
+		for (int i = tagStart; i < xmlLine.length(); i++) {
+			char c = xmlLine.charAt(i);
+			if (c == ' ' || c == '>' || c == '/' || c == '\n' || c == '\t') {
+				tagEnd = i;
+				break;
+			}
+		}
+		return (tagEnd > tagStart) ? xmlLine.substring(tagStart, tagEnd) : "View";
+	}
+	
+	private static String getInitialValue(String type) {
+		switch (type) {
+			case "int": return "0";
+			case "boolean": return "false";
+			case "String": return "\"\"";
+			case "ArrayList<String>": return "new ArrayList<>()";
+			case "double": return "0.0";
+			case "float": return "0.0f";
+			case "long": return "0L";
+			default: return "null";
+		}
+	}
+	
+	private static String getDefaultReturnValue(String returnType) {
+		switch (returnType) {
+			case "int": return "0";
+			case "boolean": return "false";
+			case "String": return "\"\"";
+			case "double": return "0.0";
+			case "float": return "0.0f";
+			case "long": return "0L";
+			default: return "null";
+		}
+	}
+	
+	
+	public static void addMoreBlocksCode(StringBuilder javaCode, String activityName, String sc_id) {
+		try {
+			BlockStorage.setScId(sc_id);
+			
+			// Data already stored in correct format
+			ArrayList<Pair<String, String>> functions = BlockStorage.loadFunctions(activityName + ".java");
+			
+			if (functions == null || functions.isEmpty()) {
+				return;
+			}
+			
+			for (Pair<String, String> function : functions) {
+				String functionName = function.first;        // e.g., "showToast"
+				String functionSpec = function.second;       // e.g., "showToast %s.userMessage %n.delayTime"
+				
+				// Get exact block logic as user wrote
+				String eventLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, functionName);
+				
+				// Generate method directly
+				// ✅ FIX: Agar functionName already "_" se start hota hai toh double "__" na bane
+				String methodName = functionName.startsWith("_") ? functionName : "_" + functionName;
+				javaCode.append("\n    public void ").append(methodName).append("(");
+				
+				// Parse parameters with their actual names
+				String[] parts = functionSpec.split("\\s+");
+				StringBuilder params = new StringBuilder();
+				List<String> paramTypes = new ArrayList<>();
+				
+				for (int i = 1; i < parts.length; i++) {
+					String part = parts[i];
+					if (part.startsWith("%")) {
+						if (params.length() > 0) {
+							params.append(", ");
+						}
+						
+						// Get type
+						char typeChar = part.charAt(1);
+						String type = "String"; // default
+						switch (typeChar) {
+							case 'n':
+							case 'd':
+							type = "double";
+							break;
+							case 'b':
+							type = "boolean";
+							break;
+							case 'c':
+							type = "int";
+							break;
+							case 's':
+							case 't':
+							type = "String";
+							break;
+						}
+						
+						// 🔥 FIX: Extract actual parameter name from the spec
+						// Format: %t.paramName or just %t
+						String paramName;
+						int dotIndex = part.indexOf('.');
+						if (dotIndex > 0 && dotIndex < part.length() - 1) {
+							paramName = part.substring(dotIndex + 1);
+						} else {
+							paramName = "param" + i;
+						}
+						
+						params.append(type).append(" ").append(paramName);
+						paramTypes.add(type);
+					}
+				}
+				
+				javaCode.append(params.toString()).append(") {\n");
+				
+				// Add exact logic
+				if (eventLogic != null && !eventLogic.isEmpty()) {
+					// Replace generic param references with actual names if needed
+					String processedLogic = eventLogic;
+					for (int i = 0; i < paramTypes.size(); i++) {
+						// Replace param1, param2 etc with actual names
+						processedLogic = processedLogic.replace("param" + (i+1), 
+						getParamNameFromSpec(functionSpec, i+1));
+					}
+					javaCode.append("        ").append(processedLogic.replace("\n", "\n        ")).append("\n");
+				}
+				
+				javaCode.append("    }\n\n");
+			}
+			
+		} catch (Exception e) {
+			Log.e("JavaCodeBuilder", "Error adding more blocks", e);
+		}
+	}
+	
+private static String getParamNameFromSpec(String spec, int paramIndex) {
+    String[] parts = spec.split("\\s+");
+    int currentParam = 0;
+
+    for (int i = 1; i < parts.length; i++) {
+        if (parts[i].startsWith("%")) {
+            currentParam++;
+            if (currentParam == paramIndex) {
+                int dotIndex = parts[i].indexOf('.');
+                if (dotIndex > 0 && dotIndex < parts[i].length() - 1) {
+                    return "_" + parts[i].substring(dotIndex + 1); // 🔥 prefix
+                }
+                return "_param" + paramIndex;
+            }
+        }
+    }
+    return "_param" + paramIndex;
+}
+	
+	/**
+* Extract project ID from path
+*/	
+	private static String extractProjectIdFromPath(String projectPath) {
+		if (projectPath == null || projectPath.isEmpty()) {
+			return null;
+		}
+		
+		
+		String[] parts = projectPath.split("/");
+		for (int i = 0; i < parts.length; i++) {
+			if ("projects".equals(parts[i]) && i + 1 < parts.length) {
+				return parts[i + 1];
+			}
+		}
+		
+		return null;
+	}
+	
+	private static boolean hasPermissions(String activityName) {
+		
+		return false;
+	}
+	
+	private static String mapTagToWidgetType(String tag) {
+		if (tag == null) return "View";
+		if (tag.contains(".")) {
+			return tag.substring(tag.lastIndexOf('.') + 1);
+		}
+		return tag;
+	}
+	
+	private static void addLifecycleEvent(StringBuilder javaCode, String activityName, String event, String projectPath) {
+		// ── Step 1: User ka logic ProjectLogicRepository se lo ───────────────
+		String eventLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, event);
+		
+		// ── Step 2: Koi user logic nahi? System events.json se template lo ──
+		// events.json ka "code" field mein %s = user logic ka placeholder hai
+		// Agar user ne koi block nahi dala toh events.json ka full code use karo
+		if (eventLogic == null || eventLogic.isEmpty()) {
+			com.nexusteam.blacklogics.utils.EventUtils.SystemEvent sysEvent =
+			com.nexusteam.blacklogics.utils.EventUtils.findSystemEventByName(event);
+			if (sysEvent != null && !sysEvent.code.isEmpty()
+			&& !sysEvent.code.equals("%s")) {
+				// Template mein %s ko empty string se replace karo (empty body)
+				eventLogic = sysEvent.buildCode("");
+			}
+		}
+		
+		StringBuilder formattedLogic = new StringBuilder();
+		if (eventLogic != null && !eventLogic.isEmpty()) {
+			formattedLogic.append("        ").append(eventLogic.replace("\n", "\n        "));
+		}
+		
+		switch (event) {
+			case "onCreate":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onCreate(Bundle savedInstanceState) {\n");
+			javaCode.append("        super.onCreate(savedInstanceState);\n");
+			javaCode.append("        setContentView(R.layout.activity_").append(activityName.toLowerCase()).append(");\n");
+			javaCode.append("        initViews();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onStart":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onStart() {\n");
+			javaCode.append("        super.onStart();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onResume":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onResume() {\n");
+			javaCode.append("        super.onResume();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onPause":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onPause() {\n");
+			javaCode.append("        super.onPause();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onStop":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onStop() {\n");
+			javaCode.append("        super.onStop();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onRestart":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onRestart() {\n");
+			javaCode.append("        super.onRestart();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onDestroy":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onDestroy() {\n");
+			javaCode.append("        super.onDestroy();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onSaveInstanceState":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onSaveInstanceState(Bundle outState) {\n");
+			javaCode.append("        super.onSaveInstanceState(outState);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onRestoreInstanceState":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onRestoreInstanceState(Bundle savedInstanceState) {\n");
+			javaCode.append("        super.onRestoreInstanceState(savedInstanceState);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onActivityResult":
+			// ✅ FIX: lifecycle "onActivityResult" ko addOnActivityResultMethod se conflict na ho
+			// Isko SKIP karo — addOnActivityResultMethod already proper switch block generate karta hai
+			// Agar sirf user logic hai (FilePicker/Camera nahi) tabhi plain method generate karo
+			{
+				List<HashMap<String, String>> _comps = ProjectLogicRepository.loadComponentLogic(activityName);
+				boolean _hasPickerOrCamera = false;
+				if (_comps != null) {
+					for (HashMap<String, String> _c : _comps) {
+						String _t = _c.get("componentName");
+						if ("FilePicker".equals(_t) || "Camera".equals(_t) || "Camera2 API".equals(_t)) {
+							_hasPickerOrCamera = true;
+							break;
+						}
+					}
+				}
+				if (!_hasPickerOrCamera) {
+					// Koi FilePicker/Camera nahi — plain onActivityResult generate karo
+					javaCode.append("    @Override\n");
+					javaCode.append("    protected void onActivityResult(int _requestCode, int _resultCode, Intent _data) {\n");
+					javaCode.append("        super.onActivityResult(_requestCode, _resultCode, _data);\n");
+					javaCode.append(formattedLogic.toString()).append("\n");
+					javaCode.append("    }\n\n");
+				}
+				// FilePicker/Camera hai toh addOnActivityResultMethod handle karega —
+				// woh method user logic bhi inject karta hai apne switch-case ke andar
+			}
+			break;
+			
+			case "onCreateOptionsMenu":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public boolean onCreateOptionsMenu(Menu menu) {\n");
+			javaCode.append("        super.onCreateOptionsMenu(menu);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("        return true;\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onOptionsItemSelected":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public boolean onOptionsItemSelected(MenuItem item) {\n");
+			javaCode.append("        super.onOptionsItemSelected(item);\n");
+			javaCode.append("        int id = item.getItemId();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("        return true;\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onBackPressed":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onBackPressed() {\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("        super.onBackPressed();\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onRequestPermissionsResult":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {\n");
+			javaCode.append("        super.onRequestPermissionsResult(requestCode, permissions, grantResults);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onConfigurationChanged":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onConfigurationChanged(Configuration newConfig) {\n");
+			javaCode.append("        super.onConfigurationChanged(newConfig);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onUserInteraction":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onUserInteraction() {\n");
+			javaCode.append("        super.onUserInteraction();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onWindowFocusChanged":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onWindowFocusChanged(boolean hasFocus) {\n");
+			javaCode.append("        super.onWindowFocusChanged(hasFocus);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onTrimMemory":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onTrimMemory(int level) {\n");
+			javaCode.append("        super.onTrimMemory(level);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onLowMemory":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onLowMemory() {\n");
+			javaCode.append("        super.onLowMemory();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onPostCreate":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onPostCreate(Bundle savedInstanceState) {\n");
+			javaCode.append("        super.onPostCreate(savedInstanceState);\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onPostResume":
+			javaCode.append("    @Override\n");
+			javaCode.append("    protected void onPostResume() {\n");
+			javaCode.append("        super.onPostResume();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			case "onContentChanged":
+			javaCode.append("    @Override\n");
+			javaCode.append("    public void onContentChanged() {\n");
+			javaCode.append("        super.onContentChanged();\n");
+			javaCode.append(formattedLogic.toString()).append("\n");
+			javaCode.append("    }\n\n");
+			break;
+			
+			default:
+			// ── System events.json se aaya koi bhi custom/unknown event ──────
+			// e.g. "OnProgressChanged", "fetchFirebaseData", "onDataChange" etc.
+			// Inka code field events.json mein already pura method hai,
+			// sirf %s = user logic se replace karna hai.
+			{
+				com.nexusteam.blacklogics.utils.EventUtils.SystemEvent sysEvent =
+				com.nexusteam.blacklogics.utils.EventUtils.findSystemEventByName(event);
+				
+				if (sysEvent != null && !sysEvent.code.isEmpty()) {
+					// User logic already formattedLogic mein hai
+					// Lekin yahan hum pura resolved method append karte hain
+					// (kyunki default case mein koi fixed wrapper nahi hota)
+					String userLogic = (eventLogic != null) ? eventLogic : "";
+					String resolvedCode = sysEvent.buildCode(userLogic);
+					
+					// Indent karke append karo
+					javaCode.append("    ")
+					.append(resolvedCode.replace("\n", "\n    "))
+					.append("\n\n");
+				} else {
+					// Bilkul unknown event — ek generic void method bana do
+					// taaki compile error na aaye
+					javaCode.append("    // Event: ").append(event).append("\n");
+					javaCode.append("    private void on_").append(event).append("() {\n");
+					if (formattedLogic.length() > 0) {
+						javaCode.append(formattedLogic.toString()).append("\n");
+					}
+					javaCode.append("    }\n\n");
+				}
+			}
+			break;
+		}
+	}
+	// Item layout ke saare widgets nikaalo
+	public static Map<String, String> extractWidgetsFromItemLayout(String layoutPath, String itemLayoutName) {
+		return extractWidgetsFromLayout(layoutPath, itemLayoutName);
+	}    
+	public static void addRecyclerViewAdapter(StringBuilder javaCode, 
+	String recyclerViewId, 
+	String itemLayoutName,
+	String layoutPath) {
+		
+		// 1️⃣ PEHLE ITEM LAYOUT KE SAARE WIDGETS EXTRACT KARO
+		Map<String, String> itemWidgets = extractWidgetsFromItemLayout(layoutPath, itemLayoutName);
+		
+		String adapterClassName = recyclerViewId.substring(0, 1).toUpperCase() + 
+		recyclerViewId.substring(1) + "Adapter";
+		String itemClassName = recyclerViewId.substring(0, 1).toUpperCase() + 
+		recyclerViewId.substring(1) + "Item";
+		
+		javaCode.append("\n    /*\n");
+		javaCode.append("     * AUTO GENERATED BY BlackLogics\n");
+		javaCode.append("     * Adapter for ").append(recyclerViewId).append("\n");
+		javaCode.append("     */\n");
+		
+		// 🔥 ADAPTER CLASS START
+		javaCode.append("    private class ").append(adapterClassName).append(" extends RecyclerView.Adapter<").append(adapterClassName).append(".ViewHolder> {\n\n");
+		
+		// Adapter fields
+		javaCode.append("        private List<").append(itemClassName).append("> itemList;\n");
+		javaCode.append("        private Context context;\n\n");
+		
+		// Constructor
+		javaCode.append("        public ").append(adapterClassName).append("(Context context, List<").append(itemClassName).append("> itemList) {\n");
+		javaCode.append("            this.context = context;\n");
+		javaCode.append("            this.itemList = itemList;\n");
+		javaCode.append("        }\n\n");
+		
+		// onCreateViewHolder
+		javaCode.append("        @Override\n");
+		javaCode.append("        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {\n");
+		javaCode.append("            View view = LayoutInflater.from(parent.getContext())\n");
+		javaCode.append("                    .inflate(R.layout.").append(itemLayoutName).append(", parent, false);\n");
+		javaCode.append("            return new ViewHolder(view);\n");
+		javaCode.append("        }\n\n");
+		
+		// onBindViewHolder
+		javaCode.append("        @Override\n");
+		javaCode.append("        public void onBindViewHolder(ViewHolder holder, int position) {\n");
+		javaCode.append("            ").append(itemClassName).append(" item = itemList.get(position);\n");
+		
+		// 🔥 AUTO-GENERATE DATA BINDING CODE
+		if (itemWidgets != null && !itemWidgets.isEmpty()) {
+			for (Map.Entry<String, String> widget : itemWidgets.entrySet()) {
+				String widgetId = widget.getKey();
+				String widgetType = widget.getValue();
+				
+				// Convert snake_case to camelCase (e.g., user_name → userName)
+				String fieldName = toCamelCase(widgetId);
+				
+				// Widget type ke according binding
+				if (widgetType.equals("TextView") || widgetType.equals("Button") || 
+				widgetType.equals("EditText") || widgetType.equals("CheckBox")) {
+					javaCode.append("            holder.").append(fieldName)
+					.append(".setText(item.get").append(capitalize(fieldName)).append("());\n");
+				} else if (widgetType.equals("ImageView") || widgetType.equals("ImageButton")) {
+					javaCode.append("            holder.").append(fieldName)
+					.append(".setImageResource(item.get").append(capitalize(fieldName)).append("());\n");
+				} else if (widgetType.equals("RatingBar")) {
+					javaCode.append("            holder.").append(fieldName)
+					.append(".setRating(item.get").append(capitalize(fieldName)).append("());\n");
+				} else if (widgetType.equals("ProgressBar")) {
+					javaCode.append("            holder.").append(fieldName)
+					.append(".setProgress(item.get").append(capitalize(fieldName)).append("());\n");
+				}
+			}
+		}
+		javaCode.append("        }\n\n");
+		
+		// getItemCount
+		javaCode.append("        @Override\n");
+		javaCode.append("        public int getItemCount() {\n");
+		javaCode.append("            return itemList.size();\n");
+		javaCode.append("        }\n\n");
+		
+		// 🔥 VIEW HOLDER CLASS - YAHAN FINDVIEWBYID HOGA
+		javaCode.append("        public class ViewHolder extends RecyclerView.ViewHolder {\n\n");
+		
+		// 2️⃣ VIEW HOLDER FIELDS AUTO-GENERATE KARO
+		if (itemWidgets != null && !itemWidgets.isEmpty()) {
+			for (Map.Entry<String, String> widget : itemWidgets.entrySet()) {
+				String widgetId = widget.getKey();
+				String widgetType = widget.getValue();
+				String fieldName = toCamelCase(widgetId);
+				
+				// 🔥 PRIVATE FIELDS BANAO (exactly activity ki tarah)
+				javaCode.append("            private ").append(widgetType)
+				.append(" ").append(fieldName).append(";\n");
+			}
+			javaCode.append("\n");
+		}
+		
+		// 3️⃣ VIEW HOLDER CONSTRUCTOR - YAHAN FINDVIEWBYID HOGA
+		javaCode.append("            public ViewHolder(View itemView) {\n");
+		javaCode.append("                super(itemView);\n\n");
+		
+		if (itemWidgets != null && !itemWidgets.isEmpty()) {
+			for (Map.Entry<String, String> widget : itemWidgets.entrySet()) {
+				String widgetId = widget.getKey();
+				String fieldName = toCamelCase(widgetId);
+				
+				// 🔥 FINDVIEWBYID AUTO-GENERATE (exactly activity jaisa)
+				javaCode.append("                ").append(fieldName)
+				.append(" = itemView.findViewById(R.id.").append(widgetId).append(");\n");
+			}
+			
+			// 4️⃣ CLICK LISTENERS BHI ADD KAR SAKTE HO
+			javaCode.append("\n                // Item click listener\n");
+			javaCode.append("                itemView.setOnClickListener(new View.OnClickListener() {\n");
+			javaCode.append("                    @Override\n");
+			javaCode.append("                    public void onClick(View v) {\n");
+			javaCode.append("                        int position = getAdapterPosition();\n");
+			javaCode.append("                        if (position != RecyclerView.NO_POSITION) {\n");
+			javaCode.append("                            // Handle item click\n");
+			javaCode.append("                        }\n");
+			javaCode.append("                    }\n");
+			javaCode.append("                });\n");
+		}
+		javaCode.append("            }\n");
+		javaCode.append("        }\n");
+		javaCode.append("    }\n\n");
+		
+		// 5️⃣ ITEM MODEL CLASS BANAAO with getters/setters
+		generateItemModelClass(javaCode, itemClassName, itemWidgets);
+	}
+	
+	// 🔥 ITEM MODEL CLASS GENERATOR
+	private static void generateItemModelClass(StringBuilder javaCode, 
+	String itemClassName, 
+	Map<String, String> itemWidgets) {
+		
+		javaCode.append("    /*\n");
+		javaCode.append("     * AUTO GENERATED BY BlackLogics\n");
+		javaCode.append("     * Model class for ").append(itemClassName).append("\n");
+		javaCode.append("     */\n");
+		javaCode.append("    private class ").append(itemClassName).append(" {\n\n");
+		
+		// 6️⃣ FIELDS BANAO (widget type ke according proper Java type)
+		if (itemWidgets != null && !itemWidgets.isEmpty()) {
+			for (Map.Entry<String, String> widget : itemWidgets.entrySet()) {
+				String widgetId = widget.getKey();
+				String widgetType = widget.getValue();
+				String fieldName = toCamelCase(widgetId);
+				String javaType = mapWidgetToJavaType(widgetType);
+				
+				javaCode.append("        private ").append(javaType).append(" ").append(fieldName).append(";\n");
+			}
+			javaCode.append("\n");
+			
+			// Constructors
+			javaCode.append("        public ").append(itemClassName).append("() {\n");
+			javaCode.append("        }\n\n");
+			
+			// 7️⃣ GETTERS/SETTERS AUTO-GENERATE
+			for (Map.Entry<String, String> widget : itemWidgets.entrySet()) {
+				String widgetId = widget.getKey();
+				String widgetType = widget.getValue();
+				String fieldName = toCamelCase(widgetId);
+				String javaType = mapWidgetToJavaType(widgetType);
+				String capitalized = capitalize(fieldName);
+				
+				// Getter
+				javaCode.append("        public ").append(javaType).append(" get").append(capitalized).append("() {\n");
+				javaCode.append("            return ").append(fieldName).append(";\n");
+				javaCode.append("        }\n\n");
+				
+				// Setter
+				javaCode.append("        public void set").append(capitalized).append("(").append(javaType).append(" ").append(fieldName).append(") {\n");
+				javaCode.append("            this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
+				javaCode.append("        }\n\n");
+			}
+		}
+		javaCode.append("    }\n\n");
+	}
+	
+	// 🔥 HELPER METHODS
+	private static String toCamelCase(String snakeCase) {
+		if (snakeCase == null || snakeCase.isEmpty()) return snakeCase;
+		
+		StringBuilder result = new StringBuilder();
+		String[] parts = snakeCase.split("_");
+		result.append(parts[0]); // pehla part as-is
+		
+		for (int i = 1; i < parts.length; i++) {
+			if (parts[i].length() > 0) {
+				result.append(parts[i].substring(0, 1).toUpperCase())
+				.append(parts[i].substring(1));
+			}
+		}
+		return result.toString();
+	}
+	
+	private static String capitalize(String str) {
+		if (str == null || str.isEmpty()) return str;
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+	
+	private static String mapWidgetToJavaType(String widgetType) {
+		if (widgetType == null) return "String";
+		
+		switch (widgetType) {
+			case "TextView":
+			case "EditText":
+			case "Button":
+			case "CheckBox":
+			case "RadioButton":
+			case "Switch":
+			case "ToggleButton":
+			return "String";
+			
+			case "ImageView":
+			case "ImageButton":
+			return "int"; // drawable resource ID
+			
+			case "RatingBar":
+			return "float";
+			
+			case "ProgressBar":
+			case "SeekBar":
+			return "int";
+			
+			default:
+			return "String";
+		}
+	}
+	
+	// ============================================================
+	// Custom View Adapter Code Generators
+	// ============================================================
+	
+	/**
+* ListView / GridView / Spinner / RecyclerView / ExpandableListView ke liye
+* private field declarations generate karta hai jab user ne Custom View select kiya ho.
+* Java 7 compatible — no diamond on RHS.
+*/	
+	private static String generateCustomViewAdapterFields(String widgetId,
+	String widgetType, String customViewName) {
+		if (widgetType == null || widgetType.isEmpty()) return "";
+		StringBuilder sb = new StringBuilder();
+		String adapterClass = cvCapitalize(widgetId) + "Adapter";
+		String listName     = widgetId + "List";
+		
+		if ("ListView".equals(widgetType) || "GridView".equals(widgetType)
+		|| "ExpandableListView".equals(widgetType) || "Spinner".equals(widgetType)) {
+			sb.append("    private ").append(adapterClass)
+			.append(" ").append(widgetId).append("Adapter;\n");
+			sb.append("    private ArrayList<").append(customViewName).append("> ")
+			.append(listName).append(" = new ArrayList<").append(customViewName).append(">();\n");
+		} else if ("RecyclerView".equals(widgetType)) {
+			sb.append("    private ").append(adapterClass)
+			.append(" ").append(widgetId).append("Adapter;\n");
+			sb.append("    private ArrayList<").append(customViewName).append("> ")
+			.append(listName).append(" = new ArrayList<").append(customViewName).append(">();\n");
+			sb.append("    private RecyclerView.LayoutManager ")
+			.append(widgetId).append("LayoutManager;\n");
+		}
+		return sb.toString();
+	}
+	
+	/**
+* initialize() method ke andar adapter setup + inner class generate karta hai.
+* Java 7 compatible — no lambdas, no diamond on RHS.
+*/	
+	private static String generateCustomViewAdapterInit(String widgetId,
+	String widgetType, String customViewName, String activityName) {
+		if (widgetType == null || widgetType.isEmpty()) return "";
+		StringBuilder sb    = new StringBuilder();
+		String adapterClass = cvCapitalize(widgetId) + "Adapter";
+		String listName     = widgetId + "List";
+		String layoutName   = cvToSnakeCase(customViewName);
+		
+		if ("ListView".equals(widgetType) || "GridView".equals(widgetType)) {
+			sb.append("        ").append(listName)
+			.append(" = new ArrayList<").append(customViewName).append(">();\n");
+			sb.append("        ").append(widgetId).append("Adapter = new ")
+			.append(adapterClass).append("(this, ").append(listName).append(");\n");
+			sb.append("        ").append(widgetId)
+			.append(".setAdapter(").append(widgetId).append("Adapter);\n");
+			sb.append("        ").append(widgetId)
+			.append(".setOnItemClickListener(new AdapterView.OnItemClickListener() {\n");
+			sb.append("            @Override\n");
+			sb.append("            public void onItemClick(AdapterView<?> _adView, View _v, int _position, long _id) {\n");
+			String clickLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, widgetId + "_onItemClick");
+			if (clickLogic != null && !clickLogic.isEmpty()) {
+				sb.append("                ").append(clickLogic.replace("\n", "\n                ")).append("\n");
+			}
+			sb.append("            }\n        });\n\n");
+			sb.append(buildListAdapterClass(adapterClass, customViewName, layoutName));
+			
+		} else if ("Spinner".equals(widgetType)) {
+			sb.append("        ").append(listName)
+			.append(" = new ArrayList<").append(customViewName).append(">();\n");
+			sb.append("        ").append(widgetId).append("Adapter = new ")
+			.append(adapterClass).append("(this, ").append(listName).append(");\n");
+			sb.append("        ").append(widgetId)
+			.append(".setAdapter(").append(widgetId).append("Adapter);\n");
+			sb.append("        ").append(widgetId)
+			.append(".setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {\n");
+			sb.append("            @Override\n");
+			sb.append("            public void onItemSelected(AdapterView<?> _adView, View _v, int _position, long _id) {\n");
+			String selLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, widgetId + "_onItemSelected");
+			if (selLogic != null && !selLogic.isEmpty()) {
+				sb.append("                ").append(selLogic.replace("\n", "\n                ")).append("\n");
+			}
+			sb.append("            }\n");
+			sb.append("            @Override\n");
+			sb.append("            public void onNothingSelected(AdapterView<?> _adView) {}\n");
+			sb.append("        });\n\n");
+			sb.append(buildSpinnerAdapterClass(adapterClass, customViewName, layoutName));
+			
+		} else if ("RecyclerView".equals(widgetType)) {
+			sb.append("        ").append(listName)
+			.append(" = new ArrayList<").append(customViewName).append(">();\n");
+			sb.append("        ").append(widgetId).append("LayoutManager = new LinearLayoutManager(this);\n");
+			sb.append("        ").append(widgetId)
+			.append(".setLayoutManager(").append(widgetId).append("LayoutManager);\n");
+			sb.append("        ").append(widgetId).append("Adapter = new ")
+			.append(adapterClass).append("(this, ").append(listName).append(");\n");
+			sb.append("        ").append(widgetId)
+			.append(".setAdapter(").append(widgetId).append("Adapter);\n");
+			sb.append("        ").append(widgetId).append(".setHasFixedSize(true);\n\n");
+			sb.append(buildRecyclerAdapterClass(adapterClass, customViewName, layoutName, widgetId, activityName));
+			
+		} else if ("ExpandableListView".equals(widgetType)) {
+			sb.append("        ").append(listName)
+			.append(" = new ArrayList<").append(customViewName).append(">();\n");
+			sb.append("        ").append(widgetId).append("Adapter = new ")
+			.append(adapterClass).append("(this, ").append(listName).append(");\n");
+			sb.append("        ").append(widgetId)
+			.append(".setAdapter(").append(widgetId).append("Adapter);\n");
+			sb.append("        ").append(widgetId)
+			.append(".setOnChildClickListener(new ExpandableListView.OnChildClickListener() {\n");
+			sb.append("            @Override\n");
+			sb.append("            public boolean onChildClick(ExpandableListView _elv, View _v, int _groupPos, int _childPos, long _id) {\n");
+			String childLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, widgetId + "_onChildClick");
+			if (childLogic != null && !childLogic.isEmpty()) {
+				sb.append("                ").append(childLogic.replace("\n", "\n                ")).append("\n");
+			}
+			sb.append("                return false;\n            }\n        });\n\n");
+			sb.append(buildListAdapterClass(adapterClass, customViewName, layoutName));
+		}
+		return sb.toString();
+	}
+	
+	/** ListView / GridView / ExpandableListView ke liye BaseAdapter inner class */
+	private static String buildListAdapterClass(String adapterClass, String customViewName, String layoutName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n    private class ").append(adapterClass).append(" extends android.widget.BaseAdapter {\n\n");
+		sb.append("        private final android.content.Context context;\n");
+		sb.append("        private final ArrayList<").append(customViewName).append("> items;\n\n");
+		sb.append("        public ").append(adapterClass)
+		.append("(android.content.Context context, ArrayList<").append(customViewName).append("> items) {\n");
+		sb.append("            this.context = context;\n            this.items = items;\n        }\n\n");
+		sb.append("        @Override\n        public int getCount() { return items.size(); }\n\n");
+		sb.append("        @Override\n        public ").append(customViewName).append(" getItem(int pos) { return items.get(pos); }\n\n");
+		sb.append("        @Override\n        public long getItemId(int pos) { return pos; }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public android.view.View getView(int position, android.view.View convertView, android.view.ViewGroup parent) {\n");
+		sb.append("            ").append(customViewName).append(" item = items.get(position);\n");
+		sb.append("            if (convertView == null) {\n");
+		sb.append("                convertView = android.view.LayoutInflater.from(context)\n");
+		sb.append("                        .inflate(R.layout.").append(layoutName).append(", parent, false);\n");
+		sb.append("            }\n");
+		sb.append("            // TODO: bind item fields to convertView children\n");
+		sb.append("            return convertView;\n        }\n    }\n\n");
+		return sb.toString();
+	}
+	
+	/** Spinner ke liye ArrayAdapter subclass inner class */
+	private static String buildSpinnerAdapterClass(String adapterClass, String customViewName, String layoutName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n    private class ").append(adapterClass)
+		.append(" extends android.widget.ArrayAdapter<").append(customViewName).append("> {\n\n");
+		sb.append("        public ").append(adapterClass)
+		.append("(android.content.Context context, ArrayList<").append(customViewName).append("> items) {\n");
+		sb.append("            super(context, 0, items);\n        }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public android.view.View getView(int position, android.view.View convertView, android.view.ViewGroup parent) {\n");
+		sb.append("            return buildView(position, convertView, parent);\n        }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public android.view.View getDropDownView(int position, android.view.View convertView, android.view.ViewGroup parent) {\n");
+		sb.append("            return buildView(position, convertView, parent);\n        }\n\n");
+		sb.append("        private android.view.View buildView(int position, android.view.View convertView, android.view.ViewGroup parent) {\n");
+		sb.append("            ").append(customViewName).append(" item = getItem(position);\n");
+		sb.append("            if (convertView == null) {\n");
+		sb.append("                convertView = android.view.LayoutInflater.from(getContext())\n");
+		sb.append("                        .inflate(R.layout.").append(layoutName).append(", parent, false);\n");
+		sb.append("            }\n");
+		sb.append("            // TODO: bind item fields to convertView children\n");
+		sb.append("            return convertView;\n        }\n    }\n\n");
+		return sb.toString();
+	}
+	
+	/** RecyclerView.Adapter inner class */
+	private static String buildRecyclerAdapterClass(String adapterClass, String customViewName,
+	String layoutName, String widgetId, String activityName) {
+		StringBuilder sb = new StringBuilder();
+		String vh = adapterClass + "VH";
+		sb.append("\n    private class ").append(adapterClass)
+		.append(" extends RecyclerView.Adapter<").append(adapterClass).append(".").append(vh).append("> {\n\n");
+		sb.append("        private final android.content.Context context;\n");
+		sb.append("        private final ArrayList<").append(customViewName).append("> items;\n\n");
+		sb.append("        public ").append(adapterClass)
+		.append("(android.content.Context context, ArrayList<").append(customViewName).append("> items) {\n");
+		sb.append("            this.context = context;\n            this.items = items;\n        }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public ").append(vh).append(" onCreateViewHolder(android.view.ViewGroup parent, int viewType) {\n");
+		sb.append("            android.view.View v = android.view.LayoutInflater.from(parent.getContext())\n");
+		sb.append("                    .inflate(R.layout.").append(layoutName).append(", parent, false);\n");
+		sb.append("            return new ").append(vh).append("(v);\n        }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public void onBindViewHolder(").append(vh).append(" holder, int position) {\n");
+		sb.append("            ").append(customViewName).append(" item = items.get(position);\n");
+		String bindLogic = ProjectLogicRepository.getBlockLogicForEvent(activityName, widgetId + "_onBindViewHolder");
+		if (bindLogic != null && !bindLogic.isEmpty()) {
+			sb.append("            ").append(bindLogic.replace("\n", "\n            ")).append("\n");
+		} else {
+			sb.append("            // TODO: holder.yourView.setText(item.yourField);\n");
+		}
+		sb.append("        }\n\n");
+		sb.append("        @Override\n");
+		sb.append("        public int getItemCount() { return items.size(); }\n\n");
+		sb.append("        public class ").append(vh).append(" extends RecyclerView.ViewHolder {\n\n");
+		sb.append("            public ").append(vh).append("(android.view.View itemView) {\n");
+		sb.append("                super(itemView);\n");
+		sb.append("                // TODO: find your views: e.g. textView = itemView.findViewById(R.id.textView);\n");
+		sb.append("                itemView.setOnClickListener(new android.view.View.OnClickListener() {\n");
+		sb.append("                    @Override\n");
+		sb.append("                    public void onClick(android.view.View v) {\n");
+		sb.append("                        int pos = getAdapterPosition();\n");
+		sb.append("                        if (pos != RecyclerView.NO_POSITION) {\n");
+		sb.append("                            // TODO: handle click\n");
+		sb.append("                        }\n");
+		sb.append("                    }\n                });\n");
+		sb.append("            }\n        }\n    }\n\n");
+		return sb.toString();
+	}
+	
+	/** "MyItemCard" -> "my_item_card" (layout file name convention) */
+	private static String cvToSnakeCase(String name) {
+		if (name == null || name.isEmpty()) return "custom_view";
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (Character.isUpperCase(c) && i > 0) sb.append('_');
+			sb.append(Character.toLowerCase(c));
+		}
+		return sb.toString();
+	}
+	
+	/** "myList" -> "MyList" */
+	private static String cvCapitalize(String s) {
+		if (s == null || s.isEmpty()) return s;
+		return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+	}
+	
+	/**
+	 * ✅ prettyIndent — Code ko line-by-line sahi indent karta hai.
+	 *
+	 * Purana approach: resolvedCode.replace("\n", "\n    ")
+	 *   → Problem: pehli line ko indent nahi milta tha, aur
+	 *     agar code already indented tha toh double-indent ho jaata tha.
+	 *
+	 * Naya approach: trim karo, phir har line ko cleanly indent karo.
+	 *
+	 * @param code    raw code string (method ya block)
+	 * @param indent  indent prefix har line ke liye (e.g. "    " = 4 spaces)
+	 * @return        properly indented string
+	 */
+	private static String prettyIndent(String code, String indent) {
+		if (code == null || code.isEmpty()) return "";
+		// Leading/trailing whitespace hata do, phir line-by-line indent karo
+		String[] lines = code.trim().split("\n", -1);
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < lines.length; i++) {
+			// Existing leading whitespace preserve karo (method body ka internal indent)
+			sb.append(indent).append(lines[i]);
+			if (i < lines.length - 1) sb.append("\n");
+		}
+		return sb.toString();
+	}
+	
+}

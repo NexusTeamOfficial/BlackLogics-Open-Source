@@ -1,0 +1,272 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/md_theme_light_background"
+	android:fillViewport="true">
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/linear8"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="32dp"
+			android:paddingBottom="36dp"
+			android:background="@color/md_theme_light_primary"
+			android:orientation="vertical"
+			android:paddingStart="24dp"
+			android:paddingEnd="24dp">
+			<ImageView
+				android:id="@+id/imageview3"
+				android:layout_width="56dp"
+				android:layout_height="56dp"
+				android:layout_marginBottom="12dp"
+				android:src="@drawable/ic_favorite"
+				android:scaleType="center"
+				android:layout_gravity="center_horizontal"
+				app:tint="@color/md_theme_light_onPrimary" />
+			<TextView
+				android:id="@+id/textview8"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Support Us"
+				android:textSize="26sp"
+				android:textStyle="bold"
+				android:layout_gravity="center_horizontal"
+				android:fontFamily="sans-serif-medium" />
+			<TextView
+				android:id="@+id/textview9"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="Your support keeps this project alive\nand helps us build better features."
+				android:textSize="14sp"
+				android:layout_gravity="center_horizontal" />
+		</LinearLayout>
+		<View
+			android:id="@+id/view9"
+			android:layout_width="match_parent"
+			android:layout_height="16dp"
+			android:background="@color/md_theme_light_background" />
+		<com.google.android.material.card.MaterialCardView
+			android:id="@+id/cardview4"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			app:cardBackgroundColor="@color/md_theme_light_surface"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:cardCornerRadius="20dp"
+			app:cardElevation="2dp"
+			app:strokeColor="@color/md_theme_light_outline"
+			app:strokeWidth="0.5dp">
+			<LinearLayout
+				android:id="@+id/linear10"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="24dp"
+				android:paddingBottom="24dp"
+				android:orientation="vertical"
+				android:paddingStart="20dp"
+				android:paddingEnd="20dp">
+				<TextView
+					android:id="@+id/textview10"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="4dp"
+					android:text="Scan &amp; Pay"
+					android:textSize="18sp"
+					android:textStyle="bold"
+					android:fontFamily="sans-serif-medium" />
+				<TextView
+					android:id="@+id/textview11"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="20dp"
+					android:text="Use any UPI app to scan and donate"
+					android:textSize="13sp" />
+				<com.google.android.material.card.MaterialCardView
+					android:id="@+id/cardview5"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="12dp"
+					app:cardBackgroundColor="@color/white"
+					android:layout_gravity="center_horizontal"
+					app:cardCornerRadius="16dp"
+					app:cardElevation="4dp"
+					app:strokeColor="@color/md_theme_light_primaryContainer"
+					app:strokeWidth="2dp">
+					<ImageView
+						android:id="@+id/iv_qr_code"
+						android:layout_width="220dp"
+						android:layout_height="220dp"
+						android:layout_margin="12dp"
+						android:src="@drawable/scan_to_pay"
+						android:scaleType="fitCenter"
+						android:contentDescription="ScantoPayQRCode" />
+				</com.google.android.material.card.MaterialCardView>
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip_upi_id"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="8dp"
+					android:layout_gravity="center_horizontal"
+					app:chipBackgroundColor="@color/md_theme_light_primaryContainer"
+					app:chipIconTint="@color/md_theme_light_primary"
+					app:chipStartPadding="8dp"
+					app:closeIconVisible="false" />
+				<TextView
+					android:id="@+id/textview12"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="4dp"
+					android:text="Tap UPI ID to copy"
+					android:textSize="11sp"
+					android:layout_gravity="center_horizontal" />
+			</LinearLayout>
+		</com.google.android.material.card.MaterialCardView>
+		<com.google.android.material.card.MaterialCardView
+			android:id="@+id/cardview8"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			app:cardBackgroundColor="@color/md_theme_light_surfaceVariant"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:cardCornerRadius="20dp"
+			app:cardElevation="0dp">
+			<LinearLayout
+				android:id="@+id/linear14"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="20dp"
+				android:paddingBottom="20dp"
+				android:orientation="vertical"
+				android:paddingStart="20dp"
+				android:paddingEnd="20dp">
+				<TextView
+					android:id="@+id/textview16"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="14dp"
+					android:text="Choose Amount"
+					android:textSize="15sp"
+					android:textStyle="bold"
+					android:fontFamily="sans-serif-medium" />
+				<com.google.android.material.chip.ChipGroup
+					android:id="@+id/chip_group_amounts"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="12dp"
+					app:selectionRequired="true"
+					app:singleSelection="true">
+					<com.google.android.material.chip.Chip
+						android:id="@+id/chip_amount_10"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						style="@style/Widget.Material3.Chip.Filter"
+						android:text="₹10"
+						android:textColor="@color/md_theme_light_onSurfaceVariant" />
+					<com.google.android.material.chip.Chip
+						android:id="@+id/chip_amount_50"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						style="@style/Widget.Material3.Chip.Filter"
+						android:text="₹50"
+						android:textColor="@color/md_theme_light_onSurfaceVariant" />
+					<com.google.android.material.chip.Chip
+						android:id="@+id/chip_amount_100"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						style="@style/Widget.Material3.Chip.Filter"
+						android:checked="true"
+						android:text="100"
+						android:textColor="@color/md_theme_light_onSurfaceVariant" />
+					<com.google.android.material.chip.Chip
+						android:id="@+id/chip_amount_500"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						style="@style/Widget.Material3.Chip.Filter"
+						android:text="₹500"
+						android:textColor="@color/md_theme_light_onSurfaceVariant" />
+				</com.google.android.material.chip.ChipGroup>
+				<com.google.android.material.textfield.TextInputLayout
+					android:id="@+id/til_custom_amount"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+					app:boxStrokeColor="@color/md_theme_light_primary"
+					app:counterEnabled="false"
+					app:prefixText="₹"
+					app:prefixTextColor="@color/md_theme_light_primary">
+					<com.google.android.material.textfield.TextInputEditText
+						android:id="@+id/et_custom_amount"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:textSize="12sp"
+						android:inputType="numberDecimal" />
+				</com.google.android.material.textfield.TextInputLayout>
+			</LinearLayout>
+		</com.google.android.material.card.MaterialCardView>
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/btn_donate_now"
+			android:layout_width="match_parent"
+			android:layout_height="56dp"
+			android:layout_marginBottom="12dp"
+			android:text="Donate Now"
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:backgroundTint="@color/md_theme_light_primary"
+			app:cornerRadius="16dp"
+			app:icon="@drawable/ic_favorite"
+			app:iconGravity="textStart"
+			app:iconTint="@color/md_theme_light_onPrimary" />
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/btn_share"
+			android:layout_width="match_parent"
+			android:layout_height="52dp"
+			android:layout_marginBottom="24dp"
+			android:text="Share This Page"
+			android:textSize="14sp"
+			style="@style/Widget.Material3.Button.OutlinedButton"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:cornerRadius="16dp"
+			app:icon="@drawable/ic_share"
+			app:iconGravity="textStart"
+			app:strokeColor="@color/md_theme_light_primary" />
+		<LinearLayout
+			android:id="@+id/linear12"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="32dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:orientation="horizontal"
+			android:layout_marginStart="24dp"
+			android:layout_marginEnd="24dp">
+			<ImageView
+				android:id="@+id/imageview4"
+				android:layout_width="16dp"
+				android:layout_height="16dp"
+				android:src="@drawable/ic_lock"
+				android:scaleType="fitCenter"
+				android:layout_marginEnd="6dp"
+				app:tint="@color/md_theme_light_outline" />
+			<TextView
+				android:id="@+id/textview14"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal|center_vertical"
+				android:text="100% Secure • All payments processed via UPI"
+				android:textSize="12sp" />
+		</LinearLayout>
+	</LinearLayout>
+</ScrollView>

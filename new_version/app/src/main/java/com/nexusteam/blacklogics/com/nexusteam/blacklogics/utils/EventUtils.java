@@ -1,0 +1,762 @@
+package com.nexusteam.blacklogics.utils;
+
+import android.content.Context;
+import android.content.Intent;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+
+import com.besome.blacklogics.beans.ProjectActivityBean;
+import com.nexusteam.internal.editor.LogicEditorActivity;
+import com.besome.blacklogics.util.FileHandler;
+import com.example.myapp.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.io.Serializable;
+import android.os.Parcelable;
+
+import b.b.b.Qm;
+
+public class EventUtils {
+
+    private static final String TAG = "EventUtils";
+
+    // ─── System events.json path ──────────────────────────────────────────────
+    // Path: /storage/emulated/0/.blacklogics/system/events.json
+    private static final String SYSTEM_EVENTS_PATH =
+            "/storage/emulated/0/.blacklogics/system/events.json";
+
+    // ─── In-memory cache ──────────────────────────────────────────────────────
+    private static List<SystemEvent> cachedSystemEvents = null;
+
+    // Merged LIFECYCLE_EVENTS cache — hardcoded + events.json names
+    private static String[] cachedAllLifecycleEvents = null;
+
+    // ─── Hardcoded standard Android lifecycle events ──────────────────────────
+    // events.json ke saare event names inke saath merge honge getLifecycleEvents() mein
+    private static final String[] LIFECYCLE_EVENTS_BASE = {
+            "onCreate", "onPostCreate", "onStart", "onResume", "onPostResume",
+            "onPause", "onStop", "onRestart", "onDestroy", "onBackPressed",
+            "onSaveInstanceState", "onRestoreInstanceState", "onActivityResult",
+            "onRequestPermissionsResult", "onUserLeaveHint", "onTrimMemory",
+            "onLowMemory", "onNewIntent", "onConfigurationChanged",
+            "onOptionsItemSelected", "onCreateOptionsMenu", "Imports"
+    };
+
+    // =========================================================================
+    //  MODEL — events.json ka ek event represent karta hai
+    // =========================================================================
+
+    /**
+     * Ek event entry jo events.json array se map hoti hai.
+     *
+     * JSON fields:
+     *   code        – raw template with %s / %1$s / %2$s etc. placeholders
+     *   headerSpec  – UI mein dikhne wali description
+     *   var         – component type (e.g. "WebView", "ActionBar", "")
+     *   icon        – drawable resource id string
+     *   name        – event ka short name
+     *   listener    – listener type string
+     *   description – longer description
+     *   parameters  – parameter hint string ("%d", "%s", etc.)
+     */
+    public static class SystemEvent {
+        public final String code;
+        public final String headerSpec;
+        public final String var;
+        public final String icon;
+        public final String name;
+        public final String listener;
+        public final String description;
+        public final String parameters;
+
+        public SystemEvent(JSONObject obj) {
+            this.code        = obj.optString("code", "");
+            this.headerSpec  = obj.optString("headerSpec", "");
+            this.var         = obj.optString("var", "");
+            this.icon        = obj.optString("icon", "");
+            this.name        = obj.optString("name", "");
+            this.listener    = obj.optString("listener", "");
+            this.description = obj.optString("description", "");
+            this.parameters  = obj.optString("parameters", "");
+        }
+
+        /**
+         * code template mein %s / %1$s / %2$s ... placeholders ko
+         * actual logic strings se replace karke final Java code deta hai.
+         *
+         * @param logicParts user/block se aaya logic — ek ya zyada parts
+         *                   (positional: index 0 → %1$s ya pehla %s, etc.)
+         * @return final Java code string
+         */
+        public String buildCode(String... logicParts) {
+            return EventUtils.resolvePlaceholders(this.code, logicParts);
+        }
+
+        /**
+         * Kitne placeholders hain is event ke code mein?
+         */
+        public int getPlaceholderCount() {
+            return EventUtils.countPlaceholders(this.code);
+        }
+
+        @Override
+        public String toString() {
+            return name + " [" + var + "]";
+        }
+    }
+
+    // =========================================================================
+    //  SYSTEM EVENTS.JSON — Load / Cache / Query
+    // =========================================================================
+
+    /**
+     * System events.json se saare events load karo.
+     * Pehli baar disk se padhta hai, uske baad cache se deta hai.
+     *
+     * @param forceReload true karo agar fresh reload chahiye
+     */
+    public static List<SystemEvent> loadSystemEvents(boolean forceReload) {
+        if (cachedSystemEvents != null && !forceReload) {
+            return cachedSystemEvents;
+        }
+
+        List<SystemEvent> result = new ArrayList<>();
+        File file = new File(SYSTEM_EVENTS_PATH);
+
+        if (!file.exists()) {
+            Log.w(TAG, "System events.json not found at: " + SYSTEM_EVENTS_PATH);
+            cachedSystemEvents = result;
+            return result;
+        }
+
+        try {
+            String json = readFileAsString(file);
+            JSONArray array = new JSONArray(json);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.optJSONObject(i);
+                if (obj != null) {
+                    result.add(new SystemEvent(obj));
+                }
+            }
+            cachedSystemEvents = result;
+            Log.d(TAG, "Loaded " + result.size() + " system events.");
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading system events: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    /** Convenience — cache use karo */
+    public static List<SystemEvent> loadSystemEvents() {
+        return loadSystemEvents(false);
+    }
+
+    /** Cache clear karo (e.g. user ne events.json update ki) */
+    public static void clearSystemEventsCache() {
+        cachedSystemEvents = null;
+        cachedAllLifecycleEvents = null; // merged array bhi reset karo
+    }
+
+    /**
+     * Kisi specific var/component ke events filter karo.
+     * e.g. getSystemEventsByVar("WebView") → WebView ke saare events
+     */
+    public static List<SystemEvent> getSystemEventsByVar(String var) {
+        List<SystemEvent> filtered = new ArrayList<>();
+        for (SystemEvent e : loadSystemEvents()) {
+            if (var.equals(e.var)) {
+                filtered.add(e);
+            }
+        }
+        return filtered;
+    }
+
+    /**
+     * Name se ek specific system event dhundo.
+     * Pehla match return karta hai; null agar nahi mila.
+     */
+    public static SystemEvent findSystemEventByName(String name) {
+        for (SystemEvent e : loadSystemEvents()) {
+            if (name.equals(e.name)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Listener type se events dhundo.
+     * e.g. findSystemEventsByListener("webviewOnProgressChanged")
+     */
+    public static List<SystemEvent> findSystemEventsByListener(String listener) {
+        List<SystemEvent> result = new ArrayList<>();
+        for (SystemEvent e : loadSystemEvents()) {
+            if (listener.equals(e.listener)) {
+                result.add(e);
+            }
+        }
+        return result;
+    }
+
+    // =========================================================================
+    //  PLACEHOLDER RESOLVER — %s / %1$s / %2$s / %d / %m etc.
+    // =========================================================================
+
+    /**
+     * Template code mein placeholders replace karo.
+     *
+     * Supported formats:
+     *   %s          – sequential, order of appearance mein replace
+     *   %1$s        – positional (1-based index)
+     *   %2$s, %3$s  – positional
+     *   %d, %1$d    – same rules, integer placeholder
+     *   %m          – same rules, object placeholder (object.toString())
+     *   /*%s* /     – comment ke andar bhi handle hota hai
+     *
+     * @param template  raw code template (events.json "code" field)
+     * @param parts     replacement strings (index 0 = first placeholder)
+     * @return          resolved Java code
+     */
+    public static String resolvePlaceholders(String template, String... parts) {
+        if (template == null || template.isEmpty()) return "";
+        if (parts == null || parts.length == 0) return template;
+
+        // ── Single pass left-to-right ─────────────────────────────────────────
+        // Dono positional (%1$s) aur sequential (%s) ek hi pass mein handle karo
+        // Isse double-replace bug nahi hoga (replacement string mein %s hone pe)
+        //
+        // Rules:
+        //   %1$s / %1$d / %1$m  → parts[0]   (1-based index)
+        //   %2$s / %2$d / %2$m  → parts[1]
+        //   %s / %d / %m        → parts[nextSequentialIndex]
+        //                         (positional se already use hue indexes skip)
+        //
+        // Approach: pehle sabhi positional slots ko track karo kaun use hua,
+        // phir sequential ke liye remaining parts left-to-right assign karo.
+
+        // Step A — positional slots kitne hain aur kaunse parts use honge
+        boolean[] usedByPositional = new boolean[parts.length];
+        // Scan karo template mein %N$_ patterns
+        java.util.regex.Matcher scanPos = java.util.regex.Pattern
+                .compile("%(\\d+)\\$[sdm]")
+                .matcher(template);
+        while (scanPos.find()) {
+            int idx = Integer.parseInt(scanPos.group(1)) - 1; // 0-based
+            if (idx >= 0 && idx < parts.length) {
+                usedByPositional[idx] = true;
+            }
+        }
+
+        // Sequential ke liye: jo parts positional ne use nahi kiye unhe
+        // left-to-right order mein assign karo
+        int[] seqQueue = new int[parts.length];
+        int seqCount = 0;
+        for (int i = 0; i < parts.length; i++) {
+            if (!usedByPositional[i]) seqQueue[seqCount++] = i;
+        }
+
+        // Step B — single left-to-right scan karo template pe
+        StringBuilder sb = new StringBuilder();
+        int seqPointer = 0; // seqQueue mein current position
+        int i = 0;
+        while (i < template.length()) {
+            char c = template.charAt(i);
+
+            if (c == '%' && i + 1 < template.length()) {
+
+                // Positional check: %N$s / %N$d / %N$m
+                java.util.regex.Matcher posMatch = java.util.regex.Pattern
+                        .compile("^%(\\d+)\\$[sdm]")
+                        .matcher(template.substring(i));
+                if (posMatch.find()) {
+                    int idx = Integer.parseInt(posMatch.group(1)) - 1; // 0-based
+                    String rep = (idx >= 0 && idx < parts.length && parts[idx] != null)
+                                 ? parts[idx] : "";
+                    sb.append(rep);
+                    i += posMatch.group(0).length(); // pura token skip
+                    continue;
+                }
+
+                // Sequential check: %s / %d / %m  (but NOT %N$...)
+                char next = template.charAt(i + 1);
+                if ((next == 's' || next == 'd' || next == 'm')) {
+                    // Confirm karo ki ye positional nahi hai (digit nahi baad mein)
+                    // Upar wala posMatch pehle hi handle kar chuka hoga,
+                    // yahan tak aaya matlab digit nahi tha
+                    int partIdx = (seqPointer < seqCount) ? seqQueue[seqPointer++] : -1;
+                    String rep = (partIdx >= 0 && parts[partIdx] != null)
+                                 ? parts[partIdx] : "";
+                    sb.append(rep);
+                    i += 2; // '%' + type char
+                    continue;
+                }
+            }
+
+            sb.append(c);
+            i++;
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Ek template mein kitne placeholder slots hain count karo.
+     * Positional %1$s etc. unke highest index se count karte hain.
+     * Sequential %s count alag se hoti hai.
+     */
+    public static int countPlaceholders(String template) {
+        if (template == null || template.isEmpty()) return 0;
+
+        int maxPositional = 0;
+        int sequential = 0;
+
+        java.util.regex.Matcher mPos = java.util.regex.Pattern
+                .compile("%([0-9]+)\\$[sdm]")
+                .matcher(template);
+        while (mPos.find()) {
+            int idx = Integer.parseInt(mPos.group(1));
+            if (idx > maxPositional) maxPositional = idx;
+        }
+
+        // Remaining sequential (non-positional)
+        String stripped = template.replaceAll("%[0-9]+\\$[sdm]", "");
+        java.util.regex.Matcher mSeq = java.util.regex.Pattern
+                .compile("%[sdm]")
+                .matcher(stripped);
+        while (mSeq.find()) sequential++;
+
+        // Total = max(positional slots, sequential slots)
+        return Math.max(maxPositional, sequential);
+    }
+
+    // =========================================================================
+    //  PROJECT-LEVEL EVENT SAVE / LOAD (existing, preserved + improved)
+    // =========================================================================
+
+    /**
+     * Kisi activity ke liye selected lifecycle events save karo.
+     * Path: <project>/events/lifecycle_events.json  (Base64 encoded)
+     */
+    public static boolean saveLifecycleEvents(String sc_id, String activityName, List<String> events) {
+        try {
+            String path = FileHandler.codeSavePath + "/" + sc_id + "/events/lifecycle_events.json";
+            File file = new File(path);
+            JSONObject allEvents = new JSONObject();
+
+            if (file.exists()) {
+                String json = FileHandler.readFile(path);
+                String decoded = new String(Base64.decode(json, Base64.DEFAULT));
+                allEvents = new JSONObject(decoded);
+            }
+
+            JSONArray existingArray = allEvents.optJSONArray(activityName);
+            if (existingArray == null) existingArray = new JSONArray();
+
+            for (String event : events) {
+                if (!arrayContains(existingArray, event)) {
+                    existingArray.put(event);
+                }
+            }
+
+            allEvents.put(activityName, existingArray);
+            String encoded = Base64.encodeToString(allEvents.toString().getBytes(), Base64.NO_WRAP);
+            FileHandler.saveFile(path, encoded);
+            return true;
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving lifecycle events: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Kisi activity ke lifecycle events load karo.
+     */
+    public static List<String> loadLifecycleEvents(String sc_id, String activityName) {
+        List<String> events = new ArrayList<>();
+        try {
+            String path = FileHandler.codeSavePath + "/" + sc_id + "/events/lifecycle_events.json";
+            File file = new File(path);
+            if (file.exists()) {
+                String json = FileHandler.readFile(path);
+                String decoded = new String(Base64.decode(json, Base64.DEFAULT));
+                JSONObject obj = new JSONObject(decoded);
+                JSONArray eventsArray = obj.optJSONArray(activityName);
+                if (eventsArray != null) {
+                    for (int i = 0; i < eventsArray.length(); i++) {
+                        events.add(eventsArray.getString(i));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading lifecycle events: " + e.getMessage());
+        }
+        return events;
+    }
+
+    /**
+     * Ek event ka data (logic code etc.) project events.json mein save karo.
+     *
+     * NEW — ab SystemEvent se directly bhi save kar sakte ho:
+     *   EventUtils.saveSystemEventToProject(sc_id, event, activityName, resolvedCode);
+     */
+    public static void saveEventData(String sc_id, String eventName, JSONObject eventData) {
+        try {
+            String path = FileHandler.codeSavePath + "/" + sc_id + "/events/events.json";
+            File file = new File(path);
+            JSONObject allEvents = new JSONObject();
+
+            if (file.exists()) {
+                String json = FileHandler.readFile(path);
+                String decoded = new String(Base64.decode(json, Base64.DEFAULT));
+                allEvents = new JSONObject(decoded);
+            }
+
+            allEvents.put(eventName, eventData);
+            String encoded = Base64.encodeToString(allEvents.toString().getBytes(), Base64.NO_WRAP);
+            FileHandler.saveFile(path, encoded);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving event data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * System event ko project ke events store mein save karo.
+     * resolvedCode = event.buildCode(logicPart1, logicPart2, ...) se milta hai.
+     *
+     * @param sc_id        project id
+     * @param event        SystemEvent (events.json se)
+     * @param activityName jis activity mein add karna hai
+     * @param resolvedCode placeholders resolve ho chuka final Java code
+     */
+    public static void saveSystemEventToProject(String sc_id, SystemEvent event,
+                                                String activityName, String resolvedCode) {
+        try {
+            JSONObject data = new JSONObject();
+            data.put("name",        event.name);
+            data.put("var",         event.var);
+            data.put("listener",    event.listener);
+            data.put("headerSpec",  event.headerSpec);
+            data.put("description", event.description);
+            data.put("parameters",  event.parameters);
+            data.put("icon",        event.icon);
+            data.put("code",        "");       // resolved code store karo
+            data.put("rawTemplate", event.code);         // original template bhi rakhte hain
+            data.put("activityName", activityName);
+
+            // Key = activityName + "_" + event.name (unique per activity)
+            String key = activityName + "_" + event.name;
+            saveEventData(sc_id, key, data);
+
+        } catch (Exception e) {
+            Log.e(TAG, "saveSystemEventToProject error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Saare project events load karo.
+     */
+    public static HashMap<String, JSONObject> loadAllEvents(String sc_id) {
+        HashMap<String, JSONObject> eventsMap = new HashMap<>();
+        try {
+            String path = FileHandler.codeSavePath + "/" + sc_id + "/events/events.json";
+            File file = new File(path);
+            if (file.exists()) {
+                String json = FileHandler.readFile(path);
+                String decoded = new String(Base64.decode(json, Base64.DEFAULT));
+                JSONObject obj = new JSONObject(decoded);
+                Iterator<String> keys = obj.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    eventsMap.put(key, obj.optJSONObject(key));
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading all events: " + e.getMessage());
+        }
+        return eventsMap;
+    }
+
+    /**
+     * Kisi ek activity ke saare saved events nikalo.
+     */
+    public static List<JSONObject> loadEventsForActivity(String sc_id, String activityName) {
+        List<JSONObject> result = new ArrayList<>();
+        HashMap<String, JSONObject> all = loadAllEvents(sc_id);
+        for (Map.Entry<String, JSONObject> entry : all.entrySet()) {
+            JSONObject data = entry.getValue();
+            if (data != null && activityName.equals(data.optString("activityName"))) {
+                result.add(data);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Ek specific event delete karo project store se.
+     */
+    public static boolean deleteEventFromProject(String sc_id, String eventKey) {
+        try {
+            String path = FileHandler.codeSavePath + "/" + sc_id + "/events/events.json";
+            File file = new File(path);
+            if (!file.exists()) return false;
+
+            String json = FileHandler.readFile(path);
+            String decoded = new String(Base64.decode(json, Base64.DEFAULT));
+            JSONObject obj = new JSONObject(decoded);
+            obj.remove(eventKey);
+
+            String encoded = Base64.encodeToString(obj.toString().getBytes(), Base64.NO_WRAP);
+            FileHandler.saveFile(path, encoded);
+            return true;
+
+        } catch (Exception e) {
+            Log.e(TAG, "deleteEventFromProject error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // =========================================================================
+    //  HELPERS — Lifecycle / Widget / Intent (existing, preserved)
+    // =========================================================================
+
+    /**
+     * Saare lifecycle + system events ka merged array return karta hai.
+     *
+     * Order:
+     *   1. LIFECYCLE_EVENTS_BASE  — standard Android lifecycle (hamesha pehle)
+     *   2. events.json ke saare unique event names — jo base mein nahi hain
+     *
+     * Result cache mein store hota hai.
+     * clearSystemEventsCache() call karo agar events.json reload chahiye.
+     */
+    public static String[] getLifecycleEvents() {
+        if (cachedAllLifecycleEvents != null) {
+            return cachedAllLifecycleEvents;
+        }
+
+        // Base set — order preserve karne ke liye LinkedHashSet
+        java.util.LinkedHashSet<String> merged = new java.util.LinkedHashSet<>();
+
+        // Step 1: pehle hardcoded lifecycle events add karo
+        for (String e : LIFECYCLE_EVENTS_BASE) {
+            merged.add(e);
+        }
+
+        // Step 2: events.json ke saare event names add karo (duplicates auto-skip)
+        for (SystemEvent e : loadSystemEvents()) {
+            if (e.name != null && !e.name.isEmpty()) {
+                merged.add(e.name);
+            }
+        }
+
+        cachedAllLifecycleEvents = merged.toArray(new String[0]);
+        return cachedAllLifecycleEvents;
+    }
+
+    public static String getEventDescription(String eventName) {
+        switch (eventName) {
+            case "onCreate":                    return "On activity create";
+            case "onPostCreate":                return "After onCreate called";
+            case "onStart":                     return "Activity becoming visible";
+            case "onResume":                    return "Activity in foreground";
+            case "onPostResume":                return "After onResume called";
+            case "onPause":                     return "Activity partially hidden";
+            case "onStop":                      return "Activity stopped";
+            case "onRestart":                   return "Activity restarted";
+            case "onDestroy":                   return "On activity destroyed";
+            case "onBackPressed":               return "On back button press";
+            case "onSaveInstanceState":         return "Save activity state";
+            case "onRestoreInstanceState":      return "Restore activity state";
+            case "onActivityResult":            return "Activity result received";
+            case "onRequestPermissionsResult":  return "Permissions result received";
+            case "onUserLeaveHint":             return "User leaving activity";
+            case "onTrimMemory":                return "System memory trim";
+            case "onLowMemory":                 return "Low memory warning";
+            case "onNewIntent":                 return "New intent received";
+            case "onConfigurationChanged":      return "Configuration changed";
+            case "Imports":                     return "activity imports";
+            default:
+                // events.json ke events ke liye description aur headerSpec wahan se lo
+                SystemEvent sysEvent = findSystemEventByName(eventName);
+                if (sysEvent != null) {
+                    // description field prefer karo, nahi toh headerSpec
+                    if (!sysEvent.description.isEmpty()) return sysEvent.description;
+                    if (!sysEvent.headerSpec.isEmpty()) return sysEvent.headerSpec;
+                }
+                return "";
+        }
+    }
+
+    public static String getEventPlaceholder(String eventName) {
+        switch (eventName) {
+            case "onActivityResult":        return "%d.requestcode %d.resultcode %m.intent";
+            case "onClick":                 return "%m.view";
+            case "onFileSelected":          return "%s.filePath";
+            case "onLocationChanged":       return "%d.latitude %d.longitude %d.altitude";
+            case "onSensorChanged":         return "%s.sensorname %d.x %d.y %d.z";
+            case "onReceive":               return "%m.intent";
+            case "onNotificationPosted":    return "%s.package %s.title %s.text";
+            case "onTick":                  return "%d.remainingtime";
+            case "onPrepared":
+            case "onCompletion":
+            case "onError":                 return "%m.mediaplayer";
+            case "onOptionsItemSelected":   return "%d.id %s.title";
+            case "onPictureTaken":          return "%s.imagepath";
+            case "onVideoRecorded":         return "%s.videopath";
+            case "onJobFinished":           return "%d.jobid %b.needsreschedule";
+            case "onStartCommand":          return "%m.intent %d.flags %d.startid";
+            // ── events.json headerSpec se aane wale ──────────────────────────
+            case "OnProgressChanged":       return "%d.newProgress";
+            case "OnDownloadStarted":       return "%s.url %s.userAgent %s.contentDisposition %s.mimetype %d.contentLength";
+            case "OnScrollChange":
+            case "OnScrolled":              return "%d.scrollX %d.scrollY %d.oldScrollX %d.oldScrollY";
+            case "onCustomListBind":        return "%d.position";
+            case "base":                    return "%s.title";
+            default:
+                // Baaki events ke liye events.json ka headerSpec parse karo
+                // headerSpec format: "some text %d.varName %s.varName2 ..."
+                // Sirf %x.varName parts extract karo
+                SystemEvent sysEvent = findSystemEventByName(eventName);
+                if (sysEvent != null && !sysEvent.headerSpec.isEmpty()) {
+                    StringBuilder placeholder = new StringBuilder();
+                    for (String token : sysEvent.headerSpec.split("\\s+")) {
+                        if (token.matches("%[sdmdb]\\..+")) {
+                            if (placeholder.length() > 0) placeholder.append(" ");
+                            placeholder.append(token);
+                        }
+                    }
+                    if (placeholder.length() > 0) return placeholder.toString();
+                }
+                return "";
+        }
+    }
+
+    public static int getWidgetIcon(String widgetType) {
+        switch (widgetType) {
+            case "TextView":              return R.drawable.widget_text_view;
+            case "CheckBox":              return R.drawable.widget_check_box;
+            case "Switch":                return R.drawable.widget_switch;
+            case "LinearLayout":          return R.drawable.widget_linear_horizontal;
+            case "ScrollView":            return R.drawable.widget_scrollview;
+            case "HorizontalScrollView":  return R.drawable.widget_horizontalscrollview;
+            case "RadioButton":           return R.drawable.widget_radio_button;
+            case "RelativeLayout":        return R.drawable.ic_palette_relative_layout;
+            case "MotionLayout":          return R.drawable.icon_auto_awesome_motion_round;
+            case "Button":                return R.drawable.widget_button;
+            case "EditText":              return R.drawable.widget_edit_text;
+            case "ImageView":             return R.drawable.widget_image_view;
+            case "ImageButton":           return R.drawable.widget_image_view;
+            case "ToggleButton":          return R.drawable.widget_button;
+            case "SeekBar":               return R.drawable.widget_seek_bar;
+            case "ProgressBar":           return R.drawable.widget_progress_bar;
+            case "RatingBar":             return R.drawable.ic_palette_rating_bar;
+            case "Spinner":               return R.drawable.icon_format_list_bulleted_round;
+            case "WebView":               return R.drawable.widget_web_view;
+            case "VideoView":             return R.drawable.widget_video_view;
+            case "NestedScrollView":      return R.drawable.widget_scrollview;
+            default:                      return R.drawable.icon_question_mark_round;
+        }
+    }
+
+    public static String getValue(Map<String, Object> data, String key, String defaultValue) {
+        return data.containsKey(key) ? String.valueOf(data.get(key)) : defaultValue;
+    }
+
+    public static String getValue(HashMap<String, Object> data, String key, String defaultValue) {
+        if (data == null) return defaultValue;
+        if (data.containsKey(key)) {
+            Object value = data.get(key);
+            if (value != null) return String.valueOf(value);
+        }
+        return defaultValue;
+    }
+
+    public static Intent createEventIntent(Context context, String eventName,
+                                           String eventDescription, String activityName,
+                                           String sc_id, Qm session, Object projectFile) {
+        Intent intent = new Intent(context, LogicEditorActivity.class);
+        intent.putExtra("id",           eventName);
+        intent.putExtra("event",        getEventPlaceholder(eventName));
+        intent.putExtra("event_text",   eventName);
+        intent.putExtra("filename",     activityName);
+        intent.putExtra("sc_id",        sc_id);
+        intent.putExtra("activityName", activityName);
+        intent.putExtra("type",         eventName);
+        if (session != null)     intent.putExtra("qm_session",   session);
+        if (projectFile != null) intent.putExtra("project_file", (Parcelable) projectFile);
+        return intent;
+    }
+
+    public static ArrayList<HashMap<String, Object>> filterWidgetsByActivity(
+            ArrayList<HashMap<String, Object>> allWidgets, String activityName) {
+        ArrayList<HashMap<String, Object>> filtered = new ArrayList<>();
+        if (allWidgets != null) {
+            for (HashMap<String, Object> item : allWidgets) {
+                if (activityName.equals(item.get("activityName"))) {
+                    filtered.add(item);
+                }
+            }
+        }
+        return filtered;
+    }
+
+    public static ArrayList<HashMap<String, Object>> loadWidgets(String sc_id) {
+        String path = FileUtil.getExternalStorageDir()
+                .concat("/.blacklogics/data/").concat(sc_id).concat("/basedata");
+        if (FileUtil.isExistFile(path)) {
+            return new Gson().fromJson(
+                    FileUtil.readFile(path),
+                    new TypeToken<ArrayList<HashMap<String, Object>>>(){}.getType()
+            );
+        }
+        return new ArrayList<>();
+    }
+
+    // =========================================================================
+    //  PRIVATE UTILS
+    // =========================================================================
+
+    private static boolean arrayContains(JSONArray array, String value) {
+        for (int i = 0; i < array.length(); i++) {
+            if (array.optString(i).equals(value)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * File ko string ke roop mein padho (UTF-8).
+     * FileHandler use nahi karta kyunki system path project path se alag hai.
+     */
+    private static String readFileAsString(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        byte[] data = new byte[(int) file.length()];
+        fis.read(data);
+        fis.close();
+        return new String(data, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Regex replacement mein $ aur \ ko escape karo.
+     */
+    private static String escapeReplacement(String s) {
+        return s.replace("\\", "\\\\").replace("$", "\\$");
+    }
+}
