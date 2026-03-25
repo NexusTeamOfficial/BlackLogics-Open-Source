@@ -54,7 +54,7 @@
 </table>
 
 ### **Logic Workflow**
-![Logic Editor](screenshots/s4.png.png)
+![Logic Editor](screenshots/Screenshot_20260325_175338.jpg)
 
 
 ### 🚀 New: Package Refactor Tool
