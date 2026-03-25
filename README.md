@@ -37,7 +37,7 @@
     <td align="center"><b>Workspace Setup</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/s.png.png" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20260325_183134.jpg" width="100%"/></td>
     <td><img src="screenshots/Screenshot_20260325_175720.jpg" width="100%"/></td>
     <td><img src="screenshots/ss7.png" width="100%"/></td>
   </tr>
