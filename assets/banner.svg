@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340">
+<defs>
+<linearGradient id="bd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D0BCFF"/><stop offset=".5" stop-color="#4F378B"/><stop offset="1" stop-color="#EFB8C8"/></linearGradient>
+<linearGradient id="tt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D0BCFF"/></linearGradient>
+<radialGradient id="g1" cx=".15" cy=".1" r=".6"><stop offset="0" stop-color="#6750A4" stop-opacity=".55"/><stop offset="1" stop-color="#6750A4" stop-opacity="0"/></radialGradient>
+<radialGradient id="g2" cx=".9" cy=".95" r=".55"><stop offset="0" stop-color="#EFB8C8" stop-opacity=".28"/><stop offset="1" stop-color="#EFB8C8" stop-opacity="0"/></radialGradient>
+<pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#E6E1E5" fill-opacity=".07"/></pattern>
+<clipPath id="cp"><rect x="2" y="2" width="1196" height="336" rx="30"/></clipPath>
+</defs>
+<rect x="2" y="2" width="1196" height="336" rx="30" fill="#141218"/>
+<g clip-path="url(#cp)"><rect width="1200" height="340" fill="url(#dots)"/><rect width="1200" height="340" fill="url(#g1)"/><rect width="1200" height="340" fill="url(#g2)"/></g>
+<rect x="2" y="2" width="1196" height="336" rx="30" fill="none" stroke="url(#bd)" stroke-width="2"/>
+<rect x="564" y="34" width="72" height="72" rx="22" fill="#0B0A0E" stroke="url(#bd)" stroke-width="2.5"/>
+<rect x="584" y="54" width="32" height="32" rx="8" fill="url(#bd)"/>
+<text x="600" y="176" text-anchor="middle" fill="url(#tt)" font-size="58" font-weight="800" letter-spacing="-1.5" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">BlackLogics</text>
+<text x="600" y="211" text-anchor="middle" fill="#E6E1E5" font-size="19" font-weight="500" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Advanced Visual Integrated Development Environment</text>
+<text x="600" y="237" text-anchor="middle" fill="#CAC4D0" font-size="14" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Open-source IDE for modern Android development · by NexusTeam</text>
+<rect x="305.0" y="262" width="96" height="34" rx="17" fill="#381E72" fill-opacity=".55" stroke="#D0BCFF" stroke-opacity=".7" stroke-width="1.2"/><text x="353.0" y="284" text-anchor="middle" fill="#D0BCFF" font-size="13.5" font-weight="600" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">v0.0.7+</text><rect x="417.0" y="262" width="96" height="34" rx="17" fill="#4A4458" fill-opacity=".55" stroke="#CCC2DC" stroke-opacity=".7" stroke-width="1.2"/><text x="465.0" y="284" text-anchor="middle" fill="#CCC2DC" font-size="13.5" font-weight="600" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">GPL-3.0</text><rect x="529.0" y="262" width="150" height="34" rx="17" fill="#0F3D22" fill-opacity=".55" stroke="#A8DAB5" stroke-opacity=".7" stroke-width="1.2"/><text x="604.0" y="284" text-anchor="middle" fill="#A8DAB5" font-size="13.5" font-weight="600" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Android SDK 21+</text><rect x="695.0" y="262" width="200" height="34" rx="17" fill="#633B48" fill-opacity=".55" stroke="#EFB8C8" stroke-opacity=".7" stroke-width="1.2"/><text x="795.0" y="284" text-anchor="middle" fill="#EFB8C8" font-size="13.5" font-weight="600" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Open Source · NexusTeam</text>
+</svg>

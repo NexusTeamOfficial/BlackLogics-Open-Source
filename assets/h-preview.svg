@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="76" viewBox="0 0 920 76">
+<defs><linearGradient id="l" x1="0" x2="1"><stop offset="0" stop-color="#EFB8C8" stop-opacity=".9"/><stop offset="1" stop-color="#EFB8C8" stop-opacity="0"/></linearGradient></defs>
+<rect x="0" y="12" width="6" height="44" rx="3" fill="#EFB8C8"/>
+<text x="22" y="28" fill="#EFB8C8" font-size="12.5" font-weight="700" letter-spacing="2.2" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">04  ·  INTERFACE</text>
+<text x="22" y="54" fill="#E6E1E5" font-size="26" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">A look inside</text>
+<rect x="0" y="70" width="920" height="2" rx="1" fill="url(#l)"/></svg>
