@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="112" viewBox="0 0 450 112">
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#211F26" stroke="#49454F" stroke-width="1.5"/>
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#D0BCFF" fill-opacity=".04"/>
+<rect x="22" y="26" width="60" height="60" rx="18" fill="#381E72" stroke="#D0BCFF" stroke-opacity=".55" stroke-width="1.2"/>
+<g transform="translate(40 44) scale(1.0)" fill="#D0BCFF"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></g>
+<text x="102" y="46" fill="#E6E1E5" font-size="17" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Drag-and-drop designer</text>
+<text x="102" y="68" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Layouts, widgets and XML</text>
+<text x="102" y="86" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">side by side</text></svg>

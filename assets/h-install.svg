@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="76" viewBox="0 0 920 76">
+<defs><linearGradient id="l" x1="0" x2="1"><stop offset="0" stop-color="#A8DAB5" stop-opacity=".9"/><stop offset="1" stop-color="#A8DAB5" stop-opacity="0"/></linearGradient></defs>
+<rect x="0" y="12" width="6" height="44" rx="3" fill="#A8DAB5"/>
+<text x="22" y="28" fill="#A8DAB5" font-size="12.5" font-weight="700" letter-spacing="2.2" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">05  ·  INSTALLATION</text>
+<text x="22" y="54" fill="#E6E1E5" font-size="26" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Up and running in minutes</text>
+<rect x="0" y="70" width="920" height="2" rx="1" fill="url(#l)"/></svg>
