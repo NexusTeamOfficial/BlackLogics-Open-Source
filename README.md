@@ -1,123 +1,87 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/version-0.0.7+-black?style=for-the-badge&labelColor=111111&color=00d4ff" />
-<img src="https://img.shields.io/badge/license-GPL--3.0-black?style=for-the-badge&labelColor=111111&color=9b59b6" />
-<img src="https://img.shields.io/badge/platform-Android%20SDK%2021+-black?style=for-the-badge&labelColor=111111&color=2ecc71" />
-<img src="https://img.shields.io/badge/open%20source-NexusTeam-black?style=for-the-badge&labelColor=111111&color=e74c3c" />
-
-<br/><br/>
-
-# ◼ BlackLogics
-
-### Advanced Visual Integrated Development Environment
-
-**A next-generation, open-source IDE for modern Android development.**  
-Built from the ground up by **NexusTeam** — visual block logic, full AndroidX, and a professional security suite (ProGuard, Dex encryption, resource encryption).
+<img src="assets/banner.svg" alt="BlackLogics" width="100%" />
 
 <br/>
 
-[📦 Clone & Install](#️-installation) · [✨ Features](#-key-features) · [📸 Screenshots](#-interface-preview) · [🤝 Contribute](#-contributing)
-
----
+<a href="#-installation"><img src="assets/b-install.svg" alt="Install" height="40"/></a>
+<a href="#-key-features"><img src="assets/b-features.svg" alt="Features" height="40"/></a>
+<a href="#-interface-preview"><img src="assets/b-preview.svg" alt="Preview" height="40"/></a>
+<a href="#-contributing"><img src="assets/b-contribute.svg" alt="Contribute" height="40"/></a>
 
 </div>
 
-## ✦ Overview
+<br/>
 
-**BlackLogics** is not a fork — it is an independent IDE architecture by **NexusTeam (Smart India Gaming)**. It bridges drag-and-drop simplicity with the full Android SDK: design UI visually, wire logic with blocks, protect release builds with ProGuard / AiJiaMi Dex encryption / resource encryption, then export or run.
+<img src="assets/h-overview.svg" alt="Overview" width="100%" />
 
----
+**BlackLogics** is not a fork. It is an independent IDE architecture by **NexusTeam (Smart India Gaming)**. It bridges drag-and-drop simplicity with the full Android SDK: design UI visually, wire logic with blocks, protect release builds with ProGuard / AiJiaMi Dex encryption / resource encryption, then export or run.
 
-## 🚀 Key Features
+<div align="center">
+<img src="assets/workflow.svg" alt="Design, Wire, Protect, Ship" width="100%" />
+</div>
 
-### 🛠️ Professional Development Suite
+<br/>
 
-- **Independent architecture** — Custom core by NexusTeam, not a Sketchware fork.
-- **Full AndroidX support** — Jetpack-ready projects and modern SDK targets.
-- **Live string rendering** — `@string/...` resolves in the visual editor.
-- **Material components** — App bars, navigation, dialogs, and a rich widget palette.
+<img src="assets/h-features.svg" alt="Key Features" width="100%" />
 
-### 🧩 Logic & UI Engine
+<table>
+<tr><td><img src="assets/f1.svg" width="100%" alt="Independent architecture"/></td><td><img src="assets/f2.svg" width="100%" alt="Full AndroidX support"/></td></tr>
+<tr><td><img src="assets/f3.svg" width="100%" alt="Live string rendering"/></td><td><img src="assets/f4.svg" width="100%" alt="Material components"/></td></tr>
+<tr><td><img src="assets/f5.svg" width="100%" alt="Visual logic editor"/></td><td><img src="assets/f6.svg" width="100%" alt="Drag-and-drop designer"/></td></tr>
+<tr><td><img src="assets/f7.svg" width="100%" alt="Source code viewer"/></td><td><img src="assets/f8.svg" width="100%" alt="Icon library"/></td></tr>
+</table>
 
-- **Visual logic editor** — Block-based behaviour without hand-written boilerplate.
-- **Drag-and-drop UI designer** — Layouts, widgets, and XML side-by-side.
-- **Source code viewer** — Inspect generated / project XML anytime.
-- **Icon library** — Import outline / filled / round / sharp Material icons with color control.
+<br/>
 
-### 📦 Resource & Security Managers
+<img src="assets/h-security.svg" alt="Security Suite" width="100%" />
 
-| Manager | What it does |
-| :--- | :--- |
-| **ProGuard Manager** | Code shrinking & obfuscation, custom keep rules, deep library mode, mapping files |
-| **Dex Encryption (AiJiaMi)** | Enterprise Dex protection — anti-decompile, string/class encrypt, anti-debug |
-| **Resource Encryption** | Encrypt XML, assets, and drawables; key-based unlock for edits |
-| **Java & Native (JNI)** | Custom classes and native libs |
-| **Assets, sounds, permissions** | Streamlined project resources and manifest toggles |
+<table>
+<tr><td><img src="assets/s1.svg" width="100%" alt="ProGuard Manager"/></td><td><img src="assets/s2.svg" width="100%" alt="Dex Encryption"/></td></tr>
+<tr><td><img src="assets/s3.svg" width="100%" alt="Resource Encryption"/></td><td><img src="assets/s4.svg" width="100%" alt="Java and Native"/></td></tr>
+<tr><td><img src="assets/s5.svg" width="100%" alt="Assets, sounds, permissions"/></td><td><img src="assets/s6.svg" width="100%" alt="Package Refactor"/></td></tr>
+</table>
 
-### 🚀 Package Refactor
+<br/>
 
-Safely rename the application package with automatic import and directory updates.
+### 🛡️ ProGuard Manager
 
----
-
-### 🔐 ProGuard Manager
-
-Turn on protection so classes and methods are renamed at build time — smaller APK, harder to reverse.
+Turn on protection so classes and methods are renamed at build time: smaller APK, harder to reverse.
 
 - Custom keep rules (reflection, native, serialization)
 - Deep library mode (recompile local libs from source)
 - Optional mapping files for crash debugging
 
-> ⚠️ Test a **release** build after enabling rules. Wrong keeps can crash at runtime.
+> [!WARNING]
+> Test a **release** build after enabling rules. Wrong keeps can crash at runtime.
 
-![ProGuard Manager](screenshots/Screenshot_20261021_120203.jpg)
-
----
-
-### 🔐 Dex Encryption — *AiJiaMi Enterprise*
+### 🔑 Dex Encryption — *AiJiaMi Enterprise*
 
 Runtime protection against reverse engineering and code theft.
 
-| Benefit | Trade-off |
+| ✅ Benefit | ⚖️ Trade-off |
 | :--- | :--- |
 | Blocks easy Dex decompilation | APK size can grow |
 | Encrypts strings & classes | Startup may be slower |
 | Anti-debug / anti-tamper | Harder to debug crashes |
 | Configurable encryption | Needs correct setup |
 
-![Dex Encryption](screenshots/Screenshot_20261021_120210.jpg)
-
----
-
 ### 🔒 Resource Encryption
 
 Encrypt project XML, assets, and drawables into protected formats. Set and store an **encryption key** securely.
 
-> ⚠️ Once enabled, resources must be **decrypted** before manual edits.
+> [!IMPORTANT]
+> Once enabled, resources must be **decrypted** before manual edits.
 
-![Resource Encryption](screenshots/Screenshot_20261021_120157.jpg)
+<br/>
 
----
-
-### 🎨 Visual UI Editor & Icons
-
-Build screens with Linear / Relative / Constraint / Motion layouts, live preview, and a full icon importer (outline, filled, round, sharp).
-
-![Visual UI Editor](screenshots/Screenshot_20261021_100335.jpg)
-
-![Import Icon](screenshots/Screenshot_20261021_101421.jpg)
-
-![Source Code Viewer](screenshots/Screenshot_20261021_100446.jpg)
-
----
-
-## 📸 Interface Preview
+<img src="assets/h-preview.svg" alt="Interface Preview" width="100%" />
 
 <table>
   <tr>
-    <td align="center"><b>Visual editor</b></td>
-    <td align="center"><b>ProGuard</b></td>
-    <td align="center"><b>Dex encryption</b></td>
+    <td align="center" width="33%"><sub><b>VISUAL EDITOR</b></sub></td>
+    <td align="center" width="33%"><sub><b>PROGUARD</b></sub></td>
+    <td align="center" width="33%"><sub><b>DEX ENCRYPTION</b></sub></td>
   </tr>
   <tr>
     <td><img src="screenshots/Screenshot_20261021_100335.jpg" width="100%"/></td>
@@ -125,9 +89,9 @@ Build screens with Linear / Relative / Constraint / Motion layouts, live preview
     <td><img src="screenshots/Screenshot_20261021_120210.jpg" width="100%"/></td>
   </tr>
   <tr>
-    <td align="center"><b>Resource encryption</b></td>
-    <td align="center"><b>Import icon</b></td>
-    <td align="center"><b>Source code</b></td>
+    <td align="center"><sub><b>RESOURCE ENCRYPTION</b></sub></td>
+    <td align="center"><sub><b>IMPORT ICON</b></sub></td>
+    <td align="center"><sub><b>SOURCE CODE</b></sub></td>
   </tr>
   <tr>
     <td><img src="screenshots/Screenshot_20261021_120157.jpg" width="100%"/></td>
@@ -136,25 +100,25 @@ Build screens with Linear / Relative / Constraint / Motion layouts, live preview
   </tr>
 </table>
 
----
+<br/>
 
-## ⚙️ Installation
+<img src="assets/h-install.svg" alt="Installation" width="100%" />
 
 | Component | Requirement |
 | :--- | :--- |
-| **JDK** | Java 8+ |
-| **Android SDK** | API 21+ |
-| **Build** | Gradle |
+| ☕ **JDK** | Java 8+ |
+| 🤖 **Android SDK** | API 21+ |
+| 🐘 **Build** | Gradle |
 
 ```bash
 git clone https://github.com/NexusTeamOfficial/BlackLogics-Open-Source.git
 ```
 
-Open in Android Studio (or your environment), sync Gradle, run on API 21+ device/emulator.
+Open in Android Studio (or your environment), sync Gradle, then run on an API 21+ device or emulator.
 
----
+<br/>
 
-## 🤝 Contributing
+<img src="assets/h-contribute.svg" alt="Contributing" width="100%" />
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/BlackLogics-Open-Source.git
@@ -164,11 +128,11 @@ git commit -m "Add: clear description"
 git push origin feature/YourFeatureName
 ```
 
-Open a Pull Request with a short description of **what** and **why**.
+Open a Pull Request with a short description of **what** changed and **why**.
 
----
+<br/>
 
-## 👥 Team
+<img src="assets/h-team.svg" alt="Team and License" width="100%" />
 
 | Member | Role |
 | :--- | :--- |
@@ -176,17 +140,11 @@ Open a Pull Request with a short description of **what** and **why**.
 | **SmartIndiaGaming** | Systems & multimedia |
 | **[Gaurav](https://github.com/GauravDeveloper-Android)** | Android contributions & testing |
 
----
+**License:** GPL-3.0 for `v0.0.7+` (earlier versions were MIT). See [`LICENSE`](LICENSE). Commercial / closed-source needs: see [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md).
 
-## 📄 License
+<br/>
 
-**GPL-3.0** for `v0.0.7+` (earlier versions were MIT). See [`LICENSE`](LICENSE).
-
-Commercial / closed-source needs: see [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md).
-
----
-
-## 🔗 Connect
+<img src="assets/h-connect.svg" alt="Connect" width="100%" />
 
 <div align="center">
 
@@ -194,6 +152,6 @@ Commercial / closed-source needs: see [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICEN
 [![YouTube](https://img.shields.io/badge/YouTube-@BlackLogics-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/@blacklogics)
 [![GitHub](https://img.shields.io/badge/GitHub-NexusTeamOfficial-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
 
-*Made with passion by **NexusTeam** & **SmartIndiaGaming***
+<sub>Made with passion by <b>NexusTeam</b> & <b>SmartIndiaGaming</b></sub>
 
 </div>
