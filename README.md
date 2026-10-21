@@ -12,12 +12,11 @@
 ### Advanced Visual Integrated Development Environment
 
 **A next-generation, open-source IDE for modern Android development.**  
-Built entirely from the ground up by **NexusTeam**, empowering developers through  
-an intuitive logic-based visual system and a professional resource management suite.
+Built from the ground up by **NexusTeam** — visual block logic, full AndroidX, and a professional security suite (ProGuard, Dex encryption, resource encryption).
 
 <br/>
 
-[📦 Clone & Install](#️-installation) · [✨ Features](#-key-features) · [🤝 Contribute](#-contributing) · [💬 Community](#-connect-with-us)
+[📦 Clone & Install](#️-installation) · [✨ Features](#-key-features) · [📸 Screenshots](#-interface-preview) · [🤝 Contribute](#-contributing)
 
 ---
 
@@ -25,7 +24,7 @@ an intuitive logic-based visual system and a professional resource management su
 
 ## ✦ Overview
 
-**BlackLogics** is not a fork — it is an independent IDE architecture conceived and built by **NexusTeam (Smart India Gaming)**. It bridges the gap between visual drag-and-drop simplicity and the full power of the Android SDK, making professional-grade Android development accessible without sacrificing depth or capability.
+**BlackLogics** is not a fork — it is an independent IDE architecture by **NexusTeam (Smart India Gaming)**. It bridges drag-and-drop simplicity with the full Android SDK: design UI visually, wire logic with blocks, protect release builds with ProGuard / AiJiaMi Dex encryption / resource encryption, then export or run.
 
 ---
 
@@ -33,84 +32,82 @@ an intuitive logic-based visual system and a professional resource management su
 
 ### 🛠️ Professional Development Suite
 
-- **Independent Architecture** — Custom high-performance core built from scratch by NexusTeam, no inherited legacy baggage.
-- **Full AndroidX Support** — First-class integration with Jetpack libraries and modern SDK features.
-- **Live String Rendering** — Reference `@string/your_string` and see the localized value update in real-time inside the visual editor.
-- **Material Design 1.9** — Access Navigation Rails, Bottom Bars, Advanced Dialogs, and a complete modern component library.
-
----
+- **Independent architecture** — Custom core by NexusTeam, not a Sketchware fork.
+- **Full AndroidX support** — Jetpack-ready projects and modern SDK targets.
+- **Live string rendering** — `@string/...` resolves in the visual editor.
+- **Material components** — App bars, navigation, dialogs, and a rich widget palette.
 
 ### 🧩 Logic & UI Engine
 
-- **Visual Logic Editor** — Define complex app behaviors using a high-level block system — zero manual Java boilerplate required.
-- **Drag-and-Drop UI Designer** — Construct responsive layouts visually with an advanced XML-to-UI translation engine.
-- **Dynamic Theming** — Native Dark/Light mode support with instant one-tap configuration.
+- **Visual logic editor** — Block-based behaviour without hand-written boilerplate.
+- **Drag-and-drop UI designer** — Layouts, widgets, and XML side-by-side.
+- **Source code viewer** — Inspect generated / project XML anytime.
+- **Icon library** — Import outline / filled / round / sharp Material icons with color control.
 
----
+### 📦 Resource & Security Managers
 
-### 📦 Advanced Resource Management
-
-| Manager | Capability |
+| Manager | What it does |
 | :--- | :--- |
-| **Java & Native (JNI)** | Inject custom Java classes and C++ native libraries for high-performance tasks |
-| **Asset & Sound** | Streamlined management of fonts, raw data, and high-fidelity audio files |
-| **Permission System** | Granular Manifest permission control with a simplified toggle interface |
-| **Resource Encryption** | Industrial-grade security for XML, assets, and drawables to protect your IP |
+| **ProGuard Manager** | Code shrinking & obfuscation, custom keep rules, deep library mode, mapping files |
+| **Dex Encryption (AiJiaMi)** | Enterprise Dex protection — anti-decompile, string/class encrypt, anti-debug |
+| **Resource Encryption** | Encrypt XML, assets, and drawables; key-based unlock for edits |
+| **Java & Native (JNI)** | Custom classes and native libs |
+| **Assets, sounds, permissions** | Streamlined project resources and manifest toggles |
+
+### 🚀 Package Refactor
+
+Safely rename the application package with automatic import and directory updates.
 
 ---
 
-### 🚀 Package Refactor Tool
+### 🔐 ProGuard Manager
 
-Safely rename your application package with **automatic import updates** and full directory restructuring — no broken references, no manual find-and-replace.
+Turn on protection so classes and methods are renamed at build time — smaller APK, harder to reverse.
 
-![Refactor Package](screenshots/Screenshot_20260325_183757.jpg)
+- Custom keep rules (reflection, native, serialization)
+- Deep library mode (recompile local libs from source)
+- Optional mapping files for crash debugging
 
----
+> ⚠️ Test a **release** build after enabling rules. Wrong keeps can crash at runtime.
 
-### 🔐 Advanced Dex Encryption — *AiJiaMi Enterprise*
-
-Protect your APK from reverse engineering and code theft with enterprise-grade Dex encryption and runtime protection.
-
-| Capability | Status |
-| :--- | :---: |
-| Prevents Dex decompilation | ✅ |
-| Encrypts classes and strings | ✅ |
-| Anti-debug & anti-tamper protection | ✅ |
-| Configurable encryption settings | ✅ |
-| Dry-run safe integration | ✅ |
-
-> ⚠️ **Note:** Enabling Dex encryption may increase APK size and make runtime debugging more complex. Recommended for production builds only.
-
-![Dex Encryption](screenshots/Screenshot_20260303_125654.jpg)
+![ProGuard Manager](screenshots/proguard_manager.jpg)
 
 ---
 
-### 🧾 Built-in Logcat Viewer
+### 🔐 Dex Encryption — *AiJiaMi Enterprise*
 
-Monitor real-time application logs **directly inside the IDE** — no switching to external tools.
+Runtime protection against reverse engineering and code theft.
 
-- Show time & TAG metadata
-- Log level filtering — Verbose, Debug, Info, Warning, Error
-- Search & Regex filtering
-- Line wrap toggle
-- Clean, responsive dark-mode UI
-
-![Logcat Viewer](screenshots/Screenshot_20260303_130141.jpg)
-
----
-
-## 🌙 Dark Mode — Built for Developers
-
-BlackLogics ships with a meticulously crafted Dark Mode that goes beyond a simple color swap.
-
-| Feature | Detail |
+| Benefit | Trade-off |
 | :--- | :--- |
-| **True Black UI** | Optimized for AMOLED displays — saves battery, looks premium |
-| **Eye Comfort** | Reduced blue light for long late-night sessions |
-| **High-Contrast Logic Blocks** | Blocks and syntax stay sharp and readable at any hour |
-| **System Integration** | Automatically follows your device theme settings |
+| Blocks easy Dex decompilation | APK size can grow |
+| Encrypts strings & classes | Startup may be slower |
+| Anti-debug / anti-tamper | Harder to debug crashes |
+| Configurable encryption | Needs correct setup |
 
-> 💡 **Pro Tip:** Toggle between Light and Dark themes instantly from Settings — no restart required.
+![Dex Encryption](screenshots/dex_encryption.jpg)
+
+---
+
+### 🔒 Resource Encryption
+
+Encrypt project XML, assets, and drawables into protected formats. Set and store an **encryption key** securely.
+
+> ⚠️ Once enabled, resources must be **decrypted** before manual edits.
+
+![Resource Encryption](screenshots/resource_encryption.jpg)
+
+---
+
+### 🎨 Visual UI Editor & Icons
+
+Build screens with Linear / Relative / Constraint / Motion layouts, live preview, and a full icon importer (outline, filled, round, sharp).
+
+![Visual UI Editor](screenshots/visual_editor.jpg)
+
+![Import Icon](screenshots/import_icon.jpg)
+
+![Source Code Viewer](screenshots/source_code_viewer.jpg)
 
 ---
 
@@ -118,171 +115,84 @@ BlackLogics ships with a meticulously crafted Dark Mode that goes beyond a simpl
 
 <table>
   <tr>
-    <td align="center"><b>Dashboard</b></td>
-    <td align="center"><b>Source Code Management</b></td>
-    <td align="center"><b>Workspace Setup</b></td>
+    <td align="center"><b>Visual editor</b></td>
+    <td align="center"><b>ProGuard</b></td>
+    <td align="center"><b>Dex encryption</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/Screenshot_20260325_183134.jpg" width="100%"/></td>
-    <td><img src="screenshots/Screenshot_20260325_175720.jpg" width="100%"/></td>
-    <td><img src="screenshots/Screenshot_20260325_183450.jpg" width="100%"/></td>
+    <td><img src="screenshots/visual_editor.jpg" width="100%"/></td>
+    <td><img src="screenshots/proguard_manager.jpg" width="100%"/></td>
+    <td><img src="screenshots/dex_encryption.jpg" width="100%"/></td>
   </tr>
   <tr>
-    <td align="center"><b>Visual UI Editor</b></td>
-    <td align="center"><b>Component Library</b></td>
-    <td align="center"><b>SDK Configuration</b></td>
+    <td align="center"><b>Resource encryption</b></td>
+    <td align="center"><b>Import icon</b></td>
+    <td align="center"><b>Source code</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/Screenshot_20260325_152206.jpg" width="100%"/></td>
-    <td><img src="screenshots/Screenshot_20260325_183618.jpg" width="100%"/></td>
-    <td><img src="screenshots/Screenshot_20260325_183328.jpg" width="100%"/></td>
+    <td><img src="screenshots/resource_encryption.jpg" width="100%"/></td>
+    <td><img src="screenshots/import_icon.jpg" width="100%"/></td>
+    <td><img src="screenshots/source_code_viewer.jpg" width="100%"/></td>
   </tr>
 </table>
 
-**Logic Workflow Editor**
-
-![Logic Editor](screenshots/Screenshot_20260325_175338.jpg)
-
 ---
 
-## ⚙️ Requirements & Installation
-
-### System Requirements
+## ⚙️ Installation
 
 | Component | Requirement |
 | :--- | :--- |
-| **JDK** | Java 8 or higher |
-| **Android SDK** | API Level 21+ (Lollipop → Latest) |
-| **Build System** | Gradle (Android Studio or standalone) |
+| **JDK** | Java 8+ |
+| **Android SDK** | API 21+ |
+| **Build** | Gradle |
 
-### Installation
-
-**1. Clone the repository**
 ```bash
 git clone https://github.com/NexusTeamOfficial/BlackLogics-Open-Source.git
 ```
 
-**2. Open the project**  
-Import the cloned directory into your Android development environment.
-
-**3. Sync dependencies**  
-Allow Gradle to resolve all required AndroidX and Material libraries automatically.
-
-**4. Build & deploy**  
-Run on a physical device or emulator targeting API 21+.
+Open in Android Studio (or your environment), sync Gradle, run on API 21+ device/emulator.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome — bug fixes, UI/UX improvements, new features, or documentation enhancements all make a difference.
-
 ```bash
-# 1. Fork the repository and clone your fork
 git clone https://github.com/YOUR_USERNAME/BlackLogics-Open-Source.git
-
-# 2. Create a feature branch
 git checkout -b feature/YourFeatureName
-
-# 3. Commit your changes with a clear message
-git commit -m "Add: description of your change"
-
-# 4. Push and open a Pull Request
+# ... changes ...
+git commit -m "Add: clear description"
 git push origin feature/YourFeatureName
 ```
 
-Please ensure your PR includes a clear description of what was changed and why.
+Open a Pull Request with a short description of **what** and **why**.
 
 ---
 
-## 👥 Core Development Team
+## 👥 Team
 
 | Member | Role |
 | :--- | :--- |
-| **NexusTeam** | Lead Architecture & UI Framework |
-| **SmartIndiaGaming** | Firebase Systems & Multimedia Integration |
-
----
-
-## 🌟 Contributors
-
-| Name | Role | GitHub |
-| :--- | :--- | :--- |
-| **Gaurav** | Android Developer — contributions, testing & feature improvements | [@GauravDeveloper-Android](https://github.com/GauravDeveloper-Android) |
-
----
-
-## 💙 Special Acknowledgement
-
-BlackLogics development is actively supported by **[Gaurav](https://github.com/GauravDeveloper-Android)** for Android development contributions, testing, and ongoing feature improvements.
+| **NexusTeam** | Lead architecture & UI |
+| **SmartIndiaGaming** | Systems & multimedia |
+| **[Gaurav](https://github.com/GauravDeveloper-Android)** | Android contributions & testing |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
+**GPL-3.0** for `v0.0.7+` (earlier versions were MIT). See [`LICENSE`](LICENSE).
 
-**You are free to:**
-- Use, modify, and distribute this software
-- Self-host and deploy
-
-**Under the following conditions:**
-- Modified source code must be disclosed publicly
-- Proper attribution must be maintained
-- The GPL-3.0 license must be preserved
-- Network-based deployments must also provide source access
-
-See the [`LICENSE`](LICENSE) file for full legal text.
+Commercial / closed-source needs: see [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md).
 
 ---
 
-### 💼 Commercial License
-
-For use cases requiring attribution removal, proprietary integration, or closed-source deployment — a **Commercial License** is available.
-
-See [`COMMERCIAL-LICENSE.md`](COMMERCIAL-LICENSE.md) for details.
-
----
-
-## 📜 License Transition Notice
-
-| Version | License |
-| :--- | :--- |
-| `v0.0.6` and earlier | MIT License |
-| `v0.0.7` and later | GNU GPL-3.0 |
-
-All new development and future releases are governed under **GPL-3.0**.  
-For proprietary usage of `v0.0.7+`, a commercial license is required.
-
----
-
-## 🔖 Third-Party Acknowledgements
-
-BlackLogics deeply respects the open-source community and its contributors.
-
-### Logcat Integration Module
-
-- **Repository:** [YurkivTaras/logcat](https://github.com/YurkivTaras/logcat)
-- **Original Author:** Yuriy Taras
-- **License:** Apache License 2.0
-
-Portions of the Logcat viewer are derived from the above repository. All intellectual property and ownership of third-party components remain solely with their respective original authors. BlackLogics does not claim ownership of third-party code and distributes all such components strictly in accordance with their original licenses.
-
-The Apache License 2.0 is available at: http://www.apache.org/licenses/LICENSE-2.0
-
-> 💙 Sincere thanks to all open-source contributors whose work makes projects like this possible.
-
----
-
-## 🔗 Connect With Us
+## 🔗 Connect
 
 <div align="center">
 
 [![Telegram](https://img.shields.io/badge/Telegram-@BlackLogicsOfficial-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/blacklogics)
 [![YouTube](https://img.shields.io/badge/YouTube-@BlackLogics-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtube.com/@blacklogics)
 [![GitHub](https://img.shields.io/badge/GitHub-NexusTeamOfficial-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source)
-
-<br/>
 
 *Made with passion by **NexusTeam** & **SmartIndiaGaming***
 
