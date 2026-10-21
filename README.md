@@ -70,7 +70,7 @@ Turn on protection so classes and methods are renamed at build time — smaller 
 
 > ⚠️ Test a **release** build after enabling rules. Wrong keeps can crash at runtime.
 
-![ProGuard Manager](screenshots/proguard_manager.jpg)
+![ProGuard Manager](screenshots/Screenshot_20261021_120203.jpg)
 
 ---
 
@@ -85,7 +85,7 @@ Runtime protection against reverse engineering and code theft.
 | Anti-debug / anti-tamper | Harder to debug crashes |
 | Configurable encryption | Needs correct setup |
 
-![Dex Encryption](screenshots/dex_encryption.jpg)
+![Dex Encryption](screenshots/Screenshot_20261021_120210.jpg)
 
 ---
 
@@ -95,7 +95,7 @@ Encrypt project XML, assets, and drawables into protected formats. Set and store
 
 > ⚠️ Once enabled, resources must be **decrypted** before manual edits.
 
-![Resource Encryption](screenshots/resource_encryption.jpg)
+![Resource Encryption](screenshots/Screenshot_20261021_120157.jpg)
 
 ---
 
@@ -103,11 +103,11 @@ Encrypt project XML, assets, and drawables into protected formats. Set and store
 
 Build screens with Linear / Relative / Constraint / Motion layouts, live preview, and a full icon importer (outline, filled, round, sharp).
 
-![Visual UI Editor](screenshots/visual_editor.jpg)
+![Visual UI Editor](screenshots/Screenshot_20261021_100335.jpg)
 
-![Import Icon](screenshots/import_icon.jpg)
+![Import Icon](screenshots/Screenshot_20261021_101421.jpg)
 
-![Source Code Viewer](screenshots/source_code_viewer.jpg)
+![Source Code Viewer](screenshots/Screenshot_20261021_100446.jpg)
 
 ---
 
@@ -120,9 +120,9 @@ Build screens with Linear / Relative / Constraint / Motion layouts, live preview
     <td align="center"><b>Dex encryption</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/visual_editor.jpg" width="100%"/></td>
-    <td><img src="screenshots/proguard_manager.jpg" width="100%"/></td>
-    <td><img src="screenshots/dex_encryption.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_100335.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_120203.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_120210.jpg" width="100%"/></td>
   </tr>
   <tr>
     <td align="center"><b>Resource encryption</b></td>
@@ -130,9 +130,9 @@ Build screens with Linear / Relative / Constraint / Motion layouts, live preview
     <td align="center"><b>Source code</b></td>
   </tr>
   <tr>
-    <td><img src="screenshots/resource_encryption.jpg" width="100%"/></td>
-    <td><img src="screenshots/import_icon.jpg" width="100%"/></td>
-    <td><img src="screenshots/source_code_viewer.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_120157.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_101421.jpg" width="100%"/></td>
+    <td><img src="screenshots/Screenshot_20261021_100446.jpg" width="100%"/></td>
   </tr>
 </table>
 
