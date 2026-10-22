@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:background="#fff" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:animateLayoutChanges="true">
-    <LinearLayout android:orientation="vertical" android:background="#fff" android:layout_width="match_parent" android:layout_height="wrap_content">
+<LinearLayout android:fitsSystemWindows="true" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:background="?attr/colorSurface" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" android:animateLayoutChanges="true">
+    <LinearLayout android:orientation="vertical" android:background="?attr/colorSurface" android:layout_width="match_parent" android:layout_height="wrap_content">
         <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:paddingLeft="8dp" android:layout_width="wrap_content" android:layout_height="48dp">
             <ImageView android:id="@+id/img_back" android:background="?attr/selectableItemBackground" android:padding="4dp" android:focusable="true" android:clickable="true" android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_left_back_blue_48dp"/>
-            <TextView android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary" android:id="@+id/tv_component_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp"/>
+            <TextView android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" android:id="@+id/tv_component_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp"/>
         </LinearLayout>
-        <View android:background="@color/color_secondary" android:layout_width="match_parent" android:layout_height="2dp"/>
+        <View android:background="?attr/colorSecondary" android:layout_width="match_parent" android:layout_height="2dp"/>
     </LinearLayout>
     <RelativeLayout android:id="@+id/layout_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:animateLayoutChanges="true">
         <LinearLayout android:orientation="vertical" android:paddingBottom="24dp" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="wrap_content">
@@ -14,10 +14,10 @@
                     <ImageView android:id="@+id/img_icon" android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/widget_file"/>
                     <TextView android:textSize="12sp" android:gravity="center" android:id="@+id/tv_name" android:visibility="invisible" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:lines="2"/>
                 </LinearLayout>
-                <TextView android:textSize="12sp" android:textColor="@color/grey" android:id="@+id/tv_description" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_marginTop="28dp" android:layout_marginRight="16dp"/>
+                <TextView android:textSize="12sp" android:textColor="?attr/colorOnSurfaceVariant" android:id="@+id/tv_description" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_marginTop="28dp" android:layout_marginRight="16dp"/>
             </LinearLayout>
             <LinearLayout android:orientation="vertical" android:id="@+id/layout_inputs" android:paddingBottom="48dp" android:layout_width="match_parent" android:layout_height="wrap_content">
-                <TextView android:textSize="12sp" android:textColor="#ff0000" android:gravity="left" android:id="@+id/tv_warning" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="28dp" android:layout_marginRight="24dp"/>
+                <TextView android:textSize="12sp" android:textColor="@android:color/holo_red_dark" android:gravity="left" android:id="@+id/tv_warning" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="28dp" android:layout_marginRight="24dp"/>
                 <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="24dp" android:layout_marginTop="16dp" android:layout_marginRight="24dp">
                     <EditText android:textSize="16sp" android:id="@+id/ed_input" android:layout_width="match_parent" android:layout_height="40dp" android:lines="1" android:inputType="text" android:imeOptions="actionDone"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -38,8 +38,8 @@
             </LinearLayout>
         </LinearLayout>
         <LinearLayout android:padding="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentRight="true" android:layout_alignParentBottom="true">
-            <Button android:theme="@style/AppTheme.Button.CoolGreen" android:textColor="#fff" android:id="@+id/docs_button" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-            <Button android:theme="@style/AppTheme.Button.LightBlue" android:textColor="#fff" android:id="@+id/add_button" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <Button android:theme="@style/AppTheme.Button.CoolGreen" android:textColor="?attr/colorOnPrimary" android:id="@+id/docs_button" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <Button android:theme="@style/AppTheme.Button.LightBlue" android:textColor="?attr/colorOnPrimary" android:id="@+id/add_button" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         </LinearLayout>
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/component_list" android:paddingTop="8dp" android:paddingBottom="8dp" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:splitMotionEvents="false"/>

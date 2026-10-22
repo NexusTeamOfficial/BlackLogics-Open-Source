@@ -1,0 +1,205 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="@android:color/white">
+	<com.google.android.material.appbar.MaterialToolbar
+		android:id="@+id/toolbar"
+		android:layout_width="match_parent"
+		android:background="@color/purple_500"
+		android:layout_height="?attr/actionBarSize"
+		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+		app:titleTextColor="@android:color/white"
+		app:title="SelectFile"
+		app:menu="@menu/file_picker_menu" />
+	<LinearLayout
+		android:id="@+id/linear23"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:background="@color/gray_light"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/linear24"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:orientation="horizontal">
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/btnBack"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:background="@drawable/button_background"
+				android:text="←"
+				android:textSize="20sp"
+				android:minWidth="48dp"
+				android:minHeight="48dp"
+				style="@style/Widget.AppCompat.Button.Borderless" />
+			<TextView
+				android:id="@+id/tvCurrentPath"
+				android:focusable="false"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:padding="10dp"
+				android:background="@drawable/border_background"
+				android:gravity="center_vertical"
+				android:text="Internal Storage"
+				android:textSize="13sp"
+				android:singleLine="true"
+				android:layout_weight="1"
+				android:layout_marginStart="8dp"
+				android:layout_marginEnd="8dp"
+				android:ellipsize="start" />
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/btnSearch"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:background="@drawable/button_background"
+				android:text="🔍"
+				android:textSize="18sp"
+				android:minWidth="48dp"
+				android:minHeight="48dp"
+				style="@style/Widget.AppCompat.Button.Borderless" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/llSearchBar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:orientation="horizontal"
+			android:visibility="gone">
+			<EditText
+				android:id="@+id/etSearch"
+				android:focusable="false"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:padding="10dp"
+				android:background="@drawable/border_background"
+				android:textSize="14sp"
+				android:hint="Search files..."
+				android:layout_weight="1" />
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/btnSearchCancel"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="Cancel"
+				android:textSize="12sp"
+				style="@style/Widget.AppCompat.Button.Borderless" />
+		</LinearLayout>
+		<com.google.android.material.chip.ChipGroup
+			android:id="@+id/chipGroupFilter"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			app:singleSelection="true"
+			android:visibility="visible">
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipAll"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipImages"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipVideos"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipAudio"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipDocuments"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+			<com.google.android.material.chip.Chip
+				android:id="@+id/chipApk"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" />
+		</com.google.android.material.chip.ChipGroup>
+	</LinearLayout>
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/rvFiles"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:padding="4dp"
+		android:layout_weight="1"
+		android:clipToPadding="false"
+		android:scrollbars="vertical" />
+	<LinearLayout
+		android:id="@+id/llEmptyState"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="32dp"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="vertical"
+		android:visibility="gone">
+		<ImageView
+			android:id="@+id/imageview2"
+			android:focusable="false"
+			android:layout_width="80dp"
+			android:layout_height="80dp"
+			android:src="@drawable/ic_folder"
+			android:scaleType="center"
+			android:tint="@color/gray_medium" />
+		<TextView
+			android:id="@+id/textview9"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="16dp"
+			android:text="No files found"
+			android:textSize="18sp" />
+		<TextView
+			android:id="@+id/textview10"
+			android:focusable="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="This folder is empty"
+			android:textSize="14sp" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/llBottomActions"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="12dp"
+		android:background="@color/purple_500"
+		android:orientation="horizontal"
+		android:visibility="gone">
+		<TextView
+			android:id="@+id/tvSelectedCount"
+			android:focusable="false"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:text="0 selected"
+			android:textSize="16sp"
+			android:layout_weight="1"
+			android:textColor="@android:color/white" />
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/btnSelectAll"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Select All"
+			android:textSize="12sp"
+			android:textColor="@android:color/white"
+			android:backgroundTint="@android:color/transparent"
+			style="@style/Widget.AppCompat.Button.Borderless" />
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/btnDone"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Done"
+			android:textSize="12sp"
+			android:backgroundTint="@android:color/white"
+			android:paddingStart="20dp"
+			android:paddingEnd="20dp" />
+	</LinearLayout>
+</LinearLayout>

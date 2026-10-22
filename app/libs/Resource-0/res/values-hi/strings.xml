@@ -1,0 +1,1021 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+<string name="abc_action_bar_home_description">होम पर नेविगेट करें</string>
+<string name="abc_action_bar_home_description_format">%1$s, %2$s</string>
+<string name="abc_action_bar_home_subtitle_description_format">%1$s, %2$s, %3$s</string>
+<string name="abc_action_bar_up_description">ऊपर नेविगेट करें</string>
+<string name="abc_action_menu_overflow_description">अधिक विकल्प</string>
+<string name="abc_action_mode_done">पूर्ण</string>
+<string name="abc_activity_chooser_view_see_all">सभी देखें</string>
+<string name="abc_activitychooserview_choose_application">ऐप चुनें</string>
+<string name="abc_capital_off">बंद</string>
+<string name="abc_capital_on">चालू</string>
+<string name="abc_search_hint">खोजें…</string>
+<string name="abc_searchview_description_clear">क्वेरी साफ़ करें</string>
+<string name="abc_searchview_description_query">खोज क्वेरी</string>
+<string name="abc_searchview_description_search">खोजें</string>
+<string name="abc_searchview_description_submit">क्वेरी सबमिट करें</string>
+<string name="abc_searchview_description_voice">आवाज़ से खोजें</string>
+<string name="abc_shareactionprovider_share_with">इसके साथ साझा करें</string>
+<string name="abc_shareactionprovider_share_with_application">इसके साथ साझा करें %s</string>
+<string name="abc_toolbar_collapse_description">संक्षिप्त करें</string>
+<string name="common_google_play_services_enable_button">सक्षम करें</string>
+<string name="common_google_play_services_enable_text">"%1$s तब तक काम नहीं करेगा जब तक आप Google Play सेवाएं सक्षम नहीं करते।"</string>
+<string name="common_google_play_services_enable_title">Google Play सेवाएं सक्षम करें</string>
+<string name="common_google_play_services_install_button">इंस्टॉल करें</string>
+<string name="common_google_play_services_install_text_phone">"%1$s Google Play सेवाओं के बिना नहीं चलेगा, जो आपके फ़ोन से गायब हैं।"</string>
+<string name="common_google_play_services_install_text_tablet">"%1$s Google Play सेवाओं के बिना नहीं चलेगा, जो आपके टैबलेट से गायब हैं।"</string>
+<string name="common_google_play_services_install_title">Google Play सेवाएं प्राप्त करें</string>
+<string name="common_google_play_services_notification_ticker">Google Play सेवाएं त्रुटि</string>
+<string name="common_google_play_services_unknown_issue">"%1$s को Google Play सेवाओं के साथ समस्या हो रही है। यदि समस्या बनी रहती है, तो सहायता के लिए डेवलपर से संपर्क करें।"</string>
+<string name="common_google_play_services_unsupported_text">"%1$s Google Play सेवाओं पर निर्भर करता है, जो आपके डिवाइस द्वारा समर्थित नहीं है। सहायता के लिए निर्माता से संपर्क करें।"</string>
+<string name="common_google_play_services_unsupported_title">Google Play सेवाएं</string>
+<string name="common_google_play_services_update_button">अपडेट करें</string>
+<string name="common_google_play_services_update_text">"%1$s तब तक नहीं चलेगा जब तक आप Google Play सेवाओं को अपडेट नहीं करते।"</string>
+<string name="common_google_play_services_update_title">Google Play सेवाएं अपडेट करें</string>
+<string name="common_google_play_services_updating_text">"%1$s Google Play सेवाओं के बिना नहीं चलेगा, जो वर्तमान में अपडेट हो रही हैं।"</string>
+<string name="common_google_play_services_updating_title">Google Play सेवाएं अपडेट हो रही हैं</string>
+<string name="common_google_play_services_wear_update_text">Google Play सेवाओं के नए संस्करण की आवश्यकता है। यह जल्द ही स्वयं अपडेट हो जाएगा।</string>
+<string name="common_open_on_phone">फ़ोन पर खोलें</string>
+<string name="common_signin_button_text">साइन इन करें</string>
+<string name="common_signin_button_text_long">Google से साइन इन करें</string>
+<string name="messenger_send_button_text">भेजें</string>
+<string name="search_menu_title">खोजें</string>
+<string name="status_bar_notification_info_overflow">999+</string>
+<string name="com_facebook_image_download_unknown_error">एक छवि डाउनलोड करते समय अप्रत्याशित त्रुटि।</string>
+<string name="com_facebook_internet_permission_error_message">WebView लॉगिन के लिए INTERNET अनुमति की आवश्यकता है</string>
+<string name="com_facebook_internet_permission_error_title">AndroidManifest त्रुटि</string>
+<string name="com_facebook_loading">लोड हो रहा है...</string>
+<string name="com_facebook_loginview_cancel_action">रद्द करें</string>
+<string name="com_facebook_loginview_log_in_button">लॉग इन करें</string>
+<string name="com_facebook_loginview_log_out_action">लॉग आउट करें</string>
+<string name="com_facebook_loginview_log_out_button">लॉग आउट करें</string>
+<string name="com_facebook_loginview_logged_in_as">इसमें लॉग इन किया गया है: %1$s</string>
+<string name="com_facebook_loginview_logged_in_using_facebook">Facebook का उपयोग करके लॉग इन किया गया</string>
+<string name="besome_blog_url">http://medium.com/sketchware/all</string>
+<string name="block_add_list_int" formatted="false">%m.listInt में %d जोड़ें</string>
+<string name="block_add_list_str" formatted="false">%m.listStr में %s जोड़ें</string>
+<string name="block_and" formatted="false">%b और %b</string>
+<string name="block_bigger" formatted="false">%d &gt; %d</string>
+<string name="block_break">रोकें</string>
+<string name="block_calendar_add" formatted="false">Calendar %m.calendar में %d को %m.calendarField मान के रूप में जोड़ें</string>
+<string name="block_calendar_diff" formatted="false">Calendar अंतर %m.calendar - %m.calendar</string>
+<string name="block_calendar_format" formatted="false">Calendar %m.calendar को %s के रूप में फॉर्मेट करें</string>
+<string name="block_calendar_get_now">Calendar %m.calendar getNow</string>
+<string name="block_calendar_set" formatted="false">Calendar %m.calendar को %m.calendarField मान %d पर सेट करें</string>
+<string name="block_clear_list">%m.list को साफ़ करें</string>
+<string name="block_contain_list_int" formatted="false">%m.listInt में %d है</string>
+<string name="block_contain_list_str" formatted="false">%m.listStr में %s है</string>
+<string name="block_decrease_int">%m.varInt को 1 से घटाएं</string>
+<string name="block_delete_list" formatted="false">%m.list के %d पर डिलीट करें</string>
+<string name="block_divide" formatted="false">%d / %d</string>
+<string name="block_do_toast">showMessage %s</string>
+<string name="block_else">अन्यथा</string>
+<string name="block_equal" formatted="false">%d = %d</string>
+<string name="block_false">गलत</string>
+<string name="block_file_get_data" formatted="false">File %m.file getData key %s</string>
+<string name="block_file_remove_data" formatted="false">File %m.file removeData key %s</string>
+<string name="block_file_set_data" formatted="false">File %m.file setData key %s value %s</string>
+<string name="block_finish_activity">गतिविधि समाप्त करें</string>
+<string name="block_forever">हमेशा के लिए</string>
+<string name="block_get_at_list_int" formatted="false">%m.listInt के %d पर प्राप्त करें</string>
+<string name="block_get_at_list_str" formatted="false">%m.listStr के %d पर प्राप्त करें</string>
+<string name="block_get_checked">CheckBox %m.checkbox getChecked</string>
+<string name="block_get_enable">%m.view getEnable</string>
+<string name="block_get_rotate">ImageView %m.imageview getRotation</string>
+<string name="block_get_text">%m.textview getText</string>
+<string name="block_if">यदि %b तो</string>
+<string name="block_if_else">यदि %b तो</string>
+<string name="block_increase_int">%m.varInt को 1 से बढ़ाएं</string>
+<string name="block_indexof_list_int" formatted="false">%m.listInt में index %d</string>
+<string name="block_indexof_list_str" formatted="false">%m.listStr में index %s</string>
+<string name="block_insert_list_int" formatted="false">%m.listInt में %d पर %d डालें</string>
+<string name="block_insert_list_str" formatted="false">%m.listStr में %d पर %s डालें</string>
+<string name="block_intent_get_string">Activity getExtra key %s</string>
+<string name="block_intent_put_extra" formatted="false">Intent %m.intent putExtra key %s value %s</string>
+<string name="block_intent_set_action" formatted="false">Intent %m.intent setAction %m.intentAction</string>
+<string name="block_intent_set_data" formatted="false">Intent %m.intent setData %s.intentData</string>
+<string name="block_intent_set_screen" formatted="false">Intent %m.intent setScreen %m.activity</string>
+<string name="block_length_list">%m.list की लंबाई</string>
+<string name="block_list_get_checked_count">ListView %m.listview getCheckedCount</string>
+<string name="block_list_get_checked_position">ListView %m.listview getCheckedPosition</string>
+<string name="block_list_get_checked_positions" formatted="false">ListView %m.listview getCheckedPositions to %m.listInt</string>
+<string name="block_list_refresh">ListView %m.listview refreshData</string>
+<string name="block_list_set_data" formatted="false">ListView %m.listview setListViewData %m.listStr</string>
+<string name="block_list_set_item_checked" formatted="false">ListView %m.listview setItemChecked pos %d value %b</string>
+<string name="block_minus" formatted="false">%d - %d</string>
+<string name="block_not">not %b</string>
+<string name="block_or" formatted="false">%b or %b</string>
+<string name="block_plus" formatted="false">%d + %d</string>
+<string name="block_random" formatted="false">%d से %d तक यादृच्छिक चुनें</string>
+<string name="block_repeat">%d बार दोहराएं</string>
+<string name="block_rest" formatted="false">%d % %d</string>
+<string name="block_set_bg_color" formatted="false">%m.view setBackgroundColor %m.color</string>
+<string name="block_set_checked" formatted="false">CheckBox %m.checkbox setChecked %b</string>
+<string name="block_set_clickable" formatted="false">%m.view setClickable %b</string>
+<string name="block_set_enable" formatted="false">%m.view setEnable %b</string>
+<string name="block_set_image" formatted="false">ImageView %m.imageview setImage %m.resource</string>
+<string name="block_set_rotate" formatted="false">ImageView %m.imageview setRotation %d</string>
+<string name="block_set_text" formatted="false">%m.textview setText %s</string>
+<string name="block_set_text_color" formatted="false">%m.textview setTextColor %m.color</string>
+<string name="block_set_var_bool" formatted="false">set %m.varBool to %b</string>
+<string name="block_set_var_int" formatted="false">set %m.varInt to %d</string>
+<string name="block_set_var_str" formatted="false">set %m.varStr to %s</string>
+<string name="block_set_visible" formatted="false">%m.view setVisible %m.visible</string>
+<string name="block_smaller" formatted="false">%d &lt; %d</string>
+<string name="block_spn_get_selection">Spinner %m.spinner getSelection</string>
+<string name="block_spn_refresh">Spinner %m.spinner refreshData</string>
+<string name="block_spn_set_data" formatted="false">Spinner %m.spinner setSpinnerData %m.listStr</string>
+<string name="block_spn_set_selection" formatted="false">Spinner %m.spinner setSelection %d</string>
+<string name="block_start_activity">StartActivity %m.intent</string>
+<string name="block_string_equals" formatted="false">%s equals %s</string>
+<string name="block_string_index" formatted="false">index %s of %s</string>
+<string name="block_string_join" formatted="false">join %s and %s</string>
+<string name="block_string_length">length of %s</string>
+<string name="block_string_sub" formatted="false">%s substring %d to %d</string>
+<string name="block_times" formatted="false">%d * %d</string>
+<string name="block_to_lower_case">toLowerCase %s</string>
+<string name="block_to_number">toNumber %s</string>
+<string name="block_to_string">toString %d</string>
+<string name="block_to_upper_case">toUpperCase %s</string>
+<string name="block_trim">trim %s</string>
+<string name="block_true">true</string>
+<string name="block_vibrator_action" formatted="false">Vibrator %m.vibrator vibrate %d milliseconds</string>
+<string name="btn_accept">सहेजें</string>
+<string name="btn_app_init">सिस्टम रीसेट करें</string>
+<string name="btn_app_upgrade">अपडेट जांचें</string>
+<string name="btn_cancel">रद्द करें</string>
+<string name="btn_change">बदलें</string>
+<string name="btn_delete">हटाएं</string>
+<string name="btn_delete_project">प्रोजेक्ट हटाएं</string>
+<string name="btn_download_apk">APK इंस्टॉल करें</string>
+<string name="btn_edit_alias">नाम बदलें</string>
+<string name="btn_edit_properties">गुण संपादित करें</string>
+<string name="btn_edit_pwd">पासवर्ड बदलें</string>
+<string name="btn_execute">चलाएं</string>
+<string name="btn_exit">बाहर निकलें</string>
+<string name="btn_find_pwd">पासवर्ड खोजें</string>
+<string name="btn_init">रीसेट करें</string>
+<string name="btn_join">रजिस्टर करें</string>
+<string name="btn_login_id">लॉग इन करें</string>
+<string name="btn_logout">लॉग आउट करें</string>
+<string name="btn_open_project">प्रोजेक्ट खोलें</string>
+<string name="btn_opt_request">वन टाइम पासवर्ड का अनुरोध करें</string>
+<string name="btn_otp_get">वन टाइम पासवर्ड का अनुरोध करें</string>
+<string name="btn_register_pwd">पासवर्ड रजिस्टर करें</string>
+<string name="btn_save_as_new_project">नए प्रोजेक्ट के रूप में सहेजें</string>
+<string name="btn_save_n_exit">सहेजें और बाहर निकलें</string>
+<string name="btn_save_setting">सहेजें</string>
+<string name="btn_service_out">खाता निष्क्रिय करें</string>
+<string name="btn_term_oss">ओपन सोर्स लाइसेंस</string>
+<string name="btn_term_view">सेवा की शर्तें</string>
+<string name="btn_update_project">प्रोजेक्ट संपादित करें</string>
+<string name="btn_ws_save_server">सर्वर में प्रोजेक्ट सहेजें</string>
+<string name="common_cancel">रद्द करें</string>
+<string name="common_close">बंद करें</string>
+<string name="common_copy">कॉपी करें</string>
+<string name="common_delete">हटाएं</string>
+<string name="common_export">निर्यात करें</string>
+<string name="common_free">निःशुल्क</string>
+<string name="common_loading">अभी लोड हो रहा है...</string>
+<string name="common_no">No</string>
+<string name="common_overwrite">ओवरराइट करें</string>
+<string name="common_save">सहेजें</string>
+<string name="common_see_all">और देखें</string>
+<string name="common_see_close">संक्षिप्त करें</string>
+<string name="common_share">साझा करें</string>
+<string name="common_start">शुरू करें</string>
+<string name="common_yes">हाँ</string>
+<string name="company_email">help@besome.co.kr</string>
+<string name="company_name">BESOME</string>
+<string name="company_tel">+82.70.8780.5456</string>
+<string name="company_url">http://www.besome.co.kr</string>
+<string name="complete_app_init">सभी डेटा इनिशियलाइज़ किया गया था</string>
+<string name="complete_copy">कॉपी पूर्ण</string>
+<string name="complete_copy_to_clipboard">क्लिपबोर्ड पर कॉपी किया गया</string>
+<string name="complete_delete_component">हटाना पूर्ण</string>
+<string name="complete_delete_moreblock">हटाना पूर्ण</string>
+<string name="complete_edit">अपडेट किया गया</string>
+<string name="complete_init_logic">रीसेट पूर्ण</string>
+<string name="complete_opt_send">वन टाइम पासवर्ड भेजा गया था</string>
+<string name="complete_purchase_ok">%s की खरीद पूरी हुई</string>
+<string name="complete_pwd_init_ok">पासवर्ड बदल दिया गया था</string>
+<string name="complete_save">सहेजना पूर्ण</string>
+<string name="complete_save_server">"वर्तमान डेटा सफलतापूर्वक अपलोड हो गया है
+यदि आप डाउनलोड करना चाहते हैं तो हमारे होमपेज पर जाएं"</string>
+<string name="complete_share">साझा करना पूर्ण</string>
+<string name="complete_share_cancel_thumbup">अनलाइक किया गया</string>
+<string name="complete_share_comment">टिप्पणी की गई</string>
+<string name="complete_share_delete_comment">टिप्पणी हटाई गई</string>
+<string name="complete_share_delete_project">प्रोजेक्ट हटाया गया</string>
+<string name="complete_share_thumbup">लाइक किया गया</string>
+<string name="complete_widget_pty_init_ok">विजेट सेटिंग्स रीसेट की गईं</string>
+<string name="confirm_app_exit">क्या आप बाहर निकलना चाहते हैं?</string>
+<string name="confirm_app_icon_default">क्या आप आइकन रीसेट करना चाहते हैं?</string>
+<string name="confirm_app_init">"सभी प्रोजेक्ट रीसेट हो जाएंगे।
+क्या आप जारी रखना चाहते हैं?"</string>
+<string name="confirm_delete">क्या आप हटाना चाहते हैं?</string>
+<string name="confirm_delete_component">क्या आप चयनित घटक को हटाना चाहते हैं?</string>
+<string name="confirm_delete_event">"चयनित ईवेंट का सभी लॉजिक डेटा खो जाएगा
+क्या आप जारी रखना चाहते हैं?"</string>
+<string name="confirm_delete_moreblock">क्या आप इस moreBlock को हटाना चाहते हैं?</string>
+<string name="confirm_err_send">"एप्लिकेशन चलाते समय एक त्रुटि हुई।
+क्या आप इस त्रुटि लॉग को भेजना चाहते हैं?"</string>
+<string name="confirm_import_hint_view">"आप सभी वर्तमान डेटा खो देंगे।
+क्या आप आयात करना चाहते हैं?"</string>
+<string name="confirm_init_logic">क्या आप इस लॉजिक को रीसेट करना चाहते हैं?</string>
+<string name="confirm_logout">क्या आप लॉग आउट करना चाहते हैं?</string>
+<string name="confirm_mysc_exit">बाहर निकलने से पहले क्या आप अपने परिवर्तन सहेजना चाहते हैं?</string>
+<string name="confirm_mysc_ws_export">क्या आप निर्यात करना चाहते हैं?</string>
+<string name="confirm_mysc_ws_save">"यदि आपके पास सहेजा गया डेटा है, तो उसे ओवरराइट कर दिया जाएगा।
+क्या आप जारी रखना चाहते हैं?"</string>
+<string name="confirm_pre_step_sc">यह प्रोजेक्ट शुरू करने से पहले अनुशंसित प्रोजेक्ट हैं</string>
+<string name="confirm_sc_app_exist">पैकेज का नाम आपके फोन में पहले से मौजूद है। हटाकर पुनः आरंभ करें।</string>
+<string name="confirm_sc_reinstall">एप्लिकेशन पहले से ही इंस्टॉल है। क्या आप पुनः इंस्टॉल करना चाहते हैं?</string>
+<string name="confirm_service_out">"सभी जानकारी खो जाएगी।
+क्या आप जारी रखना चाहते हैं?"</string>
+<string name="confirm_share_delete_comment">क्या आप निश्चित हैं?</string>
+<string name="confirm_share_delete_shared_project">"क्या आप निश्चित हैं? आप इस कार्रवाई को पूर्ववत नहीं कर सकते"</string>
+<string name="confirm_share_overwirte_project">उसी नाम का एक प्रोजेक्ट पहले से मौजूद है; ओवरराइट करें?</string>
+<string name="confirm_video_tutorial">क्या आप ट्यूटोरियल देखना चाहेंगे? (लगभग 6 मिनट)</string>
+<string name="confirm_widget_pty_all">क्या आप सभी विजेट गुणों को रीसेट करना चाहते हैं?</string>
+<string name="desc_activity_name">एक्टिविटी का नाम :</string>
+<string name="desc_apk_name_guide">यह नाम APK फ़ाइल का नाम होगा</string>
+<string name="desc_app">यह बीटा संस्करण है!!</string>
+<string name="desc_app_exit">बाहर निकलने के लिए बैक कुंजी एक बार और दबाएं</string>
+<string name="desc_arrived_notice">नई सूचना</string>
+<string name="desc_ask_show">"फिर से न दिखाएं"</string>
+<string name="desc_auto_check_notice">सर्वर से नई सूचनाओं की स्वचालित रूप से जांच करें</string>
+<string name="desc_auto_login_disable">स्वचालित लॉगिन अक्षम</string>
+<string name="desc_auto_login_enable">स्वचालित लॉगिन सक्षम</string>
+<string name="desc_bl_activity_getextra_s">"&lt;h5&gt;Intent से डेटा प्राप्त करें&lt;/h5&gt;
+*केवल Intent PutExtra ब्लॉक द्वारा सहेजा गया मान ही प्राप्त किया जा सकता है&lt;br/&gt;
+*यदि कुंजी मौजूद नहीं है तो खाली स्ट्रिंग() प्राप्त करें&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_and">&lt;H5&gt;दो शर्तों को जोड़ता है&lt;/h5&gt;</string>
+<string name="desc_bl_bool_var">&lt;h5&gt;निर्दिष्ट चर को शर्त पर सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_cal_addvalue">"&lt;h5&gt;कैलेंडर फ़ील्ड में दी गई राशि जोड़ता है&lt;/h5&gt;
+*सकारात्मक मान: समय जोड़ता है&lt;br/&gt;
+*नकारात्मक मान: समय घटाता है&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'Calendar' जोड़ना होगा"</string>
+<string name="desc_bl_cal_difference">"&lt;h5&gt;दिए गए कैलेंडर (समय) के बीच अंतर प्राप्त करें&lt;/h5&gt;
+इकाई: सेकंड&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'Calendar' जोड़ना होगा
+"</string>
+<string name="desc_bl_cal_format">"&lt;h5&gt;पैटर्न का उपयोग करके कैलेंडर को स्ट्रिंग के रूप में प्रारूपित करें&lt;/h5&gt;
+वर्ष(y) | महीना(m) | दिन(d)&lt;br/&gt;
+घंटा(h) 1~12 | घंटा(H) 0~23 | मिनट(M) | सेकंड(s)&lt;br/&gt;
+जैसे: yyyy-MM-dd hh:mm:ss ( 2106-01-01 03:01:02 )&lt;br/&gt;
+जैसे: yyyy-MM-dd HH:mm:ss ( 2106-01-01 15:01:02 )&lt;br/&gt;
+जैसे: yyyy-MM-dd ( 2106-01-01 )&lt;br/&gt;
+जैसे: hh:mm:ss ( 12:01:02 )&lt;br/&gt;
+*यदि दिया गया स्ट्रिंग प्रारूप अमान्य है तो रन-टाइम त्रुटि&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'Calendar' जोड़ना होगा
+"</string>
+<string name="desc_bl_cal_getnow">"&lt;h5&gt;वर्तमान तिथि और समय प्राप्त करें&lt;/h5&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'Calendar' जोड़ना होगा
+"</string>
+<string name="desc_bl_cal_setvalue">"&lt;h5&gt;कैलेंडर फ़ील्ड को एक विशिष्ट मान पर सेट करें&lt;/h5&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'Calendar' जोड़ना होगा
+"</string>
+<string name="desc_bl_chk_get_checked">"&lt;h5&gt;चेकबॉक्स की स्थिति प्राप्त करें&lt;/h5&gt;
+यदि चेक किया गया है तो सत्य, अन्यथा असत्य"</string>
+<string name="desc_bl_chk_set_checked">"&lt;h5&gt;चेकबॉक्स की स्थिति सेट करें&lt;/h5&gt;
+यदि सत्य पर सेट किया गया है तो चेक किया गया, अन्यथा अनचेक किया गया"</string>
+<string name="desc_bl_delete_memo">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_bl_equals">&lt;h5&gt;दो स्ट्रिंग्स के बराबर होने की जाँच के लिए शर्त&lt;/h5&gt;</string>
+<string name="desc_bl_false">&lt;h5&gt;असत्य शर्त&lt;/h5&gt;</string>
+<string name="desc_bl_file_get_data">"&lt;h5&gt;वरीयता फ़ाइल से एक मान प्राप्त करें&lt;/h5&gt;
+फ़ाइल सेट डेटा ब्लॉक द्वारा सहेजा गया मान प्राप्त किया जा सकता है&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'File(Shared Preference)' जोड़ना होगा
+"</string>
+<string name="desc_bl_file_remove_data">&lt;h5&gt;निम्नलिखित कुंजी के साथ फ़ाइल डेटा हटाएं&lt;/h5&gt;</string>
+<string name="desc_bl_file_set_data">"&lt;h5&gt;वरीयता फ़ाइल में एक मान सेट करें&lt;/h5&gt;
+*एप्लिकेशन में कई फ़ाइलें हो सकती हैं और एक फ़ाइल में कई मान हो सकते हैं&lt;br/&gt;
+*फ़ाइल में कुंजियाँ अद्वितीय होनी चाहिए। यदि एक ही कुंजी का कई बार उपयोग किया जाता है, तो केवल नवीनतम सहेजा गया मान ही सुलभ होता है &lt;br/&gt;
+*प्रारूप - कुंजी : मान&lt;br/&gt;
+जैसे) कुंजी : new_memo , मान : hello&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] से 'File(Shared Preference)' जोड़ना होगा
+"</string>
+<string name="desc_bl_finish_activity">&lt;h5&gt;वर्तमान गतिविधि समाप्त करें&lt;/h5&gt;</string>
+<string name="desc_bl_finish_memo">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_bl_forever">&lt;h5&gt;एक लूप जो कभी समाप्त नहीं होगा&lt;br/&gt;* इसका उपयोग स्टॉप ब्लॉक के साथ किया जाना चाहिए&lt;/h5&gt;</string>
+<string name="desc_bl_get_cur_time">"&lt;h5&gt;वर्तमान समय मान प्राप्त करता है
+* 1.1.1970 से मिलीसेकंड&lt;/h5&gt;"</string>
+<string name="desc_bl_get_enable">&lt;h5&gt;विजेट के लिए सक्षम स्थिति&lt;/h5&gt;</string>
+<string name="desc_bl_get_memo_title">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_bl_get_rotation">&lt;h5&gt;ImageView का रोटेशन प्राप्त करें&lt;/h5&gt;</string>
+<string name="desc_bl_get_text">&lt;h5&gt;विजेट द्वारा प्रदर्शित टेक्स्ट प्राप्त करें&lt;/h5&gt;</string>
+<string name="desc_bl_if_else">"&lt;h5&gt;शर्त की जाँच करता है - यदि शर्त सत्य है, तो पहले C के अंदर के ब्लॉक सक्रिय हो जाएंगे,
+और यदि शर्त असत्य है, तो दूसरे C के अंदर के ब्लॉक सक्रिय हो जाएंगे&lt;/h5&gt;"</string>
+<string name="desc_bl_if_then">&lt;h5&gt;शर्त की जाँच करता है - यदि शर्त सत्य है, तो उसके अंदर के ब्लॉक सक्रिय हो जाएंगे&lt;/h5&gt;</string>
+<string name="desc_bl_init_logic">&lt;h5&gt;जब एप्लिकेशन निष्पादित होता है, तो ब्लॉक सक्रिय हो जाता है&lt;/h5&gt;</string>
+<string name="desc_bl_int_decrease">&lt;h5&gt;मान को 1 से घटाएं&lt;/h5&gt;</string>
+<string name="desc_bl_int_increase">&lt;h5&gt;मान को 1 से बढ़ाएं&lt;/h5&gt;</string>
+<string name="desc_bl_int_set_to">&lt;h5&gt;निर्दिष्ट चर को संख्या पर सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_int_var">&lt;h5&gt;संख्या चर&lt;/h5&gt;</string>
+<string name="desc_bl_intent_putextra">"&lt;h5&gt;इंटेंट को डेटा बाइंड करें&lt;/h5&gt;
+&lt;p&gt;*कुंजी : मान प्रारूप के साथ गतिविधि भेजें&lt;/p&gt;&lt;br/&gt;
+*इंटेंट में कई कुंजियाँ और मान हो सकते हैं&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_intent_set_action">"&lt;h5&gt;निष्पादित की जाने वाली इंटेंट क्रिया सेट करें&lt;/h5&gt;&lt;br/&gt;
+इंटेंट: गतिविधि लोड करने के लिए एक घटक (दृश्य)&lt;br/&gt;
+-ACTION_CALL: डेटा द्वारा निर्दिष्ट किसी को कॉल करें (अनुमति: CALL_PHONE)&lt;br/&gt;
+-ACTION_DIAL: डेटा द्वारा निर्दिष्ट संख्या डायल करें (कोई अनुमति नहीं)&lt;br/&gt;
+-ACTION_VIEW: डेटा को उपयोगकर्ता को प्रदर्शित करें&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_intent_set_data">"&lt;h5&gt;वह डेटा सेट करें जिस पर यह इंटेंट संचालित हो रहा है&lt;/h5&gt;&lt;br/&gt;
+-ACTION_CALL: tel: से शुरू होना चाहिए:&lt;br/&gt;
+ (जैसे:tel:021111111)&lt;br/&gt; -ACTION_DIAL: tel: से शुरू होना चाहिए:&lt;br/&gt; (जैसे:tel:021111111)&lt;br/&gt;
+-ACTION_VIEW: http: या https: से शुरू होने वाले URL रूप का पालन करना चाहिए:&lt;br/&gt;
+ (जैसे: http://google.com)&lt;br/&gt;
+
+ *यदि आप अनुशंसा का पालन नहीं करते हैं तो रन-टाइम त्रुटि हो सकती है&lt;br/&gt;
+ *इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_intent_set_screen">"&lt;h5&gt;निष्पादित की जाने वाली गतिविधि (दृश्य) सेट करें&lt;/h5&gt;
+*इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_invalid_1">&lt;h5&gt;एक इंडेक्स या तो ऋणात्मक है या सूची के आकार से बड़ा या उसके बराबर है&lt;/h5&gt;</string>
+<string name="desc_bl_invalid_2">&lt;h5&gt;एक पूर्णांक को शून्य से विभाजित नहीं किया जा सकता है&lt;/h5&gt;</string>
+<string name="desc_bl_invalid_3">&lt;h5&gt;एक इंडेक्स या तो ऋणात्मक है या स्ट्रिंग के आकार से बड़ा है&lt;/h5&gt;</string>
+<string name="desc_bl_invalid_4">&lt;h5&gt;यह इंगित करने के लिए फेंका गया कि एप्लिकेशन ने एक स्ट्रिंग को संख्यात्मक प्रकारों में से एक में परिवर्तित करने का प्रयास किया है&lt;/h5&gt;</string>
+<string name="desc_bl_invalid_5">&lt;h5&gt;पहुँच से बाहर कथन या दोहराव ब्लॉक या अनंत ब्लॉक के बाहर स्टॉप ब्लॉक&lt;/h5&gt;</string>
+<string name="desc_bl_invalid_6">&lt;h4&gt;इंटेंट के पैरामीटर अमान्य होने पर हुआ&lt;/h4</string>
+<string name="desc_bl_join">&lt;h5&gt;एक साथ रखे गए दो मान&lt;/h5&gt;</string>
+<string name="desc_bl_list_addto">&lt;h5&gt;सूची में एक आइटम जोड़ता है (आइटम आइटम की सूची के नीचे जाता है) जिसमें निर्दिष्ट सामग्री होती है&lt;/h5&gt;</string>
+<string name="desc_bl_list_clear">&lt;h5&gt;सूची साफ़ करें&lt;/h5&gt;</string>
+<string name="desc_bl_list_contains">"&lt;h5&gt;यह जाँचने के लिए शर्त कि क्या किसी आइटम की सामग्री निर्दिष्ट टेक्स्ट है&lt;/h5&gt;"</string>
+<string name="desc_bl_list_delete_at_of">&lt;h5&gt;सूची से आइटम हटाएं&lt;/h5&gt;</string>
+<string name="desc_bl_list_get_at_of">"&lt;h5&gt;आइटम का मान प्राप्त करता है&lt;/h5&gt;"</string>
+<string name="desc_bl_list_index_in">&lt;h5&gt;आइटम का स्थिति मान&lt;/h5&gt;</string>
+<string name="desc_bl_list_insert_at_to">&lt;h5&gt;सूची में एक आइटम जोड़ता है (आइटम सूची में जहाँ आप निर्दिष्ट करते हैं वहाँ जाता है) जिसमें निर्दिष्ट सामग्री होती है। &lt;/h5&gt;</string>
+<string name="desc_bl_list_lengthof">&lt;h5&gt;निर्दिष्ट सूची में कितने आइटम हैं&lt;/h5&gt;</string>
+<string name="desc_bl_lv_getchk_count">"&lt;h5&gt;चयनित ListView आइटमों की संख्या प्राप्त करें&lt;/h5&gt;
+केवल तभी काम करता है जब ListView के लिए ChoiceMode एकल या बहु हो
+"</string>
+<string name="desc_bl_lv_getchk_pos">"&lt;h5&gt;चयनित ListView आइटम का इंडेक्स प्राप्त करें&lt;/h5&gt;
+केवल तभी काम करता है जब ListView के लिए ChoiceMode एकल या बहु हो
+"</string>
+<string name="desc_bl_lv_getchk_pos_arr">"&lt;h5&gt;चयनित ListView आइटमों के इंडेक्स का एक ऐरे प्राप्त करें&lt;/h5&gt;
+केवल तभी काम करता है जब ListView के लिए ChoiceMode एकल या बहु हो
+"</string>
+<string name="desc_bl_lv_refresh">"&lt;h5&gt;ListView को रीफ़्रेश करें&lt;/h5&gt;
+ListView डेटा को रीफ़्रेश करें
+"</string>
+<string name="desc_bl_lv_setitem_chk_pos">"&lt;h5&gt;दिए गए इंडेक्स पर एक ListView आइटम का चयन करें&lt;/h5&gt;
+केवल तभी काम करता है जब ListView के लिए ChoiceMode एकल या बहु हो&lt;br/&gt;
+ListView में आइटमों की संख्या से अधिक इंडेक्स सेट करने पर रनटाइम एरर होगा
+"</string>
+<string name="desc_bl_math_device_rest">&lt;h5&gt;विभाजन का शेषफल&lt;/h5&gt;</string>
+<string name="desc_bl_math_divide">&lt;h5&gt;विभाजन का मान&lt;/h5&gt;</string>
+<string name="desc_bl_math_great">&lt;h5&gt;यह जांचने की शर्त कि क्या कोई मान दूसरे से बड़ा है&lt;/h5&gt;</string>
+<string name="desc_bl_math_less">&lt;h5&gt;यह जांचने की शर्त कि क्या कोई मान दूसरे से छोटा है&lt;/h5&gt;</string>
+<string name="desc_bl_math_math_equals">&lt;h5&gt;यह जांचने की शर्त कि क्या दो मान बराबर हैं&lt;/h5&gt;</string>
+<string name="desc_bl_math_minus">&lt;h5&gt;घटाव का मान&lt;/h5&gt;</string>
+<string name="desc_bl_math_multi">&lt;h5&gt;गुणा का मान&lt;/h5&gt;</string>
+<string name="desc_bl_math_plus">&lt;h5&gt;जोड़ का मान&lt;/h5&gt;</string>
+<string name="desc_bl_not">&lt;h5&gt;शर्त को गलत होने पर जांचा जाता है, सही नहीं&lt;/h5&gt;</string>
+<string name="desc_bl_open_memo">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_bl_or">&lt;h5&gt;दो शर्तों को जोड़ता है, लेकिन वे अलग-अलग काम करती हैं&lt;/h5&gt;</string>
+<string name="desc_bl_pic_num">&lt;h5&gt;दो सीमाओं के बीच एक यादृच्छिक संख्या चुनता है&lt;/h5&gt;</string>
+<string name="desc_bl_read_memo">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_bl_repeat">&lt;h5&gt;निर्दिष्ट मात्रा के लिए दोहराने वाला एक लूप&lt;/h5&gt;</string>
+<string name="desc_bl_set_bg_color">&lt;h5&gt;विजेट के लिए पृष्ठभूमि का रंग सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_set_enable">&lt;h5&gt;विजेट की सक्षम स्थिति सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_set_image">&lt;h5&gt;चयनित छवि को ImageView की सामग्री के रूप में सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_set_listview_data">"&lt;h5&gt;ListView डेटा सेट करें&lt;/h5&gt;
+ListView के लिए डेटा सेट करना&lt;br/&gt;
+डेटा प्रारूप: स्ट्रिंग"</string>
+<string name="desc_bl_set_rotation">&lt;h5&gt;ImageView पर रोटेशन सेट करें&lt;/h5&gt;</string>
+<string name="desc_bl_set_spn_data">"&lt;h5&gt;Spinner डेटा सेट करें&lt;/h5&gt;&lt;br/&gt;
+Spinner डेटा सेट करें&lt;br/&gt;
+डेटा प्रारूप: स्ट्रिंग"</string>
+<string name="desc_bl_set_text">&lt;h5&gt;विजेट का टेक्स्ट सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_set_text_color">&lt;h5&gt;विजेट का टेक्स्ट रंग सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_set_visible">"&lt;h5&gt;विजेट की दृश्यता सेट करें&lt;/h5&gt;
+दृश्यता गुण&lt;br/&gt;
+- VISIBLE : यह दृश्य दिखाई दे रहा है&lt;br/&gt;
+- INVISIBLE : यह दृश्य अदृश्य है, लेकिन लेआउट उद्देश्यों के लिए यह अभी भी जगह लेता है&lt;br/&gt;
+- GONE : यह दृश्य अदृश्य है, और लेआउट उद्देश्यों के लिए यह कोई जगह नहीं लेता है"</string>
+<string name="desc_bl_show_message">&lt;h5&gt;नोटिफिकेशन पॉपअप में टेक्स्ट प्रदर्शित करता है&lt;/h5&gt;</string>
+<string name="desc_bl_spn_get_selection">"&lt;h5&gt;चयनित स्पिनर आइटम का इंडेक्स प्राप्त करें&lt;/h5&gt;&lt;br/&gt;
+इंडेक्स 0 से शुरू होता है"</string>
+<string name="desc_bl_spn_refresh">"&lt;h5&gt;Spinner को रीफ़्रेश करें&lt;/h5&gt;
+Spinner का उपयोग करके सूची आइटम को रीफ़्रेश करें
+"</string>
+<string name="desc_bl_spn_set_selection">"&lt;h5&gt;दिए गए इंडेक्स पर एक स्पिनर आइटम चुनें&lt;/h5&gt;
+स्पिनर में आइटम की संख्या से अधिक इंडेक्स सेट करने पर रनटाइम त्रुटि हो सकती है
+"</string>
+<string name="desc_bl_start_activity">"&lt;h5&gt;Intent द्वारा एक नया Activity लॉन्च करें&lt;/h5&gt;
+*यदि Intent पैरामीटर अमान्य है तो रन-टाइम त्रुटि हो सकती है&lt;br/&gt;
+*इसका उपयोग करने के लिए आपको [Component] में 'Intent' जोड़ना होगा
+"</string>
+<string name="desc_bl_stop">&lt;h5&gt;लपेटे गए लूप को रोकें&lt;/h5&gt;</string>
+<string name="desc_bl_str_indexof">&lt;h5&gt;दी गई स्ट्रिंग का पहला इंडेक्स, या -1&lt;/h5&gt;</string>
+<string name="desc_bl_str_lengthof">&lt;h5&gt;स्ट्रिंग की लंबाई&lt;/h5&gt;</string>
+<string name="desc_bl_str_set_to">&lt;h5&gt;निर्दिष्ट चर को स्ट्रिंग पर सेट करता है&lt;/h5&gt;</string>
+<string name="desc_bl_str_var">&lt;h5&gt;स्ट्रिंग चर&lt;/h5&gt;</string>
+<string name="desc_bl_substring">&lt;h5&gt;स्ट्रिंग के दिए गए उप-अनुक्रम वाली एक स्ट्रिंग&lt;/h5&gt;</string>
+<string name="desc_bl_to_number">&lt;h5&gt;संख्या में बदलें&lt;/h5&gt;</string>
+<string name="desc_bl_to_string">&lt;h5&gt;स्ट्रिंग में बदलें&lt;/h5&gt;</string>
+<string name="desc_bl_trim">&lt;h5&gt;शुरू या अंत में कोई स्पेस नहीं वाली स्ट्रिंग लौटाता है&lt;/h5&gt;</string>
+<string name="desc_bl_true">&lt;h5&gt;सत्य शर्त&lt;/h5&gt;</string>
+<string name="desc_bl_vibrator">"&lt;h5&gt;निर्धारित समय के लिए कंपन करें&lt;/h5&gt;
+- समय इकाई: मिलीसेकंड&lt;br/&gt;
+* इसका उपयोग करने के लिए आपको [Component] से 'Vibrator' जोड़ना होगा
+"</string>
+<string name="desc_bl_write_memo">&lt;h5&gt;&lt;/h5&gt;</string>
+<string name="desc_copy_block">वह ब्लॉक चुनें जिसे आप कॉपी करना चाहते हैं</string>
+<string name="desc_deprecated">*अप्रचलित</string>
+<string name="desc_expired">"सेवा समाप्त हो गई।
+%s"</string>
+<string name="desc_expired_date">भुगतान की गई सेवा: %s तक</string>
+<string name="desc_fail_find_pwd">"पासवर्ड बदलना विफल रहा
+फिर से प्रयास करें"</string>
+<string name="desc_fail_init_pwd">"पासवर्ड पंजीकरण विफल रहा
+फिर से प्रयास करें"</string>
+<string name="desc_fcm_comment_body">%s ने आपकी परियोजना पर टिप्पणी की</string>
+<string name="desc_fcm_like_body">%s को आपकी परियोजना पसंद आई</string>
+<string name="desc_free_during_beta">बीटा के दौरान उपलब्ध</string>
+<string name="desc_google_connecting">%s से जुड़ने का प्रयास करें</string>
+<string name="desc_google_login_auto_agree">(*)जब आप एसएनएस खाते से लॉग इन करते हैं, तो आप स्वचालित रूप से निम्नलिखित नियमों से सहमत होते हैं</string>
+<string name="desc_ime_option">"यह तब काम नहीं करता जब single_line 'false' हो और input_type 'text' हो"</string>
+<string name="desc_img_manage_guide">"यदि आप यहां एक छवि जोड़ते हैं
+ आप इसे आइकन या ImageView के रूप में उपयोग कर सकते हैं"</string>
+<string name="desc_initialize_complete">रीसेट पूरा हुआ</string>
+<string name="desc_initialize_current_project">क्या आप वर्तमान परियोजना को रीसेट करना चाहते हैं?</string>
+<string name="desc_input_intent_data">"कृपया इन उदाहरणों का पालन करें।
+यदि आप ऐसा नहीं करते हैं तो रनटाइम त्रुटि होगी।
+
+ACTION_CALL, ACTION_DIAL
+ tel:number (tel:12345678)
+
+ACTION_VIEW
+ url type (http://besome.co.kr)"</string>
+<string name="desc_invalid_block">अमान्य ब्लॉक के उदाहरण</string>
+<string name="desc_kakao_intro">एंड्रॉइड प्रोग्रामिंग सीखने का एक नया तरीका</string>
+<string name="desc_keep_login">मुझे याद रखें</string>
+<string name="desc_lang_set_en">भाषा को अंग्रेजी पर सेट करें</string>
+<string name="desc_main_badge_update">"लॉन्चर आइकन पर अपने अध्याय की संख्या दिखाएं"</string>
+<string name="desc_mysc_auto_delete">अध्याय निष्पादित करते समय स्वचालित रूप से हटा दिया जाएगा और स्थापित किया जाएगा</string>
+<string name="desc_mysc_auto_save">परियोजना से बाहर निकलते समय स्वचालित रूप से सहेजें</string>
+<string name="desc_need_login">इस सुविधा का उपयोग करने के लिए आपको लॉग इन होना चाहिए</string>
+<string name="desc_need_user_alias">इस सुविधा का उपयोग करने के लिए आपको एक उपयोगकर्ता नाम बनाना होगा</string>
+<string name="desc_no_share_project">प्रदर्शित करने के लिए कोई साझा परियोजनाएं नहीं</string>
+<string name="desc_only_once_edit">* यदि आप एक नाम सेट करते हैं, तो आप इसे तब तक नहीं बदल सकते जब तक आप पुनरारंभ न करें</string>
+<string name="desc_purchase">खरीदें</string>
+<string name="desc_purchase_empty">कोई खरीदी गई वस्तु नहीं</string>
+<string name="desc_push_guide">*इस सुविधा का उपयोग करने के लिए आपको स्वचालित लॉगिन सक्षम करना होगा</string>
+<string name="desc_ready_build">निर्माण के लिए तैयार हो रहा है</string>
+<string name="desc_rest_day">%d दिन</string>
+<string name="desc_sc_sort">आपकी परियोजनाएं सूची के नीचे चली जाएंगी</string>
+<string name="desc_screen_manage_guide">एक नया Activity बनाने के लिए, इसे यहां जोड़ें</string>
+<string name="desc_screen_name">दृश्य का नाम :</string>
+<string name="desc_screen_rotation">स्क्रीन ओरिएंटेशन बदलें</string>
+<string name="desc_select_google_acc">एक खाता चुनें</string>
+<string name="desc_share_apk_name">APK नाम</string>
+<string name="desc_share_app_name">ऐप का नाम</string>
+<string name="desc_share_author_alias">लेखक</string>
+<string name="desc_share_desc">विवरण</string>
+<string name="desc_share_no_comment">प्रदर्शित करने के लिए कोई टिप्पणी नहीं</string>
+<string name="desc_share_no_edit_project_file">वर्तमान में साझा की गई परियोजना</string>
+<string name="desc_share_pkg_name">पैकेज का नाम</string>
+<string name="desc_share_proj_yn">इसे सार्वजनिक करें</string>
+<string name="desc_share_project_info">परियोजना जानकारी</string>
+<string name="desc_share_reg_dt">पंजीकृत तिथि</string>
+<string name="desc_share_screen_shot">स्क्रीनशॉट</string>
+<string name="desc_share_select_my_project">मेरी परियोजनाएं चुनें</string>
+<string name="desc_share_select_shared_project">साझा परियोजना चुनें</string>
+<string name="desc_share_title">शीर्षक</string>
+<string name="desc_share_update_dt">अंतिम अद्यतन</string>
+<string name="desc_show_more">और देखें</string>
+<string name="desc_sketchware_examples">स्केचवेयर उदाहरण</string>
+<string name="desc_src_text_size">फ़ॉन्ट आकार बदलें</string>
+<string name="desc_status_logined">आप लॉग इन हैं</string>
+<string name="desc_sys_vibration">विजेट या ब्लॉक को देर तक दबाने पर कंपन करें</string>
+<string name="desc_term_aggree">निम्नलिखित शर्तों से सहमत हों</string>
+<string name="desc_term_agree">सेवा की शर्तें समझौता</string>
+<string name="desc_unlimited_expired_date">भुगतान की गई सेवा : असीमित</string>
+<string name="desc_unlimited_rest_day">असीमित</string>
+<string name="desc_until_expire">समाप्ति तिथि तक</string>
+<string name="desc_user_alias">अपना नाम या उपनाम दर्ज करें</string>
+<string name="desc_user_alias_guide">*यह नाम सार्वजनिक रूप से दिखाया जाएगा</string>
+<string name="editarea">"लेआउट, विजेट इस क्षेत्र पर छोड़ें"</string>
+<string name="err_app_init_fail">आरंभ करने में विफल</string>
+<string name="err_auto_login_fail">स्वचालित लॉगिन विफल</string>
+<string name="err_break_outside">ब्रेक ब्लॉक का उपयोग केवल रिपीट या फॉरएवर ब्लॉक के अंदर ही किया जा सकता है</string>
+<string name="err_cannot_use_name">उपयोगकर्ता नाम अनुपलब्ध</string>
+<string name="err_choose_file">संगीत फ़ाइल चुनें</string>
+<string name="err_connect_to_server">सर्वर से कनेक्ट करने में विफल</string>
+<string name="err_currently_used_list">"चयनित सूची वर्तमान में उपयोग में है
+कृपया इस सूची वाले ब्लॉक को हटाने के बाद पुनः प्रयास करें"</string>
+<string name="err_currently_used_moreblock">"चयनित ब्लॉक वर्तमान में उपयोग में है
+कृपया ब्लॉक(ओं) को हटाने के बाद पुनः प्रयास करें"</string>
+<string name="err_currently_used_variable">"चयनित चर वर्तमान में उपयोग में है
+कृपया इस चर वाले ब्लॉक को हटाने के बाद पुनः प्रयास करें"</string>
+<string name="err_failure_loading_data">डेटा लोड करने में विफल</string>
+<string name="err_failure_save_picture">"सहेजने में विफल!
+अपनी डिस्क स्थान जांचें"</string>
+<string name="err_incorrect_pwd">गलत पासवर्ड</string>
+<string name="err_invalid_mail_format">अमान्य ईमेल पता</string>
+<string name="err_join_exist">पहले से पंजीकृत</string>
+<string name="err_join_fail">पंजीकरण विफल</string>
+<string name="err_login_fail">लॉगिन विफल</string>
+<string name="err_mysc_empty">कृपया पहले एक प्रोजेक्ट चुनें</string>
+<string name="err_no_event_add">"इवेंट्स के लिए कोई विजेट उपलब्ध नहीं हैं।
+VIEW टैब में एक विजेट जोड़ें"</string>
+<string name="err_no_exist_apk">"APK फ़ाइल नहीं बनाई गई थी।
+प्रोजेक्ट चलाने के बाद पुनः प्रयास करें"</string>
+<string name="err_no_save_file">सहेजने के लिए फ़ाइलें मौजूद नहीं हैं</string>
+<string name="err_no_user">उपयोगकर्ता नहीं मिला</string>
+<string name="err_noname_yet">कोई उपनाम नहीं बनाया गया</string>
+<string name="err_not_available_network">अपनी नेटवर्क स्थिति जांचें</string>
+<string name="err_occured">एक त्रुटि हुई!</string>
+<string name="err_opt_length">वन टाइम पासवर्ड %d अंकों का है</string>
+<string name="err_pkg_name_contain_dot">पैकेज नाम में कम से कम एक या अधिक डॉट (.) वर्ण होने चाहिए</string>
+<string name="err_pkg_name_invalid">अमान्य पैकेज नाम</string>
+<string name="err_project_name_invalid">अमान्य प्रोजेक्ट नाम</string>
+<string name="err_purchase_cancel">खरीदारी रद्द की गई</string>
+<string name="err_purchase_fail">खरीदारी विफल</string>
+<string name="err_pwd_init_fail">पासवर्ड रीसेट करने में विफल</string>
+<string name="err_save_fail">सहेजने में विफल</string>
+<string name="err_save_fail_server">सर्वर में सहेजने में विफल</string>
+<string name="err_save_file_not_exist">सहेजने के लिए फ़ाइलें मौजूद नहीं हैं</string>
+<string name="err_sc_start_fail">प्रोजेक्ट शुरू करने में विफल</string>
+<string name="err_sc_view_init_fail">स्क्रीन संपादन आरंभ करने में विफल</string>
+<string name="err_sc_view_save_fail">स्क्रीन सहेजना आरंभ करने में विफल</string>
+<string name="err_send_fail_otp">वन टाइम पासवर्ड भेजने में विफल</string>
+<string name="err_share_add_screenshot">स्क्रीनशॉट जोड़ें</string>
+<string name="err_share_already_delete_comment">यह टिप्पणी पहले ही हटा दी गई थी</string>
+<string name="err_share_alreay_thumbup">आपने इस प्रोजेक्ट को पहले ही लाइक कर लिया है</string>
+<string name="err_share_delete_comment">"टिप्पणी हटाने में विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_delete_project">"प्रोजेक्ट हटाने में विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_download_project">"डाउनलोड विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_fail_cancel_thumbup">"अनलाइक विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_fail_comment">"टिप्पणी करने में विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_fail_load_comment">"टिप्पणियाँ लोड करने में विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_fail_thumbup">"लाइक विफल
+कृपया बाद में पुनः प्रयास करें"</string>
+<string name="err_share_no_thumbup">लाइक पंजीकृत नहीं हुआ</string>
+<string name="err_start_number">चर का नाम अक्षर से शुरू होना चाहिए</string>
+<string name="err_unknown_occured">अज्ञात त्रुटि! कृपया व्यवस्थापक से संपर्क करें</string>
+<string name="err_unreachable">फॉरएवर ब्लॉक में स्टॉप ब्लॉक मौजूद नहीं है</string>
+<string name="err_use_rev_name">"आरक्षित कीवर्ड का उपयोग नहीं कर सकते"</string>
+<string name="err_valid_already_used">वर्तमान नाम अनुपलब्ध है</string>
+<string name="err_valid_app_name">"विशेष अक्षर (&amp;, &lt;, &gt;, \", ') की अनुमति नहीं है"</string>
+<string name="err_valid_max_len">आप अधिकतम %d अक्षर उपयोग कर सकते हैं</string>
+<string name="err_valid_min_len">कम से कम %d अक्षर उपयोग करें</string>
+<string name="err_valid_only_eng_1">केवल अक्षर (a-z), संख्याएँ और विशेष वर्ण (.), (@) का उपयोग करें</string>
+<string name="err_valid_only_eng_2">केवल अक्षर (a-z), संख्याएँ और विशेष वर्ण (.) का उपयोग करें</string>
+<string name="err_valid_only_eng_3">केवल अक्षर (a-z), संख्याएँ और विशेष वर्ण (_) का उपयोग करें</string>
+<string name="err_valid_screen_name">केवल छोटे अक्षर (a-z), संख्याएँ और विशेष वर्ण (_) का उपयोग करें</string>
+<string name="err_widget_pty_init_fail">विजेट आरंभ करने में विफल</string>
+<string name="err_wrong_access">अनधिकृत पहुंच</string>
+<string name="err_ws_name_min_length">प्रोजेक्ट नाम कम से कम %d वर्णों का होना चाहिए</string>
+<string name="facebook_app_id">1486507718310013</string>
+<string name="facebook_url">https://m.facebook.com/sketchware</string>
+<string name="googleplus_url">https://plus.google.com</string>
+<string name="hint_current_pwd">वर्तमान पासवर्ड दर्ज करें</string>
+<string name="hint_enter_app_name">एप्लिकेशन का नाम दर्ज करें</string>
+<string name="hint_enter_comment">अपनी टिप्पणी दर्ज करें</string>
+<string name="hint_enter_filename">फ़ाइल का नाम दर्ज करें</string>
+<string name="hint_enter_icon_name">आइकन का नाम दर्ज करें</string>
+<string name="hint_enter_image_name">छवि का नाम दर्ज करें</string>
+<string name="hint_enter_pkg_name">पैकेज का नाम दर्ज करें</string>
+<string name="hint_enter_screen_name">व्यू का नाम दर्ज करें</string>
+<string name="hint_enter_user_alias">अपना नाम या उपनाम दर्ज करें</string>
+<string name="hint_enter_value">मान दर्ज करें</string>
+<string name="hint_enter_var_name">चर का नाम दर्ज करें (केस-संवेदनशील)</string>
+<string name="hint_enter_ws_name">प्रोजेक्ट का नाम दर्ज करें</string>
+<string name="hint_init_pwd">अपना पासवर्ड दर्ज करें</string>
+<string name="hint_login_id">अपना आईडी दर्ज करें</string>
+<string name="hint_login_pwd">अपना पासवर्ड दर्ज करें</string>
+<string name="hint_new_pwd">नया पासवर्ड दर्ज करें</string>
+<string name="hint_onemore_pwd">एक बार फिर पासवर्ड दर्ज करें</string>
+<string name="hint_opt_received">आपको प्राप्त वन टाइम पासवर्ड नंबर दर्ज करें</string>
+<string name="hint_otp_receive_mail">वन टाइम पासवर्ड प्राप्त करने के लिए ईमेल पता</string>
+<string name="hint_select_image">"इस क्षेत्र को स्पर्श करें
+और वह छवि चुनें जिसे आप जोड़ना चाहते हैं"</string>
+<string name="hint_share_desc">कुछ वाक्यों में अपने एप्लिकेशन के बारे में बताएं</string>
+<string name="hint_share_title">यह पोस्ट के लिए शीर्षक होगा</string>
+<string name="img_divider">विभाजक</string>
+<string name="layouts">लेआउट</string>
+<string name="logic_btn_add_list">सूची जोड़ें</string>
+<string name="logic_btn_add_variable">चर जोड़ें</string>
+<string name="logic_btn_make_block">ब्लॉक बनाएं</string>
+<string name="logic_btn_remove_list">सूची हटाएं</string>
+<string name="logic_btn_remove_variable">चर हटाएं</string>
+<string name="logic_category_controls">नियंत्रण</string>
+<string name="logic_category_functions">फ़ंक्शन</string>
+<string name="logic_category_lists">सूचियाँ</string>
+<string name="logic_category_more_blocks">अधिक ब्लॉक</string>
+<string name="logic_category_operators">ऑपरेटर</string>
+<string name="logic_category_variables">चर</string>
+<string name="logic_event_definefunc">defineFunction</string>
+<string name="logic_event_initialize">initializeLogic</string>
+<string name="logic_event_oncheckchanged">onCheckChanged</string>
+<string name="logic_event_onclick">onClick</string>
+<string name="logic_event_onitemclicked">onItemClicked</string>
+<string name="logic_event_onitemselected">onItemSelected</string>
+<string name="logic_event_ontextchanged">onTextChanged</string>
+<string name="logic_popup_btn_boolean">बूलियन जोड़ें</string>
+<string name="logic_popup_btn_label">लेबल जोड़ें</string>
+<string name="logic_popup_btn_number">संख्या जोड़ें</string>
+<string name="logic_popup_btn_string">स्ट्रिंग जोड़ें</string>
+<string name="logic_popup_desc_list_name">सूची का नाम</string>
+<string name="logic_popup_desc_list_type">सूची का प्रकार</string>
+<string name="logic_popup_desc_variable_name">चर का नाम</string>
+<string name="logic_popup_desc_variable_type">चर का प्रकार</string>
+<string name="logic_popup_hint_block_name">नया ब्लॉक नाम दर्ज करें</string>
+<string name="logic_popup_hint_boolean">बूलियन नाम दर्ज करें</string>
+<string name="logic_popup_hint_label">लेबल टेक्स्ट दर्ज करें</string>
+<string name="logic_popup_hint_number">संख्या का नाम दर्ज करें</string>
+<string name="logic_popup_hint_string">स्ट्रिंग का नाम दर्ज करें</string>
+<string name="logic_popup_title_add_list">नई सूची जोड़ें</string>
+<string name="logic_popup_title_add_variable">नया चर जोड़ें</string>
+<string name="logic_popup_title_make_block">नया ब्लॉक बनाएं</string>
+<string name="logic_popup_title_remove_list">सूची हटाएं</string>
+<string name="logic_popup_title_remove_variable">चर हटाएं</string>
+<string name="menu_account">खाता सेटिंग्स</string>
+<string name="menu_export_ws">निर्यात (ई-मेल, आदि)</string>
+<string name="menu_import_hint_all">संकेत से आयात करें</string>
+<string name="menu_import_hint_view">संकेत से दृश्य आयात करें</string>
+<string name="menu_kakao">KAKAO TALK</string>
+<string name="menu_main_feature">मुख्य विशेषता</string>
+<string name="menu_order_list">खरीदारी सूची</string>
+<string name="menu_program_info">कार्यक्रम की जानकारी</string>
+<string name="menu_save_ws">वेबसाइट पर निर्यात करें</string>
+<string name="menu_sc_widget_help">विजेट सहायक</string>
+<string name="menu_setting">सेटिंग्स</string>
+<string name="menu_show_hint">संकेत</string>
+<string name="menu_show_source">स्रोत कोड दिखाएं</string>
+<string name="menu_study_setting">परियोजना विवरण</string>
+<string name="menu_system_info">सिस्टम जानकारी</string>
+<string name="menu_system_setting">सिस्टम सेटिंग्स</string>
+<string name="menu_tutorials">ट्यूटोरियल</string>
+<string name="properties">गुण</string>
+<string name="property_alpha">अल्फा</string>
+<string name="property_background_color">पृष्ठभूमि_रंग</string>
+<string name="property_checked">जांच की गई</string>
+<string name="property_choice_mode">चयन मोड</string>
+<string name="property_clickable">क्लिक करने योग्य</string>
+<string name="property_divider_height">विभाजक ऊंचाई</string>
+<string name="property_enabled">सक्षम</string>
+<string name="property_gravity">गुरुत्वाकर्षण</string>
+<string name="property_header_image">छवि गुण</string>
+<string name="property_header_layout">लेआउट गुण</string>
+<string name="property_header_text">पाठ गुण</string>
+<string name="property_header_view">दृश्य गुण</string>
+<string name="property_hint">संकेत</string>
+<string name="property_hint_color">संकेत_रंग</string>
+<string name="property_id">आईडी</string>
+<string name="property_image">छवि</string>
+<string name="property_ime_option">ime_विकल्प</string>
+<string name="property_input_type">इनपुट_प्रकार</string>
+<string name="property_layout_gravity">लेआउट_गुरुत्वाकर्षण</string>
+<string name="property_layout_height">लेआउट_ऊंचाई</string>
+<string name="property_layout_width">लेआउट_चौड़ाई</string>
+<string name="property_margin">मार्जिन</string>
+<string name="property_orientation">अभिविन्यास</string>
+<string name="property_padding">पैडिंग</string>
+<string name="property_resource">संसाधन</string>
+<string name="property_rotate">घुमाएं</string>
+<string name="property_scale_type">स्केल_प्रकार</string>
+<string name="property_single_line">एकल_पंक्ति</string>
+<string name="property_spinner_mode">स्पिनर मोड</string>
+<string name="property_text">पाठ</string>
+<string name="property_text_color">पाठ_रंग</string>
+<string name="property_text_size">पाठ_आकार</string>
+<string name="property_text_style">पाठ_शैली</string>
+<string name="property_weight">भार</string>
+<string name="property_weight_sum">भार योग</string>
+<string name="root_spec_define">परिभाषित करें</string>
+<string name="root_spec_initialize">जब initializeLogic</string>
+<string name="root_spec_oncheckchanged">जांच की गई %b.isChecked</string>
+<string name="root_spec_onclicked">क्लिक किया गया</string>
+<string name="root_spec_onitemclicked">आइटमक्लिकेड %d.स्थिति</string>
+<string name="root_spec_onitemselected">आइटमचयनित %d.स्थिति</string>
+<string name="root_spec_ontextchanged">पाठपरिवर्तित %s.पाठ</string>
+<string name="root_spec_when">जब</string>
+<string name="sc_desc_101">एक ऐसा एप्लिकेशन बनाएं जो इनपुट स्ट्रिंग आउटपुट करे</string>
+<string name="sc_desc_102">एक रॉक.पेपर.सिज़र गेम बनाएं</string>
+<string name="sc_desc_103">एक बेसबॉल - बुल्स एंड काउज़ गेम बनाएं</string>
+<string name="sc_desc_104">एक साधारण कैलकुलेटर बनाएं</string>
+<string name="sc_desc_105">एक मेमो एप्लिकेशन बनाएं</string>
+<string name="sc_desc_106">आप एक स्रोत कोड बना सकते हैं जिसे विशिष्ट URL से जोड़ा जाएगा</string>
+<string name="sc_desc_107">एक क्लिकिंग स्पीड टेस्ट एप्लिकेशन बनाएं</string>
+<string name="sc_desc_108">एक मैच पेयर्स मेमोरी गेम बनाएं</string>
+<string name="sc_desc_109">एक ऐसा एप्लिकेशन बनाएं जो वर्तमान समय प्राप्त करे</string>
+<string name="sc_desc_110">एक फोन कॉल एप्लिकेशन बनाएं</string>
+<string name="sc_desc_111">एक वेब ब्राउज़र एप्लिकेशन बनाएं</string>
+<string name="sc_desc_112">एक अनुमान लगाने वाला गेम बनाएं</string>
+<string name="sc_desc_113">एक साधारण पासा एप्लिकेशन बनाएं</string>
+<string name="sc_desc_114">एक लोट्टो सिम्युलेटर बनाएं</string>
+<string name="sc_feature_101">"एक विजेट का उपयोग करें जो उपयोगकर्ता इनपुट लेता है
+एक बटन में एक फ़ंक्शन जोड़ें
+एक संदेश बॉक्स (टोस्ट) दिखाएं"</string>
+<string name="sc_feature_102">"रॉक, पेपर, या सिज़र चुनें
+ए.आई. भी रॉक, पेपर, या सिज़र चुनता है
+तुलना करें और तय करें कि कौन जीता"</string>
+<string name="sc_feature_103">"एक यादृच्छिक 3-अंकीय संख्या चुनें
+अंक सभी अलग होने चाहिए
+आप एक बार में एक अंक हटा सकते हैं
+स्ट्राइक (बुल्स) या बॉल (काउज़) तय करें
+    * स्ट्राइक (बुल्स) यदि आपने सही स्थिति में सही अंक का अनुमान लगाया है
+    * बॉल (काउज़) यदि आपने अलग-अलग स्थितियों में अनुमान लगाया है
+    * उदाहरण: यादृच्छिक संख्या - 123, आपका अनुमान: 132
+    * आउटपुट: 1 स्ट्राइक, 2 बॉल
+अपने प्रयासों को रिकॉर्ड करें
+सही संख्या का अनुमान लगाने तक जारी रखें"</string>
+<string name="sc_feature_104">"अंकगणितीय संचालन (+, -, x, /)
+शून्य से विभाजन की अनुमति न दें
+"</string>
+<string name="sc_feature_105">"शीर्षक और संदेश सहेजें
+मेमो की सहेजी गई सूची दिखाएं
+सहेजे गए मेमो को संपादित करें
+सहेजे गए मेमो को हटाएं
+मेमो संपादक के लिए एक नई गतिविधि शुरू करें
+"</string>
+<string name="sc_feature_106">"विशिष्ट URL सेट करें
+स्लाइड मेनू लागू करें
+आप कॉलिंग फ़ंक्शन का उपयोग कर सकते हैं
+शीर्ष पर वापस जाने के लिए लागू करें"</string>
+<string name="sc_feature_107">"यादृच्छिक संख्याएँ रखें
+क्लिकिंग अनुक्रम की जाँच करें
+क्लिक की गई संख्याओं को अक्षम करें
+लिया गया समय दिखाएं"</string>
+<string name="sc_feature_108">"चित्रों को यादृच्छिक स्थितियों में रखें
+शुरुआत में छिपी हुई छवियां प्रदर्शित करें
+यदि दो चयनित चित्र समान हैं, तो उन्हें प्रदर्शित करें; अन्यथा, उन्हें छिपाएं
+जब सभी चित्र प्रदर्शित हो जाएं तो रोकें
+"</string>
+<string name="sc_feature_109">"एक कैलेंडर घटक जोड़ें
+दिनांक प्रारूप सेट करें
+"</string>
+<string name="sc_feature_110">"कॉलिंग फ़ंक्शन लागू करें
+केवल पूर्णांकों की अनुमति दें
+"</string>
+<string name="sc_feature_111">"एक इनपुट URL स्ट्रिंग लें
+इंटेंट का उपयोग करके ब्राउज़र खोलें
+"</string>
+<string name="sc_feature_112">"0 से 9 के बीच एक यादृच्छिक संख्या उत्पन्न करें
+इनपुट संख्या की यादृच्छिक संख्या से तुलना करें
+सूचित करें कि इनपुट संख्या यादृच्छिक संख्या से बड़ी या छोटी है
+"</string>
+<string name="sc_feature_113">"1 और 6 के बीच एक यादृच्छिक संख्या उत्पन्न करें
+"</string>
+<string name="sc_feature_114">"एक बटन क्लिक करने पर हर बार 1 से 45 के बीच एक यादृच्छिक संख्या उत्पन्न करें
+डुप्लिकेट संख्याओं की अनुमति नहीं है
+"</string>
+<string name="sc_name_101">संदेश बॉक्स</string>
+<string name="sc_name_102">रॉक.पेपर.सिज़र</string>
+<string name="sc_name_103">बेस बॉल - बुल्स एंड काउज़</string>
+<string name="sc_name_104">कैलकुलेटर</string>
+<string name="sc_name_105">मेमो</string>
+<string name="sc_name_106">हाइब्रिड वेब</string>
+<string name="sc_name_107">क्लिकिंग स्पीड टेस्ट</string>
+<string name="sc_name_108">जोड़ी मिलाएँ</string>
+<string name="sc_name_109">समय प्राप्त करें</string>
+<string name="sc_name_110">पारिवारिक कॉल</string>
+<string name="sc_name_111">वेब ब्राउज़र</string>
+<string name="sc_name_112">मैं कौन हूँ?</string>
+<string name="sc_name_113">पासा</string>
+<string name="sc_name_114">लॉटरी</string>
+<string name="sc_tag_101">\# विजेट | इवेंट</string>
+<string name="sc_tag_102">\# तुलना | रैंडम</string>
+<string name="sc_tag_103">\# कैरेक्टर | डुप्लिकेट</string>
+<string name="sc_tag_104">\# अंकगणितीय ऑपरेशन | डेटा प्रकार</string>
+<string name="sc_tag_105">\# फ़ाइल | गतिविधि</string>
+<string name="sc_tag_106">\# विजेट | वेब</string>
+<string name="sc_tag_107">\# रैंडम | डुप्लिकेट | अनुक्रम</string>
+<string name="sc_tag_108">\# रैंडम | डुप्लिकेट | इमेज</string>
+<string name="sc_tag_109">\# विजेट | समय</string>
+<string name="sc_tag_110">\# इंटेंट | कॉलिंग</string>
+<string name="sc_tag_111">\# इंटेंट | यूआरएल</string>
+<string name="sc_tag_112">\# रैंडम | तुलना</string>
+<string name="sc_tag_113">\# रैंडम | इमेज</string>
+<string name="sc_tag_114">\# रैंडम | डुप्लिकेट</string>
+<string name="title_account_manage">खाता सेटिंग्स</string>
+<string name="title_add_component">नया कंपोनेंट जोड़ें</string>
+<string name="title_add_event">नया इवेंट जोड़ें</string>
+<string name="title_add_image">इमेज जोड़ें</string>
+<string name="title_add_review">समीक्षा लिखें</string>
+<string name="title_add_screen">व्यू जोड़ें</string>
+<string name="title_android_ver">एंड्रॉइड संस्करण</string>
+<string name="title_apk_send_email">इंस्टॉल फ़ाइल (APK) भेजें</string>
+<string name="title_apk_send_email_subject">इंस्टॉलेशन के लिए %s APK फ़ाइल</string>
+<string name="title_apk_send_email_text">संलग्न फ़ाइल : %s</string>
+<string name="title_app_exit">इस एप्लिकेशन से बाहर निकलें</string>
+<string name="title_app_icon_default">आइकन रीसेट करें</string>
+<string name="title_app_init">रीसेट करें</string>
+<string name="title_app_init_all">सभी सेटिंग्स और डेटा रीसेट करें</string>
+<string name="title_app_init_only_config">सभी सेटिंग्स रीसेट करें</string>
+<string name="title_app_name">ऐप का नाम</string>
+<string name="title_besome_blog">ब्लॉग</string>
+<string name="title_bl_activity">गतिविधि</string>
+<string name="title_bl_arith">अंकगणित</string>
+<string name="title_bl_bool">बूलियन</string>
+<string name="title_bl_cate_all">सभी</string>
+<string name="title_bl_cate_control">नियंत्रण</string>
+<string name="title_bl_cate_function">फ़ंक्शन</string>
+<string name="title_bl_cate_list">सूची</string>
+<string name="title_bl_cate_moreblock">अधिक ब्लॉक</string>
+<string name="title_bl_cate_operator">ऑपरेटर</string>
+<string name="title_bl_cate_var">वेरिएबल</string>
+<string name="title_bl_check">जांचें</string>
+<string name="title_bl_color">रंग</string>
+<string name="title_bl_compare">तुलना करें</string>
+<string name="title_bl_condition">शर्त की जांच</string>
+<string name="title_bl_cut">काटें</string>
+<string name="title_bl_data_exchange">डेटा का आदान-प्रदान</string>
+<string name="title_bl_delete">हटाएं</string>
+<string name="title_bl_escape">एस्केप</string>
+<string name="title_bl_index">सूचकांक</string>
+<string name="title_bl_init">शुरू करें</string>
+<string name="title_bl_join">जोड़ें</string>
+<string name="title_bl_length">लंबाई</string>
+<string name="title_bl_loop">लूप</string>
+<string name="title_bl_property">गुण</string>
+<string name="title_bl_provide">प्रदान किया गया</string>
+<string name="title_bl_random">रैंडम</string>
+<string name="title_bl_rotate">रोटेशन</string>
+<string name="title_bl_set_read">सेटिंग पढ़ें</string>
+<string name="title_bl_set_write">सेटिंग लिखें</string>
+<string name="title_bl_storage">स्टोरेज</string>
+<string name="title_bl_time">समय</string>
+<string name="title_bl_type_cast">टाइप कास्ट</string>
+<string name="title_bl_update">अपडेट करें</string>
+<string name="title_bl_var">वेरिएबल</string>
+<string name="title_block_copy">ब्लॉक कॉपी करें</string>
+<string name="title_block_err">ब्लॉक त्रुटि</string>
+<string name="title_block_helper">ब्लॉक सहायक</string>
+<string name="title_block_paste">कॉपी किए गए ब्लॉक पेस्ट करें</string>
+<string name="title_block_search_option">खोज विकल्प</string>
+<string name="title_cancel">रद्द करें</string>
+<string name="title_choose_email">ईमेल चुनें</string>
+<string name="title_community">सोशल नेटवर्क</string>
+<string name="title_company_addr">पता</string>
+<string name="title_company_email">ई-मेल</string>
+<string name="title_company_intro">कंपनी का विवरण</string>
+<string name="title_company_name">कंपनी का नाम</string>
+<string name="title_company_tel">टेलीफोन</string>
+<string name="title_company_url">वेबसाइट</string>
+<string name="title_component_menu">कंपोनेंट मेनू</string>
+<string name="title_component_name">कंपोनेंट का नाम</string>
+<string name="title_component_type">कंपोनेंट का प्रकार</string>
+<string name="title_components">कंपोनेंट्स</string>
+<string name="title_custom_mode">नई परियोजना</string>
+<string name="title_delete_component">कंपोनेंट हटाएं</string>
+<string name="title_delete_event">इवेंट हटाएं</string>
+<string name="title_delete_moreblock">अधिक ब्लॉक हटाएं</string>
+<string name="title_dev_options">डेवलपर विकल्प</string>
+<string name="title_edit_profile">प्रोफ़ाइल संपादित करें</string>
+<string name="title_events">इवेंट्स</string>
+<string name="title_execute_view">परिणाम</string>
+<string name="title_expired">भुगतान सेवा समाप्त हो गई</string>
+<string name="title_facebook_community">फेसबुक</string>
+<string name="title_favorite_share_project">लोकप्रिय परियोजनाएं</string>
+<string name="title_fcm_title_comment">टिप्पणी</string>
+<string name="title_fcm_title_like">लाइक</string>
+<string name="title_file_name">फ़ाइल का नाम</string>
+<string name="title_fullscreen">फुलस्क्रीन मोड</string>
+<string name="title_google_community">गूगल प्लस</string>
+<string name="title_import_hint_view">संकेत से आयात करें</string>
+<string name="title_import_icon">आइकन आयात करें</string>
+<string name="title_init_logic">लॉजिक इनिशियलाइज़ करें</string>
+<string name="title_initialize_current_project">वर्तमान प्रोजेक्ट रीसेट करें</string>
+<string name="title_logic_anwser">संकेत</string>
+<string name="title_logic_menu">लॉजिक मेनू</string>
+<string name="title_made_tech">कार्यान्वयन सुविधाएँ</string>
+<string name="title_main_badge_update">वर्तमान प्रोजेक्ट की संख्या दिखाएं</string>
+<string name="title_manage_image">इमेज मैनेजर</string>
+<string name="title_manage_screen">व्यू मैनेजर</string>
+<string name="title_member_join">रजिस्टर करें</string>
+<string name="title_model_name">मॉडल का नाम</string>
+<string name="title_my_page">मेरा पेज</string>
+<string name="title_my_share_project">मेरी साझा परियोजनाएं</string>
+<string name="title_mysc_auto_delete">स्वचालित रूप से हटाएं और निष्पादित करें</string>
+<string name="title_mysc_auto_save">स्वचालित रूप से सहेजें</string>
+<string name="title_mysc_block">इस प्रोजेक्ट में उपयोगी ब्लॉक</string>
+<string name="title_mysc_delete">प्रोजेक्ट हटाएं</string>
+<string name="title_mysc_exit">इस प्रोजेक्ट से बाहर निकलें</string>
+<string name="title_mysc_lang_set">भाषा सेटिंग्स</string>
+<string name="title_mysc_menu">प्रोजेक्ट विकल्प</string>
+<string name="title_notice_list">सूचनाएं</string>
+<string name="title_notice_options">नोटिस जांच की सेटिंग</string>
+<string name="title_order_name">आइटम का नाम</string>
+<string name="title_order_no">ऑर्डर नंबर</string>
+<string name="title_order_time">ऑर्डर का समय</string>
+<string name="title_package_name">पैकेज</string>
+<string name="title_popup_input_data_value">डेटा मान दर्ज करें</string>
+<string name="title_popup_input_int_value">पूर्णांक मान दर्ज करें</string>
+<string name="title_popup_input_str_value">स्ट्रिंग मान दर्ज करें</string>
+<string name="title_popup_select_activity">गतिविधि चुनें</string>
+<string name="title_popup_select_bool_list">बूलियन सूची चुनें</string>
+<string name="title_popup_select_bool_var">बूलियन वेरिएबल चुनें</string>
+<string name="title_popup_select_calendar_component">कैलेंडर कंपोनेंट चुनें</string>
+<string name="title_popup_select_calendar_field">कैलेंडर फ़ील्ड चुनें</string>
+<string name="title_popup_select_checkbox">चेकबॉक्स चुनें</string>
+<string name="title_popup_select_file_component">फ़ाइल कंपोनेंट चुनें</string>
+<string name="title_popup_select_image">इमेज चुनें</string>
+<string name="title_popup_select_imageview">ImageView चुनें</string>
+<string name="title_popup_select_int_list">पूर्णांक सूची चुनें</string>
+<string name="title_popup_select_int_var">पूर्णांक वेरिएबल चुनें</string>
+<string name="title_popup_select_intent_action">इंटेंट एक्शन चुनें</string>
+<string name="title_popup_select_intent_component">इंटेंट कंपोनेंट चुनें</string>
+<string name="title_popup_select_list">सूची चुनें</string>
+<string name="title_popup_select_listview">ListView चुनें</string>
+<string name="title_popup_select_spinner">स्पिनर चुनें</string>
+<string name="title_popup_select_str_list">स्ट्रिंग सूची चुनें</string>
+<string name="title_popup_select_str_var">स्ट्रिंग वेरिएबल चुनें</string>
+<string name="title_popup_select_textview">TextView चुनें</string>
+<string name="title_popup_select_vibrator_component">वाइब्रेटर कंपोनेंट चुनें</string>
+<string name="title_popup_select_view">विजेट चुनें</string>
+<string name="title_popup_select_visibility">दृश्यता चुनें</string>
+<string name="title_purchase">खरीदें</string>
+<string name="title_purchase_complete">खरीदा हुआ:</string>
+<string name="title_push_enable">पुश नोटिफिकेशन का उपयोग करें</string>
+<string name="title_push_sound">अलर्ट सक्षम करें</string>
+<string name="title_pwd_init">पासवर्ड रीसेट करें</string>
+<string name="title_recent_share_project">नई परियोजनाएँ</string>
+<string name="title_sample_download">डाउनलोड करें</string>
+<string name="title_sc_app_delete">एप्लिकेशन हटाएं</string>
+<string name="title_sc_before_start">अनुशंसित पूर्व-आवश्यकता</string>
+<string name="title_sc_desc">परियोजना विवरण</string>
+<string name="title_sc_export">ई-मेल पर निर्यात करें</string>
+<string name="title_sc_level">स्तर</string>
+<string name="title_sc_major">विवरण</string>
+<string name="title_sc_name">परियोजना का नाम</string>
+<string name="title_sc_pre_like">अनुशंसित पूर्व-आवश्यकता</string>
+<string name="title_sc_price">मूल्य</string>
+<string name="title_sc_reinstall">ऐप पुनः स्थापित करें</string>
+<string name="title_sc_send_email_subject">%s भेजें</string>
+<string name="title_sc_send_email_text">संलग्न फ़ाइल : %s</string>
+<string name="title_sc_sort">सूची छाँटें</string>
+<string name="title_sc_upload">www.besome.co.kr पर निर्यात करें</string>
+<string name="title_select_order_type">खरीद विकल्प</string>
+<string name="title_service_out">खाता निष्क्रिय करें</string>
+<string name="title_service_range">सेवा अवधि</string>
+<string name="title_setting_project">परियोजना सेटिंग्स</string>
+<string name="title_share_delete_comment">टिप्पणी हटाएं</string>
+<string name="title_share_delete_shared_project">साझा परियोजना हटाएं</string>
+<string name="title_share_project">परियोजना साझा करें</string>
+<string name="title_share_project_detail">परियोजना विवरण</string>
+<string name="title_shared_app">दोस्तों के साथ साझा करें</string>
+<string name="title_shared_subject">SKETCHWARE - एंड्रॉइड डेवलपमेंट को सरल बनाया गया</string>
+<string name="title_sketchware">स्केचवेयर</string>
+<string name="title_slogan">कल्पना करें। बनाएं</string>
+<string name="title_start">शुरू करें</string>
+<string name="title_sys_vibration">कंपन सेटिंग</string>
+<string name="title_system_dpi">डीपीआई</string>
+<string name="title_system_resolution">सिस्टम रिज़ॉल्यूशन</string>
+<string name="title_type_boolean">बूलियन</string>
+<string name="title_type_integer">पूर्णांक</string>
+<string name="title_type_string">स्ट्रिंग</string>
+<string name="title_video_tutorial">वीडियो ट्यूटोरियल</string>
+<string name="title_view_tutorial">संपादक ट्यूटोरियल देखें</string>
+<string name="title_widget_major">विजेट्स</string>
+<string name="title_widget_pty_init">विजेट सेटिंग्स रीसेट करें</string>
+<string name="title_widget_select">विजेट चुनें</string>
+<string name="title_workspace_name">परियोजना</string>
+<string name="tv_menu">मेनू</string>
+<string name="widgets">विजेट्स</string>
+<string name="abc_font_family_body_1_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_body_2_material">सैन्स-सेरिफ़-मीडियम</string>
+<string name="abc_font_family_button_material">सैन्स-सेरिफ़-मीडियम</string>
+<string name="abc_font_family_caption_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_display_1_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_display_2_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_display_3_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_display_4_material">सैन्स-सेरिफ़-लाइट</string>
+<string name="abc_font_family_headline_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_menu_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_subhead_material">सैन्स-सेरिफ़</string>
+<string name="abc_font_family_title_material">सैन्स-सेरिफ़-मीडियम</string>
+<string name="bottom_sheet_behavior">com.google.android.material.bottomsheet.BottomSheetBehavior</string>
+<string name="character_counter_pattern">%1$d / %2$d</string>
+<string name="com_facebook_like_button_liked">पसंद किया गया</string>
+<string name="com_facebook_like_button_not_liked">पसंद करें</string>
+<string name="com_facebook_loginview_log_in_button_long">फेसबुक से लॉग इन करें</string>
+<string name="com_facebook_send_button_text">भेजें</string>
+<string name="com_facebook_share_button_text">साझा करें</string>
+<string name="com_facebook_tooltip_default">"नया! आप नियंत्रण में हैं - चुनें कि आप ऐप्स के साथ कौन सी जानकारी साझा करना चाहते हैं।"</string>
+<string name="default_web_client_id">539401594864-chmbirvfd4hlokmkmjt1k5g24vspe10m.apps.googleusercontent.com</string>
+<string name="firebase_database_url">https://dependable-flag-825.firebaseio.com</string>
+<string name="ga_trackingId">UA-80718117-1</string>
+<string name="gcm_defaultSenderId">539401594864</string>
+<string name="google_api_key">AIzaSyBv696FDTPStkyYTGrW26Hb209wM2d6h_Q</string>
+<string name="google_app_id">1:539401594864:android:19f04706c42794de</string>
+<string name="google_crash_reporting_api_key">AIzaSyBv696FDTPStkyYTGrW26Hb209wM2d6h_Q</string>
+<string name="google_storage_bucket">dependable-flag-825.appspot.com</string>
+</resources>

@@ -1,0 +1,7 @@
+style Theme_SplashScreen
+style Theme_SplashScreen_IconBackground
+attr postSplashScreenTheme
+dimen splashscreen_icon_size
+attr windowSplashScreenAnimatedIcon
+attr windowSplashScreenAnimationDuration
+attr windowSplashScreenBackground

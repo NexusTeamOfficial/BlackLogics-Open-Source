@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -26,7 +27,7 @@
             <TextView
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/color_primary"
+                android:textColor="?attr/colorPrimary"
                 android:gravity="center_vertical"
                 android:layout_gravity="center"
                 android:id="@+id/dialog_title"
@@ -39,7 +40,7 @@
         </LinearLayout>
         <TextView
             android:textSize="14sp"
-            android:textColor="#7d7d7d"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:id="@+id/dialog_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,14 +60,14 @@
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
         android:id="@+id/layout_button"
-        android:background="@color/scolor_blue_01"
+        android:background="?attr/colorPrimary"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:layout_width="match_parent"
         android:layout_height="40dp">
         <TextView
             android:textSize="14sp"
-            android:textColor="#fff"
+            android:textColor="?attr/colorOnPrimary"
             android:gravity="center"
             android:id="@+id/dialog_btn_no"
             android:paddingLeft="8dp"
@@ -76,7 +77,7 @@
             android:layout_marginRight="16dp" />
         <TextView
             android:textSize="14sp"
-            android:textColor="#fff"
+            android:textColor="?attr/colorOnPrimary"
             android:gravity="center"
             android:id="@+id/dialog_btn_yes"
             android:paddingLeft="8dp"

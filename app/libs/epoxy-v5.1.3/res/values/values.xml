@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="epoxy_model_group_child_container" type="id"/>
+    <item name="epoxy_recycler_view_child_initial_size_id" type="id"/>
+    <item name="epoxy_saved_view_style" type="id"/>
+    <item name="epoxy_touch_helper_selection_status" type="id"/>
+    <item name="epoxy_visibility_tracker" type="id"/>
+    <item name="view_model_state_saving_id" type="id"/>
+    <declare-styleable name="EpoxyRecyclerView">
+        <attr format="dimension" name="itemSpacing"/>
+    </declare-styleable>
+</resources>
