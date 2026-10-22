@@ -1,0 +1,147 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/_coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/_app_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:background="?attr/colorPrimary"
+			app:popupTheme="@style/AppTheme.PopupOverlay" />
+	</com.google.android.material.appbar.AppBarLayout>
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:fillViewport="true"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+		<LinearLayout
+			android:id="@+id/linear10"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="16dp"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/textview4"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Elite File Selector Pro"
+				android:textSize="24sp"
+				android:textStyle="bold" />
+			<TextView
+				android:id="@+id/textview5"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="16dp"
+				android:text="Android 16 Ready"
+				android:textSize="14sp" />
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/chipGroupFilter"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="8dp"
+				app:singleSelection="true">
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip11"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip12"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip13"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip14"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip15"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</com.google.android.material.chip.ChipGroup>
+			<com.google.android.material.chip.ChipGroup
+				android:id="@+id/chipGroupSort"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="16dp"
+				app:singleSelection="true">
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip16"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip17"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+				<com.google.android.material.chip.Chip
+					android:id="@+id/chip18"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</com.google.android.material.chip.ChipGroup>
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/btnOpenFilePicker"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="16dp"
+				android:text="Open Elite File Picker"
+				android:textSize="12sp"
+				android:icon="@drawable/ic_folder"
+				app:iconGravity="textStart" />
+			<com.google.android.material.progressindicator.CircularProgressIndicator
+				android:id="@+id/progressIndicator"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:visibility="gone"
+				app:indicatorColor="@color/purple_500"
+				app:trackColor="@color/gray_light" />
+			<ProgressBar
+				android:id="@+id/progressBar"
+				android:layout_width="match_parent"
+				android:layout_height="4dp"
+				android:indeterminate="false"
+				style="?android:progressBarStyleHorizontal"
+				android:visibility="gone"
+				android:progressTint="@color/purple_500" />
+			<TextView
+				android:id="@+id/tvFileInfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="Ready"
+				android:textSize="12sp" />
+			<TextView
+				android:id="@+id/tvSelectedFile"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="8dp"
+				android:padding="12dp"
+				android:background="@drawable/border_background"
+				android:text="No file selected"
+				android:textSize="12sp"
+				android:minHeight="100dp" />
+			<TextView
+				android:id="@+id/textview6"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16dp"
+				android:text="Selected Files:"
+				android:textSize="16sp"
+				android:textStyle="bold" />
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/rvSelectedFiles"
+				android:layout_width="match_parent"
+				android:layout_height="200dp"
+				android:layout_marginTop="8dp" />
+		</LinearLayout>
+	</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -17,7 +18,7 @@
         android:contentDescription="@null" />
     <TextView
         android:textSize="14sp"
-        android:textColor="#fff"
+        android:textColor="?attr/colorOnPrimary"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:id="@+id/tv_menu_name"

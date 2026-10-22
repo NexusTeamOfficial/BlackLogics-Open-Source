@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <androidx.cardview.widget.CardView
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -21,7 +22,7 @@
             android:layout_height="24dp" />
         <TextView
             android:textSize="10sp"
-            android:textColor="#7d7d7d"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center"
             android:id="@+id/tv_title"
             android:paddingLeft="4dp"
@@ -32,7 +33,7 @@
             android:maxLines="2" />
         <TextView
             android:textSize="10sp"
-            android:textColor="@color/scolor_black_02"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:ellipsize="end"
             android:id="@+id/tv_sub_title"
             android:paddingLeft="4dp"

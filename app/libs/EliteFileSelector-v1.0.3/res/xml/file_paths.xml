@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- Internal Storage -->
+    <files-path
+        name="files"
+        path="/" />
+    
+    <cache-path
+        name="cache"
+        path="/" />
+    
+    <!-- External Storage -->
+    <external-files-path
+        name="external_files"
+        path="/" />
+    
+    <external-cache-path
+        name="external_cache"
+        path="/" />
+    
+    <external-path
+        name="external"
+        path="/" />
+    
+    <!-- For Android 10+ (Scoped Storage) -->
+    <root-path
+        name="root"
+        path="/" />
+    
+    <!-- Download Directory -->
+    <external-path
+        name="download"
+        path="Download/" />
+    
+    <!-- DCIM Directory -->
+    <external-path
+        name="dcim"
+        path="DCIM/" />
+    
+    <!-- Pictures Directory -->
+    <external-path
+        name="pictures"
+        path="Pictures/" />
+    
+    <!-- Music Directory -->
+    <external-path
+        name="music"
+        path="Music/" />
+    
+    <!-- Movies Directory -->
+    <external-path
+        name="movies"
+        path="Movies/" />
+
+</paths>

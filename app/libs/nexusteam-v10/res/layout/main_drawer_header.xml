@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:orientation="vertical"
     android:id="@+id/layout_main_drawer_header"
-    android:background="#fafafa"
+    android:background="?attr/colorSurface"
     android:layout_width="320dp"
     android:layout_height="wrap_content">
     <LinearLayout
@@ -40,7 +41,7 @@
                     android:src="@drawable/google_96" />
                 <TextView
                     android:textSize="14sp"
-                    android:textColor="@color/color_primary"
+                    android:textColor="?attr/colorPrimary"
                     android:gravity="center_vertical"
                     android:layout_gravity="center_vertical"
                     android:id="@+id/tv_login_id"
@@ -51,7 +52,7 @@
         </LinearLayout>
         <TextView
             android:textSize="12sp"
-            android:textColor="#576a73"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center_vertical"
             android:id="@+id/tv_expire_date"
             android:paddingLeft="4dp"

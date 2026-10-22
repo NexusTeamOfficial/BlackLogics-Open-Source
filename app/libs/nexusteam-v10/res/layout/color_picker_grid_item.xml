@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -8,7 +9,7 @@
     android:layout_height="56dp">
     <TextView
         android:textSize="12sp"
-        android:textColor="#666666"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:gravity="center_horizontal"
         android:id="@+id/tv_color_name"
         android:paddingTop="2dp"

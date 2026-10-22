@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <androidx.cardview.widget.CardView
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:id="@+id/layout_item"
-    android:background="@color/transparent"
+    android:background="@android:color/transparent"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:layout_marginLeft="4dp"
@@ -48,7 +49,7 @@
             android:layout_height="wrap_content">
             <ImageView
                 android:id="@+id/img_activity"
-                android:background="#f6f6f6"
+                android:background="?attr/colorSurface"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:layout_width="48dp"
@@ -65,14 +66,14 @@
                 android:layout_weight="1">
                 <TextView
                     android:textSize="16sp"
-                    android:textColor="#404040"
+                    android:textColor="?attr/colorOnSurface"
                     android:id="@+id/tv_screen_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="2dp" />
                 <TextView
                     android:textSize="15sp"
-                    android:textColor="#9a9a9a"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/tv_activity_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

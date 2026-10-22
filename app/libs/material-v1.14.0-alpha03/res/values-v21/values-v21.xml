@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item format="float" name="m3_sys_state_dragged_state_layer_opacity" type="dimen">0.32</item>
+    <item format="float" name="m3_sys_state_focus_state_layer_opacity" type="dimen">0.2</item>
+    <item format="float" name="m3_sys_state_hover_state_layer_opacity" type="dimen">0.16</item>
+    <item format="float" name="m3_sys_state_pressed_state_layer_opacity" type="dimen">0.2</item>
+</resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -20,7 +21,7 @@
             android:layout_alignParentStart="true" />
         <TextView
             android:textSize="16sp"
-            android:textColor="#404040"
+            android:textColor="?attr/colorOnSurface"
             android:id="@+id/tv_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             android:layout_marginStart="40dp" />
         <TextView
             android:textSize="14sp"
-            android:textColor="#9a9a9a"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:id="@+id/tv_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +38,7 @@
             android:layout_below="@+id/tv_name"
             android:layout_marginStart="40dp" />
         <View
-            android:background="#f6f6f6"
+            android:background="?attr/colorSurface"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_alignParentBottom="true"

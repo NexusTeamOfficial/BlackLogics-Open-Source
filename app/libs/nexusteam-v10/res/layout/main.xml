@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <androidx.drawerlayout.widget.DrawerLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:background="@color/background_floating_material_light"
+            android:background="?attr/colorSurface"
             android:orientation="vertical">
             <Button
                 android:id="@+id/button1"
@@ -92,7 +93,7 @@
                 by
                 SmartIndiaGaming"
                 android:textSize="12sp"
-                android:textColor="#9E9E9E" />
+                android:textColor="?attr/colorOnSurfaceVariant" />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -100,7 +101,7 @@
         android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#EEEEEE">
+        android:background="?attr/colorSurface">
         <include
             layout="@layout/_drawer_main"
             android:id="@+id/drawer" />

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -15,7 +16,7 @@
         android:layout_height="match_parent">
         <Spinner
             android:id="@+id/spn_widget"
-            android:background="#fff"
+            android:background="?attr/colorSurface"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -23,7 +24,7 @@
         <Button
             android:theme="@style/AppTheme.Button"
             android:textSize="12sp"
-            android:textColor="#ffffff"
+            android:textColor="?attr/colorOnPrimary"
             android:id="@+id/btn_editproperties"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

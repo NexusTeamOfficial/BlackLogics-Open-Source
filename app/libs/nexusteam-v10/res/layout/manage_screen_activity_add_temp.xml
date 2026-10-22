@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:orientation="vertical"
-    android:background="#fff"
+    android:background="?attr/colorSurface"
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,7 +22,7 @@
             <LinearLayout
                 android:gravity="center_vertical"
                 android:id="@+id/preview_toolbar"
-                android:background="@color/color_primary"
+                android:background="?attr/colorPrimary"
                 android:padding="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
@@ -35,7 +36,7 @@
                 android:gravity="right"
                 android:orientation="horizontal"
                 android:id="@+id/preview_statusbar"
-                android:background="#000"
+                android:background="?attr/colorOnSurface"
                 android:padding="2dp"
                 android:layout_width="match_parent"
                 android:layout_height="10dp">
@@ -52,7 +53,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:id="@+id/preview_drawer"
-                android:background="#66aa5b"
+                android:background="?attr/colorPrimary"
                 android:visibility="visible"
                 android:layout_width="90dp"
                 android:layout_height="match_parent"
@@ -69,7 +70,7 @@
                         android:src="@drawable/android_icon" />
                 </LinearLayout>
                 <View
-                    android:background="@color/lighter_grey"
+                    android:background="?attr/colorSurfaceVariant"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp" />
@@ -130,14 +131,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <View
-            android:background="@color/lighter_grey"
+            android:background="?attr/colorSurfaceVariant"
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp" />
         <TextView
             android:textSize="12sp"
-            android:textColor="@color/grey"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:layout_gravity="center"
             android:id="@+id/tv_warning"
             android:layout_width="wrap_content"
@@ -152,7 +153,7 @@
             android:layout_height="wrap_content">
             <TextView
                 android:textSize="14sp"
-                android:textColor="@color/color_primary"
+                android:textColor="?attr/colorPrimary"
                 android:id="@+id/tv_screen_orientation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,7 +171,7 @@
             android:layout_height="wrap_content">
             <TextView
                 android:textSize="14sp"
-                android:textColor="@color/color_primary"
+                android:textColor="?attr/colorPrimary"
                 android:id="@+id/tv_keyboard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

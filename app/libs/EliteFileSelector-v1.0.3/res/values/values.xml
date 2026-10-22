@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="colorAccent">#44845F</color>
+    <color name="colorControlHighlight">#AEF2C5</color>
+    <color name="colorControlNormal">#44845F</color>
+    <color name="colorPrimary">#44845F</color>
+    <color name="colorPrimaryDark">#44845F</color>
+    <color name="gray_dark">#616161</color>
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray_medium">#9E9E9E</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="statusBarColor">@color/purple_700</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Elite File Selector</string>
+    <string name="error">Error</string>
+    <string name="loading">Loading...</string>
+    <string name="no_file_selected">No file selected</string>
+    <string name="open_file_picker">Open File Picker</string>
+    <string name="permission_required">Storage permission is required</string>
+    <string name="select_file">Select File</string>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar.Bridge">
+		<item name="colorOnPrimary">@android:color/white</item>
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
+		<item name="colorControlHighlight">@color/colorControlHighlight</item>
+		<item name="colorControlNormal">@color/colorControlNormal</item>
+	</style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
+    <style name="AppTheme.DebugActivity" parent="AppTheme">
+		<item name="actionBarStyle">@style/ThemeOverlay.MaterialComponents.ActionBar.Primary</item>
+		<item name="actionBarTheme">@style/Widget.MaterialComponents.ActionBar.Primary</item>
+		<item name="windowActionBar">true</item>
+		<item name="windowNoTitle">false</item>
+	</style>
+    <style name="AppTheme.FullScreen" parent="AppTheme">
+		<item name="android:windowFullscreen">true</item>
+		<item name="android:windowContentOverlay">@null</item>
+	</style>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light"/>
+    <style name="Theme.EliteFileSelector" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
+    </style>
+    <style name="Theme.EliteFileSelector.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/purple_500</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@color/black</item>
+    </style>
+</resources>

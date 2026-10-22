@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -13,7 +14,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp" />
     <TextView
-        android:textColor="#535353"
+        android:textColor="?attr/colorOnSurface"
         android:gravity="center"
         android:layout_gravity="center_vertical"
         android:id="@+id/tv_widget"

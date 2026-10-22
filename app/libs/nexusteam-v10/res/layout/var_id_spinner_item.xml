@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -24,7 +25,7 @@
             android:layout_height="16dp" />
         <TextView
             android:textSize="12dp"
-            android:textColor="@color/scolor_black_02"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:gravity="center_vertical"
             android:id="@+id/name"
             android:layout_width="match_parent"

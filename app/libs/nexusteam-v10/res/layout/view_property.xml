@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout
+    android:fitsSystemWindows="true"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:aapt="http://schemas.android.com/aapt"
@@ -32,7 +33,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:id="@+id/layout_property_group"
-        android:background="#f6f6f6"
+        android:background="?attr/colorSurface"
         android:paddingTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="32dp"
@@ -40,7 +41,7 @@
     <RelativeLayout
         android:orientation="horizontal"
         android:id="@+id/property_layout"
-        android:background="#ffeeeeee"
+        android:background="?attr/colorSurface"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <com.nexusteam.internal.lib.ui.CustomHorizontalScrollView

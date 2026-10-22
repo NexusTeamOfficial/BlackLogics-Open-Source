@@ -1,154 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <color name="colorAccent">#000000</color>
-    <color name="colorPrimary">#000000</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorControlHighlight">#ECEFF1</color>
-    <color name="colorControlNormal">#263238</color>
-    <color name="abc_input_method_navigation_guard">@android:color/black</color>
-    <color name="abc_search_url_text_normal">#7fa87f</color>
-    <color name="abc_search_url_text_pressed">@android:color/black</color>
-    <color name="abc_search_url_text_selected">@android:color/black</color>
-    <color name="accent_material_dark">@color/material_deep_teal_200</color>
-    <color name="accent_material_light">@color/material_deep_teal_500</color>
-    <color name="background_floating_material_dark">@color/material_grey_800</color>
-    <color name="background_floating_material_light">@android:color/white</color>
-    <color name="background_material_dark">@color/material_grey_850</color>
-    <color name="background_material_light">@color/material_grey_50</color>
-    <color name="bottom_bar_background">#a1887f</color>
-    <color name="bright_foreground_disabled_material_dark">#80ffffff</color>
-    <color name="bright_foreground_disabled_material_light">#80000000</color>
-    <color name="bright_foreground_inverse_material_dark">@color/bright_foreground_material_light</color>
-    <color name="bright_foreground_inverse_material_light">@color/bright_foreground_material_dark</color>
-    <color name="bright_foreground_material_dark">@android:color/white</color>
-    <color name="bright_foreground_material_light">@android:color/black</color>
-    <color name="button_material_dark">#ff5a595b</color>
-    <color name="button_material_light">#ffd6d7d7</color>
-    <color name="cardview_dark_background">#ff424242</color>
-    <color name="cardview_light_background">#ffffffff</color>
-    <color name="cardview_shadow_end_color">#03000000</color>
-    <color name="cardview_shadow_start_color">#37000000</color>
-    <color name="color_accent">#000000</color>
-    <color name="color_btn_blue_highlight">#005e8a</color>
-    <color name="color_btn_blue_normal">#008dce</color>
-    <color name="color_btn_green_highlight">#1d7a73</color>
-    <color name="color_btn_ltblue_highlight">#0b96d9</color>
-    <color name="color_btn_ltblue_normal">#33b8f5</color>
-    <color name="color_btn_ltorange_dark">#ff951b</color>
-    <color name="color_btn_ltorange_highlight">#ffa43a</color>
-    <color name="color_btn_ltorange_normal">#ffb055</color>
-    <color name="color_btn_ltpink_highlight">#ff3f3a</color>
-    <color name="color_btn_ltpink_normal">#ff5955</color>
-    <color name="color_chk_white_highlight">#ffccbc</color>
-    <color name="color_chk_white_normal">#f5f5f5</color>
-    <color name="color_control_highlight">#20008dcd</color>
-    <color name="color_control_normal">#57beee</color>
-    <color name="color_primary">#000000</color>
-    <color name="color_primary_alpha">#bb008dcd</color>
-    <color name="color_primary_dark">#000000</color>
-    <color name="color_ripple">#b2000000</color>
-    <color name="color_secondary">#57beee</color>
-    <color name="common_google_signin_btn_text_dark_default">@android:color/white</color>
-    <color name="common_google_signin_btn_text_dark_disabled">#1f000000</color>
-    <color name="common_google_signin_btn_text_dark_focused">@android:color/black</color>
-    <color name="common_google_signin_btn_text_dark_pressed">@android:color/white</color>
-    <color name="common_google_signin_btn_text_light_default">#90000000</color>
-    <color name="common_google_signin_btn_text_light_disabled">#1f000000</color>
-    <color name="common_google_signin_btn_text_light_focused">#90000000</color>
-    <color name="common_google_signin_btn_text_light_pressed">#de000000</color>
-    <color name="design_bottom_navigation_shadow_color">#14000000</color>
-    <color name="design_fab_shadow_end_color">@android:color/transparent</color>
-    <color name="design_fab_shadow_mid_color">#14000000</color>
-    <color name="design_fab_shadow_start_color">#44000000</color>
-    <color name="design_fab_stroke_end_inner_color">#0a000000</color>
-    <color name="design_fab_stroke_end_outer_color">#0f000000</color>
-    <color name="design_fab_stroke_top_inner_color">#1affffff</color>
-    <color name="design_fab_stroke_top_outer_color">#2effffff</color>
-    <color name="design_menu_bg">#ffffff</color>
-    <color name="design_menu_text_color">#000000</color>
-    <color name="design_snackbar_background_color">#323232</color>
-    <color name="design_tab_background">#000000</color>
-    <color name="design_tab_indicator_color">#57beee</color>
-    <color name="design_tab_selected_text_color">#ffffff</color>
-    <color name="design_tab_text_color">#a8cde9</color>
-    <color name="dim_foreground_disabled_material_dark">#80bebebe</color>
-    <color name="dim_foreground_disabled_material_light">#80323232</color>
-    <color name="dim_foreground_material_dark">#ffbebebe</color>
-    <color name="dim_foreground_material_light">#ff323232</color>
-    <color name="error_color_material">#f4511e</color>
-    <color name="foreground_material_dark">@android:color/white</color>
-    <color name="foreground_material_light">@android:color/black</color>
-    <color name="grey">#828282</color>
-    <color name="highlighted_text_material_dark">#6680cbc4</color>
-    <color name="highlighted_text_material_light">#66009688</color>
-    <color name="light_grey">#c6c6c6</color>
-    <color name="lighter_grey">#eeeeee</color>
-    <color name="list_selected_background">#20008dcd</color>
-    <color name="main_tab_background">#fff</color>
-    <color name="main_tab_indicator_color">#71bce9</color>
-    <color name="main_tab_selected_text_color">#007cc9</color>
-    <color name="main_tab_text_color">#007cc9</color>
-    <color name="material_blue_grey_800">#ff37474f</color>
-    <color name="material_blue_grey_900">#ff263238</color>
-    <color name="material_blue_grey_950">#ff21272b</color>
-    <color name="material_deep_teal_200">#ff80cbc4</color>
-    <color name="material_deep_teal_500">#ff009688</color>
-    <color name="material_grey_100">#fff5f5f5</color>
-    <color name="material_grey_300">#ffe0e0e0</color>
-    <color name="material_grey_50">#fffafafa</color>
-    <color name="material_grey_600">#ff757575</color>
-    <color name="material_grey_800">#ff424242</color>
-    <color name="material_grey_850">#ff303030</color>
-    <color name="material_grey_900">#ff212121</color>
-    <color name="notification_action_color_filter">#ffffffff</color>
-    <color name="notification_icon_bg_color">#ff9e9e9e</color>
-    <color name="notification_material_background_media_default_color">#ff424242</color>
-    <color name="primary_dark_material_dark">@android:color/black</color>
-    <color name="primary_dark_material_light">@color/material_grey_600</color>
-    <color name="primary_material_dark">@color/material_grey_900</color>
-    <color name="primary_material_light">@color/material_grey_100</color>
-    <color name="primary_text_default_material_dark">#ffffffff</color>
-    <color name="primary_text_default_material_light">#de000000</color>
-    <color name="primary_text_disabled_material_dark">#4dffffff</color>
-    <color name="primary_text_disabled_material_light">#39000000</color>
-    <color name="ripple_material_dark">#33ffffff</color>
-    <color name="ripple_material_light">#1f000000</color>
-    <color name="sc_item_bg">#fff9ac</color>
-    <color name="sc_item_bg_1">#fff78e</color>
-    <color name="scolor_bg_01">#f0f3fb</color>
-    <color name="scolor_bg_02">#f1f4fb</color>
-    <color name="scolor_black_01">#1d2129</color>
-    <color name="scolor_black_02">#757575</color>
-    <color name="scolor_blue_01">#09a7ec</color>
-    <color name="scolor_dark_yellow_01">#ff8700</color>
-    <color name="scolor_green_01">#52f55c</color>
-    <color name="scolor_green_02">#74f37c</color>
-    <color name="scolor_green_normal">#26a59a</color>
-    <color name="scolor_grey">#828282</color>
-    <color name="scolor_light_grey">#d4d4d4</color>
-    <color name="scolor_light_sky">#d0f1ff</color>
-    <color name="scolor_purple_01">#8e44ad</color>
-    <color name="scolor_red_01">#de0000</color>
-    <color name="scolor_red_02">#ff7c79</color>
-    <color name="scolor_sky_03">#a8cde9</color>
-    <color name="scolor_sl_01">#1d2129</color>
-    <color name="scolor_sl_02">#ffb055</color>
-    <color name="scolor_sl_03">#de0000</color>
-    <color name="scolor_sl_04">#008dcd</color>
-    <color name="scolor_yellow_01">#f1c40f</color>
-    <color name="scratch_end_gradient">#d0f1ff</color>
-    <color name="scratch_start_gradient">#d0f1ff</color>
-    <color name="secondary_text_default_material_dark">#b3ffffff</color>
-    <color name="secondary_text_default_material_light">#8a000000</color>
-    <color name="secondary_text_disabled_material_dark">#36ffffff</color>
-    <color name="secondary_text_disabled_material_light">#24000000</color>
-    <color name="swipe_refresh">#ffffff</color>
-    <color name="swipe_refresh_bg">#000000</color>
-    <color name="switch_thumb_disabled_material_dark">#ff616161</color>
-    <color name="switch_thumb_disabled_material_light">#ffbdbdbd</color>
-    <color name="switch_thumb_normal_material_dark">#ffbdbdbd</color>
-    <color name="switch_thumb_normal_material_light">#fff1f1f1</color>
-    <color name="tool_bar_text_color">#ffffff</color>
-    <color name="tooltip_background_dark">#e6616161</color>
-    <color name="tooltip_background_light">#e6ffffff</color>
-    <color name="transparent">#00ffffff</color>
+    <!--Light Theme Colors-->
+    <color name="colorPrimary">#0061A4</color>
+    <color name="colorPrimaryDark">#00497D</color>
+    <color name="colorAccent">#0061A4</color>
+    <color name="colorControlHighlight">#330061A4</color>
+    <color name="colorControlNormal">#43474E</color>
+
+    <!-- ==================== LIGHT THEME ==================== -->
+    <color name="md_theme_light_primary">#0061A4</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#D1E4FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#001D36</color>
+
+    <color name="md_theme_light_secondary">#535F70</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#D7E3F8</color>
+    <color name="md_theme_light_onSecondaryContainer">#101C2B</color>
+
+    <color name="md_theme_light_tertiary">#6B5778</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#F2DAFF</color>
+    <color name="md_theme_light_onTertiaryContainer">#251431</color>
+
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
+
+    <color name="md_theme_light_background">#FDFCFF</color>
+    <color name="md_theme_light_onBackground">#1A1C1E</color>
+    <color name="md_theme_light_surface">#FDFCFF</color>
+    <color name="md_theme_light_onSurface">#1A1C1E</color>
+    <color name="md_theme_light_surfaceVariant">#DFE2EB</color>
+    <color name="md_theme_light_onSurfaceVariant">#43474E</color>
+    <color name="md_theme_light_outline">#73777F</color>
+    <color name="md_theme_light_inverseSurface">#2F3033</color>
+    <color name="md_theme_light_inverseOnSurface">#F1F0F4</color>
+    <color name="md_theme_light_inversePrimary">#9ECAFF</color>
+
+    <!-- Surface container roles (Material 1.14) -->
+    <color name="md_theme_light_surfaceDim">#D9DADE</color>
+    <color name="md_theme_light_surfaceBright">#FDFCFF</color>
+    <color name="md_theme_light_surfaceContainerLowest">#FFFFFF</color>
+    <color name="md_theme_light_surfaceContainerLow">#F3F3F7</color>
+    <color name="md_theme_light_surfaceContainer">#EEEDF1</color>
+    <color name="md_theme_light_surfaceContainerHigh">#E8E8EB</color>
+    <color name="md_theme_light_surfaceContainerHighest">#E2E2E6</color>
+    <color name="md_theme_light_outlineVariant">#C3C7CF</color>
+
+    <!-- Fixed roles (same in light and dark) -->
+    <color name="md_theme_primaryFixed">#D1E4FF</color>
+    <color name="md_theme_primaryFixedDim">#9ECAFF</color>
+    <color name="md_theme_onPrimaryFixed">#001D36</color>
+    <color name="md_theme_onPrimaryFixedVariant">#00497D</color>
+    <color name="md_theme_secondaryFixed">#D7E3F8</color>
+    <color name="md_theme_secondaryFixedDim">#BBC7DB</color>
+    <color name="md_theme_onSecondaryFixed">#101C2B</color>
+    <color name="md_theme_onSecondaryFixedVariant">#3B4858</color>
+    <color name="md_theme_tertiaryFixed">#F2DAFF</color>
+    <color name="md_theme_tertiaryFixedDim">#D6BEE4</color>
+    <color name="md_theme_onTertiaryFixed">#251431</color>
+    <color name="md_theme_onTertiaryFixedVariant">#523F5F</color>
+
+    <!-- ==================== DARK THEME ==================== -->
+    <color name="md_theme_dark_primary">#9ECAFF</color>
+    <color name="md_theme_dark_onPrimary">#003258</color>
+    <color name="md_theme_dark_primaryContainer">#00497D</color>
+    <color name="md_theme_dark_onPrimaryContainer">#D1E4FF</color>
+
+    <color name="md_theme_dark_secondary">#BBC7DB</color>
+    <color name="md_theme_dark_onSecondary">#253140</color>
+    <color name="md_theme_dark_secondaryContainer">#3B4858</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D7E3F8</color>
+
+    <color name="md_theme_dark_tertiary">#D6BEE4</color>
+    <color name="md_theme_dark_onTertiary">#3B2948</color>
+    <color name="md_theme_dark_tertiaryContainer">#523F5F</color>
+    <color name="md_theme_dark_onTertiaryContainer">#F2DAFF</color>
+
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+
+    <color name="md_theme_dark_background">#111418</color>
+    <color name="md_theme_dark_onBackground">#E2E2E6</color>
+    <color name="md_theme_dark_surface">#111418</color>
+    <color name="md_theme_dark_onSurface">#E2E2E6</color>
+    <color name="md_theme_dark_surfaceVariant">#43474E</color>
+    <color name="md_theme_dark_onSurfaceVariant">#C3C7CF</color>
+    <color name="md_theme_dark_outline">#8D9199</color>
+    <color name="md_theme_dark_inverseSurface">#E2E2E6</color>
+    <color name="md_theme_dark_inverseOnSurface">#2F3033</color>
+    <color name="md_theme_dark_inversePrimary">#0061A4</color>
+
+    <!-- Surface container roles (Material 1.14) -->
+    <color name="md_theme_dark_surfaceDim">#111418</color>
+    <color name="md_theme_dark_surfaceBright">#37393E</color>
+    <color name="md_theme_dark_surfaceContainerLowest">#0C0E13</color>
+    <color name="md_theme_dark_surfaceContainerLow">#1A1C20</color>
+    <color name="md_theme_dark_surfaceContainer">#1E2024</color>
+    <color name="md_theme_dark_surfaceContainerHigh">#282A2F</color>
+    <color name="md_theme_dark_surfaceContainerHighest">#33353A</color>
+    <color name="md_theme_dark_outlineVariant">#43474E</color>
+
+    <!--Primary Variants-->
+    <color name="colorPrimaryVariant">#00497D</color>
+
+    <!--Secondary Variants-->
+    <color name="primary">#0061A4</color>
+    <color name="primary_dark">#001D36</color>
+    <color name="seed">#0061A4</color>
+
+    <!--Basic Colors-->
+    <color name="colorSecondary">#535F70</color>
+    <color name="accent">#4D8FCC</color>
+    <color name="color_white">#FFFFFFFF</color>
+    <color name="color_black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="gray">#73777F</color>
+    <color name="light_grey">#DFE2EB</color>
+
+    <!--Text Colors-->
+    <color name="dark">#1A1C1E</color>
+    <color name="gunmetal">#43474E</color>
+    <color name="textColor">#1A1C1E</color>
+    <color name="textColorPrimary">#1A1C1E</color>
+    <color name="textColorSecondary">#43474E</color>
+    <color name="textGrey">#73777F</color>
+    <color name="textBlueGrey">#535F70</color>
+    <color name="text_color">#1A1C1E</color>
+    <color name="tool_bar_text_color">#FFFFFF</color>
+
+    <!--Background & Surface-->
+    <color name="toolText">#FFFFFF</color>
+    <color name="hint_color">#73777F</color>
+    <color name="backgroundColor">#FDFCFF</color>
+    <color name="background_color">#FDFCFF</color>
+    <color name="colorWidget">#43474E</color>
+
+    <!--Button Colors-->
+    <color name="color_dark_light">#73777F</color>
+    <color name="status_bar_color">#14000000</color>
+    <color name="normal_btn_color">#0061A4</color>
+
+    <!--Spinner Colors-->
+    <color name="button_background">#0061A4</color>
+    <color name="button_text">#FFFFFF</color>
+
+    <!--Control Colors-->
+    <color name="spinner_background">#FFFFFF</color>
+    <color name="spinner_text">#1A1C1E</color>
+    <color name="tab_ripple">#400061A4</color>
+    <color name="rippleColor">#200061A4</color>
+    <color name="default_ripple">#BDD1E4FF</color>
+
+    <!--Divider & SubBar-->
+    <color name="divider">#DFE2EB</color>
+    <color name="divider_color">#1F000000</color>
+    <color name="subBarColor">#D1E4FF</color>
+    <color name="subBarColor2">#FDFCFF</color>
+    <color name="nav_bar_divider">#1F000000</color>
+
+    <!--Error Colors-->
+    <color name="error">#BA1A1A</color>
+    <color name="colorError">#BA1A1A</color>
+    <color name="log_error_color">#BA1A1A</color>
+    <color name="selected_log_color">#8A0061A4</color>
+
+    <!--Miscellaneous-->
+    <color name="scolor_dark_yellow_01">#F5A623</color>
+    <color name="scolor_black_02">#43474E</color>
+
+    <!--============================================-->
+    <color name="component_intent">#B03A6F</color>
+    <color name="component_file">#4A5FA8</color>
+    <color name="component_calendar">#C26A00</color>
+    <color name="component_vibrator">#2E7D5B</color>
+    <color name="component_timer">#C4502A</color>
+    <color name="component_firebase">#D68100</color>
+    <color name="component_dialog">#6B5778</color>
+    <color name="component_mediaplayer">#1565A8</color>
+    <color name="component_soundpool">#00796B</color>
+    <color name="component_animator">#7E3F98</color>
+    <color name="component_gyroscope">#9C2F62</color>
+    <color name="component_ad">#C0392B</color>
+    <color name="component_camera">#0B4F8A</color>
+    <color name="component_filepicker">#3F51A0</color>
+    <color name="component_network">#00695C</color>
+    <color name="component_speech">#C75000</color>
+    <color name="component_bluetooth">#2563B8</color>
+    <color name="component_location">#A33A12</color>
+    <color name="component_default">#73777F</color>
+    <color name="component_default_bg">#E2E2E6</color>
+    <color name="component_card_bg">#FFFFFF</color>
+    <color name="component_icon_bg">#0061A4</color>
+    <color name="component_title_color">#0061A4</color>
+    <color name="component_subtitle_color">#43474E</color>
+    <color name="color_chk_white_highlight">#D1E4FF</color>
+    <color name="color_chk_white_normal">#F1F0F4</color>
+
+    <!-- Scrim & surface containers (for layouts that need them) -->
+    <color name="color_scrim">#52000000</color>
+    <color name="color_scrim_dark">#99000000</color>
+    <color name="color_surface_container">#EEEDF1</color>
+    <color name="color_surface_container_high">#E8E8EB</color>
+    <color name="color_outline_variant">#C3C7CF</color>
+    <color name="color_surface_inverse">#2F3033</color>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_width="match_parent" android:layout_height="match_parent">
+<RelativeLayout android:fitsSystemWindows="true" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_width="match_parent" android:layout_height="match_parent">
     <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
-        <LinearLayout android:orientation="horizontal" android:background="#eeeeee" android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:orientation="horizontal" android:background="?attr/colorSurface" android:layout_width="match_parent" android:layout_height="match_parent">
             <com.nexusteam.internal.editor.logic.PaletteBlock android:id="@+id/palette_block" android:layout_width="120dp" android:layout_height="match_parent"/>
             <com.nexusteam.internal.editor.view.ViewLogicEditor android:id="@+id/editor" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_margin="4dp"/>
         </LinearLayout>

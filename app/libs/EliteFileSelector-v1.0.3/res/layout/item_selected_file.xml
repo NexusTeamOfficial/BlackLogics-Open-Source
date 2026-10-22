@@ -1,0 +1,52 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:padding="8dp"
+	android:background="?android:attr/selectableItemBackground">
+	<ImageView
+		android:id="@+id/ivFileIcon"
+		android:focusable="false"
+		android:layout_width="32dp"
+		android:layout_height="32dp"
+		android:src="@drawable/ic_file"
+		android:scaleType="center"
+		android:layout_gravity="center_vertical" />
+	<LinearLayout
+		android:id="@+id/linear20"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_weight="1"
+		android:layout_marginStart="12dp">
+		<TextView
+			android:id="@+id/tvFileName"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="File Name"
+			android:textSize="14sp"
+			android:textStyle="bold"
+			android:singleLine="true"
+			android:ellipsize="end" />
+		<TextView
+			android:id="@+id/tvFileSize"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Size"
+			android:textSize="12sp" />
+		<TextView
+			android:id="@+id/tvFilePath"
+			android:focusable="false"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Path"
+			android:textSize="10sp"
+			android:singleLine="true"
+			android:ellipsize="start" />
+	</LinearLayout>
+</LinearLayout>
