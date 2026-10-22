@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:background="?android:attr/selectableItemBackground" android:paddingLeft="8dp" android:paddingRight="8dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <ImageView android:id="@+id/img_icon" android:layout_width="24dp" android:layout_height="24dp" android:layout_margin="8dp"/>
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <LinearLayout android:orientation="vertical" android:padding="8dp" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
+                    <TextView android:textSize="14sp" android:textColor="@color/scolor_black_02" android:ellipsize="end" android:id="@+id/tv_root_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true"/>
+                    <TextView android:textSize="12sp" android:textColor="@color/light_grey" android:ellipsize="end" android:id="@+id/tv_sub_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true"/>
+                </LinearLayout>
+                <ImageView android:id="@+id/img_more" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/selector_ic_chevron_right_grey_48"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <HorizontalScrollView android:paddingLeft="40dp" android:paddingRight="4dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="horizontal" android:id="@+id/sub_items" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+    </HorizontalScrollView>
+    <View android:id="@+id/sub_separator" android:background="@color/scolor_light_grey" android:layout_width="match_parent" android:layout_height="0.5dp" android:layout_marginLeft="16dp" android:layout_marginRight="16dp"/>
+    <View android:id="@+id/separator" android:background="@color/lighter_grey" android:layout_width="match_parent" android:layout_height="12dp"/>
+</LinearLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:id="@+id/group_item"
+    android:background="@drawable/selector_palette_tab_round"
+    android:padding="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="24dp">
+    <ImageView
+        android:id="@+id/img_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside" />
+</LinearLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:padding="4.0dip" android:layout_width="fill_parent" android:layout_height="fill_parent"
+android:background="#FFFFFF">
+	<EditText android:id="@id/dup_0x7f030003" android:layout_width="fill_parent" android:layout_height="wrap_content" android:hint="@string/dup_0x7f060004" android:inputType="none" android:layout_marginEnd="36.0dip"  android:textColorHint="#311B92" android:textColor="#311B92" />
+	<ImageButton android:gravity="center_horizontal" android:id="@id/dup_0x7f030007" android:background="@drawable/dup_0x7f020001" android:padding="4.0dip" android:layout_width="36.0dip" android:layout_height="36.0dip" android:layout_alignEnd="@id/dup_0x7f030003" android:layout_alignParentEnd="true" />
+	
+	<Button android:id="@id/dup_0x7f030001" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/dup_0x7f060006" android:layout_below="@id/dup_0x7f030003"
+ android:background="#311B92"
+  android:radius="24dp"/>
+  
+	<ProgressBar android:id="@id/dup_0x7f030006" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerHorizontal="true" android:elevation="7.0dip" style="?android:progressBarStyleLarge" />
+	<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@id/dup_0x7f030001">
+		<HorizontalScrollView android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<TextView android:typeface="monospace" android:id="@id/dup_0x7f03000a" android:layout_width="wrap_content" android:layout_height="fill_parent" android:text="@string/dup_0x7f060021" android:textIsSelectable="true" android:fontFamily="monospace" android:textColor="#311B92" />
+		</HorizontalScrollView>
+	</ScrollView>
+</RelativeLayout>

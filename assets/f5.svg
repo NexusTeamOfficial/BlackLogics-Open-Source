@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="112" viewBox="0 0 450 112">
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#211F26" stroke="#49454F" stroke-width="1.5"/>
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#CCC2DC" fill-opacity=".04"/>
+<rect x="22" y="26" width="60" height="60" rx="18" fill="#4A4458" stroke="#CCC2DC" stroke-opacity=".55" stroke-width="1.2"/>
+<g transform="translate(40 44) scale(1.0)" fill="#CCC2DC"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></g>
+<text x="102" y="46" fill="#E6E1E5" font-size="17" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Visual logic editor</text>
+<text x="102" y="68" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Block-based behaviour without</text>
+<text x="102" y="86" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">hand-written boilerplate</text></svg>

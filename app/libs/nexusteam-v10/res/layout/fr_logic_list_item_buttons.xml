@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:orientation="vertical" android:id="@+id/confirm_layout" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:gravity="bottom|center_vertical|center_horizontal|center" android:id="@+id/ll_warning" android:visibility="gone" android:layout_width="match_parent" android:layout_height="32dp">
+            <TextView android:textSize="13sp" android:textColor="#7d7d7d" android:id="@+id/tv_warning_message" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="48dp">
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/confirm_yes" android:background="?attr/selectableItemBackground" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView android:id="@+id/confirm_yes_icon" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginRight="8dp" android:src="@drawable/ic_checkmark_green_48dp" android:contentDescription="@null"/>
+                <TextView android:textSize="12sp" android:textColor="#757575" android:id="@+id/confirm_yes_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:contentDescription="@null"/>
+            </LinearLayout>
+            <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/confirm_no" android:background="?attr/selectableItemBackground" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+                <ImageView android:id="@+id/confirm_no_icon" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginRight="8dp" android:src="@drawable/delete_96" android:contentDescription="@null"/>
+                <TextView android:textSize="12sp" android:textColor="#757575" android:id="@+id/confirm_no_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:contentDescription="@null"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="horizontal" android:id="@+id/project_buttons" android:layout_width="match_parent" android:layout_height="48dp"/>
+</FrameLayout>

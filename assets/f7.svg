@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="112" viewBox="0 0 450 112">
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#211F26" stroke="#49454F" stroke-width="1.5"/>
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#9ECAFF" fill-opacity=".04"/>
+<rect x="22" y="26" width="60" height="60" rx="18" fill="#00344F" stroke="#9ECAFF" stroke-opacity=".55" stroke-width="1.2"/>
+<g transform="translate(40 44) scale(1.0)" fill="#9ECAFF"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></g>
+<text x="102" y="46" fill="#E6E1E5" font-size="17" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Source code viewer</text>
+<text x="102" y="68" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Inspect generated / project</text>
+<text x="102" y="86" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">XML anytime</text></svg>

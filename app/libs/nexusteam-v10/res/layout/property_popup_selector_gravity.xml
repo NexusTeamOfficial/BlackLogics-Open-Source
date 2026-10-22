@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_left"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="left" />
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_right"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="right" />
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_hcenter"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="center_horizontal" />
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_top"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="top" />
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_bottom"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="bottom" />
+        <CheckBox
+            android:textSize="16sp"
+            android:id="@+id/chk_vcenter"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="center_vertical" />
+    </LinearLayout>
+</ScrollView>

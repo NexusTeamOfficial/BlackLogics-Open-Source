@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="match_parent">
+        <LinearLayout android:orientation="vertical" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <TextView android:textSize="12sp" android:gravity="center" android:id="@+id/empty_message" android:background="#f5f5f5" android:layout_width="match_parent" android:layout_height="match_parent"/>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/component_list" android:background="#f5f5f5" android:scrollbars="vertical" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:splitMotionEvents="false"/>
+        </LinearLayout>
+    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/fab" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="16dp" android:src="@drawable/ic_add_white_36dp" android:layout_alignParentBottom="true" android:layout_alignParentEnd="true" app:borderWidth="0dp"/>
+</RelativeLayout>

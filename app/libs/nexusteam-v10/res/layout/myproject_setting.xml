@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="vertical" android:id="@+id/contents" android:background="#fff" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="16dp">
+            <RelativeLayout android:id="@+id/app_icon_layout" android:layout_width="wrap_content" android:layout_height="wrap_content">
+                <View android:background="@drawable/circle_bg_grey" android:layout_width="56dp" android:layout_height="56dp" android:layout_centerInParent="true" android:contentDescription="@null"/>
+                <com.besome.sketch.lib.ui.CircleImageView android:id="@+id/app_icon" android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/default_icon" android:layout_centerInParent="true" android:contentDescription="@null"/>
+            </RelativeLayout>
+            <TextView android:textSize="10sp" android:textColor="#606060" android:id="@+id/tv_change_icon" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:layout_below="@+id/app_icon" android:layout_centerHorizontal="true"/>
+        </LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout android:gravity="center" android:id="@+id/ti_app_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp">
+            <EditText android:textSize="14sp" android:textColor="#535353" android:textColorHint="#8e8e8e" android:id="@+id/et_app_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="16dp" android:layout_marginRight="16dp" android:inputType="text"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+    <LinearLayout android:orientation="vertical" android:id="@+id/basic" android:clickable="true" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+            <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_marginRight="8dp">
+                <LinearLayout android:gravity="right|center_vertical|center_horizontal|center" android:orientation="horizontal" android:id="@+id/advanced_setting" android:layout_width="match_parent" android:layout_height="32dp" android:layout_marginTop="16dp" android:animateLayoutChanges="true">
+                    <TextView android:textSize="12sp" android:textColor="#757575" android:gravity="center" android:id="@+id/tv_advanced_settings" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="4dp"/>
+                    <ImageView android:id="@+id/icon" android:layout_width="16dp" android:layout_height="16dp" android:src="@drawable/settings_filled_96" android:scaleType="fitCenter" android:contentDescription="@null"/>
+                </LinearLayout>
+                <LinearLayout android:orientation="vertical" android:id="@+id/advanced_setting_layout" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                        <HorizontalScrollView android:background="@drawable/bg_outline" android:paddingTop="4dp" android:paddingBottom="4dp" android:layout_width="0dp" android:layout_height="wrap_content" android:fillViewport="true" android:layout_weight="1">
+                            <LinearLayout android:orientation="horizontal" android:id="@+id/layout_theme_colors" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                        </HorizontalScrollView>
+                        <ImageView android:id="@+id/img_theme_color_help" android:padding="4dp" android:layout_width="36dp" android:layout_height="36dp" android:layout_marginLeft="8dp" android:src="@drawable/help_96_blue"/>
+                    </LinearLayout>
+                    <ImageView android:id="@+id/img_color_guide" android:background="#000" android:visibility="gone" android:layout_width="match_parent" android:layout_height="wrap_content" android:src="@drawable/color_guide"/>
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:paddingLeft="4dp" android:paddingTop="4dp" android:paddingRight="4dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_marginRight="4dp" android:src="@drawable/package_96" android:scaleType="fitCenter" android:contentDescription="@null"/>
+                        <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_package_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp" app:hintTextAppearance="@style/TextAppearance">
+                            <EditText android:textSize="14sp" android:textColor="#535353" android:textColorHint="#8e8e8e" android:gravity="left|center_vertical|center_horizontal|center|start" android:id="@+id/et_package_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:paddingLeft="4dp" android:paddingTop="4dp" android:paddingRight="4dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_marginRight="4dp" android:src="@drawable/abc_96" android:scaleType="fitCenter" android:contentDescription="@null"/>
+                        <com.google.android.material.textfield.TextInputLayout android:id="@+id/ti_project_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="8dp" app:hintTextAppearance="@style/TextAppearance">
+                            <EditText android:textSize="14sp" android:textColor="#535353" android:textColorHint="#8e8e8e" android:gravity="left|center_vertical|center_horizontal|center|start" android:id="@+id/et_project_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="text"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:paddingLeft="4dp" android:paddingRight="4dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp">
+                        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:layout_marginRight="4dp" android:src="@drawable/code_96" android:scaleType="fitCenter" android:contentDescription="@null"/>
+                        <LinearLayout android:orientation="horizontal" android:background="@drawable/bg_outline" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginLeft="8dp" android:layout_weight="1">
+                            <TextView android:textSize="14sp" android:textColor="#757575" android:gravity="center" android:id="@+id/ver_code" android:background="?android:attr/selectableItemBackground" android:layout_width="0dp" android:layout_height="match_parent" android:text="1" android:layout_weight="1"/>
+                            <View android:background="#c6c6c6" android:layout_width="1dp" android:layout_height="match_parent"/>
+                            <TextView android:textSize="14sp" android:textColor="#757575" android:gravity="center" android:id="@+id/ver_name" android:background="?android:attr/selectableItemBackground" android:layout_width="0dp" android:layout_height="match_parent" android:text="1.0" android:layout_weight="1"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

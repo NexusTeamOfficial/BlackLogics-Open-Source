@@ -1,0 +1,676 @@
+package com.nexusteam.internal.os.layouteditor.undo;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+
+import com.shapun.layouteditor.IdManager;
+import com.shapun.layouteditor.Attribute;
+import com.shapun.layouteditor.AttributeSet;
+import com.shapun.layouteditor.ViewEditor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+
+public class ViewAction implements UndoableAction {
+    
+    private final ActionType type;
+    private final long timestamp;
+    private final String activityName;
+    private final Map<String, Object> data;
+    
+    // Keys for data storage
+    private static final String KEY_VIEW_ID = "view_id";
+    private static final String KEY_PARENT_ID = "parent_id";
+    private static final String KEY_INDEX = "index";
+    private static final String KEY_VIEW_CLASS = "view_class";
+    private static final String KEY_OLD_ATTRIBUTES = "old_attributes";
+    private static final String KEY_NEW_ATTRIBUTES = "new_attributes";
+    private static final String KEY_ORIGINAL_CLASS = "original_class";
+    private static final String KEY_NEW_CLASS = "new_class";
+    
+    // Transient fields for runtime use
+    private transient ViewEditor editor;
+    private transient View view;
+    private transient ViewGroup parent;
+    private transient AttributeSet oldAttributes;
+    private transient AttributeSet newAttributes;
+    
+    private ViewAction(Builder builder) {
+        this.type = builder.type;
+        this.timestamp = System.currentTimeMillis();
+        this.activityName = builder.activityName;
+        this.editor = builder.editor;
+        
+        this.data = new HashMap<>();
+        
+        // Store view ID
+        if (builder.view != null) {
+            String viewId = IdManager.getInstance().getId(builder.view);
+            if (viewId != null) {
+                data.put(KEY_VIEW_ID, viewId);
+            }
+            data.put(KEY_VIEW_CLASS, builder.view.getClass().getName());
+        }
+        
+        // Store parent ID
+        if (builder.parent != null) {
+            String parentId = IdManager.getInstance().getId(builder.parent);
+            if (parentId != null) {
+                data.put(KEY_PARENT_ID, parentId);
+            }
+        }
+        
+        // Store index
+        data.put(KEY_INDEX, builder.index);
+        
+        // Store old attributes
+        if (builder.oldAttributes != null) {
+            data.put(KEY_OLD_ATTRIBUTES, serializeAttributes(builder.oldAttributes));
+        }
+        
+        // Store new attributes
+        if (builder.newAttributes != null) {
+            data.put(KEY_NEW_ATTRIBUTES, serializeAttributes(builder.newAttributes));
+        }
+        
+        // Store class names for conversion
+        if (builder.originalClassName != null) {
+            data.put(KEY_ORIGINAL_CLASS, builder.originalClassName);
+        }
+        if (builder.newClassName != null) {
+            data.put(KEY_NEW_CLASS, builder.newClassName);
+        }
+        
+        // Keep direct references for current session
+        this.view = builder.view;
+        this.parent = builder.parent;
+        this.oldAttributes = builder.oldAttributes;
+        this.newAttributes = builder.newAttributes;
+    }
+    
+    private Map<String, String> serializeAttributes(AttributeSet attributeSet) {
+        Map<String, String> map = new HashMap<>();
+        if (attributeSet != null) {
+            for (Attribute attr : attributeSet.getAttributes()) {
+                map.put(attr.getName(), attr.getValue());
+            }
+        }
+        return map;
+    }
+    
+    private AttributeSet deserializeAttributes(Map<String, String> map) {
+        if (map == null || map.isEmpty()) return null;
+        
+        AttributeSet attributeSet = new AttributeSet();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            attributeSet.add(new Attribute(entry.getKey(), entry.getValue()));
+        }
+        return attributeSet;
+    }
+    
+    @Override
+    public void undo() {
+        if (editor == null) return;
+        if (editor.isUndoRedoInProgress) return;
+        
+        editor.isUndoRedoInProgress = true;
+        
+        try {
+            switch (type) {
+                case ADD_VIEW:
+                    handleUndoAdd();
+                    break;
+                    
+                case REMOVE_VIEW:
+                    handleUndoRemove();
+                    break;
+                    
+                case UPDATE_ATTRIBUTE:
+                    handleUndoUpdateAttribute();
+                    break;
+                    
+                case MOVE_VIEW:
+                    handleUndoMove();
+                    break;
+                    
+                case CONVERT_WIDGET:
+                    handleUndoConvert();
+                    break;
+                    
+                case BULK_CHANGE:
+                    // Handled separately
+                    break;
+            }
+            
+            // Refresh UI
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    editor.requestLayout();
+                    editor.invalidate();
+                }
+            });
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Undo failed: " + e.getMessage(), e);
+        } finally {
+            editor.isUndoRedoInProgress = false;
+        }
+    }
+    
+    private void handleUndoAdd() {
+        // Remove the view that was added
+        View viewToRemove = findViewById((String) data.get(KEY_VIEW_ID));
+        if (viewToRemove != null && viewToRemove.getParent() != null) {
+            ((ViewGroup) viewToRemove.getParent()).removeView(viewToRemove);
+            IdManager.getInstance().remove(viewToRemove);
+            editor.attributesValueMap.remove(viewToRemove);
+        }
+    }
+    
+    private void handleUndoRemove() {
+        // Restore the view that was removed
+        ViewGroup parentView = findParentById((String) data.get(KEY_PARENT_ID));
+        if (parentView == null) return;
+        
+        int index = (int) data.get(KEY_INDEX);
+        String viewClass = (String) data.get(KEY_VIEW_CLASS);
+        
+        try {
+            // Create new view
+            View restoredView = createViewFromClass(viewClass);
+            if (restoredView == null) return;
+            
+            // Restore ID
+            String viewId = (String) data.get(KEY_VIEW_ID);
+            if (viewId != null) {
+                IdManager.getInstance().addNewId(restoredView, viewId);
+            }
+            
+            // Restore attributes
+            Map<String, String> attrsMap = (Map<String, String>) data.get(KEY_OLD_ATTRIBUTES);
+            if (attrsMap != null) {
+                AttributeSet attributeSet = new AttributeSet();
+                for (Map.Entry<String, String> entry : attrsMap.entrySet()) {
+                    attributeSet.add(new Attribute(entry.getKey(), entry.getValue()));
+                }
+                editor.attributesValueMap.put(restoredView, attributeSet);
+            }
+            
+            // Add to parent
+            parentView.addView(restoredView, Math.min(index, parentView.getChildCount()));
+            
+            // Apply attributes
+            if (editor.attributesValueMap.containsKey(restoredView)) {
+                for (Attribute attr : editor.attributesValueMap.get(restoredView).getAttributes()) {
+                    editor.applyAttribute(restoredView, attr);
+                }
+            }
+            
+            // Setup listeners
+            setupViewListeners(restoredView);
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Failed to restore view", e);
+        }
+    }
+    
+    private void handleUndoUpdateAttribute() {
+        View targetView = findViewById((String) data.get(KEY_VIEW_ID));
+        if (targetView == null) return;
+        
+        Map<String, String> oldAttrs = (Map<String, String>) data.get(KEY_OLD_ATTRIBUTES);
+        if (oldAttrs == null) return;
+        
+        // Restore old attributes
+        AttributeSet oldSet = new AttributeSet();
+        for (Map.Entry<String, String> entry : oldAttrs.entrySet()) {
+            oldSet.add(new Attribute(entry.getKey(), entry.getValue()));
+        }
+        
+        editor.attributesValueMap.put(targetView, oldSet);
+        
+        // Apply old attributes
+        for (Attribute attr : oldSet.getAttributes()) {
+            editor.applyAttribute(targetView, attr);
+        }
+        
+        targetView.requestLayout();
+    }
+    
+    private void handleUndoMove() {
+        View movedView = findViewById((String) data.get(KEY_VIEW_ID));
+        ViewGroup originalParent = findParentById((String) data.get(KEY_PARENT_ID));
+        
+        if (movedView == null || originalParent == null) return;
+        
+        // Remove from current parent
+        if (movedView.getParent() != null) {
+            ((ViewGroup) movedView.getParent()).removeView(movedView);
+        }
+        
+        // Add back to original position
+        int index = (int) data.get(KEY_INDEX);
+        originalParent.addView(movedView, Math.min(index, originalParent.getChildCount()));
+    }
+    
+    private void handleUndoConvert() {
+        // Similar to remove+add with original class
+        String originalClass = (String) data.get(KEY_ORIGINAL_CLASS);
+        if (originalClass == null) return;
+        
+        View currentView = findViewById((String) data.get(KEY_VIEW_ID));
+        if (currentView == null || currentView.getParent() == null) return;
+        
+        ViewGroup parentView = (ViewGroup) currentView.getParent();
+        int index = parentView.indexOfChild(currentView);
+        
+        try {
+            // Create original view
+            View originalView = createViewFromClass(originalClass);
+            if (originalView == null) return;
+            
+            // Restore ID
+            String viewId = (String) data.get(KEY_VIEW_ID);
+            if (viewId != null) {
+                IdManager.getInstance().addNewId(originalView, viewId);
+            }
+            
+            // Restore old attributes
+            Map<String, String> oldAttrs = (Map<String, String>) data.get(KEY_OLD_ATTRIBUTES);
+            if (oldAttrs != null) {
+                AttributeSet oldSet = new AttributeSet();
+                for (Map.Entry<String, String> entry : oldAttrs.entrySet()) {
+                    oldSet.add(new Attribute(entry.getKey(), entry.getValue()));
+                }
+                editor.attributesValueMap.put(originalView, oldSet);
+            }
+            
+            // Replace
+            parentView.removeView(currentView);
+            parentView.addView(originalView, index);
+            
+            // Apply attributes
+            if (editor.attributesValueMap.containsKey(originalView)) {
+                for (Attribute attr : editor.attributesValueMap.get(originalView).getAttributes()) {
+                    editor.applyAttribute(originalView, attr);
+                }
+            }
+            
+            // Setup listeners
+            setupViewListeners(originalView);
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Failed to convert back", e);
+        }
+    }
+    
+    @Override
+    public void redo() {
+        if (editor == null) return;
+        if (editor.isUndoRedoInProgress) return;
+        
+        editor.isUndoRedoInProgress = true;
+        
+        try {
+            switch (type) {
+                case ADD_VIEW:
+                    handleRedoAdd();
+                    break;
+                    
+                case REMOVE_VIEW:
+                    handleRedoRemove();
+                    break;
+                    
+                case UPDATE_ATTRIBUTE:
+                    handleRedoUpdateAttribute();
+                    break;
+                    
+                case MOVE_VIEW:
+                    handleRedoMove();
+                    break;
+                    
+                case CONVERT_WIDGET:
+                    handleRedoConvert();
+                    break;
+                    
+                case BULK_CHANGE:
+                    // Handled separately
+                    break;
+            }
+            
+            // Refresh UI
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    editor.requestLayout();
+                    editor.invalidate();
+                }
+            });
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Redo failed: " + e.getMessage(), e);
+        } finally {
+            editor.isUndoRedoInProgress = false;
+        }
+    }
+    
+    private void handleRedoAdd() {
+        // Add the view back
+        ViewGroup parentView = findParentById((String) data.get(KEY_PARENT_ID));
+        if (parentView == null) return;
+        
+        int index = (int) data.get(KEY_INDEX);
+        String viewClass = (String) data.get(KEY_VIEW_CLASS);
+        
+        try {
+            View newView = createViewFromClass(viewClass);
+            if (newView == null) return;
+            
+            String viewId = (String) data.get(KEY_VIEW_ID);
+            if (viewId != null) {
+                IdManager.getInstance().addNewId(newView, viewId);
+            }
+            
+            Map<String, String> attrsMap = (Map<String, String>) data.get(KEY_NEW_ATTRIBUTES);
+            if (attrsMap != null) {
+                AttributeSet attributeSet = new AttributeSet();
+                for (Map.Entry<String, String> entry : attrsMap.entrySet()) {
+                    attributeSet.add(new Attribute(entry.getKey(), entry.getValue()));
+                }
+                editor.attributesValueMap.put(newView, attributeSet);
+            }
+            
+            parentView.addView(newView, Math.min(index, parentView.getChildCount()));
+            
+            if (editor.attributesValueMap.containsKey(newView)) {
+                for (Attribute attr : editor.attributesValueMap.get(newView).getAttributes()) {
+                    editor.applyAttribute(newView, attr);
+                }
+            }
+            
+            setupViewListeners(newView);
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Failed to redo add", e);
+        }
+    }
+    
+    private void handleRedoRemove() {
+        View viewToRemove = findViewById((String) data.get(KEY_VIEW_ID));
+        if (viewToRemove != null && viewToRemove.getParent() != null) {
+            ((ViewGroup) viewToRemove.getParent()).removeView(viewToRemove);
+            IdManager.getInstance().remove(viewToRemove);
+            editor.attributesValueMap.remove(viewToRemove);
+        }
+    }
+    
+    private void handleRedoUpdateAttribute() {
+        View targetView = findViewById((String) data.get(KEY_VIEW_ID));
+        if (targetView == null) return;
+        
+        Map<String, String> newAttrs = (Map<String, String>) data.get(KEY_NEW_ATTRIBUTES);
+        if (newAttrs == null) return;
+        
+        // Apply new attributes
+        AttributeSet newSet = new AttributeSet();
+        for (Map.Entry<String, String> entry : newAttrs.entrySet()) {
+            newSet.add(new Attribute(entry.getKey(), entry.getValue()));
+        }
+        
+        editor.attributesValueMap.put(targetView, newSet);
+        
+        for (Attribute attr : newSet.getAttributes()) {
+            editor.applyAttribute(targetView, attr);
+        }
+        
+        targetView.requestLayout();
+    }
+    
+    private void handleRedoMove() {
+        View movedView = findViewById((String) data.get(KEY_VIEW_ID));
+        ViewGroup newParent = findParentById((String) data.get(KEY_PARENT_ID));
+        
+        if (movedView == null || newParent == null) return;
+        
+        if (movedView.getParent() != null) {
+            ((ViewGroup) movedView.getParent()).removeView(movedView);
+        }
+        
+        int index = (int) data.get(KEY_INDEX);
+        newParent.addView(movedView, Math.min(index, newParent.getChildCount()));
+    }
+    
+    private void handleRedoConvert() {
+        String newClass = (String) data.get(KEY_NEW_CLASS);
+        if (newClass == null) return;
+        
+        View currentView = findViewById((String) data.get(KEY_VIEW_ID));
+        if (currentView == null || currentView.getParent() == null) return;
+        
+        ViewGroup parentView = (ViewGroup) currentView.getParent();
+        int index = parentView.indexOfChild(currentView);
+        
+        try {
+            View newView = createViewFromClass(newClass);
+            if (newView == null) return;
+            
+            String viewId = (String) data.get(KEY_VIEW_ID);
+            if (viewId != null) {
+                IdManager.getInstance().addNewId(newView, viewId);
+            }
+            
+            Map<String, String> newAttrs = (Map<String, String>) data.get(KEY_NEW_ATTRIBUTES);
+            if (newAttrs != null) {
+                AttributeSet newSet = new AttributeSet();
+                for (Map.Entry<String, String> entry : newAttrs.entrySet()) {
+                    newSet.add(new Attribute(entry.getKey(), entry.getValue()));
+                }
+                editor.attributesValueMap.put(newView, newSet);
+            }
+            
+            parentView.removeView(currentView);
+            parentView.addView(newView, index);
+            
+            if (editor.attributesValueMap.containsKey(newView)) {
+                for (Attribute attr : editor.attributesValueMap.get(newView).getAttributes()) {
+                    editor.applyAttribute(newView, attr);
+                }
+            }
+            
+            setupViewListeners(newView);
+            
+        } catch (Exception e) {
+            Log.e("ViewAction", "Failed to redo convert", e);
+        }
+    }
+    
+    private View findViewById(String id) {
+        if (id == null) return null;
+        return IdManager.getInstance().getView(id);
+    }
+    
+    private ViewGroup findParentById(String id) {
+        if (id == null) return null;
+        View view = IdManager.getInstance().getView(id);
+        return (view instanceof ViewGroup) ? (ViewGroup) view : null;
+    }
+    
+    private View createViewFromClass(String className) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            return (View) clazz.getConstructor(Context.class).newInstance(editor.getContext());
+        } catch (Exception e) {
+            try {
+                Class<?> clazz = Class.forName("android.widget." + className);
+                return (View) clazz.getConstructor(Context.class).newInstance(editor.getContext());
+            } catch (Exception e2) {
+                return null;
+            }
+        }
+    }
+    
+    private void setupViewListeners(View view) {
+        if (editor == null) return;
+        
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id = IdManager.getInstance().getId(v);
+                if (id != null && editor.viewItems != null) {
+                    editor.viewItems.selectId(id);
+                }
+                editor.showAttributesDialog(v);
+            }
+        });
+        
+        editor._rearrangeListener(view);
+        
+        if (view instanceof ViewGroup) {
+            view.setOnDragListener(editor.dragListener);
+        }
+    }
+    
+    private boolean hasEditor() {
+        return editor != null;
+    }
+    
+    private ViewEditor getEditor() {
+        return editor;
+    }
+    
+    private void notifyListeners(ViewEditor editor) {
+        // Notify UndoManager about change
+        if (editor != null) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    // Trigger UI update
+                    editor.requestLayout();
+                    editor.invalidate();
+                }
+            });
+        }
+    }
+    
+    @Override
+    public String getDescription() {
+        switch (type) {
+            case ADD_VIEW:
+                String className = (String) data.get(KEY_VIEW_CLASS);
+                return "Add " + getSimpleName(className);
+            case REMOVE_VIEW:
+                return "Remove " + getSimpleName((String) data.get(KEY_VIEW_CLASS));
+            case UPDATE_ATTRIBUTE:
+                return "Change attribute";
+            case MOVE_VIEW:
+                return "Move widget";
+            case CONVERT_WIDGET:
+                return "Convert widget";
+            case BULK_CHANGE:
+                return "Multiple changes";
+            default:
+                return "Unknown action";
+        }
+    }
+    
+    private String getSimpleName(String fullClassName) {
+        if (fullClassName == null) return "widget";
+        int lastDot = fullClassName.lastIndexOf('.');
+        return lastDot > 0 ? fullClassName.substring(lastDot + 1) : fullClassName;
+    }
+    
+ 
+    @Override
+    public long getTimestamp() {
+        return timestamp;
+    }
+    
+    @Override
+    public ActionType getType() {
+        return type;
+    }
+    
+    @Override
+    public Map<String, Object> getData() {
+        return data;
+    }
+    
+    @Override
+    public String getActivityName() {
+        return activityName;
+    }
+    
+    // Builder Class
+    public static class Builder {
+        private ActionType type;
+        private View view;
+        private ViewGroup parent;
+        private int index = -1;
+        private ViewEditor editor;
+        private AttributeSet oldAttributes;
+        private AttributeSet newAttributes;
+        private String activityName;
+        private String originalClassName;
+        private String newClassName;
+        
+        public Builder setType(ActionType type) {
+            this.type = type;
+            return this;
+        }
+        
+        public Builder setView(View view) {
+            this.view = view;
+            return this;
+        }
+        
+        public Builder setParent(ViewGroup parent) {
+            this.parent = parent;
+            return this;
+        }
+        
+        public Builder setIndex(int index) {
+            this.index = index;
+            return this;
+        }
+        
+        public Builder setEditor(ViewEditor editor) {
+            this.editor = editor;
+            return this;
+        }
+        
+        public Builder setOldAttributes(AttributeSet oldAttributes) {
+            this.oldAttributes = oldAttributes;
+            return this;
+        }
+        
+        public Builder setNewAttributes(AttributeSet newAttributes) {
+            this.newAttributes = newAttributes;
+            return this;
+        }
+        
+        public Builder setActivityName(String activityName) {
+            this.activityName = activityName;
+            return this;
+        }
+        
+        public Builder setOriginalClassName(String originalClassName) {
+            this.originalClassName = originalClassName;
+            return this;
+        }
+        
+        public Builder setNewClassName(String newClassName) {
+            this.newClassName = newClassName;
+            return this;
+        }
+        
+        public ViewAction build() {
+            return new ViewAction(this);
+        }
+    }
+}

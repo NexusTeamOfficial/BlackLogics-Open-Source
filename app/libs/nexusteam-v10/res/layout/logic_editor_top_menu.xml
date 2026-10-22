@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:orientation="horizontal" android:background="#efefef" android:paddingTop="8dp" android:paddingBottom="8dp" android:layout_width="match_parent" android:layout_height="48dp">
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/layout_delete" android:background="#fefefe" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
+        <ImageView android:id="@+id/iv_trash" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginLeft="4dp" android:src="@drawable/icon_delete" android:scaleType="centerInside"/>
+        <TextView android:gravity="center" android:id="@+id/tv_delete" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/layout_copy" android:background="#fefefe" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
+        <ImageView android:id="@+id/iv_copy" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginLeft="4dp" android:src="@drawable/ic_content_paste_grey600_24dp" android:scaleType="centerInside"/>
+        <TextView android:gravity="center" android:id="@+id/tv_copy" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/layout_favorite" android:background="#fefefe" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
+        <ImageView android:id="@+id/iv_bookmark" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginLeft="4dp" android:src="@drawable/ic_bookmark_red_48dp" android:scaleType="centerInside"/>
+        <TextView android:gravity="center" android:id="@+id/tv_favorite" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+    <LinearLayout android:gravity="center" android:orientation="horizontal" android:id="@+id/layout_detail" android:background="#fefefe" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginStart="2dp" android:layout_marginEnd="2dp">
+        <ImageView android:id="@+id/iv_detail" android:layout_width="18dp" android:layout_height="18dp" android:layout_marginLeft="4dp" android:src="@drawable/more_block_96dp" android:scaleType="centerInside"/>
+        <TextView android:gravity="center" android:id="@+id/tv_detail" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,855 @@
+package com.nexusteam.blacklogics.logic;
+
+import android.util.Base64;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ProjectLogicRepository {
+	
+	public static String projectPath = "";
+	
+	public static void setPath(String path) {
+		ProjectLogicRepository.projectPath = path;
+	}
+	
+	private static File getMainFile() {
+		return new File(projectPath + "/project_logic.bin");
+	}
+	
+	private static Map<String, Object> loadAll() {
+		File file = getMainFile();
+		if (!file.exists()) {
+			return new HashMap<String, Object>();
+		}
+		
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file);
+			byte[] fileData = new byte[(int) file.length()];
+			fis.read(fileData);
+			
+			byte[] decodedBytes = Base64.decode(fileData, Base64.DEFAULT);
+			String json = new String(decodedBytes, StandardCharsets.UTF_8);
+			
+			Type type = new TypeToken<Map<String, Object>>() {}.getType();
+			Map<String, Object> allData = new Gson().fromJson(json, type);
+			
+			return allData == null ? new HashMap<String, Object>() : allData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new HashMap<String, Object>();
+		} finally {
+			if (fis != null) {
+				try { fis.close(); } catch (Exception e) {}
+			}
+		}
+	}
+	
+	private static void saveAll(Map<String, Object> allData) {
+		FileOutputStream fos = null;
+		try {
+			String json = new GsonBuilder().setPrettyPrinting().create().toJson(allData);
+			byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
+			
+			byte[] encodedBytes = Base64.encode(jsonBytes, Base64.DEFAULT);
+			
+			File file = getMainFile();
+			File parentDir = file.getParentFile();
+			if (parentDir != null && !parentDir.exists()) {
+				parentDir.mkdirs();
+			}
+			
+			fos = new FileOutputStream(file);
+			fos.write(encodedBytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (fos != null) {
+				try { fos.close(); } catch (Exception e) {}
+			}
+		}
+	}
+	
+	// ============ COMPONENT METHODS WITH EXTRA DATA ============
+	
+	public static void saveComponentLogic(String activityName,
+	String componentName,
+	String fieldName,
+	String extraData) {
+		
+		Map<String, Object> all = loadAll();
+		
+		// FIX: Gson LinkedTreeMap se safe List banao — cast directly mat karo
+		List<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+		
+		Object componentsObj = all.get("components");
+		if (componentsObj instanceof Map) {
+			Map<?, ?> componentsRaw = (Map<?, ?>) componentsObj;
+			Object listObj = componentsRaw.get(activityName);
+			if (listObj instanceof List) {
+				for (Object o : (List<?>) listObj) {
+					if (o instanceof Map) {
+						HashMap<String, String> safeMap = new HashMap<String, String>();
+						for (Map.Entry<?, ?> e : ((Map<?, ?>) o).entrySet()) {
+							safeMap.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+						}
+						list.add(safeMap);
+					}
+				}
+			}
+		}
+		
+		// Check if component with same fieldName already exists
+		boolean found = false;
+		for (HashMap<String, String> existingComp : list) {
+			if (fieldName.equals(existingComp.get("fieldName"))) {
+				existingComp.put("componentName", componentName);
+				existingComp.put("extraData", extraData != null ? extraData : "");
+				found = true;
+				break;
+			}
+		}
+		
+		// If not found, add new component
+		if (!found) {
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("componentName", componentName);
+			map.put("fieldName", fieldName);
+			map.put("extraData", extraData != null ? extraData : "");
+			list.add(map);
+		}
+		
+		// Safe rebuild karo poora components map
+		Map<String, Object> newComponents = new HashMap<String, Object>();
+		Object existingComps = all.get("components");
+		if (existingComps instanceof Map) {
+			for (Map.Entry<?, ?> e : ((Map<?, ?>) existingComps).entrySet()) {
+				newComponents.put(String.valueOf(e.getKey()), e.getValue());
+			}
+		}
+		newComponents.put(activityName, list);
+		all.put("components", newComponents);
+		
+		saveAll(all);
+	}
+	
+	// Overloaded method for backward compatibility (without extraData)
+	public static void saveComponentLogic(String activityName,
+	String componentName,
+	String fieldName) {
+		saveComponentLogic(activityName, componentName, fieldName, "");
+	}
+	
+	public static List<HashMap<String, String>> loadComponentLogic(String activityName) {
+		Map<String, Object> all = loadAll();
+		Object componentsObj = all.get("components");
+		if (!(componentsObj instanceof Map)) return new ArrayList<HashMap<String, String>>();
+		
+		Map<String, Object> components = (Map<String, Object>) componentsObj;
+		Object listObj = components.get(activityName);
+		if (!(listObj instanceof List)) return new ArrayList<HashMap<String, String>>();
+		
+		List<?> rawList = (List<?>) listObj;
+		List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+		for (Object o : rawList) {
+			if (o instanceof Map) {
+				Map<?, ?> rawMap = (Map<?, ?>) o;
+				HashMap<String, String> map = new HashMap<String, String>();
+				for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+					map.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+				}
+				// Ensure extraData field exists even if not present in old data
+				if (!map.containsKey("extraData")) {
+					map.put("extraData", "");
+				}
+				result.add(map);
+			}
+		}
+		return result;
+	}
+	
+	public static String getComponentExtraData(String activityName, String fieldName) {
+		List<HashMap<String, String>> components = loadComponentLogic(activityName);
+		for (HashMap<String, String> comp : components) {
+			if (fieldName.equals(comp.get("fieldName"))) {
+				String extraData = comp.get("extraData");
+				return extraData != null ? extraData : "";
+			}
+		}
+		return "";
+	}
+	
+	public static List<HashMap<String, String>> getComponentsByType(String activityName, String componentType) {
+		List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+		List<HashMap<String, String>> allComponents = loadComponentLogic(activityName);
+		
+		for (HashMap<String, String> comp : allComponents) {
+			if (componentType.equals(comp.get("componentName"))) {
+				result.add(comp);
+			}
+		}
+		return result;
+	}
+	
+	public static void removeComponentLogic(String activityName, String componentName, String fieldName) {
+		Map<String, Object> all = loadAll();
+		
+		Object componentsObj = all.get("components");
+		if (!(componentsObj instanceof Map)) return;
+		Map<String, Object> components = (Map<String, Object>) componentsObj;
+		
+		Object listObj = components.get(activityName);
+		if (!(listObj instanceof List)) return;
+		List<?> rawList = (List<?>) listObj;
+		
+		List<HashMap<String, String>> newList = new ArrayList<HashMap<String, String>>();
+		for (Object o : rawList) {
+			if (o instanceof Map) {
+				Map<?, ?> comp = (Map<?, ?>) o;
+				String cName = String.valueOf(comp.get("componentName"));
+				String fName = String.valueOf(comp.get("fieldName"));
+				if (!componentName.equals(cName) || !fieldName.equals(fName)) {
+					HashMap<String, String> safeMap = new HashMap<String, String>();
+					for (Map.Entry<?, ?> entry : comp.entrySet()) {
+						safeMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+					}
+					// Preserve extraData if it exists
+					if (comp.containsKey("extraData")) {
+						safeMap.put("extraData", String.valueOf(comp.get("extraData")));
+					}
+					newList.add(safeMap);
+				}
+			}
+		}
+		
+		if (newList.isEmpty()) {
+			components.remove(activityName);
+		} else {
+			components.put(activityName, newList);
+		}
+		
+		all.put("components", components);
+		saveAll(all);
+	}
+	
+	// ============ VARIABLE METHODS ============
+	
+	public static void saveVariable(String activityName,
+	String typeName,
+	String varName) {
+		
+		Map<String, Object> all = loadAll();
+		
+		Map<String, List<HashMap<String, String>>> variables;
+		if (all.containsKey("variables")) {
+			variables = (Map<String, List<HashMap<String, String>>>) all.get("variables");
+		} else {
+			variables = new HashMap<String, List<HashMap<String, String>>>();
+		}
+		
+		List<HashMap<String, String>> list;
+		if (variables.containsKey(activityName)) {
+			list = variables.get(activityName);
+		} else {
+			list = new ArrayList<HashMap<String, String>>();
+		}
+		
+		HashMap<String, String> data = new HashMap<String, String>();
+		data.put("varTypeName", typeName);
+		data.put("varName", varName);
+		
+		list.add(data);
+		variables.put(activityName, list);
+		all.put("variables", variables);
+		
+		saveAll(all);
+	}
+	
+	public static List<HashMap<String, String>> loadVariableLogic(String activityName) {
+		Map<String, Object> all = loadAll();
+		Object varsObj = all.get("variables");
+		if (!(varsObj instanceof Map)) return new ArrayList<HashMap<String, String>>();
+		
+		Map<String, Object> rawMap = (Map<String, Object>) varsObj;
+		Object listObj = rawMap.get(activityName);
+		if (!(listObj instanceof List)) return new ArrayList<HashMap<String, String>>();
+		
+		List<?> rawList = (List<?>) listObj;
+		List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+		for (Object o : rawList) {
+			if (o instanceof Map) {
+				Map<?, ?> m = (Map<?, ?>) o;
+				HashMap<String, String> clean = new HashMap<String, String>();
+				for (Map.Entry<?, ?> e : m.entrySet()) {
+					clean.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+				}
+				result.add(clean);
+			}
+		}
+		return result;
+	}
+	
+	public static void removeVariable(String activityName, String typeName, String varName) {
+		Map<String, Object> all = loadAll();
+		Object varsObj = all.get("variables");
+		if (!(varsObj instanceof Map)) return;
+		
+		Map<?, ?> rawVariables = (Map<?, ?>) varsObj;
+		Object listObj = rawVariables.get(activityName);
+		if (!(listObj instanceof List)) return;
+		
+		List<?> rawList = (List<?>) listObj;
+		List<HashMap<String, String>> cleanedList = new ArrayList<HashMap<String, String>>();
+		
+		for (Object o : rawList) {
+			if (o instanceof Map) {
+				Map<?, ?> m = (Map<?, ?>) o;
+				String vType = String.valueOf(m.get("varTypeName"));
+				String vName = String.valueOf(m.get("varName"));
+				if (!typeName.equals(vType) || !varName.equals(vName)) {
+					HashMap<String, String> clean = new HashMap<String, String>();
+					for (Map.Entry<?, ?> e : m.entrySet()) {
+						clean.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+					}
+					cleanedList.add(clean);
+				}
+			}
+		}
+		
+		Map<String, Object> newVariables = new HashMap<String, Object>(rawVariables.size());
+		for (Map.Entry<?, ?> e : rawVariables.entrySet()) {
+			String key = String.valueOf(e.getKey());
+			if (!key.equals(activityName)) {
+				newVariables.put(key, e.getValue());
+			}
+		}
+		
+		if (!cleanedList.isEmpty()) {
+			newVariables.put(activityName, cleanedList);
+		}
+		
+		all.put("variables", newVariables);
+		saveAll(all);
+	}
+	
+	// ============ BLOCK/WIDGET METHODS ============
+	
+	public static void saveBlockLogicForWidget(String activityName,
+	String widgetId,
+	String logic) {
+		
+		Map<String, Object> all = loadAll();
+		
+		Map<String, Map<String, String>> blocks;
+		if (all.containsKey("blocks")) {
+			blocks = (Map<String, Map<String, String>>) all.get("blocks");
+		} else {
+			blocks = new HashMap<String, Map<String, String>>();
+		}
+		
+		Map<String, String> act;
+		if (blocks.containsKey(activityName)) {
+			act = blocks.get(activityName);
+		} else {
+			act = new HashMap<String, String>();
+		}
+		
+		act.put(widgetId, logic);
+		blocks.put(activityName, act);
+		all.put("blocks", blocks);
+		
+		saveAll(all);
+	}
+	
+	public static String getBlockLogicForWidget(String activityName,
+	String widgetId) {
+		
+		Map<String, Object> all = loadAll();
+		
+		Map<String, Map<String, String>> blocks;
+		if (all.containsKey("blocks")) {
+			blocks = (Map<String, Map<String, String>>) all.get("blocks");
+		} else {
+			return "";
+		}
+		
+		Map<String, String> act = blocks.get(activityName);
+		if (act == null) return "";
+		
+		String logic = act.get(widgetId);
+		return logic != null ? logic : "";
+	}
+	
+	public static boolean isBlockLogicAvailable(String activityName,
+	String widgetId) {
+		
+		Map<String, Object> all = loadAll();
+		
+		if (!all.containsKey("blocks")) return false;
+		
+		Map<String, Map<String, String>> blocks = (Map<String, Map<String, String>>) all.get("blocks");
+		
+		Map<String, String> act = blocks.get(activityName);
+		if (act == null) return false;
+		
+		String logic = act.get(widgetId);
+		return logic != null && logic.length() > 0;
+	}
+	
+	public static Map<String, String> getWidgetClickListeners(String activityName) {
+		
+		Map<String, String> widgetEvents = new LinkedHashMap<String, String>();
+		
+		Map<String, Object> all = loadAll();
+		
+		if (!all.containsKey("blocks")) return widgetEvents;
+		
+		Map<String, Map<String, String>> blocks = (Map<String, Map<String, String>>) all.get("blocks");
+		
+		Map<String, String> activityBlocks = blocks.get(activityName);
+		if (activityBlocks != null) {
+			widgetEvents.putAll(activityBlocks);
+		}
+		return widgetEvents;
+	}
+	
+	public static String getBlockLogicForEvent(String activityName, String widgetId) {
+		return getBlockLogicForWidget(activityName, widgetId);
+	}
+	
+	public static void saveBlockLogicForEvent(String activityName, String widgetId, String logic) {
+		saveBlockLogicForWidget(activityName, widgetId, logic);
+	}
+	
+	public static String getBlockLogics(String activityName) {
+		
+		Map<String, Object> all = loadAll();
+		
+		if (!all.containsKey("blocks")) {
+			return "";
+		}
+		
+		Map<String, Map<String, String>> blocks = (Map<String, Map<String, String>>) all.get("blocks");
+		
+		Map<String, String> act = blocks.get(activityName);
+		
+		if (act == null) {
+			return "";
+		}
+		
+		String logic = act.get(activityName);
+		
+		if (logic == null) {
+			return "";
+		}
+		
+		return logic;
+	}
+	
+	// ============ FUNCTION METHODS ============
+	
+	public static void addFunction(String activityName,
+	String functionName,
+	String returnType,
+	List<HashMap<String, String>> params) {
+		Map<String, Object> all = loadAll();
+		
+		Map<String, List<HashMap<String, Object>>> functions = new HashMap<String, List<HashMap<String, Object>>>();
+		
+		Object rawFn = all.get("functions");
+		
+		if (rawFn instanceof Map) {
+			Map<?, ?> rawMap = (Map<?, ?>) rawFn;
+			for (Map.Entry<?, ?> e : rawMap.entrySet()) {
+				
+				String act = String.valueOf(e.getKey());
+				List<HashMap<String, Object>> fnList = new ArrayList<HashMap<String, Object>>();
+				
+				if (e.getValue() instanceof List) {
+					for (Object o : (List<?>) e.getValue()) {
+						if (o instanceof Map) {
+							HashMap<String, Object> clean = new HashMap<String, Object>();
+							
+							for (Map.Entry<?, ?> m : ((Map<?, ?>) o).entrySet()) {
+								clean.put(String.valueOf(m.getKey()), m.getValue());
+							}
+							fnList.add(clean);
+						}
+					}
+				}
+				functions.put(act, fnList);
+			}
+		}
+		
+		List<HashMap<String, Object>> list;
+		if (functions.containsKey(activityName)) {
+			list = functions.get(activityName);
+		} else {
+			list = new ArrayList<HashMap<String, Object>>();
+		}
+		
+		boolean found = false;
+		for (HashMap<String, Object> fn : list) {
+			Object name = fn.get("functionName");
+			if (functionName.equals(name)) {
+				fn.put("returnType", returnType);
+				fn.put("parameters", params);
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			HashMap<String, Object> newFn = new HashMap<String, Object>();
+			newFn.put("functionName", functionName);
+			newFn.put("returnType", returnType);
+			newFn.put("parameters", params);
+			list.add(newFn);
+		}
+		
+		functions.put(activityName, list);
+		all.put("functions", functions);
+		saveAll(all);
+	}
+	
+	public static List<HashMap<String, Object>> loadFunctions(String activityName) {
+		Map<String, Object> all = loadAll();
+		
+		Object rawFn = all.get("functions");
+		if (!(rawFn instanceof Map)) return new ArrayList<HashMap<String, Object>>();
+		
+		Map<?, ?> fnMap = (Map<?, ?>) rawFn;
+		Object rawList = fnMap.get(activityName);
+		if (!(rawList instanceof List)) return new ArrayList<HashMap<String, Object>>();
+		
+		List<?> list = (List<?>) rawList;
+		List<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
+		
+		for (Object o : list) {
+			if (o instanceof Map) {
+				Map<?, ?> raw = (Map<?, ?>) o;
+				HashMap<String, Object> clean = new HashMap<String, Object>();
+				
+				for (Map.Entry<?, ?> e : raw.entrySet()) {
+					Object val = e.getValue();
+					
+					if ("parameters".equals(String.valueOf(e.getKey())) && val instanceof List) {
+						
+						List<HashMap<String, String>> params = new ArrayList<HashMap<String, String>>();
+						
+						for (Object p : (List<?>) val) {
+							if (p instanceof Map) {
+								HashMap<String, String> cleanParam = new HashMap<String, String>();
+								for (Map.Entry<?, ?> pe : ((Map<?, ?>) p).entrySet()) {
+									cleanParam.put(String.valueOf(pe.getKey()), String.valueOf(pe.getValue()));
+								}
+								params.add(cleanParam);
+							}
+						}
+						clean.put("parameters", params);
+						
+					} else {
+						clean.put(String.valueOf(e.getKey()), val);
+					}
+				}
+				result.add(clean);
+			}
+		}
+		return result;
+	}
+	
+	// ============ COMPONENT EVENT METHODS ============
+	
+	public static void saveComponentEventLogic(String activityName,
+	String componentName,
+	String fieldName,
+	String eventName,
+	String logic,
+	String extraData) {
+		
+		Map<String, Object> all = loadAll();
+		
+		// FIX: Gson LinkedTreeMap se safe List banao
+		List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+		
+		Object componentsObj = all.get("components");
+		if (componentsObj instanceof Map) {
+			Map<?, ?> componentsRaw = (Map<?, ?>) componentsObj;
+			Object listObj = componentsRaw.get(activityName);
+			if (listObj instanceof List) {
+				for (Object o : (List<?>) listObj) {
+					if (o instanceof Map) {
+						HashMap<String, Object> safeMap = new HashMap<String, Object>();
+						for (Map.Entry<?, ?> e : ((Map<?, ?>) o).entrySet()) {
+							safeMap.put(String.valueOf(e.getKey()), e.getValue());
+						}
+						list.add(safeMap);
+					}
+				}
+			}
+		}
+		
+		boolean found = false;
+		for (HashMap<String, Object> comp : list) {
+			Object f = comp.get("fieldName");
+			if (f != null && f.equals(fieldName)) {
+				
+				Map<String, String> events = new HashMap<String, String>();
+				Object evObj = comp.get("events");
+				if (evObj instanceof Map) {
+					for (Map.Entry<?, ?> e : ((Map<?, ?>) evObj).entrySet()) {
+						events.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+					}
+				}
+				events.put(eventName, logic);
+				comp.put("events", events);
+				
+				if (extraData != null) {
+					comp.put("extraData", extraData);
+				}
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found) {
+			HashMap<String, Object> newComp = new HashMap<String, Object>();
+			newComp.put("fieldName", fieldName);
+			newComp.put("componentName", componentName);
+			if (extraData != null) {
+				newComp.put("extraData", extraData);
+			}
+			Map<String, String> events = new HashMap<String, String>();
+			events.put(eventName, logic);
+			newComp.put("events", events);
+			list.add(newComp);
+		}
+		
+		// Safe rebuild
+		Map<String, Object> newComponents = new HashMap<String, Object>();
+		Object existingComps = all.get("components");
+		if (existingComps instanceof Map) {
+			for (Map.Entry<?, ?> e : ((Map<?, ?>) existingComps).entrySet()) {
+				newComponents.put(String.valueOf(e.getKey()), e.getValue());
+			}
+		}
+		newComponents.put(activityName, list);
+		all.put("components", newComponents);
+		saveAll(all);
+	}
+	
+	public static void saveComponentEventLogic(String activityName,
+	String componentName,
+	String fieldName,
+	String eventName,
+	String logic) {
+		saveComponentEventLogic(activityName, componentName, fieldName, eventName, logic, null);
+	}
+	
+	public static String loadComponentEventLogic(String activityName,
+	String fieldName,
+	String eventName) {
+		
+		Map<String, Object> all = loadAll();
+		
+		if (!all.containsKey("components")) return "";
+		
+		Map<String, List<HashMap<String, Object>>> components = (Map<String, List<HashMap<String, Object>>>) all.get("components");
+		
+		List<HashMap<String, Object>> list = components.get(activityName);
+		if (list == null) return "";
+		
+		for (HashMap<String, Object> comp : list) {
+			Object f = comp.get("fieldName");
+			if (f != null && f.equals(fieldName)) {
+				
+				Object ev = comp.get("events");
+				if (ev instanceof Map) {
+					Map<String, String> events = (Map<String, String>) ev;
+					
+					String logic = events.get(eventName);
+					return logic != null ? logic : "";
+				}
+			}
+		}
+		return "";
+	}
+	
+	public static Map<String, Object> loadComponentEventLogicWithExtra(String activityName,
+	String fieldName,
+	String eventName) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("logic", "");
+		result.put("extraData", "");
+		
+		Map<String, Object> all = loadAll();
+		
+		if (!all.containsKey("components")) return result;
+		
+		Map<String, List<HashMap<String, Object>>> components = (Map<String, List<HashMap<String, Object>>>) all.get("components");
+		
+		List<HashMap<String, Object>> list = components.get(activityName);
+		if (list == null) return result;
+		
+		for (HashMap<String, Object> comp : list) {
+			Object f = comp.get("fieldName");
+			if (f != null && f.equals(fieldName)) {
+				
+				// Get extraData
+				if (comp.containsKey("extraData")) {
+					result.put("extraData", String.valueOf(comp.get("extraData")));
+				}
+				
+				// Get event logic
+				Object ev = comp.get("events");
+				if (ev instanceof Map) {
+					Map<String, String> events = (Map<String, String>) ev;
+					String logic = events.get(eventName);
+					result.put("logic", logic != null ? logic : "");
+				}
+				
+				break;
+			}
+		}
+		return result;
+	}
+	
+	public static List<HashMap<String, String>> loadComponentFromName(String activityName, String componentName) {
+		List<HashMap<String, String>> matched = new ArrayList<HashMap<String, String>>();
+		Map<String, Object> all = loadAll();
+		Object componentsObj = all.get("components");
+		
+		if (!(componentsObj instanceof Map)) return matched;
+		
+		Map<String, Object> components = (Map<String, Object>) componentsObj;
+		Object listObj = components.get(activityName);
+		
+		if (!(listObj instanceof List)) return matched;
+		
+		List<?> rawList = (List<?>) listObj;
+		
+		for (Object o : rawList) {
+			if (o instanceof Map) {
+				Map<?, ?> rawCompMap = (Map<?, ?>) o;
+				
+				HashMap<String, String> cleanComp = new HashMap<String, String>();
+				for (Map.Entry<?, ?> entry : rawCompMap.entrySet()) {
+					cleanComp.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+				}
+				
+				// Ensure extraData field exists
+				if (!cleanComp.containsKey("extraData")) {
+					cleanComp.put("extraData", "");
+				}
+				
+				if (componentName.equals(cleanComp.get("componentName"))) {
+					matched.add(cleanComp);
+				}
+			}
+		}
+		return matched;
+	}
+	
+	public static List<HashMap<String, String>> loadIntentComponents(String activityName) {
+		return loadComponentFromName(activityName, "Intent");
+	}
+	
+	// ============ IMPORT METHODS - SIMPLE SETTER/GETTER (JAVA 7) ============
+	
+	public static void setImports(String activityName, String imports) {
+		Map<String, Object> all = loadAll();
+		
+		Map<String, String> importsMap;
+		if (all.containsKey("imports")) {
+			importsMap = (Map<String, String>) all.get("imports");
+		} else {
+			importsMap = new HashMap<String, String>();
+		}
+		
+		importsMap.put(activityName, imports);
+		all.put("imports", importsMap);
+		
+		saveAll(all);
+	}
+	
+	public static String getImports(String activityName) {
+		Map<String, Object> all = loadAll();
+		
+		Object importsObj = all.get("imports");
+		if (!(importsObj instanceof Map)) {
+			return "";
+		}
+		
+		Map<String, String> importsMap = (Map<String, String>) importsObj;
+		String imports = importsMap.get(activityName);
+		
+		return imports != null ? imports : "";
+	}
+	public static void removeBlockLogic(String activityName) {
+
+	Map<String, Object> all = loadAll();
+
+	if (!all.containsKey("blocks")) return;
+
+	Map<String, Map<String, String>> blocks =
+	(Map<String, Map<String, String>>) all.get("blocks");
+
+	Map<String, String> act = blocks.get(activityName);
+	if (act == null) return;
+
+	act.remove(activityName);
+
+	if (act.isEmpty()) {
+		blocks.remove(activityName);
+	} else {
+		blocks.put(activityName, act);
+	}
+
+	all.put("blocks", blocks);
+	saveAll(all);
+}
+public static void removeBlockLogicForWidget(String activityName, String widgetId) {
+
+	Map<String, Object> all = loadAll();
+
+	if (!all.containsKey("blocks")) return;
+
+	Map<String, Map<String, String>> blocks =
+	(Map<String, Map<String, String>>) all.get("blocks");
+
+	Map<String, String> act = blocks.get(activityName);
+	if (act == null) return;
+
+	act.remove(widgetId);
+
+	if (act.isEmpty()) {
+		blocks.remove(activityName);
+	} else {
+		blocks.put(activityName, act);
+	}
+
+	all.put("blocks", blocks);
+	saveAll(all);
+}
+public static void removeBlockLogicForEvent(String activityName, String widgetId) {
+	removeBlockLogicForWidget(activityName, widgetId);
+}
+	// Utility method to reset cache if needed
+	public static void resetCache() {
+	}
+	
+	public static void flushCache() {
+	}
+}
