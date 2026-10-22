@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:background="?attr/selectableItemBackground" android:layout_width="wrap_content" android:layout_height="wrap_content">
+    <RelativeLayout android:id="@+id/property_item" android:layout_width="match_parent" android:layout_height="72dp">
+        <ImageView android:id="@+id/img_left_icon" android:layout_width="24dp" android:layout_height="24dp" android:layout_marginLeft="8dp" android:layout_marginRight="8dp" android:layout_centerVertical="true" android:layout_alignParentStart="true"/>
+        <TextView android:textSize="14sp" android:textColor="#9a9a9a" android:id="@+id/tv_value" android:paddingRight="60dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@+id/tv_name" android:layout_marginStart="40dp"/>
+        <ImageView android:id="@+id/view_image" android:background="#ffbdbdbd" android:layout_width="60dp" android:layout_height="60dp" android:layout_marginRight="16dp" android:scaleType="centerCrop" android:layout_alignParentRight="true" android:layout_centerVertical="true"/>
+        <View android:background="#f6f6f6" android:layout_width="match_parent" android:layout_height="1dp" android:layout_alignParentBottom="true" android:layout_marginStart="40dp"/>
+        <TextView android:textSize="16sp" android:textColor="#404040" android:id="@+id/tv_name" android:paddingTop="16dp" android:paddingRight="60dp" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentTop="true" android:layout_marginStart="40dp" android:layout_alignParentStart="true"/>
+    </RelativeLayout>
+    <include layout="@layout/property_grid_item"/>
+</RelativeLayout>

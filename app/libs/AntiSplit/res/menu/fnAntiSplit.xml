@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:icon="@drawable/dup_0x7f020003" android:id="@id/dup_0x7f030008" android:title="@string/dup_0x7f060020" android:showAsAction="ifRoom" />
+</menu>

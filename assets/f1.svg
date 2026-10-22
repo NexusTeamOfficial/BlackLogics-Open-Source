@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="112" viewBox="0 0 450 112">
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#211F26" stroke="#49454F" stroke-width="1.5"/>
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#D0BCFF" fill-opacity=".04"/>
+<rect x="22" y="26" width="60" height="60" rx="18" fill="#381E72" stroke="#D0BCFF" stroke-opacity=".55" stroke-width="1.2"/>
+<g transform="translate(40 44) scale(1.0)" fill="#D0BCFF"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></g>
+<text x="102" y="46" fill="#E6E1E5" font-size="17" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Independent architecture</text>
+<text x="102" y="68" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Custom core by NexusTeam,</text>
+<text x="102" y="86" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">not a Sketchware fork</text></svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/dup_0x7f06001c">
+		<CheckBoxPreference android:title="@string/dup_0x7f06001f" android:key="signEnable" android:defaultValue="true" android:summaryOn="@string/dup_0x7f06001e" android:summaryOff="@string/dup_0x7f06001d" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/dup_0x7f060018">
+		<CheckBoxPreference android:title="@string/dup_0x7f06001b" android:key="moduleEnable" android:defaultValue="false" android:summaryOn="@string/dup_0x7f06001a" android:summaryOff="@string/dup_0x7f060019" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/dup_0x7f06000a">
+		<CheckBoxPreference android:title="@string/dup_0x7f06000d" android:key="extractNativeLibsEnable" android:defaultValue="false" android:summaryOn="@string/dup_0x7f06000c" android:summaryOff="@string/dup_0x7f06000b" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/dup_0x7f060014">
+		<CheckBoxPreference android:title="@string/dup_0x7f060017" android:key="mismatchingPackagesEnable" android:defaultValue="false" android:summaryOn="@string/dup_0x7f060016" android:summaryOff="@string/dup_0x7f060015" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/dup_0x7f06000f">
+		<CheckBoxPreference android:title="@string/dup_0x7f06000e" android:key="languageEnable" android:defaultValue="false" android:summaryOn="@string/dup_0x7f060010" android:summaryOff="@string/dup_0x7f060011" />
+		<EditTextPreference android:title="@string/dup_0x7f060012" android:key="languageCode" android:summary="@string/dup_0x7f060013" android:defaultValue="ru" />
+	</PreferenceCategory>
+</PreferenceScreen>

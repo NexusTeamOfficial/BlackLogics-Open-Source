@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="112" viewBox="0 0 450 112">
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#211F26" stroke="#49454F" stroke-width="1.5"/>
+<rect x="1.5" y="1.5" width="447" height="109" rx="22" fill="#9ECAFF" fill-opacity=".04"/>
+<rect x="22" y="26" width="60" height="60" rx="18" fill="#00344F" stroke="#9ECAFF" stroke-opacity=".55" stroke-width="1.2"/>
+<g transform="translate(40 44) scale(1.0)" fill="#9ECAFF"><path d="M9.93 13.5h4.14L12 7.98zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></g>
+<text x="102" y="46" fill="#E6E1E5" font-size="17" font-weight="700" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">Live string rendering</text>
+<text x="102" y="68" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">@string/... resolves directly</text>
+<text x="102" y="86" fill="#CAC4D0" font-size="13" font-family="'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif">in the visual editor</text></svg>

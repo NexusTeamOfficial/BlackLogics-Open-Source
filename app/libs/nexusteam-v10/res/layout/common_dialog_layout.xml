@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:aapt="http://schemas.android.com/aapt" android:id="@+id/common_dialog_container" android:background="#66000000" android:paddingLeft="24dp" android:paddingRight="24dp" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="match_parent">
+    <ScrollView android:layout_gravity="center" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:gravity="center" android:orientation="vertical" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="match_parent">
+            <LinearLayout android:gravity="left|center_vertical|center_horizontal|center" android:orientation="horizontal" android:id="@+id/common_dialog_title_layout" android:background="#fff" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <ImageView android:id="@+id/common_dialog_icon" android:layout_width="24dp" android:layout_height="24dp" android:layout_marginRight="8dp"/>
+                <TextView android:textStyle="bold" android:textColor="@color/color_primary" android:id="@+id/common_dialog_tv_title" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="vertical" android:id="@+id/common_dialog_content" android:clipChildren="false" android:clipToPadding="false" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+            <LinearLayout android:orientation="horizontal" android:id="@+id/common_dialog_button_layout" android:background="@color/scolor_blue_01" android:padding="8dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <TextView android:textColor="#fff" android:layout_gravity="center_horizontal" android:id="@+id/common_dialog_default_button" android:padding="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="8dp"/>
+                <LinearLayout android:gravity="right|center_vertical|center_horizontal|center" android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <TextView android:textColor="#fff" android:gravity="center" android:id="@+id/common_dialog_cancel_button" android:background="?attr/selectableItemBackground" android:padding="4dp" android:focusable="true" android:clickable="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8dp"/>
+                    <TextView android:textColor="#fff" android:id="@+id/common_dialog_ok_button" android:padding="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="8dp"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
