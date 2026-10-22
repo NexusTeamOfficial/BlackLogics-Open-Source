@@ -1,0 +1,655 @@
+[
+  {
+    "name": "LinearLayout",
+    "class_path": "android.widget.LinearLayout",
+    "icon": "ic_palette_linear_layout_horz",
+    "events": []
+  },
+  {
+    "name": "RelativeLayout",
+    "class_path": "android.widget.RelativeLayout",
+    "icon": "ic_palette_relative_layout",
+    "events": []
+  },
+  {
+    "name": "FrameLayout",
+    "class_path": "android.widget.FrameLayout",
+    "icon": "ic_palette_frame_layout",
+    "events": []
+  },
+  {
+    "name": "GridLayout",
+    "class_path": "android.widget.GridLayout",
+    "icon": "ic_palette_grid_layout",
+    "events": []
+  },
+  {
+    "name": "TableLayout",
+    "class_path": "android.widget.TableLayout",
+    "icon": "ic_palette_table_layout",
+    "events": []
+  },
+  {
+    "name": "ConstraintLayout",
+    "class_path": "androidx.constraintlayout.widget.ConstraintLayout",
+    "icon": "ic_palette_constraint_layout",
+    "events": []
+  },
+  {
+    "name": "MotionLayout",
+    "class_path": "androidx.constraintlayout.motion.widget.MotionLayout",
+    "icon": "icon_auto_awesome_motion_round",
+    "events": []
+  },
+  {
+    "name": "CoordinatorLayout",
+    "class_path": "androidx.coordinatorlayout.widget.CoordinatorLayout",
+    "icon": "ic_palette_coordinator_layout",
+    "events": []
+  },
+  {
+    "name": "TextView",
+    "class_path": "android.widget.TextView",
+    "icon": "ic_palette_text_view",
+    "initial_attributes": {
+      "android:text": "TextView"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      },
+      {
+        "name": "onTextChanged",
+        "type": "TextWatcher"
+      }
+    ]
+  },
+  {
+    "name": "Button",
+    "class_path": "android.widget.Button",
+    "icon": "ic_palette_button",
+    "initial_attributes": {
+      "android:text": "Button"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  },
+  {
+    "name": "EditText",
+    "class_path": "android.widget.EditText",
+    "icon": "ic_palette_edit_text",
+    "initial_attributes": {
+      "android:hint": "Enter text"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onFocusChange",
+        "type": "View.OnFocusChangeListener"
+      },
+      {
+        "name": "onTextChanged",
+        "type": "TextWatcher"
+      }
+    ]
+  },
+  {
+    "name": "ImageView",
+    "class_path": "android.widget.ImageView",
+    "icon": "ic_palette_image_view",
+    "initial_attributes": {
+      "android:src": "@drawable/default_image"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  },
+  {
+    "name": "ImageButton",
+    "class_path": "android.widget.ImageButton",
+    "icon": "ic_palette_image_button",
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  },
+  {
+    "name": "CheckBox",
+    "class_path": "android.widget.CheckBox",
+    "icon": "ic_palette_check_box",
+    "initial_attributes": {
+      "android:text": "CheckBox"
+    },
+    "events": [
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "RadioButton",
+    "class_path": "android.widget.RadioButton",
+    "icon": "ic_palette_radio_button",
+    "initial_attributes": {
+      "android:text": "RadioButton"
+    },
+    "events": [
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "ToggleButton",
+    "class_path": "android.widget.ToggleButton",
+    "icon": "ic_palette_toggle_button",
+    "events": [
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "Switch",
+    "class_path": "android.widget.Switch",
+    "icon": "ic_palette_switch",
+    "initial_attributes": {
+      "android:text": "Switch"
+    },
+    "events": [
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "SeekBar",
+    "class_path": "android.widget.SeekBar",
+    "icon": "ic_palette_seek_bar",
+    "events": [
+      {
+        "name": "onProgressChanged",
+        "type": "SeekBar.OnSeekBarChangeListener"
+      },
+      {
+        "name": "onStartTrackingTouch",
+        "type": "SeekBar.OnSeekBarChangeListener"
+      },
+      {
+        "name": "onStopTrackingTouch",
+        "type": "SeekBar.OnSeekBarChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "ProgressBar",
+    "class_path": "android.widget.ProgressBar",
+    "icon": "ic_palette_progress_bar",
+    "events": []
+  },
+  {
+    "name": "RatingBar",
+    "class_path": "android.widget.RatingBar",
+    "icon": "ic_palette_rating_bar",
+    "events": [
+      {
+        "name": "onRatingChanged",
+        "type": "RatingBar.OnRatingBarChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "Spinner",
+    "class_path": "android.widget.Spinner",
+    "icon": "ic_palette_spinner",
+    "events": [
+      {
+        "name": "onItemSelected",
+        "type": "AdapterView.OnItemSelectedListener"
+      },
+      {
+        "name": "onNothingSelected",
+        "type": "AdapterView.OnItemSelectedListener"
+      }
+    ]
+  },
+  {
+    "name": "ListView",
+    "class_path": "android.widget.ListView",
+    "icon": "ic_palette_list_view",
+    "events": [
+      {
+        "name": "onItemClick",
+        "type": "AdapterView.OnItemClickListener"
+      },
+      {
+        "name": "onItemLongClick",
+        "type": "AdapterView.OnItemLongClickListener"
+      },
+      {
+        "name": "onItemSelected",
+        "type": "AdapterView.OnItemSelectedListener"
+      },
+      {
+        "name": "onCustomListBind",
+        "type": "CustomView.OnBindListener",
+        "requiresCustomView": true
+      }
+    ]
+  },
+  {
+    "name": "GridView",
+    "class_path": "android.widget.GridView",
+    "icon": "ic_palette_grid_view",
+    "events": [
+      {
+        "name": "onItemClick",
+        "type": "AdapterView.OnItemClickListener"
+      },
+      {
+        "name": "onItemLongClick",
+        "type": "AdapterView.OnItemLongClickListener"
+      },
+      {
+        "name": "onItemSelected",
+        "type": "AdapterView.OnItemSelectedListener"
+      },
+      {
+        "name": "onCustomListBind",
+        "type": "CustomView.OnBindListener",
+        "requiresCustomView": true
+      }
+    ]
+  },
+  {
+    "name": "ExpandableListView",
+    "class_path": "android.widget.ExpandableListView",
+    "icon": "ic_palette_list_view",
+    "events": [
+      {
+        "name": "onGroupClick",
+        "type": "ExpandableListView.OnGroupClickListener"
+      },
+      {
+        "name": "onChildClick",
+        "type": "ExpandableListView.OnChildClickListener"
+      },
+      {
+        "name": "onGroupExpand",
+        "type": "ExpandableListView.OnGroupExpandListener"
+      },
+      {
+        "name": "onGroupCollapse",
+        "type": "ExpandableListView.OnGroupCollapseListener"
+      },
+      {
+        "name": "onCustomListBind",
+        "type": "CustomView.OnBindListener",
+        "requiresCustomView": true
+      }
+    ]
+  },
+  {
+    "name": "WebView",
+    "class_path": "android.webkit.WebView",
+    "icon": "ic_palette_web_view",
+    "events": [
+      {
+        "name": "onPageStarted",
+        "type": "WebViewClient"
+      },
+      {
+        "name": "onPageFinished",
+        "type": "WebViewClient"
+      }
+    ]
+  },
+  {
+    "name": "WebView2",
+    "class_path": "com.nexusteam.internal.os.layouteditor.widget.WidgetWebView",
+    "icon": "ic_palette_web_view",
+    "events": [
+      {
+        "name": "onPageStarted",
+        "type": "WebViewClient"
+      },
+      {
+        "name": "onPageFinished",
+        "type": "WebViewClient"
+      }
+    ]
+  },
+  {
+    "name": "VideoView",
+    "class_path": "android.widget.VideoView",
+    "icon": "ic_palette_video_view",
+    "events": [
+      {
+        "name": "onPrepared",
+        "type": "MediaPlayer.OnPreparedListener"
+      },
+      {
+        "name": "onCompletion",
+        "type": "MediaPlayer.OnCompletionListener"
+      },
+      {
+        "name": "onError",
+        "type": "MediaPlayer.OnErrorListener"
+      }
+    ]
+  },
+  {
+    "name": "ScrollView",
+    "class_path": "android.widget.ScrollView",
+    "icon": "ic_palette_scroll_view",
+    "events": [
+      {
+        "name": "onScrollChanged",
+        "type": "View.OnScrollChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "HorizontalScrollView",
+    "class_path": "android.widget.HorizontalScrollView",
+    "icon": "ic_palette_horizontal_scroll_view",
+    "events": [
+      {
+        "name": "onScrollChanged",
+        "type": "View.OnScrollChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "NestedScrollView",
+    "class_path": "androidx.core.widget.NestedScrollView",
+    "icon": "ic_palette_nested_scroll_view",
+    "events": [
+      {
+        "name": "onScrollChanged",
+        "type": "View.OnScrollChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "RecyclerView",
+    "class_path": "androidx.recyclerview.widget.RecyclerView",
+    "icon": "ic_palette_recycler_view",
+    "events": [
+      {
+        "name": "onItemClick",
+        "type": "AdapterView.OnItemClickListener"
+      },
+      {
+        "name": "onItemLongClick",
+        "type": "AdapterView.OnItemLongClickListener"
+      },
+      {
+        "name": "onCustomListBind",
+        "type": "CustomView.OnBindListener",
+        "requiresCustomView": true
+      }
+    ]
+  },
+  {
+    "name": "ViewPager",
+    "class_path": "androidx.viewpager.widget.ViewPager",
+    "icon": "ic_palette_view_pager",
+    "events": [
+      {
+        "name": "onPageSelected",
+        "type": "ViewPager.OnPageChangeListener"
+      },
+      {
+        "name": "onPageScrolled",
+        "type": "ViewPager.OnPageChangeListener"
+      },
+      {
+        "name": "onPageScrollStateChanged",
+        "type": "ViewPager.OnPageChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "ViewPager2",
+    "class_path": "androidx.viewpager2.widget.ViewPager2",
+    "icon": "ic_palette_view_pager",
+    "events": [
+      {
+        "name": "onPageSelected",
+        "type": "ViewPager2.OnPageChangeCallback"
+      },
+      {
+        "name": "onPageScrolled",
+        "type": "ViewPager2.OnPageChangeCallback"
+      },
+      {
+        "name": "onPageScrollStateChanged",
+        "type": "ViewPager2.OnPageChangeCallback"
+      }
+    ]
+  },
+  {
+    "name": "CardView",
+    "class_path": "androidx.cardview.widget.CardView",
+    "icon": "ic_palette_card_view",
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  },
+  {
+    "name": "CollapsingToolbarLayout",
+    "class_path": "com.google.android.material.appbar.CollapsingToolbarLayout",
+    "icon": "ic_palette_collapsing_toolbar_layout",
+    "events": []
+  },
+  {
+    "name": "MaterialButton",
+    "class_path": "com.google.android.material.button.MaterialButton",
+    "icon": "ic_palette_button",
+    "initial_attributes": {
+      "android:text": "Material Button"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  },
+  {
+    "name": "TextInputLayout",
+    "class_path": "com.google.android.material.textfield.TextInputLayout",
+    "icon": "ic_palette_text_input_layout",
+    "initial_attributes": {
+      "hint": "TextInputLayout"
+    },
+    "events": [
+      {
+        "name": "onTextChanged",
+        "type": "TextWatcher"
+      }
+    ]
+  },
+  {
+    "name": "BottomNavigationView",
+    "class_path": "com.google.android.material.bottomnavigation.BottomNavigationView",
+    "icon": "ic_palette_bottom_navigation_view",
+    "events": [
+      {
+        "name": "onNavItemSelected",
+        "type": "BottomNavigationView.OnNavigationItemSelectedListener"
+      }
+    ]
+  },
+  {
+    "name": "NavigationView",
+    "class_path": "com.google.android.material.navigation.NavigationView",
+    "icon": "ic_palette_navigation_view",
+    "events": [
+      {
+        "name": "onNavigationItemSelected",
+        "type": "NavigationView.OnNavigationItemSelectedListener"
+      }
+    ]
+  },
+  {
+    "name": "TabLayout",
+    "class_path": "com.google.android.material.tabs.TabLayout",
+    "icon": "ic_palette_tab_layout",
+    "events": [
+      {
+        "name": "onTabSelected",
+        "type": "TabLayout.OnTabSelectedListener"
+      },
+      {
+        "name": "onTabUnselected",
+        "type": "TabLayout.OnTabSelectedListener"
+      },
+      {
+        "name": "onTabReselected",
+        "type": "TabLayout.OnTabSelectedListener"
+      }
+    ]
+  },
+  {
+    "name": "Chip",
+    "class_path": "com.google.android.material.chip.Chip",
+    "icon": "ic_palette_chip",
+    "initial_attributes": {
+      "android:text": "Chip"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      },
+      {
+        "name": "onCloseIconClick",
+        "type": "View.OnClickListener"
+      }
+    ]
+  },
+  {
+    "name": "ChipGroup",
+    "class_path": "com.google.android.material.chip.ChipGroup",
+    "icon": "ic_palette_chip_group",
+    "events": [
+      {
+        "name": "onChipCheckedChanged",
+        "type": "ChipGroup.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "MaterialCardView",
+    "class_path": "com.google.android.material.card.MaterialCardView",
+    "icon": "ic_palette_card_view",
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      },
+      {
+        "name": "onCheckedChanged",
+        "type": "MaterialCardView.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "MaterialSwitch",
+    "class_path": "com.google.android.material.switchmaterial.SwitchMaterial",
+    "icon": "ic_palette_switch",
+    "events": [
+      {
+        "name": "onCheckedChanged",
+        "type": "CompoundButton.OnCheckedChangeListener"
+      }
+    ]
+  },
+  {
+    "name": "LottieAnimationView",
+    "class_path": "com.airbnb.lottie.LottieAnimationView",
+    "icon": "icon_animation_round",
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onAnimationEnd",
+        "type": "Animator.AnimatorListener"
+      }
+    ]
+  },
+  {
+    "name": "CircleImageView",
+    "class_path": "de.hdodenhof.circleimageview.CircleImageView",
+    "icon": "ic_palette_image_view",
+    "initial_attributes": {
+      "android:src": "@drawable/default_image"
+    },
+    "events": [
+      {
+        "name": "onClick",
+        "type": "View.OnClickListener"
+      },
+      {
+        "name": "onLongClick",
+        "type": "View.OnLongClickListener"
+      }
+    ]
+  }
+]

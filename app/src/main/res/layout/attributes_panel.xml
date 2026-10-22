@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="0dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardview2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        app:cardBackgroundColor="@color/backgroundColor"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="3dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/textGrey"
+        app:cardPreventCornerOverlap="true">
+
+        <LinearLayout
+            android:id="@+id/linear3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ── Header ─────────────────────────────────────────────── -->
+            <LinearLayout
+                android:id="@+id/lin_header"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:background="@color/backgroundColor">
+
+                <ImageView
+                    android:id="@+id/img_edit_id"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_edit_black"
+                    android:scaleType="centerInside"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Edit ID"
+                    android:focusable="true"
+                    android:clickable="true" />
+
+                <ImageView
+                    android:id="@+id/img_common_attributes"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:src="@drawable/dimention"
+                    android:scaleType="centerInside"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Common attributes"
+                    android:focusable="true"
+                    android:clickable="true" />
+
+                <com.nexusteam.blacklogics.custom.ViewItems
+                    android:id="@+id/viewItems"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:minHeight="40dp" />
+
+                <ImageView
+                    android:id="@+id/collection"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="8dp"
+                    android:src="@drawable/icon_bookmark_baseline"
+                    android:scaleType="centerInside"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Add to collection"
+                    android:focusable="true"
+                    android:clickable="true" />
+
+                <!-- Hidden intentionally -->
+                <ImageView
+                    android:id="@+id/img_custom"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_add_black" />
+            </LinearLayout>
+
+            <!-- ── Divider ────────────────────────────────────────────── -->
+            <View
+                android:id="@+id/lin_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/textGrey" />
+
+            <!-- ── Tabs ───────────────────────────────────────────────── -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/attributesOrListener"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@color/backgroundColor"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabIndicatorHeight="3dp"
+                app:tabIndicatorFullWidth="false"
+                app:tabIndicatorColor="@color/colorPrimary"
+                app:tabSelectedTextColor="@color/colorPrimary"
+                app:tabTextColor="@color/textColorSecondary"
+                app:tabRippleColor="@color/colorPrimary"
+                app:tabTextAppearance="@style/TextAppearance.Material3.LabelLarge" />
+
+            <!-- ── Content ────────────────────────────────────────────── -->
+            <LinearLayout
+                android:id="@+id/linear1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/attributesTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_attributes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never"
+                        android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/eventTab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/listeners"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never"
+                        android:nestedScrollingEnabled="false" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="200dp"
+    android:viewportWidth="120"
+    android:viewportHeight="200">
+    <!-- Phone body -->
+    <path
+        android:fillColor="#FF1A1A1A"
+        android:pathData="M16,4 C12,4 8,8 8,12 L8,188 C8,192 12,196 16,196 L104,196 C108,196 112,192 112,188 L112,12 C112,8 108,4 104,4 Z"/>
+    <!-- Screen -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M14,14 C14,12 15,11 17,11 L103,11 C105,11 106,12 106,14 L106,186 C106,188 105,189 103,189 L17,189 C15,189 14,188 14,186 Z"/>
+    <!-- Status bar -->
+    <path
+        android:fillColor="#FFF5F5F5"
+        android:pathData="M14,11 L106,11 L106,22 L14,22 Z"/>
+    <!-- Status icons dots -->
+    <path android:fillColor="#FF666666" android:pathData="M88,15 L92,15 L92,18 L88,18 Z"/>
+    <path android:fillColor="#FF666666" android:pathData="M94,15 L98,15 L98,18 L94,18 Z"/>
+    <path android:fillColor="#FF666666" android:pathData="M100,15 L103,15 L103,18 L100,18 Z"/>
+    <!-- Title Welcome -->
+    <path
+        android:fillColor="#FF212121"
+        android:pathData="M36,48 L84,48 L84,54 L36,54 Z"/>
+    <!-- Email field -->
+    <path
+        android:fillColor="#FFF0F0F0"
+        android:pathData="M24,68 L96,68 L96,82 C96,84 94,86 92,86 L28,86 C26,86 24,84 24,82 Z"/>
+    <path android:fillColor="#FFBDBDBD" android:pathData="M30,74 L60,74 L60,78 L30,78 Z"/>
+    <!-- Password field -->
+    <path
+        android:fillColor="#FFF0F0F0"
+        android:pathData="M24,94 L96,94 L96,108 C96,110 94,112 92,112 L28,112 C26,112 24,110 24,108 Z"/>
+    <path android:fillColor="#FFBDBDBD" android:pathData="M30,100 L55,100 L55,104 L30,104 Z"/>
+    <!-- Login button -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M24,124 L96,124 L96,140 C96,142 94,144 92,144 L28,144 C26,144 24,142 24,140 Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M48,130 L72,130 L72,134 L48,134 Z"/>
+</vector>

@@ -1,0 +1,56 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
+	<LinearLayout
+		android:id="@+id/linear4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/colorSurface"
+		android:orientation="vertical">
+		<FrameLayout
+			android:id="@+id/quizContainer"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:layout_gravity="center_horizontal|center_vertical" />
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:background="?attr/colorSurfaceContainerHigh"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:minHeight="56dp"
+			android:paddingStart="16dp"
+			android:paddingEnd="16dp">
+			<ImageView
+				android:id="@+id/imageview1"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:src="@drawable/test1"
+				android:scaleType="centerCrop"
+				android:layout_marginEnd="12dp"
+				android:contentDescription="@null"
+				android:focusable="false" />
+			<TextView
+				android:id="@+id/buildText"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:text="Apk building…"
+				android:textSize="12sp"
+				android:layout_weight="1"
+				android:textAppearance="?attr/textAppearanceBodyMedium"
+				android:maxLines="1"
+				android:ellipsize="end"
+				android:focusable="false" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

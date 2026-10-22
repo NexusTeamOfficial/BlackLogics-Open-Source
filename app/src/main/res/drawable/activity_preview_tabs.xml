@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="200dp"
+    android:viewportWidth="120"
+    android:viewportHeight="200">
+    <path
+        android:fillColor="#FF1A1A1A"
+        android:pathData="M16,4 C12,4 8,8 8,12 L8,188 C8,192 12,196 16,196 L104,196 C108,196 112,192 112,188 L112,12 C112,8 108,4 104,4 Z"/>
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M14,14 C14,12 15,11 17,11 L103,11 C105,11 106,12 106,14 L106,186 C106,188 105,189 103,189 L17,189 C15,189 14,188 14,186 Z"/>
+    <!-- Status -->
+    <path android:fillColor="#FF1976D2" android:pathData="M14,11 L106,11 L106,20 L14,20 Z"/>
+    <!-- Toolbar -->
+    <path android:fillColor="#FF2196F3" android:pathData="M14,20 L106,20 L106,42 L14,42 Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M22,28 L34,28 L34,34 L22,34 Z"/>
+    <!-- Tab bar -->
+    <path android:fillColor="#FF1E88E5" android:pathData="M14,42 L106,42 L106,58 L14,58 Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M22,48 L40,48 L40,52 L22,52 Z"/>
+    <path android:fillColor="#B3FFFFFF" android:pathData="M50,48 L68,48 L68,52 L50,52 Z"/>
+    <path android:fillColor="#B3FFFFFF" android:pathData="M78,48 L96,48 L96,52 L78,52 Z"/>
+    <!-- Tab indicator -->
+    <path android:fillColor="#FFFFFFFF" android:pathData="M20,56 L42,56 L42,58 L20,58 Z"/>
+    <!-- Content lines -->
+    <path android:fillColor="#FFE0E0E0" android:pathData="M28,80 L92,80 L92,86 L28,86 Z"/>
+    <path android:fillColor="#FFEEEEEE" android:pathData="M28,96 L80,96 L80,102 L28,102 Z"/>
+    <path android:fillColor="#FFEEEEEE" android:pathData="M28,112 L88,112 L88,118 L28,118 Z"/>
+</vector>

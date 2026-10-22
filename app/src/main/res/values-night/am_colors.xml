@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material 3 dark scheme (blue seed) -->
+<resources>
+    <color name="am_primary">#AAC7FF</color>
+    <color name="am_on_primary">#0A305F</color>
+    <color name="am_primary_container">#284777</color>
+    <color name="am_on_primary_container">#D6E3FF</color>
+    <color name="am_secondary">#BEC6DC</color>
+    <color name="am_on_secondary">#283141</color>
+    <color name="am_secondary_container">#3E4759</color>
+    <color name="am_on_secondary_container">#DAE2F9</color>
+    <color name="am_tertiary">#DDBCE0</color>
+    <color name="am_on_tertiary">#3F2844</color>
+    <color name="am_tertiary_container">#573E5C</color>
+    <color name="am_on_tertiary_container">#FAD8FD</color>
+    <color name="am_error">#FFB4AB</color>
+    <color name="am_on_error">#690005</color>
+    <color name="am_error_container">#93000A</color>
+    <color name="am_on_error_container">#FFDAD6</color>
+    <color name="am_background">#111318</color>
+    <color name="am_on_background">#E2E2E9</color>
+    <color name="am_surface">#111318</color>
+    <color name="am_on_surface">#E2E2E9</color>
+    <color name="am_surface_variant">#44474E</color>
+    <color name="am_on_surface_variant">#C4C6D0</color>
+    <color name="am_outline">#8E9099</color>
+    <color name="am_outline_variant">#44474E</color>
+    <color name="am_inverse_surface">#E2E2E9</color>
+    <color name="am_inverse_on_surface">#2E3036</color>
+    <color name="am_inverse_primary">#415F91</color>
+    <color name="am_surface_container_lowest">#0C0E13</color>
+    <color name="am_surface_container_low">#191C20</color>
+    <color name="am_surface_container">#1D2024</color>
+    <color name="am_surface_container_high">#282A2F</color>
+    <color name="am_surface_container_highest">#33353A</color>
+</resources>

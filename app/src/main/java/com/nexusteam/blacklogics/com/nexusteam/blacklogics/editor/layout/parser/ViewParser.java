@@ -1,0 +1,1466 @@
+package com.nexusteam.blacklogics.editor.layout.parser;
+
+import android.util.Log;
+import android.util.Pair;
+import com.nexusteam.blacklogics.FileUtil;
+import com.nexusteam.blacklogics.editor.layout.model.LayoutData;
+import com.nexusteam.blacklogics.editor.layout.storage.LayoutStorage;
+import com.nexusteam.internal.beans.*;
+import com.nexusteam.internal.kk;
+import com.nexusteam.internal.lx;
+import com.nexusteam.internal.hc;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class ViewParser {
+	
+	private static final String TAG = "ViewParser";
+	private static ViewParser instance;
+	
+	private String currentScId;
+	private String currentActivityName;
+	
+	private ConcurrentHashMap<String, CacheEntry> viewMap;
+	private HashMap<String, ViewBean> fabMap;
+	private HashMap<String, ViewBean> idToBeanMap;
+	
+	private ScheduledExecutorService scheduler;
+	private ConcurrentHashMap<String, AtomicLong> fileTimestamps;
+	private ConcurrentHashMap<String, String> fileContents;
+	
+	private ConcurrentHashMap<String, List<ViewBean>> typeIndex;
+	private ConcurrentHashMap<String, List<ViewBean>> parentIndex;
+	
+	private kk fileHelper = new kk();
+	
+	private ConcurrentHashMap<String, Map<String, String>> xmlTagCache = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, Long> xmlTagCacheTimestamp = new ConcurrentHashMap<>();
+	
+	private static class CacheEntry {
+		ArrayList<ViewBean> beans;
+		long timestamp;
+		String filePath;
+		
+		CacheEntry(ArrayList<ViewBean> beans, String filePath) {
+			this.beans = beans;
+			this.filePath = filePath;
+			this.timestamp = System.currentTimeMillis();
+		}
+		
+		boolean isExpired(long maxAge) {
+			return System.currentTimeMillis() - timestamp > maxAge;
+		}
+	}
+	
+	private ViewParser() {
+		viewMap = new ConcurrentHashMap<>();
+		fabMap = new HashMap<>();
+		idToBeanMap = new HashMap<>();
+		fileTimestamps = new ConcurrentHashMap<>();
+		fileContents = new ConcurrentHashMap<>();
+		typeIndex = new ConcurrentHashMap<>();
+		parentIndex = new ConcurrentHashMap<>();
+		
+		startBackgroundUpdater();
+	}
+	
+	public static synchronized ViewParser getInstance() {
+		if (instance == null) {
+			instance = new ViewParser();
+		}
+		return instance;
+	}
+	
+	public void init(String scId, String activityName) {
+		this.currentScId = scId;
+		this.currentActivityName = activityName;
+		
+		String xmlName = activityName;
+		forceReload(xmlName);
+		
+		Log.d(TAG, "ViewParser initialized with scId=" + scId + ", activity=" + activityName);
+	}
+	
+	public ArrayList<ViewBean> loadBeanData() {
+		return loadBeanData(currentActivityName);
+	}
+	
+	private void startBackgroundUpdater() {
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		scheduler.scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					updateChangedFiles();
+				} catch (Exception e) {
+					Log.e(TAG, "Error in background updater: " + e.getMessage());
+				}
+			}
+		}, 1, 1, TimeUnit.SECONDS);
+	}
+	
+	private void updateChangedFiles() {
+		if (currentScId == null) return;
+		
+		String basePath = FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + currentScId + "/";
+		
+		for (Map.Entry<String, CacheEntry> entry : viewMap.entrySet()) {
+			String xmlName = entry.getKey();
+			CacheEntry cache = entry.getValue();
+			
+			if (cache.filePath != null) {
+				File file = new File(cache.filePath);
+				if (file.exists()) {
+					long lastModified = file.lastModified();
+					AtomicLong storedTime = fileTimestamps.get(xmlName);
+					
+					if (storedTime == null || storedTime.get() != lastModified) {
+						Log.d(TAG, "File changed detected: " + xmlName);
+						reloadFile(xmlName, cache.filePath);
+						fileTimestamps.put(xmlName, new AtomicLong(lastModified));
+					}
+				}
+			}
+		}
+	}
+	
+	private synchronized void reloadFile(String xmlName, String filePath) {
+		try {
+			ArrayList<ViewBean> newBeans = loadFromFilePath(filePath, xmlName);
+			if (newBeans != null && !newBeans.isEmpty()) {
+				viewMap.put(xmlName, new CacheEntry(newBeans, filePath));
+				
+				updateIndexes(xmlName, newBeans);
+				
+				Log.d(TAG, "✅ Auto-reloaded " + xmlName + " with " + newBeans.size() + " views");
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error reloading file: " + xmlName, e);
+		}
+	}
+	
+	private void forceReload(String xmlName) {
+		if (xmlName == null || currentScId == null) return;
+		
+		String layoutPath = FileUtil.getExternalStorageDir() 
+		+ "/.blacklogics/data/" + currentScId + "/";
+		
+		String filePath = layoutPath + xmlName;
+		File file = new File(filePath);
+		
+		if (file.exists()) {
+			reloadFile(xmlName, filePath);
+			fileTimestamps.put(xmlName, new AtomicLong(file.lastModified()));
+		}
+	}
+	
+	public ArrayList<ViewBean> loadBeanData(String activityName) {
+		if (activityName == null || currentScId == null) {
+			Log.e(TAG, "Cannot load beans: scId or activityName not set");
+			return new ArrayList<>();
+		}
+		
+		String xmlName = activityName;
+		String layoutPath = FileUtil.getExternalStorageDir() 
+		+ "/.blacklogics/data/" + currentScId + "/";
+		String fullPath = layoutPath + xmlName;
+		
+		Log.d(TAG, "Loading beans from: " + fullPath);
+		
+		CacheEntry cached = viewMap.get(xmlName);
+		if (cached != null) {
+			File file = new File(fullPath);
+			if (file.exists()) {
+				long lastModified = file.lastModified();
+				AtomicLong storedTime = fileTimestamps.get(xmlName);
+				
+				if (storedTime != null && storedTime.get() == lastModified) {
+					if (!cached.isExpired(5000)) {
+						Log.d(TAG, "Returning cached views for " + xmlName);
+						return cached.beans;
+					}
+				}
+			}
+		}
+		
+		ArrayList<ViewBean> beans = loadFromStorage(layoutPath, xmlName);
+		
+		if (beans != null && !beans.isEmpty()) {
+			CacheEntry newCache = new CacheEntry(beans, fullPath);
+			viewMap.put(xmlName, newCache);
+			
+			File file = new File(fullPath);
+			if (file.exists()) {
+				fileTimestamps.put(xmlName, new AtomicLong(file.lastModified()));
+			}
+			
+			updateIndexes(xmlName, beans);
+			
+			Log.d(TAG, "✅ Loaded " + beans.size() + " views from " + xmlName);
+		} else {
+			Log.d(TAG, "No views found for " + xmlName);
+			beans = new ArrayList<>();
+			viewMap.put(xmlName, new CacheEntry(beans, null));
+		}
+		
+		return beans;
+	}
+	
+	private void updateIndexes(String xmlName, ArrayList<ViewBean> beans) {
+		for (ViewBean bean : beans) {
+			idToBeanMap.put(bean.id, bean);
+		}
+		
+		for (ViewBean bean : beans) {
+			String typeKey = xmlName + "_type_" + bean.type;
+			List<ViewBean> typeList = typeIndex.get(typeKey);
+			if (typeList == null) {
+				typeList = new CopyOnWriteArrayList<>();
+				typeIndex.put(typeKey, typeList);
+			}
+			typeList.add(bean);
+		}
+		
+		for (ViewBean bean : beans) {
+			if (bean.parent != null) {
+				String parentKey = xmlName + "_parent_" + bean.parent;
+				List<ViewBean> parentList = parentIndex.get(parentKey);
+				if (parentList == null) {
+					parentList = new CopyOnWriteArrayList<>();
+					parentIndex.put(parentKey, parentList);
+				}
+				parentList.add(bean);
+			}
+		}
+	}
+	private ArrayList<ViewBean> loadFromFilePath(String filePath, String layoutName) {
+		ArrayList<ViewBean> beans = new ArrayList<ViewBean>();
+		
+		try {
+			File file = new File(filePath);
+			if (!file.exists()) {
+				String xmlPath = filePath;
+				if (!xmlPath.endsWith(".xml")) {
+					xmlPath = filePath + ".xml";
+				}
+				file = new File(xmlPath);
+				if (!file.exists()) {
+					String fallbackPath = filePath.replace("/" + layoutName, "/layout/" + layoutName);
+					file = new File(fallbackPath);
+					if (!file.exists()) {
+						Log.e(TAG, "File not found: " + filePath);
+						return beans;
+					}
+				}
+			}
+			
+			String xmlContent = readFileContent(file);
+			if (xmlContent != null && !xmlContent.isEmpty()) {
+				beans = parseXmlToBeans(xmlContent);
+				if (beans != null && !beans.isEmpty()) {
+					Log.d(TAG, "Direct parse success: " + beans.size() + " views");
+					return beans;
+				}
+			}
+			
+			File baseDir = file.getParentFile();
+			LayoutData layoutData = LayoutStorage.load(baseDir, layoutName, null);
+			if (layoutData != null && layoutData.xml != null) {
+				beans = parseXmlToBeans(layoutData.xml);
+				if (beans != null && !beans.isEmpty()) {
+					Log.d(TAG, "LayoutStorage parse success: " + beans.size() + " views");
+					return beans;
+				}
+			}
+			
+			String viewPath = fe.e(currentScId) + File.separator + "view";
+			if (fileHelper.a(viewPath)) {
+				byte[] bytes = fileHelper.f(viewPath);
+				String data = fileHelper.b(bytes);
+				beans = parseLwFormat(data);
+				if (beans != null && !beans.isEmpty()) {
+					Log.d(TAG, "LW format parse success: " + beans.size() + " views");
+					return beans;
+				}
+			}
+			
+		} catch (Exception e) {
+			Log.e(TAG, "loadFromFilePath error: " + e.getMessage(), e);
+			e.printStackTrace();
+		}
+		
+		return beans;
+	}
+	
+	private String readFileContent(File file) {
+		BufferedReader reader = null;
+		try {
+			StringBuilder sb = new StringBuilder();
+			reader = new BufferedReader(new FileReader(file));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line).append("\n");
+			}
+			return sb.toString();
+		} catch (Exception e) {
+			Log.e(TAG, "readFileContent error: " + e.getMessage(), e);
+			return null;
+		} finally {
+			if (reader != null) {
+				try { reader.close(); } catch (IOException ignored) {}
+			}
+		}
+	}
+	
+	public ViewBean getViewBean(String xmlName, String viewId) {
+		String activityName = xmlName;
+		if (activityName != null && activityName.equals(currentActivityName)) {
+			checkAndReloadIfNeeded(xmlName);
+		}
+		
+		ViewBean bean = idToBeanMap.get(viewId);
+		if (bean != null) return bean;
+		
+		ArrayList<ViewBean> beans = loadBeanData(xmlName);
+		if (beans != null) {
+			for (ViewBean b : beans) {
+				if (viewId.equals(b.id)) {
+					idToBeanMap.put(viewId, b);
+					return b;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public ViewBean getViewBean(String viewId) {
+		String xmlName = currentActivityName;
+		return getViewBean(xmlName, viewId);
+	}
+	
+	private void checkAndReloadIfNeeded(String xmlName) {
+		if (currentScId == null) return;
+		
+		String layoutPath = FileUtil.getExternalStorageDir() 
+		+ "/.blacklogics/data/" + currentScId + "/";
+		String fullPath = layoutPath + xmlName;
+		
+		File file = new File(fullPath);
+		if (file.exists()) {
+			long lastModified = file.lastModified();
+			AtomicLong storedTime = fileTimestamps.get(xmlName);
+			
+			if (storedTime == null || storedTime.get() != lastModified) {
+				reloadFile(xmlName, fullPath);
+				fileTimestamps.put(xmlName, new AtomicLong(lastModified));
+			}
+		}
+	}
+	
+	public ArrayList<ViewBean> getAllBeans() {
+		String xmlName = currentActivityName;
+		return getAllBeans(xmlName);
+	}
+	
+	public ArrayList<ViewBean> getAllBeans(String xmlName) {
+		checkAndReloadIfNeeded(xmlName);
+		CacheEntry entry = viewMap.get(xmlName);
+		return entry != null ? entry.beans : null;
+	}
+	
+	public ArrayList<ViewBean> getBeansByType(int type) {
+		String xmlName = currentActivityName;
+		checkAndReloadIfNeeded(xmlName);
+		
+		String typeKey = xmlName + "_type_" + type;
+		List<ViewBean> indexed = typeIndex.get(typeKey);
+		if (indexed != null) {
+			return new ArrayList<>(indexed);
+		}
+		
+		ArrayList<ViewBean> all = getAllBeans();
+		if (all == null) return new ArrayList<>();
+		
+		ArrayList<ViewBean> result = new ArrayList<>();
+		for (ViewBean bean : all) {
+			if (bean.type == type) {
+				result.add(bean);
+			}
+		}
+		return result;
+	}
+	
+	public ArrayList<ViewBean> getBeansByClass(String className) {
+		int type = ViewBean.getViewTypeByTypeName(className);
+		if (type != -1) {
+			return getBeansByType(type);
+		}
+		return new ArrayList<>();
+	}
+	
+	public ArrayList<ViewBean> getChildViews(String parentId) {
+		String xmlName = currentActivityName;
+		checkAndReloadIfNeeded(xmlName);
+		
+		String parentKey = xmlName + "_parent_" + parentId;
+		List<ViewBean> children = parentIndex.get(parentKey);
+		if (children != null) {
+			return new ArrayList<>(children);
+		}
+		return new ArrayList<>();
+	}
+	
+	public ArrayList<Pair<Integer, String>> getViewsByType(String xmlName, String viewType) {
+		ArrayList<Pair<Integer, String>> result = new ArrayList<>();
+		ArrayList<ViewBean> beans = getAllBeans(xmlName);
+		
+		if (beans == null) {
+			beans = loadBeanData(xmlName);
+		}
+		
+		if (beans != null && viewType != null) {
+			String want = viewType.trim();
+			int wantType = ViewBean.getViewTypeByTypeName(want);
+			for (ViewBean bean : beans) {
+				if (bean == null || bean.id == null) continue;
+				boolean match = false;
+				try {
+					if ("CheckBox".equals(want) || "compoundButton".equalsIgnoreCase(want)) {
+						if (bean.getClassInfo() != null && bean.getClassInfo().a("CompoundButton")) {
+							match = true;
+						}
+					}
+					if (!match && bean.getClassInfo() != null && bean.getClassInfo().a(want)) {
+						match = true;
+					}
+				} catch (Exception ignore) {}
+				if (!match && wantType >= 0 && bean.type == wantType) {
+					match = true;
+				}
+				if (!match) {
+					String beanTypeName = ViewBean.getViewTypeName(bean.type);
+					if (beanTypeName != null && beanTypeName.equalsIgnoreCase(want)) {
+						match = true;
+					}
+				}
+				if (!match && "View".equalsIgnoreCase(want)) {
+					match = true;
+				}
+				if (match) {
+					result.add(new Pair<>(bean.type, bean.id));
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public void refreshAll() {
+		Log.d(TAG, "Forcing full refresh");
+		clearCache();
+		
+		if (currentActivityName != null && currentScId != null) {
+			String xmlName = currentActivityName;
+			forceReload(xmlName);
+		}
+	}
+	
+	public interface ViewParserListener {
+		void onViewsChanged(String xmlName);
+	}
+	
+	private List<ViewParserListener> listeners = new CopyOnWriteArrayList<>();
+	
+	public void addListener(ViewParserListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(ViewParserListener listener) {
+		listeners.remove(listener);
+	}
+	
+	private void notifyListeners(String xmlName) {
+		for (ViewParserListener listener : listeners) {
+			try {
+				listener.onViewsChanged(xmlName);
+			} catch (Exception e) {
+				Log.e(TAG, "Listener error: " + e.getMessage());
+			}
+		}
+	}
+	
+	public void clearCache() {
+		viewMap.clear();
+		fabMap.clear();
+		idToBeanMap.clear();
+		fileTimestamps.clear();
+		fileContents.clear();
+		typeIndex.clear();
+		parentIndex.clear();
+		Log.d(TAG, "Cache cleared");
+	}
+	
+	public void shutdown() {
+		if (scheduler != null) {
+			scheduler.shutdown();
+			try {
+				if (!scheduler.awaitTermination(2, TimeUnit.SECONDS)) {
+					scheduler.shutdownNow();
+				}
+			} catch (InterruptedException e) {
+				scheduler.shutdownNow();
+			}
+		}
+	}
+	
+	
+	private ArrayList<ViewBean> loadFromStorage(String savePath, String layoutName) {
+		try {
+			File baseDir = new File(savePath);
+			if (!baseDir.exists()) {
+				return null;
+			}
+			
+			LayoutData layoutData = LayoutStorage.load(baseDir, layoutName, null);
+			if (layoutData != null && layoutData.xml != null) {
+				return parseXmlToBeans(layoutData.xml);
+			}
+			
+			String viewPath = fe.e(currentScId) + File.separator + "view";
+			if (fileHelper.a(viewPath)) {
+				byte[] bytes = fileHelper.f(viewPath);
+				String data = fileHelper.b(bytes);
+				return parseLwFormat(data);
+			}
+			
+		} catch (Exception e) {
+			Log.e(TAG, "Error loading from storage: " + e.getMessage(), e);
+		}
+		
+		return null;
+	}
+	
+	private ArrayList<ViewBean> parseXmlToBeans(String xml) {
+		ArrayList<ViewBean> beans = new ArrayList<>();
+		Stack<ViewBean> parentStack = new Stack<>();
+		Map<String, Integer> idCounter = new HashMap<>();
+		
+		try {
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			parser.setInput(new StringReader(xml));
+			
+			int eventType = parser.getEventType();
+			int viewIndex = 0;
+			
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_TAG) {
+					String tagName = parser.getName();
+					
+					if (!"merge".equals(tagName) && !"include".equals(tagName)) {
+						ViewBean bean = new ViewBean();
+						
+						String id = parseId(parser);
+						if (id != null) {
+							bean.id = id;
+							bean.name = id;
+						} else {
+							String baseId = tagName.toLowerCase() + "_";
+							Integer count = idCounter.get(baseId);
+							if (count == null) count = 0;
+							count++;
+							idCounter.put(baseId, count);
+							bean.id = baseId + count;
+							bean.name = bean.id;
+						}
+						
+						bean.type = getViewType(tagName);
+						bean.index = viewIndex++;
+						
+						if (!parentStack.isEmpty()) {
+							ViewBean parent = parentStack.peek();
+							bean.parent = parent.id;
+							bean.parentType = parent.type;
+						}
+						
+						bean.layout = new LayoutBean();
+						parseLayoutParams(parser, bean.layout);
+						
+						if (isTextView(bean.type)) {
+							bean.text = new TextBean();
+							parseTextProperties(parser, bean.text);
+						}
+						
+						if (bean.type == 6) {
+							bean.image = new ImageBean();
+							parseImageProperties(parser, bean.image);
+						}
+						
+						parseCommonAttributes(parser, bean);
+						parseWidgetSpecificAttributes(parser, bean);
+						
+						beans.add(bean);
+						
+						if (isViewGroup(tagName)) {
+							parentStack.push(bean);
+						}
+					}
+				} else if (eventType == XmlPullParser.END_TAG) {
+					String tagName = parser.getName();
+					if (isViewGroup(tagName) && !parentStack.isEmpty()) {
+						parentStack.pop();
+					}
+				}
+				
+				eventType = parser.next();
+			}
+			
+		} catch (Exception e) {
+			Log.e(TAG, "Error parsing XML: " + e.getMessage(), e);
+		}
+		
+		return beans;
+	}
+	
+	private ArrayList<ViewBean> parseLwFormat(String data) {
+		ArrayList<ViewBean> beans = new ArrayList<>();
+		
+		try {
+			BufferedReader reader = new BufferedReader(new StringReader(data));
+			String currentKey = "";
+			StringBuffer currentData = new StringBuffer();
+			
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.length() > 0) {
+					if (line.charAt(0) == '@') {
+						if (currentKey.length() > 0 && currentData.length() > 0) {
+							ArrayList<ViewBean> parsed = parseLwSection(currentKey, currentData.toString());
+							if (parsed != null) {
+								beans.addAll(parsed);
+							}
+							currentData = new StringBuffer();
+						}
+						currentKey = line.substring(1);
+					} else {
+						currentData.append(line).append("\n");
+					}
+				}
+			}
+			
+			if (currentKey.length() > 0 && currentData.length() > 0) {
+				ArrayList<ViewBean> parsed = parseLwSection(currentKey, currentData.toString());
+				if (parsed != null) {
+					beans.addAll(parsed);
+				}
+			}
+			
+			reader.close();
+			
+		} catch (Exception e) {
+			Log.e(TAG, "Error parsing LW format: " + e.getMessage(), e);
+		}
+		
+		return beans;
+	}
+	
+	private ArrayList<ViewBean> parseLwSection(String key, String data) {
+		try {
+			lx lxVar = new lx(key);
+			lx.DataType type = lxVar.c();
+			
+			if (type == lx.DataType.DATA_TYPE_VIEW) {
+				return (ArrayList<ViewBean>) lxVar.a(data);
+			} else if (type == lx.DataType.DATA_TYPE_FAB) {
+				ArrayList<ViewBean> list = (ArrayList<ViewBean>) lxVar.a(data);
+				if (list != null && !list.isEmpty()) {
+					fabMap.put(lxVar.a(), list.get(0));
+					return list;
+				}
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Error parsing section: " + key, e);
+		}
+		return null;
+	}
+	
+	private String parseId(XmlPullParser parser) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			if ("id".equals(name) || "android:id".equals(name)) {
+				String value = parser.getAttributeValue(i);
+				if (value != null) {
+					if (value.startsWith("@+id/")) {
+						return value.substring(5);
+					} else if (value.startsWith("@id/")) {
+						return value.substring(4);
+					}
+					return value;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private void parseLayoutParams(XmlPullParser parser, LayoutBean layout) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			String value = parser.getAttributeValue(i);
+			
+			if ("layout_width".equals(name) || "android:layout_width".equals(name)) {
+				if ("match_parent".equals(value)) layout.width = -1;
+				else if ("wrap_content".equals(value)) layout.width = -2;
+			} else if ("layout_height".equals(name) || "android:layout_height".equals(name)) {
+				if ("match_parent".equals(value)) layout.height = -1;
+				else if ("wrap_content".equals(value)) layout.height = -2;
+			} else if ("layout_margin".equals(name) || "android:layout_margin".equals(name)) {
+				int margin = parseDimensionValue(value);
+				layout.marginLeft = margin;
+				layout.marginTop = margin;
+				layout.marginRight = margin;
+				layout.marginBottom = margin;
+			} else if ("layout_marginLeft".equals(name) || "android:layout_marginLeft".equals(name)) {
+				layout.marginLeft = parseDimensionValue(value);
+			} else if ("layout_marginTop".equals(name) || "android:layout_marginTop".equals(name)) {
+				layout.marginTop = parseDimensionValue(value);
+			} else if ("layout_marginRight".equals(name) || "android:layout_marginRight".equals(name)) {
+				layout.marginRight = parseDimensionValue(value);
+			} else if ("layout_marginBottom".equals(name) || "android:layout_marginBottom".equals(name)) {
+				layout.marginBottom = parseDimensionValue(value);
+			} else if ("orientation".equals(name) || "android:orientation".equals(name)) {
+				layout.orientation = "vertical".equalsIgnoreCase(value) ? 1 : 0;
+			}
+		}
+		
+		if (layout.width == 0) layout.width = -2;
+		if (layout.height == 0) layout.height = -2;
+		if (layout.orientation == 0) layout.orientation = 1;
+	}
+	
+	private void parseTextProperties(XmlPullParser parser, TextBean text) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			String value = parser.getAttributeValue(i);
+			
+			if ("text".equals(name) || "android:text".equals(name)) {
+				text.text = value;
+			} else if ("hint".equals(name) || "android:hint".equals(name)) {
+				text.hint = value;
+			} else if ("textColor".equals(name) || "android:textColor".equals(name)) {
+				try {
+					if (value != null && value.startsWith("#")) {
+						text.textColor = (int)Long.parseLong(value.substring(1), 16);
+					} else {
+						text.textColor = 0xFF000000;
+					}
+				} catch (Exception e) {
+					text.textColor = 0xFF000000;
+				}
+			} else if ("textSize".equals(name) || "android:textSize".equals(name)) {
+				try {
+					String size = value.replace("sp", "").replace("dp", "").replace("px", "");
+					text.textSize = (int)Float.parseFloat(size);
+				} catch (NumberFormatException e) {
+					text.textSize = 14;
+				}
+			} else if ("textStyle".equals(name) || "android:textStyle".equals(name)) {
+				text.textType = parseTextStyle(value);
+			} else if ("fontFamily".equals(name) || "android:fontFamily".equals(name)) {
+				text.textFont = value;
+			} else if ("singleLine".equals(name) || "android:singleLine".equals(name)) {
+				text.singleLine = "true".equals(value) ? 1 : 0;
+			} else if ("lines".equals(name) || "android:lines".equals(name)) {
+				try {
+					text.line = Integer.parseInt(value);
+				} catch (NumberFormatException e) {
+					text.line = 0;
+				}
+			} else if ("inputType".equals(name) || "android:inputType".equals(name)) {
+				text.inputType = parseInputType(value);
+			} else if ("imeOptions".equals(name) || "android:imeOptions".equals(name)) {
+				text.imeOption = parseImeOption(value);
+			}
+		}
+		
+		if (text.text == null) text.text = "";
+		if (text.textSize == 0) text.textSize = 14;
+		if (text.textColor == 0) text.textColor = 0xFF000000;
+		if (text.textFont == null) text.textFont = TextBean.TEXT_FONT;
+		if (text.hint == null) text.hint = "";
+		if (text.hintColor == 0) text.hintColor = 0xFF808080;
+	}
+	
+	private int parseTextStyle(String value) {
+		if (value == null) return TextBean.TEXT_TYPE_NORMAL;
+		
+		if ("bold".equals(value)) return TextBean.TEXT_TYPE_BOLD;
+		if ("italic".equals(value)) return TextBean.TEXT_TYPE_ITALIC;
+		if ("bold|italic".equals(value)) return TextBean.TEXT_TYPE_BOLDITALIC;
+		
+		return TextBean.TEXT_TYPE_NORMAL;
+	}
+	
+	private int parseImeOption(String value) {
+		if (value == null) return TextBean.IME_OPTION_NORMAL;
+		
+		if ("actionDone".equals(value)) return TextBean.IME_OPTION_DONE;
+		if ("actionGo".equals(value)) return TextBean.IME_OPTION_GO;
+		if ("actionNext".equals(value)) return TextBean.IME_OPTION_NEXT;
+		if ("actionSearch".equals(value)) return TextBean.IME_OPTION_SEARCH;
+		if ("actionSend".equals(value)) return TextBean.IME_OPTION_SEND;
+		
+		return TextBean.IME_OPTION_NORMAL;
+	}
+	
+	private void parseImageProperties(XmlPullParser parser, ImageBean image) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			String value = parser.getAttributeValue(i);
+			
+			if ("scaleType".equals(name) || "android:scaleType".equals(name)) {
+			} else if ("src".equals(name) || "android:src".equals(name)) {
+				image.resName = value;
+			}
+		}
+	}
+	
+	private void parseCommonAttributes(XmlPullParser parser, ViewBean bean) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			String value = parser.getAttributeValue(i);
+			
+			if ("enabled".equals(name) || "android:enabled".equals(name)) {
+				bean.enabled = "true".equals(value) ? 1 : 0;
+			} else if ("clickable".equals(name) || "android:clickable".equals(name)) {
+				bean.clickable = "true".equals(value) ? 1 : 0;
+			} else if ("padding".equals(name) || "android:padding".equals(name)) {
+				int pad = parseDimensionValue(value);
+				bean.layout.paddingLeft = pad;
+				bean.layout.paddingTop = pad;
+				bean.layout.paddingRight = pad;
+				bean.layout.paddingBottom = pad;
+			} else if ("paddingLeft".equals(name) || "android:paddingLeft".equals(name)) {
+				bean.layout.paddingLeft = parseDimensionValue(value);
+			} else if ("paddingTop".equals(name) || "android:paddingTop".equals(name)) {
+				bean.layout.paddingTop = parseDimensionValue(value);
+			} else if ("paddingRight".equals(name) || "android:paddingRight".equals(name)) {
+				bean.layout.paddingRight = parseDimensionValue(value);
+			} else if ("paddingBottom".equals(name) || "android:paddingBottom".equals(name)) {
+				bean.layout.paddingBottom = parseDimensionValue(value);
+			} else if ("background".equals(name) || "android:background".equals(name)) {
+				if (value != null && value.startsWith("#")) {
+					try {
+						bean.layout.backgroundColor = (int)Long.parseLong(value.substring(1), 16);
+					} catch (NumberFormatException e) {
+						bean.layout.backgroundColor = 0xFFFFFF;
+					}
+				} else {
+					bean.layout.backgroundResource = value;
+				}
+			} else if ("alpha".equals(name) || "android:alpha".equals(name)) {
+				try {
+					bean.alpha = Float.parseFloat(value);
+				} catch (NumberFormatException e) {
+					bean.alpha = 1.0f;
+				}
+			}
+		}
+	}
+	
+	private void parseWidgetSpecificAttributes(XmlPullParser parser, ViewBean bean) {
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			String name = parser.getAttributeName(i);
+			String value = parser.getAttributeValue(i);
+			
+			switch (bean.type) {
+				case 8:
+				case 14:
+				if ("max".equals(name) || "android:max".equals(name)) {
+					try {
+						bean.max = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.max = 100;
+					}
+				}
+				if ("progress".equals(name) || "android:progress".equals(name)) {
+					try {
+						bean.progress = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.progress = 0;
+					}
+				}
+				if ("indeterminate".equals(name) || "android:indeterminate".equals(name)) {
+					bean.indeterminate = value;
+				}
+				break;
+				
+				case 11:
+				case 13:
+				case 19:
+				case 21:
+				case 37:
+				if ("checked".equals(name) || "android:checked".equals(name)) {
+					bean.checked = "true".equals(value) ? 1 : 0;
+				}
+				break;
+				
+				case 22:
+				if ("rating".equals(name) || "android:rating".equals(name)) {
+					try {
+						bean.rating = Float.parseFloat(value);
+					} catch (NumberFormatException e) {
+						bean.rating = 0.0f;
+					}
+				}
+				if ("numStars".equals(name) || "android:numStars".equals(name)) {
+					try {
+						bean.numStars = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.numStars = 5;
+					}
+				}
+				break;
+				
+				case 23:
+				if ("min".equals(name) || "android:min".equals(name)) {
+					try {
+						bean.pickerMinValue = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.pickerMinValue = 0;
+					}
+				}
+				if ("max".equals(name) || "android:max".equals(name)) {
+					try {
+						bean.pickerMaxValue = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.pickerMaxValue = 100;
+					}
+				}
+				break;
+				
+				case 24:
+				if ("videoPath".equals(name) || "app:videoPath".equals(name)) {
+					bean.videoPath = value;
+				}
+				break;
+				
+				case 30:
+				if ("cardCornerRadius".equals(name) || "app:cardCornerRadius".equals(name)) {
+					bean.cardCornerRadius = parseDimensionValue(value);
+				}
+				if ("cardElevation".equals(name) || "app:cardElevation".equals(name)) {
+					bean.cardElevation = parseDimensionValue(value);
+				}
+				break;
+				
+				case 38:
+				if ("valueFrom".equals(name) || "android:valueFrom".equals(name)) {
+					try {
+						bean.sliderValueFrom = Float.parseFloat(value);
+					} catch (NumberFormatException e) {
+						bean.sliderValueFrom = 0.0f;
+					}
+				}
+				if ("valueTo".equals(name) || "android:valueTo".equals(name)) {
+					try {
+						bean.sliderValueTo = Float.parseFloat(value);
+					} catch (NumberFormatException e) {
+						bean.sliderValueTo = 100.0f;
+					}
+				}
+				if ("value".equals(name) || "android:value".equals(name)) {
+					try {
+						bean.sliderValue = Float.parseFloat(value);
+					} catch (NumberFormatException e) {
+						bean.sliderValue = 0.0f;
+					}
+				}
+				break;
+				
+				case 9:
+				if ("choiceMode".equals(name) || "android:choiceMode".equals(name)) {
+					if ("multipleChoice".equals(value)) bean.choiceMode = 2;
+					else if ("singleChoice".equals(value)) bean.choiceMode = 1;
+					else bean.choiceMode = 0;
+				}
+				if ("dividerHeight".equals(name) || "android:dividerHeight".equals(name)) {
+					bean.dividerHeight = parseDimensionValue(value);
+				}
+				break;
+				
+				case 10:
+				if ("spinnerMode".equals(name) || "android:spinnerMode".equals(name)) {
+					bean.spinnerMode = "dialog".equals(value) ? 0 : 1;
+				}
+				break;
+				
+				case 15:
+				if ("firstDayOfWeek".equals(name) || "android:firstDayOfWeek".equals(name)) {
+					try {
+						bean.firstDayOfWeek = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						bean.firstDayOfWeek = 1;
+					}
+				}
+				break;
+				
+				case 17:
+				if ("adSize".equals(name)) bean.adSize = value;
+				if ("adUnitId".equals(name)) bean.adUnitId = value;
+				break;
+				
+				case 58: // MaterialToolbar
+    if ("title".equals(name) || "app:title".equals(name)) {
+        bean.text.text = value;
+    }
+    if ("subtitle".equals(name) || "app:subtitle".equals(name)) {
+        bean.text.hint = value;
+    }
+    break;
+
+case 59: // SwipeRefreshLayout
+    if ("refreshing".equals(name) || "app:refreshing".equals(name)) {
+        bean.checked = "true".equals(value) ? 1 : 0;
+    }
+    break;
+
+case 60: // ShapeableImageView
+    if ("shapeAppearance".equals(name) || "app:shapeAppearance".equals(name)) {
+        bean.getAttrs().put("shapeAppearance", value);
+    }
+    if ("strokeWidth".equals(name) || "app:strokeWidth".equals(name)) {
+        bean.getAttrs().put("strokeWidth", value);
+    }
+    if ("strokeColor".equals(name) || "app:strokeColor".equals(name)) {
+        bean.getAttrs().put("strokeColor", value);
+    }
+    break;
+
+case 61: // CircularProgressIndicator
+    if ("indicatorSize".equals(name) || "app:indicatorSize".equals(name)) {
+        bean.getAttrs().put("indicatorSize", value);
+    }
+    if ("indicatorColor".equals(name) || "app:indicatorColor".equals(name)) {
+        bean.getAttrs().put("indicatorColor", value);
+    }
+    break;
+
+case 62: // LinearProgressIndicator
+    if ("trackThickness".equals(name) || "app:trackThickness".equals(name)) {
+        bean.getAttrs().put("trackThickness", value);
+    }
+    break;
+
+case 66: // BottomAppBar
+    if ("fabAlignmentMode".equals(name) || "app:fabAlignmentMode".equals(name)) {
+        bean.getAttrs().put("fabAlignmentMode", value);
+    }
+    break;
+
+case 67: // MaterialSlider
+case 90: // MaterialSpinner — treat as Spinner
+    if ("valueFrom".equals(name) || "android:valueFrom".equals(name)) {
+        try { bean.sliderValueFrom = Float.parseFloat(value); } catch (Exception ignored) {}
+    }
+    if ("valueTo".equals(name) || "android:valueTo".equals(name)) {
+        try { bean.sliderValueTo = Float.parseFloat(value); } catch (Exception ignored) {}
+    }
+    if ("value".equals(name) || "android:value".equals(name)) {
+        try { bean.sliderValue = Float.parseFloat(value); } catch (Exception ignored) {}
+    }
+    break;
+
+case 68: // PatternLockView
+    if ("dotCount".equals(name) || "app:dotCount".equals(name)) {
+        try { bean.max = Integer.parseInt(value); } catch (Exception ignored) {}
+    }
+    break;
+
+case 69: // CodeView
+    if ("code".equals(name) || "app:code".equals(name)) {
+        bean.text.text = value;
+    }
+    if ("language".equals(name) || "app:language".equals(name)) {
+        bean.text.hint = value;
+    }
+    break;
+
+case 70: // OTPView
+    if ("fieldCount".equals(name) || "app:fieldCount".equals(name)) {
+        try { bean.max = Integer.parseInt(value); } catch (Exception ignored) {}
+    }
+    break;
+
+case 72: // BadgeView
+    if ("badgeText".equals(name) || "app:badgeText".equals(name)) {
+        bean.text.text = value;
+    }
+    if ("badgeNumber".equals(name) || "app:badgeNumber".equals(name)) {
+        try { bean.progress = Integer.parseInt(value); } catch (Exception ignored) {}
+    }
+    break;
+
+case 73: // YouTubePlayerView
+    if ("videoId".equals(name) || "app:videoId".equals(name)) {
+        bean.videoPath = value;
+    }
+    break;
+
+case 74: // ExoPlayerView / PlayerView
+case 86: // PlayerView
+    if ("videoPath".equals(name) || "app:videoPath".equals(name)
+        || "app:controller_layout_id".equals(name)) {
+        bean.videoPath = value;
+    }
+    break;
+
+case 78: // MaterialCalendarView
+    if ("firstDayOfWeek".equals(name) || "app:mcv_firstDayOfWeek".equals(name)) {
+        try { bean.firstDayOfWeek = Integer.parseInt(value); } catch (Exception ignored) {}
+    }
+    break;
+
+case 84: // GoogleMapView
+case 85: // OpenStreetMapView
+    if ("mapType".equals(name) || "app:mapType".equals(name)) {
+        bean.getAttrs().put("mapType", value);
+    }
+    if ("latitude".equals(name) || "app:latitude".equals(name)) {
+        bean.getAttrs().put("latitude", value);
+    }
+    if ("longitude".equals(name) || "app:longitude".equals(name)) {
+        bean.getAttrs().put("longitude", value);
+    }
+    if ("zoom".equals(name) || "app:zoom".equals(name)) {
+        bean.getAttrs().put("zoom", value);
+    }
+    break;
+			}
+		}
+	}
+	
+	private int parseDimensionValue(String value) {
+		if (value == null) return 0;
+		try {
+			if (value.endsWith("dp")) {
+				return Integer.parseInt(value.substring(0, value.length() - 2));
+			} else if (value.endsWith("px")) {
+				return Integer.parseInt(value.substring(0, value.length() - 2));
+			} else if (value.endsWith("dip")) {
+				return Integer.parseInt(value.substring(0, value.length() - 3));
+			}
+			return Integer.parseInt(value);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+	
+	private int parseInputType(String value) {
+		if (value == null) return TextBean.INPUT_TYPE_TEXT;
+		
+		if (value.contains("textPassword")) return TextBean.INPUT_TYPE_PASSWORD;
+		if (value.contains("numberDecimal")) return TextBean.INPUT_TYPE_NUMBER_DECIMAL;
+		if (value.contains("numberSigned")) return TextBean.INPUT_TYPE_NUMBER_SIGNED;
+		if (value.contains("phone")) return TextBean.INPUT_TYPE_PHONE;
+		if (value.contains("number")) return TextBean.INPUT_TYPE_NUMBER_SIGNED_DECIMAL;
+		
+		return TextBean.INPUT_TYPE_TEXT;
+	}
+	
+	private int parseScaleType(String value) {
+		if (value == null) return 0;
+		if ("center".equals(value)) return 1;
+		if ("centerCrop".equals(value)) return 2;
+		if ("centerInside".equals(value)) return 3;
+		if ("fitCenter".equals(value)) return 4;
+		if ("fitEnd".equals(value)) return 5;
+		if ("fitStart".equals(value)) return 6;
+		if ("fitXY".equals(value)) return 7;
+		if ("matrix".equals(value)) return 8;
+		return 4;
+	}
+	
+	private int getViewType(String tagName) {
+		if (tagName == null) return -1;
+		
+		if (tagName.equals("LinearLayout")) return 0;
+		if (tagName.equals("RelativeLayout")) return 1;
+		if (tagName.equals("HorizontalScrollView")) return 2;
+		if (tagName.equals("Button")) return 3;
+		if (tagName.equals("TextView")) return 4;
+		if (tagName.equals("EditText")) return 5;
+		if (tagName.equals("ImageView")) return 6;
+		if (tagName.equals("WebView")) return 7;
+		if (tagName.equals("ProgressBar")) return 8;
+		if (tagName.equals("ListView")) return 9;
+		if (tagName.equals("Spinner")) return 10;
+		if (tagName.equals("CheckBox")) return 11;
+		if (tagName.equals("ScrollView")) return 12;
+		if (tagName.equals("Switch")) return 13;
+		if (tagName.equals("SeekBar")) return 14;
+		if (tagName.equals("CalendarView")) return 15;
+		if (tagName.contains("FloatingActionButton")) return 16;
+		if (tagName.contains("AdView")) return 17;
+		if (tagName.contains("MapView")) return 18;
+		
+		if (tagName.equals("RadioButton")) return 19;
+		if (tagName.equals("RadioGroup")) return 20;
+		if (tagName.equals("ToggleButton")) return 21;
+		if (tagName.equals("RatingBar")) return 22;
+		if (tagName.equals("NumberPicker")) return 23;
+		if (tagName.equals("VideoView")) return 24;
+		if (tagName.equals("GridView")) return 25;
+		if (tagName.equals("AutoCompleteTextView")) return 26;
+		if (tagName.equals("DatePicker")) return 27;
+		if (tagName.equals("TimePicker")) return 28;
+		
+		if (tagName.contains("MaterialButton")) return 29;
+		if (tagName.contains("MaterialCardView")) return 30;
+		if (tagName.contains("TextInputLayout")) return 31;
+		if (tagName.contains("TextInputEditText")) return 32;
+		if (tagName.contains("ChipGroup")) return 34;
+		if (tagName.endsWith(".Chip") || tagName.equals("Chip")) return 33;
+		if (tagName.contains("BottomNavigationView")) return 35;
+		if (tagName.contains("TabLayout")) return 36;
+		if (tagName.contains("SwitchMaterial")) return 37;
+		if (tagName.contains("Slider")) return 38;
+		
+		if (tagName.equals("RecyclerView") || tagName.contains("RecyclerView")) return 39;
+		if (tagName.equals("ViewPager2") || tagName.contains("ViewPager2")) return 41;
+		if (tagName.equals("ViewPager") || tagName.contains("ViewPager")) return 40;
+		if (tagName.equals("CardView") || (tagName.contains("CardView") && !tagName.contains("Material"))) return 42;
+		if (tagName.equals("NestedScrollView") || tagName.contains("NestedScrollView")) return 45;
+		if (tagName.equals("FrameLayout")) return 50;
+		if (tagName.contains("ConstraintLayout") && !tagName.contains("Motion")) return 43;
+		if (tagName.contains("CoordinatorLayout")) return 44;
+		if (tagName.contains("LottieAnimationView") || tagName.contains("Lottie")) return 46;
+		if (tagName.contains("CircleImageView")) return 47;
+		if (tagName.contains("NavigationView") && !tagName.contains("Bottom")) return 48;
+		if (tagName.equals("SearchView") || tagName.contains("SearchView")) return 49;
+		if (tagName.equals("GridLayout")) return 51;
+		if (tagName.equals("TableLayout")) return 52;
+		if (tagName.equals("ImageButton")) return 53;
+		if (tagName.equals("ExpandableListView") || tagName.contains("ExpandableListView")) return 54;
+		if (tagName.contains("CollapsingToolbarLayout")) return 55;
+		if (tagName.contains("MotionLayout")) return 56;
+		if (tagName.equals("WebView2") || tagName.contains("WidgetWebView")) return 57;
+		if (tagName.equals("VideoView")) return 24;
+		if (tagName.contains("MaterialButton")) return 29;
+		// ── Extended (AndroidX + Material + 3rd-party) ──
+if (tagName.contains("MaterialToolbar") || tagName.contains("Toolbar")) return 58;
+if (tagName.contains("SwipeRefreshLayout")) return 59;
+if (tagName.contains("ShapeableImageView")) return 60;
+if (tagName.contains("CircularProgressIndicator")) return 61;
+if (tagName.contains("LinearProgressIndicator")) return 62;
+if (tagName.endsWith(".InputChip") || tagName.equals("InputChip")) return 63;
+if (tagName.endsWith(".FilterChip") || tagName.equals("FilterChip")) return 64;
+if (tagName.endsWith(".SuggestionChip") || tagName.equals("SuggestionChip")) return 65;
+if (tagName.contains("BottomAppBar")) return 66;
+if (tagName.contains("MaterialSlider") || (tagName.contains("Slider") && !tagName.contains("SeekBar"))) return 67;
+if (tagName.contains("PatternLockView")) return 68;
+if (tagName.contains("CodeView")) return 69;
+if (tagName.contains("OTPView")) return 70;
+if (tagName.contains("BubbleLayout")) return 71;
+if (tagName.contains("BadgeView")) return 72;
+if (tagName.contains("YouTubePlayerView") || tagName.contains("YoutubePlayerView")) return 73;
+if (tagName.contains("ExoPlayerView") || tagName.equals("com.google.android.exoplayer2.ui.PlayerView")) return 74;
+if (tagName.contains("NativeAdView")) return 75;
+if (tagName.contains("PagerTabStrip") && !tagName.contains("TabLayout")) return 76;
+if (tagName.endsWith("TabItem") || tagName.endsWith(".TabItem")) return 77;
+if (tagName.contains("MaterialCalendarView")) return 78;
+if (tagName.contains("MaterialTimePicker")) return 79;
+if (tagName.contains("MaterialDatePicker")) return 80;
+if (tagName.contains("MaterialSpinner") || tagName.contains("NiceSpinner")) return 81;
+if (tagName.contains("SupportMapFragment")) return 83;
+if (tagName.contains("MapFragment")) return 82;
+if (tagName.contains("GoogleMap")) return 84;
+if (tagName.contains("OpenStreetMap") || tagName.contains("osmdroid")) return 85;
+if (tagName.contains("PlayerView")) return 86;
+if (tagName.contains("AnimatedVectorDrawable")) return 87;
+if (tagName.contains("StateListAnimator")) return 88;
+if (tagName.contains("AnimatedStateListDrawable")) return 89;
+if (tagName.contains("MaterialRadioGroup")) return 91;
+if (tagName.contains("MaterialCheckBox")) return 92;
+if (tagName.contains("SwitchCompat")) return 93;
+if (tagName.contains("MaterialSpinner")) return 90;
+		
+		return -1;
+	}
+	
+	private boolean isTextView(int type) {
+    return type == 3 || type == 4 || type == 5 || type == 11 || type == 13
+    || type == 19 || type == 21 || type == 29 || type == 32 || type == 33 || type == 37
+    || type == 53 // ImageButton
+    // ── Extended ──
+    || type == 58  // MaterialToolbar
+    || type == 63 || type == 64 || type == 65  // InputChip / FilterChip / SuggestionChip
+    || type == 69  // CodeView
+    || type == 70  // OTPView
+    || type == 72  // BadgeView
+    || type == 92; // MaterialCheckBox
+}
+	
+	private boolean isViewGroup(String tagName) {
+    return tagName.endsWith("Layout") || 
+    tagName.endsWith("ViewGroup") ||
+    tagName.contains("ScrollView") ||
+    tagName.equals("FrameLayout") ||
+    tagName.equals("TableLayout") ||
+    tagName.equals("GridLayout") ||
+    tagName.equals("ConstraintLayout") ||
+    tagName.contains("RadioGroup") ||
+    tagName.contains("ChipGroup") ||
+    tagName.contains("CardView") ||
+    tagName.contains("BottomNavigationView") ||
+    tagName.contains("TabLayout") ||
+    tagName.contains("RecyclerView") ||
+    tagName.contains("ViewPager") ||
+    tagName.contains("NestedScrollView") ||
+    tagName.contains("CoordinatorLayout") ||
+    tagName.contains("ConstraintLayout") ||
+    // ── Extended ──
+    tagName.contains("SwipeRefreshLayout") ||
+    tagName.contains("BottomAppBar") ||
+    tagName.contains("BubbleLayout") ||
+    tagName.contains("PagerTabStrip") ||
+    tagName.contains("MapFragment") ||
+    tagName.contains("SupportMapFragment") ||
+    tagName.contains("LinearLayoutCompat") ||
+    tagName.contains("FrameLayout");
+}
+	
+	private String convertToXmlName(String activityName) {
+		if (activityName == null) return null;
+		
+		String name = activityName.replace(".java", "");
+		
+		StringBuilder xmlName = new StringBuilder();
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (i != 0) xmlName.append("_");
+				xmlName.append(Character.toLowerCase(c));
+			} else {
+				xmlName.append(c);
+			}
+		}
+		
+		return xmlName.toString() + ".xml";
+	}
+	
+	private String xmlNameToActivityName(String xmlName) {
+		if (xmlName == null) return null;
+		
+		String name = xmlName.replace(".xml", "");
+		StringBuilder activityName = new StringBuilder();
+		
+		String[] parts = name.split("_");
+		for (String part : parts) {
+			if (part.length() > 0) {
+				activityName.append(Character.toUpperCase(part.charAt(0)))
+				.append(part.substring(1));
+			}
+		}
+		
+		return activityName.toString() + ".java";
+	}
+	public String getViewXmlTag(String xmlName, String viewId) {
+		if (xmlName == null || viewId == null || currentScId == null) {
+			return "";
+		}
+		
+		try {
+			Long cacheTime = xmlTagCacheTimestamp.get(xmlName);
+			if (cacheTime != null && (System.currentTimeMillis() - cacheTime) < 5000) {
+				Map<String, String> tagMap = xmlTagCache.get(xmlName);
+				if (tagMap != null && tagMap.containsKey(viewId)) {
+					Log.d(TAG, "getViewXmlTag (cached): " + viewId + " -> " + tagMap.get(viewId));
+					return tagMap.get(viewId);
+				}
+			}
+			
+			String layoutPath = FileUtil.getExternalStorageDir() 
+			+ "/.blacklogics/data/" + currentScId + "/";
+			String fullPath = layoutPath + xmlName;
+			
+			File xmlFile = new File(fullPath);
+			if (!xmlFile.exists()) {
+				Log.d(TAG, "XML file not found: " + fullPath);
+				return "";
+			}
+			
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser parser = factory.newPullParser();
+			
+			FileInputStream fis = new FileInputStream(xmlFile);
+			parser.setInput(fis, null);
+			
+			int eventType = parser.getEventType();
+			String result = "";
+			Map<String, String> tagMap = new HashMap<>();
+			
+			while (eventType != XmlPullParser.END_DOCUMENT) {
+				if (eventType == XmlPullParser.START_TAG) {
+					String tagName = parser.getName();
+					
+					if (!"merge".equals(tagName) && !"include".equals(tagName)) {
+						String idValue = null;
+						for (int i = 0; i < parser.getAttributeCount(); i++) {
+							String attrName = parser.getAttributeName(i);
+							if ("id".equals(attrName) || "android:id".equals(attrName)) {
+								idValue = parser.getAttributeValue(i);
+								if (idValue != null) {
+									if (idValue.startsWith("@+id/")) {
+										idValue = idValue.substring(5);
+									} else if (idValue.startsWith("@id/")) {
+										idValue = idValue.substring(4);
+									}
+								}
+								break;
+							}
+						}
+						
+						if (idValue != null) {
+							tagMap.put(idValue, tagName);
+							if (viewId.equals(idValue)) {
+								result = tagName;
+							}
+						}
+					}
+				}
+				eventType = parser.next();
+			}
+			
+			fis.close();
+			
+			if (!tagMap.isEmpty()) {
+				xmlTagCache.put(xmlName, tagMap);
+				xmlTagCacheTimestamp.put(xmlName, System.currentTimeMillis());
+			}
+			
+			Log.d(TAG, "getViewXmlTag: " + viewId + " -> " + result);
+			return result;
+			
+		} catch (Exception e) {
+			Log.e(TAG, "Error getting XML tag for " + viewId + ": " + e.getMessage(), e);
+			return "";
+		}
+	}
+	
+	public String getViewXmlTag(String viewId) {
+		return getViewXmlTag(currentActivityName, viewId);
+	}
+	
+	private static class fe {
+		public static String e(String scId) {
+			return FileUtil.getExternalStorageDir() + "/.blacklogics/data/" + scId;
+		}
+	}
+	
+}

@@ -1,0 +1,1933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string
+        name="app_name">BlackLogics</string>
+    <string
+        name="import_icon_title">आइकन इम्पोर्ट करें</string>
+    <string
+        name="select">चुनें</string>
+    <string
+        name="cancel">रद्द करें</string>
+    <string
+        name="black">काला</string>
+    <string
+        name="grey">स्लेटी</string>
+    <string
+        name="white">सफ़ेद</string>
+    <string
+        name="icon_name_hint">आइकन का नाम</string>
+    <string
+        name="icon_name_required">आइकन का नाम आवश्यक है</string>
+    <string
+        name="select_icon">कृपया एक आइकन चुनें</string>
+    <string
+        name="run_button_text">चलाएँ</string>
+    <string
+        name="common_word_run">चलाएँ</string>
+    <string
+        name="common_word_save">सेव करें</string>
+    <string
+        name="version_name">v1.0.0.1 - (112)</string>
+    <string
+        name="resource">संसाधन</string>
+    <string
+        name="resource_manager">संसाधन प्रबंधक</string>
+    <string
+        name="debug">डीबग</string>
+    <string
+        name="component_tree">कंपोनेंट ट्री</string>
+    <string
+        name="raw_xml">रॉ XML</string>
+    <string
+        name="about">इसके बारे में</string>
+    <string
+        name="ok">ठीक है</string>
+    <string
+        name="run">चलाएँ</string>
+    <string
+        name="mode">मोड</string>
+    <string
+        name="design_surface">डिज़ाइन सरफ़ेस</string>
+    <string
+        name="view">व्यू</string>
+    <string
+        name="design">डिज़ाइन</string>
+    <string
+        name="blueprint">ब्लूप्रिंट</string>
+    <string
+        name="sidebar_item_title">आइटम 1</string>
+    <string
+        name="block_manager_title">ब्लॉक प्रबंधक</string>
+    <string
+        name="block_manager_sub_title">लॉजिक एडिटर में अपने ब्लॉक प्रबंधित करें।</string>
+    <string
+        name="back_button_description">वापस</string>
+    <string
+        name="undo_button_description">पूर्ववत करें</string>
+    <string
+        name="redo_button_description">फिर से करें</string>
+    <string
+        name="save_button_description">सेव करें</string>
+    <string
+        name="more_options_description">अधिक विकल्प</string>
+    <string
+        name="project_detail_description">प्रोजेक्ट विवरण</string>
+    <string
+        name="design_drawer_menu_resource_encrypt">संसाधन एन्क्रिप्ट प्रबंधक</string>
+    <string
+        name="design_drawer_menu_resource_encrypt_subtitle">अतिरिक्त सुरक्षा के लिए ऐप संसाधनों को एन्क्रिप्ट करें</string>
+    <string
+        name="design_drawer_menu_dex_encrypt">डेक्स सुरक्षा (AiJiaMi एंटरप्राइज़)</string>
+    <string
+        name="design_drawer_menu_dex_encrypt_subtitle">
+    एंटरप्राइज़-स्तरीय DEX एन्क्रिप्शन और एंटी-टैम्पर सुरक्षा
+    </string>
+    <string
+        name="title_vibrator_description">वाइब्रेटर कंपोनेंट चुनें</string>
+    <string
+        name="title_filter">फ़िल्टर</string>
+    <string
+        name="title_regex">रेगेक्स</string>
+    <string
+        name="title_show_time">समय दिखाएँ</string>
+    <string
+        name="title_show_tag">TAG दिखाएँ</string>
+    <string
+        name="title_wrap_log">लॉग रैप करें</string>
+    <string
+        name="title_log_copied">लॉग कॉपी हो गया</string>
+    <string
+        name="design_drawer_menu_logcat">लॉगकैट व्यूअर</string>
+    <string
+        name="design_drawer_menu_logcat_subtitle">रीयल-टाइम में ऐप लॉग देखें</string>
+    <string
+        name="ver_control_title">वर्ज़न नियंत्रण</string>
+    <string
+        name="restore_project_title">प्रोजेक्ट पुनर्स्थापित करें</string>
+    <string
+        name="splash_tag">कल्पना करें, बनाएँ, साझा करें</string>
+    <string
+        name="pray_god">श्री गणेशाय नमः</string>
+    <string
+        name="default_event_name">onCreate</string>
+    <string
+        name="default_event_desc">एक्टिविटी बनने पर</string>
+    <string
+        name="about_app_title">एनवायरनमेंट मूल्यांकन</string>
+    <string
+        name="application_environment_desc">अपने वर्तमान एनवायरनमेंट का मूल्यांकन जाँचें</string>
+    <string
+        name="app_dark_mode_title">डार्क लाइट</string>
+    <string
+        name="app_property_title">प्रॉपर्टीज़</string>
+    <string
+        name="block_spec_title">block spec</string>
+    <string
+        name="app_code_title">कोड</string>
+    <string
+        name="block_preview_title">ब्लॉक पूर्वावलोकन</string>
+    <string
+        name="common_word_type">टाइप</string>
+    <string
+        name="common_word_type_name">टाइप नाम</string>
+    <string
+        name="app_color_title">रंग</string>
+    <string
+        name="block_spec2_title">Spec2</string>
+    <string
+        name="select_text_size">फ़ॉन्ट साइज़ चुनें</string>
+    <string
+        name="app_check_update_title">अपडेट के लिए जाँचें</string>
+    <string
+        name="app_reset_settings">सेटिंग्स रीसेट करें</string>
+    <string
+        name="developer_name">NexusTeam</string>
+    <string
+        name="app_docs_title">दस्तावेज़</string>
+    <string
+        name="common_word_unavailable">उपलब्ध नहीं...</string>
+    <string
+        name="app_suggest_idea_title">सुझाव दें</string>
+    <string
+        name="developer_telegram_url">https://t.me/blacklogics_official</string>
+    <string
+        name="open_source_licenses_title">ओपन सोर्स लाइसेंस</string>
+    <string
+        name="app_system_information_title">सिस्टम जानकारी</string>
+    <string
+        name="common_word_create">बनाएँ</string>
+    <string
+        name="app_export_path_desc">एक्सपोर्ट पथ: blacklogics/keystore/release.jks</string>
+    <string
+        name="export_project_source_code_title">सोर्स कोड एक्सपोर्ट करें</string>
+    <string
+        name="share_exported_source_code_title">सोर्स कोड ज़िप फ़ाइल भेजें</string>
+    <string
+        name="app_local_path_title">लोकल पथ</string>
+    <string
+        name="app_editor_toolbar_title">टूलबार</string>
+    <string
+        name="app_reset_all_settings">सभी सेटिंग्स रीसेट करें</string>
+    <string
+        name="app_reset_all_settings_and_data">सभी सेटिंग्स और डेटा रीसेट करें</string>
+    <string
+        name="common_reset_word">रीसेट करें</string>
+    <string
+        name="common_word_yes">हाँ</string>
+    <string
+        name="app_create_new_project_title">नया प्रोजेक्ट</string>
+    <string
+        name="word_type_to_change_icon">आइकन बदलने के लिए टैप करें</string>
+    <string
+        name="project_default_name_hint_text">एप्लिकेशन का नाम दर्ज करें</string>
+    <string
+        name="word_color_accent">colorAccent</string>
+    <string
+        name="word_color_primary">colorPrimary</string>
+    <string
+        name="word_color_primary_dark">colorPrimaryDark</string>
+    <string
+        name="word_color_primary_normal">colorPrimaryNormal</string>
+    <string
+        name="word_color_primary_highlight">colorPrimaryHighlight</string>
+    <string
+        name="project_template_package_name_title">पैकेज नाम</string>
+    <string
+        name="project_template_package_name_hint">com.my.newproject</string>
+    <string
+        name="project_name_title">NewProject</string>
+    <string
+        name="create_app_word">ऐप बनाएँ</string>
+    <string
+        name="app_advance_settings_word">एडवांस्ड सेटिंग्स</string>
+    <string
+        name="common_word_convert">कन्वर्ट करें</string>
+    <string
+        name="add_component_word">कंपोनेंट जोड़ें</string>
+    <string
+        name="component_documentation_word">दस्तावेज़ीकरण</string>
+    <string
+        name="example_component_hint_text">फ़ील्ड का नाम दर्ज करें (जैसे, myIntent)</string>
+    <string
+        name="settings_title">सेटिंग्स</string>
+    <string
+        name="community_title">समुदाय</string>
+    <string
+        name="legal_title">कानूनी</string>
+    <string
+        name="app_version_footer">Version 0.0.5 alpha5 (1459)</string>
+    <!-- Component Icon Content Descriptions -->
+    <string
+        name="component_icon">कंपोनेंट आइकन</string>
+    <string
+        name="more_options">अधिक विकल्प</string>
+    <string
+        name="delete">हटाएँ</string>
+    <!-- Delete Section Text -->
+    <string
+        name="delete_component">कंपोनेंट हटाएँ</string>
+    <!-- Component Display Names -->
+    <string
+        name="component_name_default">कंपोनेंट का नाम</string>
+    <string
+        name="field_name_default">field_name</string>
+    <!-- Optional: Additional useful strings for this component -->
+    <string
+        name="component_subtitle">कंपोनेंट उपशीर्षक</string>
+    <string
+        name="confirm">पुष्टि करें</string>
+    <string
+        name="edit">संपादित करें</string>
+    <string
+        name="name_hint">नाम दर्ज करें</string>
+    <string
+        name="error_field_required">यह फ़ील्ड आवश्यक है</string>
+    <!-- res/values/strings.xml mein add karo -->
+    <string
+        name="event_on_restart">एक्टिविटी पुनः शुरू हुई</string>
+    <string
+        name="event_on_save_instance_state">एक्टिविटी स्थिति सेव करें</string>
+    <string
+        name="event_on_restore_instance_state">एक्टिविटी स्थिति पुनर्स्थापित करें</string>
+    <string
+        name="event_on_activity_result">एक्टिविटी परिणाम प्राप्त हुआ</string>
+    <string
+        name="event_on_request_permissions_result">अनुमतियों का परिणाम प्राप्त हुआ</string>
+    <string
+        name="event_on_user_leave_hint">उपयोगकर्ता एक्टिविटी छोड़ रहा है</string>
+    <string
+        name="event_on_trim_memory">सिस्टम मेमोरी ट्रिम</string>
+    <string
+        name="event_on_low_memory">कम मेमोरी चेतावनी</string>
+    <string
+        name="event_on_new_intent">नया इंटेंट प्राप्त हुआ</string>
+    <string
+        name="event_on_configuration_changed">कॉन्फ़िगरेशन बदला गया</string>
+    <string
+        name="event_on_post_resume">onResume कॉल होने के बाद</string>
+    <string
+        name="event_imports">एक्टिविटी इम्पोर्ट्स</string>
+    <!-- Activity Lifecycle Events -->
+    <string
+        name="root_spec_on_create">onCreate: एक्टिविटी बनी</string>
+    <string
+        name="root_spec_on_post_resume">onPostResume: एक्टिविटी रिज़्यूम पूरा हुआ</string>
+    <string
+        name="root_spec_on_restart">onRestart: एक्टिविटी पुनः शुरू हुई</string>
+    <string
+        name="root_spec_on_save_instance_state">onSaveInstanceState: स्थिति सेव हो रही है</string>
+    <string
+        name="root_spec_on_restore_instance_state">onRestoreInstanceState: स्थिति पुनर्स्थापित हो रही है</string>
+    <string
+        name="root_spec_on_activity_result">onActivityResult: परिणाम प्राप्त हुआ</string>
+    <string
+        name="root_spec_on_request_permissions_result">onRequestPermissionsResult: अनुमति परिणाम</string>
+    <string
+        name="root_spec_on_user_leave_hint">onUserLeaveHint: उपयोगकर्ता एक्टिविटी छोड़ रहा है</string>
+    <string
+        name="root_spec_on_trim_memory">onTrimMemory: मेमोरी ट्रिमिंग</string>
+    <string
+        name="root_spec_on_low_memory">onLowMemory: कम मेमोरी चेतावनी</string>
+    <string
+        name="root_spec_on_new_intent">onNewIntent: नया इंटेंट प्राप्त हुआ</string>
+    <string
+        name="root_spec_on_configuration_changed">onConfigurationChanged: कॉन्फ़िगरेशन बदला गया</string>
+    <!-- Menu Events -->
+    <string
+        name="root_spec_on_options_item_selected">onOptionsItemSelected: मेनू आइटम चुना गया</string>
+    <string
+        name="root_spec_on_create_options_menu">onCreateOptionsMenu: विकल्प मेनू बन रहा है</string>
+    <!-- Special -->
+    <string
+        name="root_spec_imports">इम्पोर्ट्स: इम्पोर्ट जोड़े जा रहे हैं</string>
+    <!-- Component Make Activity - Global -->
+    <string
+        name="component_title_edit_component">कस्टम कंपोनेंट संपादित करें</string>
+    <string
+        name="component_subtitle_edit_component">ग्लोबल कस्टम कंपोनेंट अपडेट करें</string>
+    <string
+        name="component_subtitle_add_component">नया ग्लोबल कस्टम कंपोनेंट जोड़ें</string>
+    <string
+        name="component_hint_enter_description">विवरण</string>
+    <string
+        name="component_hint_enter_icon">आइकन का नाम (जैसे, widget_custom)</string>
+    <string
+        name="component_hint_enter_type_name">टाइप नाम</string>
+    <string
+        name="component_hint_enter_class_name">क्लास का नाम</string>
+    <string
+        name="component_hint_enter_build_class">बिल्ड क्लास</string>
+    <string
+        name="component_hint_enter_imports">इम्पोर्ट्स (कॉमा से अलग करें)</string>
+    <string
+        name="component_hint_enter_additional_var">अतिरिक्त वेरिएबल्स</string>
+    <string
+        name="component_hint_enter_define_var">अतिरिक्त वेरिएबल्स परिभाषित करें</string>
+    <string
+        name="component_hint_enter_url">दस्तावेज़ीकरण URL</string>
+    <string
+        name="component_hint_enter_properties">प्रॉपर्टीज़ (JSON फ़ॉर्मेट)</string>
+    <string
+        name="component_properties_title">प्रॉपर्टीज़</string>
+    <string
+        name="component_icon_picker_title">आइकन चुनें</string>
+    <string
+        name="component_delete_confirm_title">कंपोनेंट हटाएँ</string>
+    <string
+        name="component_delete_confirm_message">क्या आप वाकई "%s" कंपोनेंट को हटाना चाहते हैं?nnयह इसे सभी प्रोजेक्ट्स से हटा देगा।</string>
+    <string
+        name="component_delete_success">कंपोनेंट सफलतापूर्वक हटाया गया</string>
+    <string
+        name="component_save_success">कंपोनेंट सफलतापूर्वक सेव हुआ</string>
+    <string
+        name="component_update_success">कंपोनेंट सफलतापूर्वक अपडेट हुआ</string>
+    <string
+        name="component_create_success">कंपोनेंट सफलतापूर्वक बनाया गया</string>
+    <string
+        name="component_discard_title">बदलाव छोड़ें?</string>
+    <string
+        name="component_discard_message">आपके पास बिना सेव किए बदलाव हैं। क्या आप उन्हें छोड़ना चाहते हैं?</string>
+    <string
+        name="component_save_error">कंपोनेंट सेव करने में त्रुटि</string>
+    <string
+        name="component_loading_error">कंपोनेंट लोड करने में त्रुटि</string>
+    <string
+        name="component_invalid_properties">अमान्य प्रॉपर्टीज़ JSON फ़ॉर्मेट</string>
+    <string
+        name="component_name_required">कंपोनेंट का नाम आवश्यक है</string>
+    <string
+        name="component_required_info">आवश्यक जानकारी</string>
+    <string
+        name="component_optional_info">वैकल्पिक जानकारी</string>
+    <string
+        name="component_global_tag">(ग्लोबल)</string>
+    <string
+        name="component_type_label">कंपोनेंट टाइप: %d</string>
+    <string
+        name="title_component_manager">कंपोनेंट प्रबंधक</string>
+    <string
+        name="component_manager_desc">कस्टम कंपोनेंट जोड़ें</string>
+    <!-- BlackLogics built-in blocks — Sketchware-style (views.json) -->
+    <string
+        name="block_recycler_set_layout_manager_linear_head">set Layout Manager Linear</string>
+    <string
+        name="block_recycler_set_layout_manager_linear_tail" />
+    <string
+        name="block_recycler_set_layout_manager_grid_head">set Layout Manager Grid</string>
+    <string
+        name="block_recycler_set_layout_manager_grid_body_1" />
+    <string
+        name="block_recycler_set_layout_manager_grid_tail" />
+    <string
+        name="block_recycler_set_has_fixed_size_head">set Has Fixed Size</string>
+    <string
+        name="block_recycler_set_has_fixed_size_body_1" />
+    <string
+        name="block_recycler_set_has_fixed_size_tail" />
+    <string
+        name="block_recycler_set_adapter_head">set Adapter</string>
+    <string
+        name="block_recycler_set_adapter_body_1" />
+    <string
+        name="block_recycler_set_adapter_tail" />
+    <string
+        name="block_recycler_notify_data_set_changed_head">notify Data Set Changed</string>
+    <string
+        name="block_recycler_notify_data_set_changed_tail" />
+    <string
+        name="block_recycler_notify_item_inserted_head">notify Item Inserted</string>
+    <string
+        name="block_recycler_notify_item_inserted_body_1" />
+    <string
+        name="block_recycler_notify_item_inserted_tail" />
+    <string
+        name="block_recycler_notify_item_removed_head">notify Item Removed</string>
+    <string
+        name="block_recycler_notify_item_removed_body_1" />
+    <string
+        name="block_recycler_notify_item_removed_tail" />
+    <string
+        name="block_recycler_notify_item_changed_head">notify Item Changed</string>
+    <string
+        name="block_recycler_notify_item_changed_body_1" />
+    <string
+        name="block_recycler_notify_item_changed_tail" />
+    <string
+        name="block_recycler_scroll_to_position_head">scroll To Position</string>
+    <string
+        name="block_recycler_scroll_to_position_body_1" />
+    <string
+        name="block_recycler_scroll_to_position_tail" />
+    <string
+        name="block_recycler_smooth_scroll_to_position_head">smooth Scroll To Position</string>
+    <string
+        name="block_recycler_smooth_scroll_to_position_body_1" />
+    <string
+        name="block_recycler_smooth_scroll_to_position_tail" />
+    <string
+        name="block_list_set_selection_head">set Selection</string>
+    <string
+        name="block_list_set_selection_body_1" />
+    <string
+        name="block_list_set_selection_tail" />
+    <string
+        name="block_grid_set_num_columns_head">set Num Columns</string>
+    <string
+        name="block_grid_set_num_columns_body_1" />
+    <string
+        name="block_grid_set_num_columns_tail" />
+    <string
+        name="block_expandable_expand_group_head">expand Group</string>
+    <string
+        name="block_expandable_expand_group_body_1" />
+    <string
+        name="block_expandable_expand_group_tail" />
+    <string
+        name="block_expandable_collapse_group_head">collapse Group</string>
+    <string
+        name="block_expandable_collapse_group_body_1" />
+    <string
+        name="block_expandable_collapse_group_tail" />
+    <string
+        name="block_view_pager_set_current_item_head">pager Set Current Item</string>
+    <string
+        name="block_view_pager_set_current_item_body_1" />
+    <string
+        name="block_view_pager_set_current_item_tail" />
+    <string
+        name="block_view_pager_get_current_item_head">pager Get Current Item</string>
+    <string
+        name="block_view_pager_get_current_item_tail" />
+    <string
+        name="block_view_pager2_set_current_item_head">pager2 Set Current Item</string>
+    <string
+        name="block_view_pager2_set_current_item_body_1" />
+    <string
+        name="block_view_pager2_set_current_item_tail" />
+    <string
+        name="block_view_pager2_get_current_item_head">pager2 Get Current Item</string>
+    <string
+        name="block_view_pager2_get_current_item_tail" />
+    <string
+        name="block_view_pager2_set_user_input_enabled_head">pager2 Set User Input Enabled</string>
+    <string
+        name="block_view_pager2_set_user_input_enabled_body_1" />
+    <string
+        name="block_view_pager2_set_user_input_enabled_tail" />
+    <string
+        name="block_tab_layout_add_tab_head">layout Add Tab</string>
+    <string
+        name="block_tab_layout_add_tab_body_1" />
+    <string
+        name="block_tab_layout_add_tab_tail" />
+    <string
+        name="block_tab_layout_get_selected_head">layout Get Selected</string>
+    <string
+        name="block_tab_layout_get_selected_tail" />
+    <string
+        name="block_tab_layout_remove_all_tabs_head">layout Remove All Tabs</string>
+    <string
+        name="block_tab_layout_remove_all_tabs_tail" />
+    <string
+        name="block_tab_layout_select_tab_head">layout Select Tab</string>
+    <string
+        name="block_tab_layout_select_tab_body_1" />
+    <string
+        name="block_tab_layout_select_tab_tail" />
+    <string
+        name="block_bottom_nav_set_selected_item_id_head">nav Set Selected Item Id</string>
+    <string
+        name="block_bottom_nav_set_selected_item_id_body_1" />
+    <string
+        name="block_bottom_nav_set_selected_item_id_tail" />
+    <string
+        name="block_bottom_nav_get_selected_item_id_head">nav Get Selected Item Id</string>
+    <string
+        name="block_bottom_nav_get_selected_item_id_tail" />
+    <string
+        name="block_nav_view_set_checked_item_head">view Set Checked Item</string>
+    <string
+        name="block_nav_view_set_checked_item_body_1" />
+    <string
+        name="block_nav_view_set_checked_item_tail" />
+    <string
+        name="block_card_view_set_radius_head">view Set Radius</string>
+    <string
+        name="block_card_view_set_radius_body_1" />
+    <string
+        name="block_card_view_set_radius_tail" />
+    <string
+        name="block_card_view_set_card_elevation_head">view Set Card Elevation</string>
+    <string
+        name="block_card_view_set_card_elevation_body_1" />
+    <string
+        name="block_card_view_set_card_elevation_tail" />
+    <string
+        name="block_card_view_set_card_background_color_head">view Set Card Background Color</string>
+    <string
+        name="block_card_view_set_card_background_color_body_1" />
+    <string
+        name="block_card_view_set_card_background_color_tail" />
+    <string
+        name="block_rating_bar_set_rating_head">bar Set Rating</string>
+    <string
+        name="block_rating_bar_set_rating_body_1" />
+    <string
+        name="block_rating_bar_set_rating_tail" />
+    <string
+        name="block_rating_bar_get_rating_head">bar Get Rating</string>
+    <string
+        name="block_rating_bar_get_rating_tail" />
+    <string
+        name="block_rating_bar_set_num_stars_head">bar Set Num Stars</string>
+    <string
+        name="block_rating_bar_set_num_stars_body_1" />
+    <string
+        name="block_rating_bar_set_num_stars_tail" />
+    <string
+        name="block_progress_bar_set_progress_head">bar Set Progress</string>
+    <string
+        name="block_progress_bar_set_progress_body_1" />
+    <string
+        name="block_progress_bar_set_progress_tail" />
+    <string
+        name="block_progress_bar_get_progress_head">bar Get Progress</string>
+    <string
+        name="block_progress_bar_get_progress_tail" />
+    <string
+        name="block_progress_bar_set_max_head">bar Set Max</string>
+    <string
+        name="block_progress_bar_set_max_body_1" />
+    <string
+        name="block_progress_bar_set_max_tail" />
+    <string
+        name="block_progress_bar_set_indeterminate_head">bar Set Indeterminate</string>
+    <string
+        name="block_progress_bar_set_indeterminate_body_1" />
+    <string
+        name="block_progress_bar_set_indeterminate_tail" />
+    <string
+        name="block_seek_bar_set_progress_head">bar Set Progress</string>
+    <string
+        name="block_seek_bar_set_progress_body_1" />
+    <string
+        name="block_seek_bar_set_progress_tail" />
+    <string
+        name="block_seek_bar_get_progress_head">bar Get Progress</string>
+    <string
+        name="block_seek_bar_get_progress_tail" />
+    <string
+        name="block_seek_bar_set_max_head">bar Set Max</string>
+    <string
+        name="block_seek_bar_set_max_body_1" />
+    <string
+        name="block_seek_bar_set_max_tail" />
+    <string
+        name="block_switch_set_checked_head">set Checked</string>
+    <string
+        name="block_switch_set_checked_body_1" />
+    <string
+        name="block_switch_set_checked_tail" />
+    <string
+        name="block_switch_get_checked_head">get Checked</string>
+    <string
+        name="block_switch_get_checked_tail" />
+    <string
+        name="block_check_box_set_checked_head">box Set Checked</string>
+    <string
+        name="block_check_box_set_checked_body_1" />
+    <string
+        name="block_check_box_set_checked_tail" />
+    <string
+        name="block_check_box_get_checked_head">box Get Checked</string>
+    <string
+        name="block_check_box_get_checked_tail" />
+    <string
+        name="block_radio_button_set_checked_head">button Set Checked</string>
+    <string
+        name="block_radio_button_set_checked_body_1" />
+    <string
+        name="block_radio_button_set_checked_tail" />
+    <string
+        name="block_radio_button_get_checked_head">button Get Checked</string>
+    <string
+        name="block_radio_button_get_checked_tail" />
+    <string
+        name="block_toggle_button_set_checked_head">button Set Checked</string>
+    <string
+        name="block_toggle_button_set_checked_body_1" />
+    <string
+        name="block_toggle_button_set_checked_tail" />
+    <string
+        name="block_toggle_button_get_checked_head">button Get Checked</string>
+    <string
+        name="block_toggle_button_get_checked_tail" />
+    <string
+        name="block_video_view_set_path_head">view Set Path</string>
+    <string
+        name="block_video_view_set_path_body_1" />
+    <string
+        name="block_video_view_set_path_tail" />
+    <string
+        name="block_video_view_start_head">view Start</string>
+    <string
+        name="block_video_view_start_tail" />
+    <string
+        name="block_video_view_pause_head">view Pause</string>
+    <string
+        name="block_video_view_pause_tail" />
+    <string
+        name="block_video_view_stop_head">view Stop</string>
+    <string
+        name="block_video_view_stop_tail" />
+    <string
+        name="block_video_view_seek_to_head">view Seek To</string>
+    <string
+        name="block_video_view_seek_to_body_1" />
+    <string
+        name="block_video_view_seek_to_tail" />
+    <string
+        name="block_video_view_is_playing_head">view Is Playing</string>
+    <string
+        name="block_video_view_is_playing_tail" />
+    <string
+        name="block_search_view_set_query_head">view Set Query</string>
+    <string
+        name="block_search_view_set_query_body_1" />
+    <string
+        name="block_search_view_set_query_body_2" />
+    <string
+        name="block_search_view_set_query_tail" />
+    <string
+        name="block_search_view_get_query_head">view Get Query</string>
+    <string
+        name="block_search_view_get_query_tail" />
+    <string
+        name="block_search_view_set_iconified_head">view Set Iconified</string>
+    <string
+        name="block_search_view_set_iconified_body_1" />
+    <string
+        name="block_search_view_set_iconified_tail" />
+    <string
+        name="block_chip_set_text_head">set Text</string>
+    <string
+        name="block_chip_set_text_body_1" />
+    <string
+        name="block_chip_set_text_tail" />
+    <string
+        name="block_chip_get_text_head">get Text</string>
+    <string
+        name="block_chip_get_text_tail" />
+    <string
+        name="block_chip_set_checkable_head">set Checkable</string>
+    <string
+        name="block_chip_set_checkable_body_1" />
+    <string
+        name="block_chip_set_checkable_tail" />
+    <string
+        name="block_chip_set_checked_head">set Checked</string>
+    <string
+        name="block_chip_set_checked_body_1" />
+    <string
+        name="block_chip_set_checked_tail" />
+    <string
+        name="block_chip_is_checked_head">is Checked</string>
+    <string
+        name="block_chip_is_checked_tail" />
+    <string
+        name="block_chip_group_set_single_selection_head">group Set Single Selection</string>
+    <string
+        name="block_chip_group_set_single_selection_body_1" />
+    <string
+        name="block_chip_group_set_single_selection_tail" />
+    <string
+        name="block_chip_group_clear_check_head">group Clear Check</string>
+    <string
+        name="block_chip_group_clear_check_tail" />
+    <string
+        name="block_text_input_layout_set_hint_head">input Layout Set Hint</string>
+    <string
+        name="block_text_input_layout_set_hint_body_1" />
+    <string
+        name="block_text_input_layout_set_hint_tail" />
+    <string
+        name="block_text_input_layout_set_error_head">input Layout Set Error</string>
+    <string
+        name="block_text_input_layout_set_error_body_1" />
+    <string
+        name="block_text_input_layout_set_error_tail" />
+    <string
+        name="block_text_input_layout_set_error_enabled_head">input Layout Set Error Enabled</string>
+    <string
+        name="block_text_input_layout_set_error_enabled_body_1" />
+    <string
+        name="block_text_input_layout_set_error_enabled_tail" />
+    <string
+        name="block_material_button_set_text_head">button Set Text</string>
+    <string
+        name="block_material_button_set_text_body_1" />
+    <string
+        name="block_material_button_set_text_tail" />
+    <string
+        name="block_material_button_get_text_head">button Get Text</string>
+    <string
+        name="block_material_button_get_text_tail" />
+    <string
+        name="block_material_button_set_enabled_head">button Set Enabled</string>
+    <string
+        name="block_material_button_set_enabled_body_1" />
+    <string
+        name="block_material_button_set_enabled_tail" />
+    <string
+        name="block_lottie_set_animation_head">set Animation</string>
+    <string
+        name="block_lottie_set_animation_body_1" />
+    <string
+        name="block_lottie_set_animation_tail" />
+    <string
+        name="block_lottie_play_animation_head">play Animation</string>
+    <string
+        name="block_lottie_play_animation_tail" />
+    <string
+        name="block_lottie_pause_animation_head">pause Animation</string>
+    <string
+        name="block_lottie_pause_animation_tail" />
+    <string
+        name="block_lottie_cancel_animation_head">cancel Animation</string>
+    <string
+        name="block_lottie_cancel_animation_tail" />
+    <string
+        name="block_lottie_set_repeat_count_head">set Repeat Count</string>
+    <string
+        name="block_lottie_set_repeat_count_body_1" />
+    <string
+        name="block_lottie_set_repeat_count_tail" />
+    <string
+        name="block_lottie_set_speed_head">set Speed</string>
+    <string
+        name="block_lottie_set_speed_body_1" />
+    <string
+        name="block_lottie_set_speed_tail" />
+    <string
+        name="block_circle_image_set_image_resource_head">image Set Image Resource</string>
+    <string
+        name="block_circle_image_set_image_resource_body_1" />
+    <string
+        name="block_circle_image_set_image_resource_tail" />
+    <string
+        name="block_image_button_set_image_resource_head">button Set Image Resource</string>
+    <string
+        name="block_image_button_set_image_resource_body_1" />
+    <string
+        name="block_image_button_set_image_resource_tail" />
+    <string
+        name="block_nested_scroll_smooth_scroll_to_head">scroll Smooth Scroll To</string>
+    <string
+        name="block_nested_scroll_smooth_scroll_to_body_1" />
+    <string
+        name="block_nested_scroll_smooth_scroll_to_body_2" />
+    <string
+        name="block_nested_scroll_smooth_scroll_to_tail" />
+    <string
+        name="block_scroll_view_smooth_scroll_to_head">view Smooth Scroll To</string>
+    <string
+        name="block_scroll_view_smooth_scroll_to_body_1" />
+    <string
+        name="block_scroll_view_smooth_scroll_to_body_2" />
+    <string
+        name="block_scroll_view_smooth_scroll_to_tail" />
+    <string
+        name="block_h_scroll_smooth_scroll_to_head">scroll Smooth Scroll To</string>
+    <string
+        name="block_h_scroll_smooth_scroll_to_body_1" />
+    <string
+        name="block_h_scroll_smooth_scroll_to_body_2" />
+    <string
+        name="block_h_scroll_smooth_scroll_to_tail" />
+    <string
+        name="block_web_view_load_data_head">view Load Data</string>
+    <string
+        name="block_web_view_load_data_body_1" />
+    <string
+        name="block_web_view_load_data_body_2" />
+    <string
+        name="block_web_view_load_data_body_3" />
+    <string
+        name="block_web_view_load_data_tail" />
+    <string
+        name="block_web_view_evaluate_javascript_head">view Evaluate Javascript</string>
+    <string
+        name="block_web_view_evaluate_javascript_body_1" />
+    <string
+        name="block_web_view_evaluate_javascript_tail" />
+    <string
+        name="block_import_statement_head">import</string>
+    <string
+        name="block_import_statement_tail">;</string>
+    <string
+        name="block_menu_inflate_head">Menu get menu from file</string>
+    <string
+        name="block_menu_inflate_tail" />
+    <string
+        name="block_menu_add_head">Menu add id</string>
+    <string
+        name="block_menu_add_body_1" />
+    <string
+        name="block_menu_add_tail" />
+    <string
+        name="block_menu_add_icon_head">Menu add id</string>
+    <string
+        name="block_menu_add_icon_body_1" />
+    <string
+        name="block_menu_add_icon_body_2" />
+    <string
+        name="block_menu_add_icon_tail" />
+    <string
+        name="block_menu_add_submenu_head">Menu add submenu</string>
+    <string
+        name="block_menu_add_submenu_tail" />
+    <string
+        name="block_submenu_add_head">submenu add id</string>
+    <string
+        name="block_submenu_add_body_1" />
+    <string
+        name="block_submenu_add_tail" />
+    <string
+        name="block_menu_item_set_visible_head">Menuitem setVisible</string>
+    <string
+        name="block_menu_item_set_visible_body_1" />
+    <string
+        name="block_menu_item_set_visible_tail" />
+    <string
+        name="block_menu_item_set_enabled_head">Menuitem setEnabled</string>
+    <string
+        name="block_menu_item_set_enabled_body_1" />
+    <string
+        name="block_menu_item_set_enabled_tail" />
+    <string
+        name="block_menu_find_item_head">MenuItem findItem</string>
+    <string
+        name="block_menu_find_item_tail" />
+    <string
+        name="block_menu_item_get_item_id_head">Menuitem getItemId</string>
+    <string
+        name="block_menu_item_get_item_id_tail" />
+    <string
+        name="block_menu_item_get_title_head">Menuitem getTitle</string>
+    <string
+        name="block_menu_item_get_title_tail" />
+    <string
+        name="block_context_menu_add_head">ContextMenu add id</string>
+    <string
+        name="block_context_menu_add_body_1" />
+    <string
+        name="block_context_menu_add_tail" />
+    <string
+        name="block_activity_result_get_request_code_head">requestCode</string>
+    <string
+        name="block_activity_result_get_request_code_tail" />
+    <string
+        name="block_activity_result_get_result_code_head">resultCode</string>
+    <string
+        name="block_activity_result_get_result_code_tail" />
+    <string
+        name="block_activity_result_get_intent_head">intent data</string>
+    <string
+        name="block_activity_result_get_intent_tail" />
+    <string
+        name="block_list_bind_get_position_head">position</string>
+    <string
+        name="block_list_bind_get_position_tail" />
+    <string
+        name="block_view_pager_set_adapter_head">setAdapter</string>
+    <string
+        name="block_view_pager_set_adapter_tail" />
+    <string
+        name="block_view_pager_notify_data_set_changed_head">notifyDataSetChanged</string>
+    <string
+        name="block_view_pager_notify_data_set_changed_tail" />
+    <string
+        name="block_view_pager2_set_adapter_head">setAdapter</string>
+    <string
+        name="block_view_pager2_set_adapter_tail" />
+    <string
+        name="block_view_pager2_notify_data_set_changed_head">notifyDataSetChanged</string>
+    <string
+        name="block_view_pager2_notify_data_set_changed_tail" />
+    <string
+        name="block_tab_layout_setup_with_view_pager_head">setupWithViewPager</string>
+    <string
+        name="block_tab_layout_setup_with_view_pager_tail" />
+    <string
+        name="block_material_card_set_radius_head">setRadius</string>
+    <string
+        name="block_material_card_set_radius_tail" />
+    <string
+        name="block_material_card_set_elevation_head">setCardElevation</string>
+    <string
+        name="block_material_card_set_elevation_tail" />
+    <string
+        name="block_material_card_set_bg_head">setCardBackgroundColor</string>
+    <string
+        name="block_material_card_set_bg_tail" />
+    <string
+        name="block_material_switch_set_checked_head">setChecked</string>
+    <string
+        name="block_material_switch_set_checked_tail" />
+    <string
+        name="block_material_switch_get_checked_head">isChecked</string>
+    <string
+        name="block_material_switch_get_checked_tail" />
+    <string
+        name="block_collapsing_toolbar_set_title_head">setTitle</string>
+    <string
+        name="block_collapsing_toolbar_set_title_tail" />
+    <string
+        name="block_collapsing_toolbar_set_expanded_head">setExpanded</string>
+    <string
+        name="block_collapsing_toolbar_set_expanded_tail" />
+    <string
+        name="block_collapsing_toolbar_set_scrim_head">setContentScrimColor</string>
+    <string
+        name="block_collapsing_toolbar_set_scrim_tail" />
+    <string
+        name="block_motion_layout_transition_to_start_head">transitionToStart</string>
+    <string
+        name="block_motion_layout_transition_to_start_tail" />
+    <string
+        name="block_motion_layout_transition_to_end_head">transitionToEnd</string>
+    <string
+        name="block_motion_layout_transition_to_end_tail" />
+    <string
+        name="block_motion_layout_set_progress_head">setProgress</string>
+    <string
+        name="block_motion_layout_set_progress_tail" />
+    <string
+        name="block_motion_layout_get_progress_head">getProgress</string>
+    <string
+        name="block_motion_layout_get_progress_tail" />
+    <string
+        name="block_spinner_set_selection_head">setSelection</string>
+    <string
+        name="block_spinner_set_selection_tail" />
+    <string
+        name="block_spinner_get_selected_item_position_head">getSelectedItemPosition</string>
+    <string
+        name="block_spinner_get_selected_item_position_tail" />
+    <string
+        name="block_spinner_get_selected_item_head">getSelectedItem</string>
+    <string
+        name="block_spinner_get_selected_item_tail" />
+    <string
+        name="block_linear_layout_set_orientation_head">setOrientation</string>
+    <string
+        name="block_linear_layout_set_orientation_tail" />
+    <string
+        name="block_grid_layout_set_column_count_head">setColumnCount</string>
+    <string
+        name="block_grid_layout_set_column_count_tail" />
+    <string
+        name="block_grid_layout_set_row_count_head">setRowCount</string>
+    <string
+        name="block_grid_layout_set_row_count_tail" />
+    <string
+        name="block_nested_scroll_scroll_to_head">scrollTo</string>
+    <string
+        name="block_nested_scroll_scroll_to_tail" />
+    <string
+        name="block_video_view_get_duration_head">getDuration</string>
+    <string
+        name="block_video_view_get_duration_tail" />
+    <string
+        name="block_video_view_get_current_position_head">getCurrentPosition</string>
+    <string
+        name="block_video_view_get_current_position_tail" />
+    <string
+        name="block_chip_group_get_checked_chip_id_head">getCheckedChipId</string>
+    <string
+        name="block_chip_group_get_checked_chip_id_tail" />
+    <string
+        name="block_material_button_set_icon_head">setIconResource</string>
+    <string
+        name="block_material_button_set_icon_tail" />
+    <string
+        name="block_rating_bar_set_is_indicator_head">setIsIndicator</string>
+    <string
+        name="block_rating_bar_set_is_indicator_tail" />
+    <string
+        name="block_text_input_layout_set_helper_head">setHelperText</string>
+    <string
+        name="block_text_input_layout_set_helper_tail" />
+    <string
+        name="block_text_input_layout_get_edit_text_head">getEditText</string>
+    <string
+        name="block_text_input_layout_get_edit_text_tail" />
+    <!-- Lifecycle Events Screen -->
+    <string
+        name="initialize_logic">initializeLogic</string>
+    <string
+        name="on_activity_create">एक्टिविटी बनने पर</string>
+    <string
+        name="remove">हटाएँ</string>
+    <string
+        name="selected_lifecycle_events">चयनित लाइफ़साइकल इवेंट्स</string>
+    <string
+        name="no_lifecycle_events_selected">कोई लाइफ़साइकल इवेंट चयनित नहीं</string>
+    <string
+        name="tap_plus_to_add_lifecycle_events">लाइफ़साइकल इवेंट जोड़ने के लिए + टैप करें</string>
+    <string
+        name="learn_more_about_events">इवेंट्स के बारे में और जानें</string>
+    <string
+        name="quick_event_tips">त्वरित इवेंट सुझाव</string>
+    <string
+        name="tip_lifecycle_events">• लाइफ़साइकल इवेंट्स तय समय पर अपने आप चलते हैं (onCreate, onResume, आदि)</string>
+    <string
+        name="tip_view_events">• व्यू इवेंट्स क्लिक, टच और लॉन्ग प्रेस जैसी उपयोगकर्ता क्रियाओं पर प्रतिक्रिया करते हैं</string>
+    <string
+        name="tip_moreblocks">• MoreBlocks से आप अपने कोड को व्यवस्थित करने के लिए पुनः प्रयोग योग्य फ़ंक्शन बना सकते हैं</string>
+    <string
+        name="tip_chained_events">• जटिल व्यवहार बनाने के लिए इवेंट्स को आपस में जोड़ा जा सकता है</string>
+    <!-- View Events Section -->
+    <string
+        name="view_events">व्यू इवेंट्स</string>
+    <string
+        name="no_views_yet">अभी तक कोई व्यू नहीं</string>
+    <string
+        name="no_views_description">व्यू इवेंट बनाने के लिए पहले डिज़ाइन टैब में व्यू जोड़ें</string>
+    <!-- MoreBlocks Section -->
+    <string
+        name="moreblocks">MoreBlocks</string>
+    <string
+        name="no_moreblocks_yet">अभी तक कोई MoreBlocks नहीं</string>
+    <string
+        name="no_moreblocks_description">MoreBlocks का उपयोग करके पुनः प्रयोग योग्य फ़ंक्शन और प्रोसीज़र बनाएँ</string>
+    <!-- New strings -->
+    <string
+        name="common_word_name">नाम</string>
+    <string
+        name="parameters">पैरामीटर्स</string>
+    <string
+        name="code">कोड</string>
+    <string
+        name="quick_tips">त्वरित सुझाव</string>
+    <string
+        name="tip_components_reused">• कंपोनेंट्स को कई एक्टिविटीज़ में पुनः उपयोग किया जा सकता है</string>
+    <string
+        name="tip_unique_field_name">• हर कंपोनेंट के लिए एक यूनीक फ़ील्ड नाम आवश्यक है</string>
+    <string
+        name="tip_event_handlers">• कंपोनेंट्स को इंटरैक्टिव बनाने के लिए इवेंट हैंडलर जोड़ें</string>
+    <string
+        name="settings">सेटिंग्स</string>
+    <string
+        name="preferences">प्राथमिकताएँ</string>
+    <string
+        name="language">भाषा</string>
+    <string
+        name="english">अंग्रेज़ी</string>
+    <string
+        name="button">बटन</string>
+    <string
+        name="hi">नमस्ते</string>
+    <string
+        name="enabled">सक्षम</string>
+    <string
+        name="appcompat_library_desc">App Compat लाइब्रेरी को सक्रिय करने से आप एक्टिविटीज़ में ड्रॉअर लेआउट और फ़्लोटिंग एक्शन बटन जोड़ सकेंगे।</string>
+    <string
+        name="appcompat_library_warning">लाइब्रेरी शामिल करने से कुछ डिवाइसों पर कंपाइलेशन समय धीमा हो सकता है।</string>
+    <string
+        name="activate_resource_encryption">संसाधन एन्क्रिप्शन सक्रिय करें</string>
+    <string
+        name="resource_encryption_desc">प्रोजेक्ट संसाधनों को एन्क्रिप्ट करने से XML, एसेट्स और ड्रॉएबल फ़ाइलें सुरक्षित फ़ॉर्मेट में बदल जाएँगी।</string>
+    <string
+        name="warning">चेतावनी</string>
+    <string
+        name="resource_encryption_warning">एक्रिप्शन सक्षम होने के बाद, संसाधनों को मैन्युअल रूप से संपादित करने से पहले डिक्रिप्ट करना होगा।</string>
+    <string
+        name="encryption_key">एन्क्रिप्शन कुंजी</string>
+    <string
+        name="encryption_key_desc">एन्क्रिप्शन कुंजी आपके प्रोजेक्ट संसाधनों को अपठनीय बनाए रखती है। इसे सुरक्षित रूप से सहेजें।</string>
+    <string
+        name="enable_dex_protection">डेक्स सुरक्षा सक्षम करें (AiJiaMi एंटरप्राइज़)</string>
+    <string
+        name="aijiami_enterprise_desc">AiJiaMi एंटरप्राइज़ रिवर्स इंजीनियरिंग और कोड चोरी को रोकने के लिए Dex एन्क्रिप्शन और रनटाइम सुरक्षा प्रदान करता है।</string>
+    <string
+        name="dex_protection_warning">चेतावनी: डेक्स सुरक्षा सक्षम करने से APK का आकार बढ़ सकता है और डीबगिंग कठिन हो सकती है।</string>
+    <string
+        name="benefits">लाभ</string>
+    <string
+        name="dex_protection_benefits">• Dex डिकंपाइलेशन को रोकता है&gt;&gt;&gt;&gt;&gt;&gt;&gt;>
+• सोर्स कोड लॉजिक की सुरक्षा करता है
+• स्ट्रिंग्स और क्लासेज़ को एन्क्रिप्ट करता है
+• एंटी-डीबग और एंटी-टैम्पर जोड़ता है
+• एप्लिकेशन सुरक्षा में सुधार करता है</string>
+    <string
+        name="disadvantages">नुकसान</string>
+    <string
+        name="dex_protection_disadvantages">• APK का आकार बढ़ता है&gt;&gt;&gt;&gt;&gt;&gt;&gt;>
+• ऐप का स्टार्टअप धीमा हो सकता है
+• क्रैश डीबग करना कठिन होता है
+• पूरी तरह से अभेद्य नहीं है
+• सही कॉन्फ़िगरेशन आवश्यक है</string>
+    <string
+        name="encryption_configuration">एन्क्रिप्शन कॉन्फ़िगरेशन</string>
+    <string
+        name="androidmanifest_manager">AndroidManifest प्रबंधक</string>
+    <string
+        name="application">एप्लिकेशन</string>
+    <string
+        name="application_desc">ऐप के लिए डिफ़ॉल्ट प्रॉपर्टीज़</string>
+    <string
+        name="permissions">अनुमतियाँ</string>
+    <string
+        name="permissions_desc">इस ऐप में कस्टम अनुमतियाँ जोड़ें</string>
+    <string
+        name="launcher_activity">लॉन्चर एक्टिविटी</string>
+    <string
+        name="launcher_activity_desc">डिफ़ॉल्ट लॉन्चर एक्टिविटी बदलें</string>
+    <string
+        name="all_activities">सभी एक्टिविटीज़</string>
+    <string
+        name="all_activities_desc">सभी एक्टिविटीज़ के लिए एट्रिब्यूट जोड़ें</string>
+    <string
+        name="app_components">ऐप कंपोनेंट्स</string>
+    <string
+        name="app_components_desc">अतिरिक्त कंपोनेंट्स जोड़ें</string>
+    <string
+        name="activities">एक्टिविटीज़</string>
+    <string
+        name="add_activity">एक्टिविटी जोड़ें</string>
+    <string
+        name="opensource_licenses">ओपन सोर्स लाइसेंस</string>
+    <string
+        name="lightning_emoji">⚡</string>
+    <string
+        name="blacklogics">BlackLogics</string>
+    <string
+        name="nexusteam_smart_india_gaming">NexusTeam · Smart India Gaming</string>
+    <string
+        name="copyright_nexusteam">© 2024–2026 NexusTeam.</string>
+    <string
+        name="blacklogics_license_desc">BlackLogics दो लाइसेंस में उपलब्ध है:&gt;&gt;&gt;&gt;&gt;&gt;&gt;>
+- GNU जनरल पब्लिक लाइसेंस v3.0 (GPL-3.0) — डिफ़ॉल्ट
+- कमर्शियल लाइसेंस — अनुरोध पर उपलब्ध
+
+यह सॉफ़्टवेयर मुक्त सॉफ़्टवेयर है; आप इसे GPL-3.0 की शर्तों के तहत पुनर्वितरित और/या संशोधित कर सकते हैं। ओपन सोर्स दायित्वों के बिना व्यावसायिक उपयोग के लिए, कमर्शियल लाइसेंस आवश्यक है।</string>
+    <string
+        name="third_party_open_source_components">थर्ड-पार्टी ओपन सोर्स कंपोनेंट्स</string>
+    <string
+        name="license_compliance">लाइसेंस अनुपालन</string>
+    <string
+        name="license_compliance_desc">BlackLogics सभी ओपन-सोर्स लाइसेंसों का पूरी तरह सम्मान करता है। सभी थर्ड-पार्टी कंपोनेंट्स उनके संबंधित लेखकों की विशेष संपत्ति बने रहते हैं और उनके मूल लाइसेंस शर्तों के अनुसार ही वितरित किए जाते हैं — जिनमें GPL-3.0, Apache 2.0, MIT और अन्य शामिल हैं।</string>
+    <string
+        name="project_name_label">प्रोजेक्ट का नाम</string>
+    <string
+        name="version_code_default">1</string>
+    <string
+        name="version_name_default">1.0</string>
+    <string
+        name="about_team">टीम के बारे में</string>
+    <string
+        name="changelog">परिवर्तन सूची</string>
+    <string
+        name="system_settings">सिस्टम सेटिंग्स</string>
+    <string
+        name="program_information">प्रोग्राम जानकारी</string>
+    <string
+        name="developer_tools">डेवलपर टूल्स</string>
+    <string
+        name="create_release_keystore">रिलीज़ कीस्टोर बनाएँ</string>
+    <string
+        name="web_to_apk_beta">वेब से APK (बीटा)</string>
+    <string
+        name="java_to_smali_beta">Java से Smali (बीटा)</string>
+    <string
+        name="donate">दान करें</string>
+    <string
+        name="attr_gravity">ग्रेविटी</string>
+    <string
+        name="attr_orientation">ओरिएंटेशन</string>
+    <string
+        name="attr_weight_sum">वेट सम</string>
+    <string
+        name="attr_baseline_aligned">बेसलाइन अलाइन्ड</string>
+    <string
+        name="attr_text">टेक्स्ट</string>
+    <string
+        name="attr_text_size">टेक्स्ट साइज़</string>
+    <string
+        name="attr_text_color">टेक्स्ट कलर</string>
+    <string
+        name="attr_max_lines">मैक्स लाइन्स</string>
+    <string
+        name="attr_min_lines">मिन लाइन्स</string>
+    <string
+        name="attr_lines">लाइन्स</string>
+    <string
+        name="attr_single_line">सिंगल लाइन</string>
+    <string
+        name="attr_all_caps">ऑल कैप्स</string>
+    <string
+        name="attr_letter_spacing">लेटर स्पेसिंग</string>
+    <string
+        name="attr_hint_color">हिंट कलर</string>
+    <string
+        name="attr_ellipsize">एलिप्साइज़</string>
+    <string
+        name="attr_set_checked">चेक्ड सेट करें</string>
+    <string
+        name="attr_image">इमेज</string>
+    <string
+        name="attr_set_tint">टिंट सेट करें</string>
+    <string
+        name="attr_scale_type">स्केल टाइप</string>
+    <string
+        name="attr_adjust_view_bounds">एडजस्ट व्यू बाउंड्स</string>
+    <string
+        name="attr_width">चौड़ाई</string>
+    <string
+        name="attr_height">ऊँचाई</string>
+    <string
+        name="attr_background_color">बैकग्राउंड कलर</string>
+    <string
+        name="attr_elevation">एलिवेशन</string>
+    <string
+        name="attr_alpha">अल्फा</string>
+    <string
+        name="attr_translation_y">ट्रांसलेशन Y</string>
+    <string
+        name="attr_translation_x">ट्रांसलेशन X</string>
+    <string
+        name="attr_scale_x">स्केल X</string>
+    <string
+        name="attr_scale_y">स्केल Y</string>
+    <string
+        name="attr_convert_widget">विजेट कन्वर्ट करें</string>
+    <string
+        name="attr_padding_settings">पैडिंग सेटिंग्स</string>
+    <string
+        name="attr_margin_settings">मार्जिन सेटिंग्स</string>
+    <string
+        name="attr_visibility">विज़िबिलिटी</string>
+    <string
+        name="attr_enabled">एनेबल्ड</string>
+    <string
+        name="attr_clickable">क्लिकेबल</string>
+    <string
+        name="attr_focusable">फोकसेबल</string>
+    <string
+        name="attr_rotation">रोटेशन</string>
+    <string
+        name="attr_min_width">मिन चौड़ाई</string>
+    <string
+        name="attr_min_height">मिन ऊँचाई</string>
+    <string
+        name="attr_hint">हिंट</string>
+    <string
+        name="attr_select_all_on_focus">फोकस पर सब सिलेक्ट</string>
+    <string
+        name="attr_fill_viewport">फिल व्यूपोर्ट</string>
+    <string
+        name="attr_custom_view">कस्टम व्यू</string>
+    <string
+        name="attr_app_title">टाइटल</string>
+    <string
+        name="attr_title">टाइटल</string>
+    <!-- Widget palette — Hindi -->
+    <string
+        name="view_linear_layout">लीनियर लेआउट</string>
+    <string
+        name="view_relative_layout">रिलेटिव लेआउट</string>
+    <string
+        name="view_frame_layout">फ्रेम लेआउट</string>
+    <string
+        name="view_grid_layout">ग्रिड लेआउट</string>
+    <string
+        name="view_table_layout">टेबल लेआउट</string>
+    <string
+        name="view_constraint_layout">कॉन्स्ट्रेंट लेआउट</string>
+    <string
+        name="view_motion_layout">मोशन लेआउट</string>
+    <string
+        name="view_coordinator_layout">कोऑर्डिनेटर लेआउट</string>
+    <string
+        name="view_text_view">टेक्स्ट व्यू</string>
+    <string
+        name="view_button">बटन</string>
+    <string
+        name="view_edit_text">एडिट टेक्स्ट</string>
+    <string
+        name="view_image_view">इमेज व्यू</string>
+    <string
+        name="view_image_button">इमेज बटन</string>
+    <string
+        name="view_check_box">चेक बॉक्स</string>
+    <string
+        name="view_radio_button">रेडियो बटन</string>
+    <string
+        name="view_toggle_button">टॉगल बटन</string>
+    <string
+        name="view_switch">स्विच</string>
+    <string
+        name="view_seek_bar">सीक बार</string>
+    <string
+        name="view_progress_bar">प्रोग्रेस बार</string>
+    <string
+        name="view_rating_bar">रेटिंग बार</string>
+    <string
+        name="view_spinner">स्पिनर</string>
+    <string
+        name="view_list_view">लिस्ट व्यू</string>
+    <string
+        name="view_grid_view">ग्रिड व्यू</string>
+    <string
+        name="view_expandable_list_view">एक्सपैंडेबल लिस्ट</string>
+    <string
+        name="view_web_view">वेब व्यू</string>
+    <string
+        name="view_web_view2">वेब व्यू 2</string>
+    <string
+        name="view_video_view">वीडियो व्यू</string>
+    <string
+        name="view_scroll_view">स्क्रॉल व्यू</string>
+    <string
+        name="view_horizontal_scroll_view">हॉरिजॉन्टल स्क्रॉल</string>
+    <string
+        name="view_nested_scroll_view">नेस्टेड स्क्रॉल</string>
+    <string
+        name="view_recycler_view">रिसाइकलर व्यू</string>
+    <string
+        name="view_view_pager">व्यू पेजर</string>
+    <string
+        name="view_view_pager2">व्यू पेजर 2</string>
+    <string
+        name="view_card_view">कार्ड व्यू</string>
+    <string
+        name="view_collapsing_toolbar_layout">कोलॅप्सिंग टूलबार</string>
+    <string
+        name="view_material_button">मटीरियल बटन</string>
+    <string
+        name="view_text_input_layout">टेक्स्ट इनपुट लेआउट</string>
+    <string
+        name="view_bottom_navigation_view">बॉटम नेविगेशन</string>
+    <string
+        name="view_navigation_view">नेविगेशन व्यू</string>
+    <string
+        name="view_tab_layout">टैब लेआउट</string>
+    <string
+        name="view_chip">चिप</string>
+    <string
+        name="view_chip_group">चिप ग्रुप</string>
+    <string
+        name="view_material_card_view">मटीरियल कार्ड</string>
+    <string
+        name="view_material_switch">मटीरियल स्विच</string>
+    <string
+        name="view_lottie_animation_view">लॉटी एनिमेशन</string>
+    <string
+        name="view_circle_image_view">सर्कल इमेज</string>
+    <string
+        name="event_desc_on_create">एक्टिविटी बनने पर</string>
+    <string
+        name="event_desc_on_post_create">onCreate के बाद</string>
+    <string
+        name="event_desc_on_start">एक्टिविटी दिखने लगती है</string>
+    <string
+        name="event_desc_on_resume">एक्टिविटी फोरग्राउंड में</string>
+    <string
+        name="event_desc_on_post_resume">onResume के बाद</string>
+    <string
+        name="event_desc_on_pause">एक्टिविटी आंशिक छिपी</string>
+    <string
+        name="event_desc_on_stop">एक्टिविटी रुकी</string>
+    <string
+        name="event_desc_on_restart">एक्टिविटी फिर शुरू</string>
+    <string
+        name="event_desc_on_destroy">एक्टिविटी नष्ट होने पर</string>
+    <string
+        name="event_desc_on_back_pressed">बैक बटन दबाने पर</string>
+    <string
+        name="event_desc_on_save_instance_state">एक्टिविटी स्थिति सेव करें</string>
+    <string
+        name="event_desc_on_restore_instance_state">एक्टिविटी स्थिति पुनर्स्थापित करें</string>
+    <string
+        name="event_desc_on_activity_result">एक्टिविटी परिणाम मिला</string>
+    <string
+        name="event_desc_on_request_permissions_result">अनुमति परिणाम मिला</string>
+    <string
+        name="event_desc_on_user_leave_hint">उपयोगकर्ता एक्टिविटी छोड़ रहा है</string>
+    <string
+        name="event_desc_on_trim_memory">सिस्टम मेमोरी ट्रिम</string>
+    <string
+        name="event_desc_on_low_memory">कम मेमोरी चेतावनी</string>
+    <string
+        name="event_desc_on_new_intent">नया इंटेंट मिला</string>
+    <string
+        name="event_desc_on_configuration_changed">कॉन्फ़िगरेशन बदला</string>
+    <string
+        name="event_desc_imports">एक्टिविटी इम्पोर्ट्स</string>
+    <string
+        name="create_new_certificate">नया प्रमाणपत्र बनाएं</string>
+    <string
+        name="certificate_credentials">प्रमाणपत्र क्रेडेंशियल</string>
+    <string
+        name="enter_certificate_name">प्रमाणपत्र का नाम दर्ज करें</string>
+    <string
+        name="enter_new_password">नया पासवर्ड दर्ज करें</string>
+    <string
+        name="alias">उपनाम</string>
+    <string
+        name="validity_years">वैधता (वर्ष)</string>
+    <string
+        name="certificate_info">प्रमाणपत्र जानकारी</string>
+    <string
+        name="organization">संगठन</string>
+    <string
+        name="organization_unit">संगठन इकाई</string>
+    <string
+        name="city">शहर</string>
+    <string
+        name="state">राज्य</string>
+    <string
+        name="country_xx">देश (XX)</string>
+    <string
+        name="appcompat_and_design">AppCompat और Design</string>
+    <string
+        name="appcompat_and_design_desc">DrawerLayout, FloatingActionButton</string>
+    <!-- OX Quiz Statements -->
+    <string
+        name="q_gyroscope_supported">Gyroscope कॉम्पोनेंट हर डिवाइस पर सपोर्टेड है।</string>
+    <string
+        name="q_index_first_item_one">लिस्ट में पहले आइटम का इंडेक्स 1 होता है।</string>
+    <string
+        name="q_sharedpref_remains">ऐप डिलीट करने के बाद भी सेव किया हुआ SharedPreference डेटा रहता है।</string>
+    <string
+        name="q_sharedpref_deletes_restart">ऐप रीस्टार्ट करने के बाद सेव किया हुआ SharedPreference डेटा डिलीट हो जाता है।</string>
+    <string
+        name="q_events_only_event_tab">आप इवेंट्स को सिर्फ \"Event\" टैब से एक्सेस कर सकते हैं।</string>
+    <string
+        name="q_timer_multiple_tasks">एक ही Timer कॉम्पोनेंट से आप कई Timer टास्क चला और कैंसिल कर सकते हैं।</string>
+    <string
+        name="q_firebase_component_tab">Firebase लाइब्रेरी को सिर्फ \"Component\" टैब में ऐड करके इस्तेमाल कर सकते हैं।</string>
+    <string
+        name="q_scroll_multiple_widgets">\"Scroll\" Layout Widget के अंदर कई widgets रखना संभव है।</string>
+    <string
+        name="q_soundpool_any_length">SoundPool कॉम्पोनेंट किसी भी लंबाई की साउंड फाइल चला सकता है।</string>
+    <string
+        name="q_drawer_fab_compile_time">Activity में Drawer या FAB ऐड करने का कंपाइलेशन टाइम पर कोई असर नहीं पड़ता।</string>
+    <string
+        name="q_onstop_after_ondestroy">Activity के lifecycle में \"onStop\", \"onDestroy\" इवेंट के बाद आता है।</string>
+    <string
+        name="q_delete_blacklogics_removes_projects">BlackLogics ऐप डिलीट करने से सारे सेव किए प्रोजेक्ट्स हट जाते हैं।</string>
+    <string
+        name="q_blacklogics_autosave">BlackLogics अपने आप प्रोजेक्ट सेव कर देता है।</string>
+    <string
+        name="q_sharedpref_fileutil_same">SharedPreferences और FileUtil दोनों एक ही काम करते हैं।</string>
+    <string
+        name="q_update_playstore_diff_key">Play Store पर ऐप को अलग release key से अपडेट कर सकते हैं।</string>
+    <string
+        name="q_local_project_recover">बिना बैकअप वाला लोकल प्रोजेक्ट डिलीट होने पर रिकवर हो सकता है।</string>
+    <string
+        name="q_duplicate_id_widgets">Widgets की ID डुप्लीकेट हो सकती है।</string>
+    <string
+        name="q_disable_widgets_enabled_prop">Widgets को सिर्फ उसकी \"enabled\" प्रॉपर्टी से डिसेबल कर सकते हैं।</string>
+    <string
+        name="q_alpha_shadow">\"alpha\" प्रॉपर्टी widget के पीछे शैडो बनाती है।</string>
+    <string
+        name="q_list_only_numbers">\"List\" सिर्फ नंबर्स की लिस्ट स्टोर कर सकती है।</string>
+    <string
+        name="q_if_else_one_condition">if-else ब्लॉक के अंदर सिर्फ एक कंडीशन चेक कर सकते हैं।</string>
+    <string
+        name="q_clear_top_removes_uppermost">Intent कॉम्पोनेंट का \"CLEAR_TOP\" सबसे ऊपर वाली स्क्रीन हटा देता है।</string>
+    <string
+        name="q_finishactivity_close_app">\"finishActivity\" ब्लॉक ऐप बंद करने के लिए इस्तेमाल होता है।</string>
+    <string
+        name="q_listview_scroll_not_possible">ब्लॉक्स से ListView को प्रोग्रामेटिकली स्क्रॉल करना संभव नहीं है।</string>
+    <string
+        name="q_open_other_apps_not_possible">Intent कॉम्पोनेंट से दूसरे ऐप्स ओपन करना संभव नहीं है।</string>
+    <string
+        name="q_objectanimator_only_way">Widgets को एनिमेट करने का सिर्फ ObjectAnimator ही तरीका है।</string>
+    <string
+        name="q_events_auto_added">कॉम्पोनेंट ऐड करने के बाद उसके इवेंट्स अपने आप ऐड हो जाते हैं।</string>
+    <string
+        name="q_collection_not_shared">\"Project A\" की My Collection \"Project B\" से एक्सेस नहीं की जा सकती।</string>
+    <string
+        name="q_upload_apk_unsigned">बिना साइन किए APK फाइल Play Store पर अपलोड करना संभव है।</string>
+    <string
+        name="q_delete_collection_items">Image, Sound और Font मैनेजर्स से \"My Collection\" आइटम्स डिलीट कर सकते हैं।</string>
+    <string
+        name="q_fixed_dp_recommended">Widget की width और height पर fixed dp सेट करना आमतौर पर सुझाया जाता है।</string>
+    <string
+        name="q_layout_inside_layout_not_possible">Layout के अंदर दूसरा Layout widget इस्तेमाल नहीं कर सकते।</string>
+    <string
+        name="q_textview_maxlines_not_possible">TextView में दिखने वाली max lines सेट नहीं कर सकते।</string>
+    <string
+        name="q_edittext_disable_not_possible">EditText widget को डिसेबल नहीं कर सकते।</string>
+    <string
+        name="q_redirect_website_not_possible">ब्लॉक्स से यूज़र को वेबसाइट पर रीडायरेक्ट नहीं कर सकते।</string>
+    <string
+        name="q_divide_by_zero">किसी नंबर को 0 से डिवाइड कर सकते हैं।</string>
+    <string
+        name="q_copy_blocks_not_possible">ब्लॉक्स को दूसरी activity में कॉपी नहीं कर सकते।</string>
+    <string
+        name="q_calendar_calendarview_same">Calendar और CalendarView एक ही चीज़ हैं।</string>
+    <string
+        name="q_one_component_per_activity">एक activity में सिर्फ एक कॉम्पोनेंट ऐड कर सकते हैं।</string>
+    <string
+        name="q_var_case_same">Variable नाम \"Abc\" और \"abc\" एक ही variable हैं।</string>
+    <string
+        name="q_duplicate_list_items_not_possible">लिस्ट में डुप्लीकेट आइटम्स ऐड नहीं कर सकते।</string>
+    <string
+        name="q_undo_variable_creation">Variable बनाने की action को UNDO कर सकते हैं।</string>
+    <string
+        name="q_create_widget_duplicate_id">डुप्लीकेट ID वाला widget बना सकते हैं।</string>
+    <string
+        name="q_lower_version_code">अपने ऐप का version code कम कर सकते हैं।</string>
+    <string
+        name="q_oncreate_deletable">Lifecycle इवेंट onCreate को डिलीट कर सकते हैं।</string>
+    <string
+        name="q_deleted_project_recover">डिलीट किया हुआ प्रोजेक्ट रिकवर हो सकता है।</string>
+    <string
+        name="q_deleted_collection_recover">डिलीट किया हुआ Collection आइटम रिकवर हो सकता है।</string>
+    <string
+        name="q_var_activity_a_to_b">\"Activity A\" में बनाया variable \"Activity B\" से एक्सेस किया जा सकता है।</string>
+    <string
+        name="q_component_activity_a_to_b">\"Activity A\" में बनाया कॉम्पोनेंट \"Activity B\" से एक्सेस किया जा सकता है।</string>
+    <string
+        name="q_custom_blocks_playstore">Google Play के BlackLogics में BlackLogics से बनाए custom Blocks इस्तेमाल कर सकते हैं।</string>
+    <string
+        name="q_file_blocks_android11">Target SDK version 30 और ऊपर होने पर File blocks Android 11 और नए वर्ज़न पर काम करते हैं।</string>
+    <!-- INFO Quiz Statements -->
+    <string
+        name="q_filepicker_choose_file">\"FilePicker\" कॉम्पोनेंट से फाइल चुन सकते हैं।</string>
+    <string
+        name="q_finishaffinity_close_app">\"finishAffinity\" ब्लॉक ऐप बंद करने के लिए इस्तेमाल होता है।</string>
+    <string
+        name="q_manifest_tags">AndroidManifest manager में AndroidManifest में tags ऐड कर सकते हैं।</string>
+    <string
+        name="q_custom_components">Component manager में अपने खुद के कॉम्पोनेंट्स बना सकते हैं।</string>
+    <string
+        name="q_backup_single_project">एक प्रोजेक्ट का बैकअप, इस्तेमाल किए सारे custom blocks और libraries के साथ ले सकते हैं।</string>
+    <string
+        name="q_drawer_view_manager">View Manager में Drawer ऐड कर सकते हैं।</string>
+    <string
+        name="q_imageview_image_and_bg">ImageView पर \"image\" और \"background resource\" दोनों सेट कर सकते हैं।</string>
+    <string
+        name="q_events_in_property_tab">\"Event\" टैब से property tab के अंदर आसानी से इवेंट्स ऐड कर सकते हैं।</string>
+    <string
+        name="q_imageview_colorfilter">\"setColorFilter\" ब्लॉक से ImageView का रंग बदल सकते हैं।</string>
+    <string
+        name="q_oncreate_first_event">Lifecycle इवेंट onCreate, ऐप स्टार्ट होते ही सबसे पहले call होता है।</string>
+    <string
+        name="q_invalid_sharedpref_key_crash">Shared Preference से invalid key एक्सेस करने पर ऐप क्रैश हो सकता है।</string>
+    <string
+        name="q_firebase_storage_upload">Firebase Storage से फाइलें अपलोड और डाउनलोड कर सकते हैं</string>
+    <string
+        name="q_listview_onbindview">ListView में लिस्ट आइटम्स को वैल्यू देने के लिए \"onBindView\" इवेंट ऐड करना ज़रूरी है।</string>
+    <string
+        name="q_fileutil_resize_images">FileUtil blocks से अपने डिवाइस की तस्वीरें resize कर सकते हैं।</string>
+    <string
+        name="q_statusbar_color_advanced">प्रोजेक्ट की advanced settings में status bar का default रंग बदल सकते हैं।</string>
+    <string
+        name="q_firebase_auth_login">Firebase Auth से लॉगिन authentication सिस्टम बना सकते हैं।</string>
+    <string
+        name="q_overlap_widgets_translation">translation और rotation प्रॉपर्टीज़ से widgets को ओवरलैप कर सकते हैं।</string>
+    <string
+        name="q_firebase_library_settings">Firebase लाइब्रेरी इस्तेमाल करने के लिए पहले Library Settings में configuration सेट करनी होगी।</string>
+    <string
+        name="q_imageview_scaletype_ratio">ImageView की \"ScaleType\" प्रॉपर्टी दिखाई जा रही इमेज का ratio तय करती है।</string>
+    <string
+        name="q_custom_list_item">ListView के लिए custom list item बना सकते हैं।</string>
+    <string
+        name="q_forever_without_stop_crash">stop block के बिना forever block इस्तेमाल करने पर ऐप हैंग और क्रैश होगा।</string>
+    <string
+        name="q_if_then_execute">if-then ब्लॉक के अंदर के blocks सिर्फ तब चलेंगे जब कंडीशन true हो।</string>
+    <string
+        name="q_variables_store_types">\"Variables\" से अलग-अलग टाइप की वैल्यूज़ स्टोर कर सकते हैं।</string>
+    <string
+        name="q_intent_transfer_data">Intent कॉम्पोनेंट से activities के बीच डेटा ट्रांसफर कर सकते हैं।</string>
+    <string
+        name="q_custom_item_listview">ListView के लिए custom आइटम बनाना संभव है।</string>
+    <string
+        name="q_mycollection_shared">My collection सारे प्रोजेक्ट्स के लिए शेयर किया हुआ डेटा कलेक्शन है।</string>
+    <string
+        name="q_save_widgets_blocks">Widgets और blocks को बाद में इस्तेमाल के लिए सेव करना संभव है।</string>
+    <string
+        name="q_new_component_blocks_added">कॉम्पोनेंट ऐड करने पर उसके नए component blocks ऐड हो जाते हैं।</string>
+    <string
+        name="q_moreblock_purple">MoreBlock एक पर्पल block है जो आप रिपिटिटिव कामों के लिए बना सकते हैं।</string>
+    <string
+        name="q_change_font_style">फॉन्ट स्टाइल प्रोग्रामेटिकली बदल सकते हैं।</string>
+    <string
+        name="q_discord_community">एक Discord कम्युनिटी है जो आपकी मदद कर सकती है।</string>
+    <string
+        name="q_onclick_other_widgets">Button के अलावा दूसरे Widgets पर भी onClick इवेंट ऐड कर सकते हैं।</string>
+    <string
+        name="q_events_component_tab">\"Component\" टैब के अंदर भी इवेंट्स ऐड कर सकते हैं।</string>
+    <string
+        name="q_change_language_blacklogics">BlackLogics की language settings बदल सकते हैं।</string>
+    <string
+        name="q_edit_image_after_add">इमेज ऐड करने के बाद उस फाइल को एडिट कर सकते हैं।</string>
+    <string
+        name="q_export_android_studio">Android Studio में काम जारी रखने के लिए प्रोजेक्ट export कर सकते हैं।</string>
+    <string
+        name="q_sign_project_playstore">Play Store पर अपलोड करने के लिए प्रोजेक्ट साइन कर सकते हैं।</string>
+    <string
+        name="q_playstore_dev_account">Play Store पर APK फाइल अपलोड करने के लिए Play Store Developer account चाहिए।</string>
+    <string
+        name="q_center_text_gravity">\"gravity\" प्रॉपर्टी से टेक्स्ट को सेंटर कर सकते हैं।</string>
+    <string
+        name="q_view_java_xml">अनुवादित Java और XML source फाइल देख सकते हैं।</string>
+    <string
+        name="q_upload_pictures_firebase">Firebase Storage पर तस्वीरें अपलोड कर सकते हैं।</string>
+    <string
+        name="q_swap_two_vars_third">दो variables की वैल्यू स्वैप करने के लिए तीसरे variable की ज़रूरत पड़ती है।</string>
+    <string
+        name="q_weight_responsive">Weight प्रॉपर्टी तब इस्तेमाल होती है जब आप widget का size screen size के हिसाब से responsive बनाना चाहते हैं।</string>
+    <string
+        name="q_trim_block">Operator टैब का Trim block शुरुआत और आखिर के extra white spaces हटाता है।</string>
+    <string
+        name="q_number_string_convert">नंबर को String और String को नंबर में बदलना संभव है।</string>
+    <string
+        name="q_calc_screen_width">ब्लॉक्स से screen की width कैलकुलेट कर सकते हैं।</string>
+    <string
+        name="q_collision_getlocation">\"getLocationX\" और \"getLocationY\" blocks से अलग-अलग widgets के collisions डिटेक्ट कर सकते हैं।</string>
+    <string
+        name="q_clear_top_removes_all_previous">Intent कॉम्पोनेंट का \"CLEAR_TOP\" flag navigation stack की सारी पिछली activities हटा देता है।</string>
+    <string
+        name="q_single_top_reuse">Intent कॉम्पोनेंट का \"SINGLE_TOP\" flag navigation stack में मौजूद activity को नई बनाने की बजाय री-यूज़ करता है।</string>
+    <string
+        name="q_startactivity_navigate">\"startActivity\" ब्लॉक दूसरी activity पर जाने के लिए इस्तेमाल होता है।</string>
+    <string
+        name="q_soundpool_max_stream">SoundPool से साउंड चलाने के लिए पहले max stream count assign करना ज़रूरी है।</string>
+    <string
+        name="q_animate_objectanimator">ObjectAnimator कॉम्पोनेंट से Widget को एनिमेट कर सकते हैं।</string>
+    <string
+        name="q_components_own_events">कुछ कॉम्पोनेंट्स के अपने इवेंट्स होते हैं जिन्हें आप मैन्युअली ऐड कर सकते हैं।</string>
+    <string
+        name="q_dialog_popup">Dialog कॉम्पोनेंट से pop-up message बना सकते हैं।</string>
+    <string
+        name="q_timer_may_not_cancel">Timer कॉम्पोनेंट पर एक से ज़्यादा टास्क assign करने पर वो कैंसिल नहीं हो सकता।</string>
+    <string
+        name="q_moreblocks_develop_quickly">तेज़ और कुशल तरीके से डेवलप करने के लिए MoreBlocks इस्तेमाल कर सकते हैं।</string>
+    <string
+        name="q_share_projects_without_app">बने हुए प्रोजेक्ट्स दूसरे लोगों के साथ BlackLogics के बिना भी शेयर कर सकते हैं।</string>
+    <string
+        name="q_verbal_abuse_ban">कम्युनिटी में किसी से गाली-गलौज करने पर ban हो सकता है।</string>
+    <string
+        name="q_moreblock_in_moreblock">एक MoreBlock के अंदर दूसरा MoreBlock इस्तेमाल कर सकते हैं।</string>
+    <string
+        name="q_custom_hex_color">custom hex color code ऐड करना संभव है।</string>
+    <string
+        name="q_imageview_bg_resource">\"background resource\" प्रॉपर्टी से ImageView पर एक और इमेज का सेट सेट कर सकते हैं।</string>
+    <string
+        name="q_drawer_events_drawer_xml">\"Drawer\" कैटेगरी के इवेंट्स तब दिखते हैं जब आप \"drawer.xml\" फाइल में widget ऐड करते हैं।</string>
+    <string
+        name="q_firebase_free_small">Google की Firebase सेवा छोटे ऐप्स के लिए फ्री है।</string>
+    <string
+        name="q_camera_take_pictures">Camera कॉम्पोनेंट से तस्वीरें ले सकते हैं।</string>
+    <string
+        name="q_edittext_custom_validator">\"onTextChanged\" इवेंट एडिट करके EditText के लिए अपना खुद का validator बना सकते हैं।</string>
+    <string
+        name="q_programmatic_styling">ब्लॉक्स से widgets की styling प्रोग्रामेटिकली बदल सकते हैं।</string>
+    <string
+        name="q_edittext_hint">EditText की \"Hint\" प्रॉपर्टी यूज़र को बताती है कि क्या इनपुट लेना है।</string>
+    <string
+        name="q_invisible_takes_space">visibility प्रॉपर्टी का \"INVISIBLE\" ऑप्शन widget को गायब कर देता है, लेकिन वो जगह फिर भी लेता है।</string>
+    <string
+        name="q_landscape_app">BlackLogics पर landscape ऐप बनाना संभव है।</string>
+    <string
+        name="q_infinite_loop_sound">साउंड फाइल को infinitely loop करना संभव है।</string>
+    <string
+        name="q_algorithms_blocks">ब्लॉक्स से algorithms बना सकते हैं, जैसे ताश की गड्डी शफल करने वाला algorithm।</string>
+    <string
+        name="q_oncreate_first_lifecycle">\"onCreate\" इवेंट वो पहला lifecycle इवेंट है जो activity स्टार्ट होने पर आता है।</string>
+    <string
+        name="q_index_out_of_bounds">लिस्ट के size से बड़े index से लिस्ट में से आइटम नहीं निकाल सकते।</string>
+    <string
+        name="q_list_ordered_by_save">\"List\" के आइटम्स सेव होने के समय के हिसाब से order होते हैं।</string>
+    <!-- Two-option questions -->
+    <string
+        name="q_animate_widgets_component">ये कॉम्पोनेंट Widgets को एनिमेट करने के लिए इस्तेमाल होता है।</string>
+    <string
+        name="q_play_longer_sound_component">ये कॉम्पोनेंट लंबी साउंड फाइल्स चलाने के लिए इस्तेमाल होता है।</string>
+    <string
+        name="q_fill_parent_space">ये width / height प्रॉपर्टी वैल्यू parent की पूरी जगह भर देती है।</string>
+    <string
+        name="q_position_children_layout">ये प्रॉपर्टी layout के अंदर children को position करने देती है।</string>
+    <string
+        name="q_spacing_around_widget">ये प्रॉपर्टी widget के चारों तरफ spacing ऐड करती है।</string>
+    <string
+        name="q_change_bg_transparency">बैकग्राउंड की transparency कैसे बदलेंगे?</string>
+    <string
+        name="q_number_keyboard_edittext">EditText के लिए number keyboard type कैसे सेट करेंगे?</string>
+    <string
+        name="q_lifecycle_restart">Activity restart होने पर कौन सा lifecycle इवेंट call होता है?</string>
+    <string
+        name="q_singleline_vs_lines">EditText&gt;&gt;&gt;&gt;>
+        पर
+        \"singleLine=true\"
+        और
+        \"lines=3\" दोनों लगाने पर कौन सी प्रॉपर्टी apply होगी?</string>
+    <!-- Options -->
+    <string
+        name="opt_mediaplayer">MediaPlayer</string>
+    <string
+        name="opt_objectanimator">ObjectAnimator</string>
+    <string
+        name="opt_soundpool">SoundPool</string>
+    <string
+        name="opt_wrap_content">WRAP_CONTENT</string>
+    <string
+        name="opt_match_parent">MATCH_PARENT</string>
+    <string
+        name="opt_layout_gravity">layout gravity</string>
+    <string
+        name="opt_gravity">gravity</string>
+    <string
+        name="opt_padding">padding</string>
+    <string
+        name="opt_margin">margin</string>
+    <string
+        name="opt_alpha">alpha</string>
+    <string
+        name="opt_bg_color">background color</string>
+    <string
+        name="opt_ime">ime</string>
+    <string
+        name="opt_numberdecimal">numberDecimal</string>
+    <string
+        name="opt_onresume">onResume</string>
+    <string
+        name="opt_onstop">onStop</string>
+    <string
+        name="opt_singleline">singleLine</string>
+    <string
+        name="opt_lines3">lines=3</string>
+    <!-- ============ ManageJavaActivity ============ -->
+    <string
+        name="manage_java_no_files">कोई फाइल नहीं</string>
+    <string
+        name="manage_java_title">%s मैनेजर</string>
+    <string
+        name="manage_java_java_class">Java क्लास</string>
+    <string
+        name="manage_java_java_activity">Java Activity</string>
+    <string
+        name="manage_java_kotlin_class">Kotlin क्लास</string>
+    <string
+        name="manage_java_kotlin_activity">Kotlin Activity</string>
+    <string
+        name="manage_java_invalid_file_name">अमान्य फाइल नाम</string>
+    <string
+        name="manage_java_select_file_type">फाइल टाइप चुनें</string>
+    <string
+        name="manage_java_folder_created">फोल्डर सफलतापूर्वक बनाया गया</string>
+    <string
+        name="manage_java_file_created">फाइल सफलतापूर्वक बनाई गई</string>
+    <string
+        name="manage_java_kotlin_unsupported">माफ़ करें, आप Kotlin इस्तेमाल नहीं कर सकते क्योंकि kotlinc सिर्फ Android 8 और ऊपर के डिवाइस पर काम करता है!</string>
+    <string
+        name="manage_java_kotlin_unsupported_skip">माफ़ करें, आप Kotlin इस्तेमाल नहीं कर सकते क्योंकि kotlinc सिर्फ Android 8 और ऊपर के डिवाइस पर काम करता है, %s को स्किप कर रहे हैं!</string>
+    <string
+        name="manage_java_select_files_title">Java/Kotlin फाइल(ें) चुनें</string>
+    <string
+        name="manage_java_rename_occurrences">फाइल में \"%s\" की सभी जगह रीनेम करें</string>
+    <string
+        name="manage_java_renamed_successfully">सफलतापूर्वक रीनेम किया गया</string>
+    <string
+        name="manage_java_removed_activity_manifest">नोट: AndroidManifest से Activity हटा दी गई</string>
+    <string
+        name="manage_java_delete_message_folder">क्या आप वाकई इस फोल्डर को डिलीट करना चाहते हैं? यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_java_delete_message_file">क्या आप वाकई इस फाइल को डिलीट करना चाहते हैं? यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_java_delete_message_file_manifest">क्या आप वाकई इस फाइल को डिलीट करना चाहते हैं? यह AndroidManifest से भी हटा दी जाएगी। यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_java_delete_message_folder_manifest">क्या आप वाकई इस फोल्डर को डिलीट करना चाहते हैं? यह AndroidManifest से भी हटा दिया जाएगा। यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_java_deleted_successfully">सफलतापूर्वक डिलीट किया गया</string>
+    <string
+        name="manage_java_add_activity_manifest">manifest में Activity के रूप में ऐड करें</string>
+    <string
+        name="manage_java_remove_activity_manifest">manifest से Activity हटाएं</string>
+    <string
+        name="manage_java_add_service_manifest">manifest में Service के रूप में ऐड करें</string>
+    <string
+        name="manage_java_remove_service_manifest">manifest से Service हटाएं</string>
+    <string
+        name="manage_java_edit">एडिट करें</string>
+    <string
+        name="manage_java_edit_with">इसके साथ एडिट करें…</string>
+    <string
+        name="manage_java_rename">रीनेम करें</string>
+    <string
+        name="manage_java_delete">डिलीट करें</string>
+    <string
+        name="manage_java_added_activity_manifest">%s को AndroidManifest में Activity के रूप में सफलतापूर्वक ऐड किया गया</string>
+    <string
+        name="manage_java_activity_not_in_manifest">Activity AndroidManifest में डिफाइन नहीं थी।</string>
+    <string
+        name="manage_java_added_service_manifest">%s को AndroidManifest में Service के रूप में सफलतापूर्वक ऐड किया गया</string>
+    <string
+        name="manage_java_removed_service_manifest">Service %s को AndroidManifest से सफलतापूर्वक हटाया गया</string>
+    <string
+        name="manage_java_service_not_in_manifest">Service AndroidManifest में डिफाइन नहीं थी।</string>
+    <!-- ============ Refactor Dialog ============ -->
+    <string
+        name="refactor_title">पैकेज रीफैक्टर करें</string>
+    <string
+        name="refactor_old_package">पुराना पैकेज</string>
+    <string
+        name="refactor_new_package">नया पैकेज</string>
+    <string
+        name="refactor_dry_run">ड्राई रन (सिर्फ प्रीव्यू)</string>
+    <string
+        name="refactor_update_imports">इम्पोर्ट्स अपडेट करें</string>
+    <string
+        name="refactor_move_files">फाइलें मूव करें</string>
+    <string
+        name="refactor_preview">प्रीव्यू</string>
+    <string
+        name="refactor_execute">एक्सीक्यूट करें</string>
+    <string
+        name="refactor_cancel">कैंसिल</string>
+    <string
+        name="refactor_enter_both_packages">कृपया दोनों पैकेज नाम डालें</string>
+    <string
+        name="refactor_preview_header">बदलावों का प्रीव्यू</string>
+    <string
+        name="refactor_old_pkg_label">पुराना पैकेज: %s</string>
+    <string
+        name="refactor_new_pkg_label">नया पैकेज: %s</string>
+    <string
+        name="refactor_separator">================================</string>
+    <string
+        name="refactor_files_affected">प्रभावित होने वाली फाइलें:</string>
+    <string
+        name="refactor_no_files_found">कोई फाइल नहीं मिली</string>
+    <string
+        name="refactor_no_files_with_pkg">⚠ इस पैकेज वाली कोई फाइल नहीं मिली: %s</string>
+    <string
+        name="refactor_starting_dry_run">रीफैक्टर शुरू हो रहा है (ड्राई रन)…</string>
+    <string
+        name="refactor_starting">रीफैक्टर शुरू हो रहा है…</string>
+    <string
+        name="refactor_completed_success">✅ रीफैक्टर सफलतापूर्वक पूरा हुआ!</string>
+    <string
+        name="refactor_failed">❌ रीफैक्टर फेल हुआ: %s</string>
+    <string
+        name="refactor_dry_run_results">ड्राई रन रिज़ल्ट्स</string>
+    <string
+        name="refactor_completed_results">✅ रीफैक्टर पूरा हुआ</string>
+    <!-- ManageResourceActivity -->
+    <string
+        name="manage_resource_title">रिसोर्स मैनेजर</string>
+    <string
+        name="manage_resource_create_folder">नया फोल्डर बनाएं</string>
+    <string
+        name="manage_resource_create_file">नई फाइल बनाएं</string>
+    <string
+        name="manage_resource_invalid_name">अमान्य नाम</string>
+    <string
+        name="manage_resource_file_exists">फाइल पहले से मौजूद है</string>
+    <string
+        name="manage_resource_created_success">फाइल सफलतापूर्वक बनाई गई</string>
+    <string
+        name="manage_resource_select_file">रिसोर्स फाइल चुनें</string>
+    <string
+        name="manage_resource_import_error">रिसोर्स इम्पोर्ट नहीं हो सका! [%s]</string>
+    <string
+        name="manage_resource_renamed_success">सफलतापूर्वक रीनेम किया गया</string>
+    <string
+        name="manage_resource_rename_failed">रीनेम फेल हुआ</string>
+    <string
+        name="manage_resource_delete_message_folder">क्या आप वाकई इस फोल्डर को डिलीट करना चाहते हैं? यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_resource_delete_message_file">क्या आप वाकई इस फाइल को डिलीट करना चाहते हैं? यह वापस नहीं हो सकता!</string>
+    <string
+        name="manage_resource_delete">डिलीट करें</string>
+    <string
+        name="manage_resource_cancel">कैंसिल</string>
+    <string
+        name="manage_resource_deleted">डिलीट किया गया</string>
+    <string
+        name="manage_resource_only_xml_editable">सिर्फ XML फाइलें एडिट की जा सकती हैं</string>
+    <string
+        name="manage_resource_edit">एडिट करें</string>
+    <string
+        name="manage_resource_edit_with">इसके साथ एडिट करें…</string>
+    <string
+        name="manage_resource_rename">रीनेम करें</string>
+    <string
+        name="theme_title">थीम चुनें</string>
+    <string
+        name="theme_light">लाइट</string>
+    <string
+        name="theme_dark">डार्क</string>
+    <string
+        name="theme_system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string
+        name="language_title">भाषा चुनें</string>
+    <string
+        name="canvas_empty">कैनवास खाली है\nबाएँ पैलेट से विजेट को लंबे समय तक दबाकर यहाँ खींचें</string>
+</resources>

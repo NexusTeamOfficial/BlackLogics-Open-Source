@@ -1,0 +1,43 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
+	<include layout="@layout/toolbar_improved" />
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:fillViewport="true"
+		android:scrollbars="none"
+		android:clipToPadding="false"
+		android:tag="err_vScroll">
+		<HorizontalScrollView
+			android:id="@+id/hscroll2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:fillViewport="true"
+			android:scrollbars="none"
+			android:tag="err_hScroll">
+			<TextView
+				android:id="@+id/tv_compile_log"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingTop="16dp"
+				android:paddingBottom="48dp"
+				android:textSize="12sp"
+				android:paddingStart="16dp"
+				android:paddingEnd="16dp"
+				android:textAppearance="?attr/textAppearanceBodySmall"
+				android:fontFamily="monospace"
+				android:lineSpacingExtra="2dp"
+				android:textIsSelectable="true"
+				android:focusable="false" />
+		</HorizontalScrollView>
+	</ScrollView>
+</LinearLayout>

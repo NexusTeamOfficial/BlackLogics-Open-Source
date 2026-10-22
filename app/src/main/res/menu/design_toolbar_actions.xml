@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:id="@+id/action_undo"
+		android:icon="@drawable/tb_ic_undo"
+		android:title="@string/undo_button_description"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+	<item
+		android:id="@+id/action_redo"
+		android:icon="@drawable/tb_ic_redo"
+		android:title="@string/redo_button_description"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+	<item
+		android:id="@+id/action_save"
+		android:icon="@drawable/tb_ic_save"
+		android:title="@string/save_button_description"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+	<item
+		android:id="@+id/action_more"
+		android:icon="@drawable/tb_ic_more"
+		android:title="@string/more_options_description"
+		app:iconTint="?attr/colorOnSurface"
+		app:showAsAction="always" />
+</menu>

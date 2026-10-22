@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Follows system light/dark automatically (DayNight). -->
+    <style name="Theme.AppCompatManager" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/am_primary</item>
+        <item name="colorOnPrimary">@color/am_on_primary</item>
+        <item name="colorPrimaryContainer">@color/am_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/am_on_primary_container</item>
+        <item name="colorSecondary">@color/am_secondary</item>
+        <item name="colorOnSecondary">@color/am_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/am_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/am_on_secondary_container</item>
+        <item name="colorTertiary">@color/am_tertiary</item>
+        <item name="colorOnTertiary">@color/am_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/am_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/am_on_tertiary_container</item>
+        <item name="colorError">@color/am_error</item>
+        <item name="colorOnError">@color/am_on_error</item>
+        <item name="colorErrorContainer">@color/am_error_container</item>
+        <item name="colorOnErrorContainer">@color/am_on_error_container</item>
+        <item name="android:colorBackground">@color/am_background</item>
+        <item name="colorOnBackground">@color/am_on_background</item>
+        <item name="colorSurface">@color/am_surface</item>
+        <item name="colorOnSurface">@color/am_on_surface</item>
+        <item name="colorSurfaceVariant">@color/am_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/am_on_surface_variant</item>
+        <item name="colorOutline">@color/am_outline</item>
+        <item name="colorOutlineVariant">@color/am_outline_variant</item>
+        <item name="colorSurfaceInverse">@color/am_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/am_inverse_on_surface</item>
+        <item name="colorPrimaryInverse">@color/am_inverse_primary</item>
+        <item name="colorSurfaceContainerLowest">@color/am_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/am_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/am_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/am_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/am_surface_container_highest</item>
+
+        <!-- edge-to-edge: the activity handles insets + icon contrast in code -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+    </style>
+</resources>

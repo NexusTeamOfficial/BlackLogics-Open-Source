@@ -1,0 +1,94 @@
+
+package mod.agus.jcoderz.dex;
+
+import mod.agus.jcoderz.dex.util.ByteInput;
+import mod.agus.jcoderz.dex.util.ByteOutput;
+
+public final class Leb128 {
+    private Leb128() {
+    }
+
+    public static int unsignedLeb128Size(int value) {
+
+
+        int remaining = value >> 7;
+        int count = 0;
+
+        while (remaining != 0) {
+            remaining >>= 7;
+            count++;
+        }
+
+        return count + 1;
+    }
+
+    public static int readSignedLeb128(mod.agus.jcoderz.dex.util.ByteInput in) {
+        int result = 0;
+        int cur;
+        int count = 0;
+        int signBits = -1;
+
+        do {
+            cur = in.readByte() & 0xff;
+            result |= (cur & 0x7f) << (count * 7);
+            signBits <<= 7;
+            count++;
+        } while (((cur & 0x80) == 0x80) && count < 5);
+
+        if ((cur & 0x80) == 0x80) {
+            throw new DexException("invalid LEB128 sequence");
+        }
+
+
+        if (((signBits >> 1) & result) != 0 ) {
+            result |= signBits;
+        }
+
+        return result;
+    }
+
+    public static int readUnsignedLeb128(ByteInput in) {
+        int result = 0;
+        int cur;
+        int count = 0;
+
+        do {
+            cur = in.readByte() & 0xff;
+            result |= (cur & 0x7f) << (count * 7);
+            count++;
+        } while (((cur & 0x80) == 0x80) && count < 5);
+
+        if ((cur & 0x80) == 0x80) {
+            throw new DexException("invalid LEB128 sequence");
+        }
+
+        return result;
+    }
+
+    public static void writeUnsignedLeb128(mod.agus.jcoderz.dex.util.ByteOutput out, int value) {
+        int remaining = value >>> 7;
+
+        while (remaining != 0) {
+            out.writeByte((byte) ((value & 0x7f) | 0x80));
+            value = remaining;
+            remaining >>>= 7;
+        }
+
+        out.writeByte((byte) (value & 0x7f));
+    }
+
+    public static void writeSignedLeb128(ByteOutput out, int value) {
+        int remaining = value >> 7;
+        boolean hasMore = true;
+        int end = ((value & Integer.MIN_VALUE) == 0) ? 0 : -1;
+
+        while (hasMore) {
+            hasMore = (remaining != end)
+                    || ((remaining & 1) != ((value >> 6) & 1));
+
+            out.writeByte((byte) ((value & 0x7f) | (hasMore ? 0x80 : 0)));
+            value = remaining;
+            remaining >>= 7;
+        }
+    }
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="am_title">AppCompat Injection</string>
+    <string name="am_subtitle_attrs">%1$d attributes</string>
+    <string name="am_new_layout">New layout</string>
+    <string name="am_add_attribute">Add attribute</string>
+
+    <string name="am_empty_layouts_title">No injection files yet</string>
+    <string name="am_empty_layouts_msg">Create one for a layout to customise how its AppCompat widgets are generated.</string>
+    <string name="am_empty_attrs_title">No attributes for %1$s</string>
+    <string name="am_empty_attrs_msg">Tap Add attribute to inject one.</string>
+
+    <string name="am_menu_add_type">Add widget type</string>
+    <string name="am_menu_raw_json">Raw JSON</string>
+    <string name="am_menu_reset">Reset to defaults</string>
+
+    <string name="am_layout_summary">%1$d attributes \u00b7 %2$d widget types</string>
+    <string name="am_invalid_json">Invalid JSON \u00b7 tap to fix</string>
+    <string name="am_chip_label">%1$s (%2$d)</string>
+    <string name="am_empty_value">(empty)</string>
+
+    <string name="am_cancel">Cancel</string>
+    <string name="am_save">Save</string>
+    <string name="am_delete">Delete</string>
+    <string name="am_create">Create</string>
+    <string name="am_add">Add</string>
+    <string name="am_apply">Apply</string>
+    <string name="am_reset">Reset</string>
+    <string name="am_undo">Undo</string>
+
+    <string name="am_dialog_new_layout_title">New injection file</string>
+    <string name="am_hint_layout_name">Layout name</string>
+    <string name="am_helper_layout_name">e.g. main, activity_login</string>
+    <string name="am_error_layout_name">Use letters, digits and _ only</string>
+
+    <string name="am_dialog_add_type_title">Add widget type</string>
+    <string name="am_hint_type">Widget type</string>
+    <string name="am_helper_type">e.g. chip, textview</string>
+    <string name="am_error_type">Use lowercase letters, digits and _ only</string>
+
+    <string name="am_dialog_add_attr_title">Add to %1$s</string>
+    <string name="am_dialog_edit_attr_title">Edit attribute</string>
+    <string name="am_hint_attr_name">Attribute</string>
+    <string name="am_helper_attr_name">e.g. android:background</string>
+    <string name="am_hint_attr_value">Value</string>
+    <string name="am_error_attr_name">Enter a valid attribute name</string>
+
+    <string name="am_dialog_raw_title">Raw JSON</string>
+    <string name="am_error_json">Invalid JSON: %1$s</string>
+
+    <string name="am_delete_layout_title">Delete \"%1$s\"?</string>
+    <string name="am_delete_layout_msg">This removes the injection file for this layout.</string>
+    <string name="am_reset_title">Reset to defaults?</string>
+    <string name="am_reset_msg">Attributes in \"%1$s\" will be replaced with the defaults.</string>
+    <string name="am_attr_deleted">Deleted %1$s</string>
+    <string name="am_save_failed">Save failed: %1$s</string>
+
+    <string name="am_cd_back">Navigate up</string>
+    <string name="am_cd_delete">Delete</string>
+</resources>

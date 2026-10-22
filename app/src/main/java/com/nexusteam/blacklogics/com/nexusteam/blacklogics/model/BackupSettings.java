@@ -1,0 +1,33 @@
+
+package com.nexusteam.blacklogics.model;
+
+import android.os.Environment;
+
+import java.io.File;
+
+public class BackupSettings {
+    public static final String EXTENSION = "blb";
+    public static final String DEFAULT_PATH = ".blacklogics/backups/";
+    
+    private static final String[] RESOURCE_SUBFOLDERS = {
+        "fonts", "icons", "images", "sounds"
+    };
+    
+    public static String getBackupDir() {
+        return new File("/storage/emulated/0/", DEFAULT_PATH)
+                .getAbsolutePath();
+    }
+    
+    public static File getAllLocalLibsDir() {
+        return new File("/storage/emulated/0/",
+                ".blacklogics/libs/local_libs");
+    }
+    
+    public static String[] getResourceSubfolders() {
+        return RESOURCE_SUBFOLDERS.clone();
+    }
+    
+    public static String generateBackupFileName(String projectName) {
+        return projectName + "." + EXTENSION;
+    }
+}

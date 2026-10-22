@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:fitsSystemWindows="true" xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Sketchware-style ViewEditor (package: com.nexusteam.internal.editor.view) -->
+    <com.nexusteam.internal.editor.view.ViewEditor
+        android:id="@+id/view_editor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

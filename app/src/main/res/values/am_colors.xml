@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material 3 light scheme (blue seed). Night values live in values-night/am_colors.xml -->
+<resources>
+    <color name="am_primary">#415F91</color>
+    <color name="am_on_primary">#FFFFFF</color>
+    <color name="am_primary_container">#D6E3FF</color>
+    <color name="am_on_primary_container">#001B3E</color>
+    <color name="am_secondary">#565F71</color>
+    <color name="am_on_secondary">#FFFFFF</color>
+    <color name="am_secondary_container">#DAE2F9</color>
+    <color name="am_on_secondary_container">#131C2B</color>
+    <color name="am_tertiary">#705575</color>
+    <color name="am_on_tertiary">#FFFFFF</color>
+    <color name="am_tertiary_container">#FAD8FD</color>
+    <color name="am_on_tertiary_container">#28132E</color>
+    <color name="am_error">#BA1A1A</color>
+    <color name="am_on_error">#FFFFFF</color>
+    <color name="am_error_container">#FFDAD6</color>
+    <color name="am_on_error_container">#410002</color>
+    <color name="am_background">#F9F9FF</color>
+    <color name="am_on_background">#191C20</color>
+    <color name="am_surface">#F9F9FF</color>
+    <color name="am_on_surface">#191C20</color>
+    <color name="am_surface_variant">#E0E2EC</color>
+    <color name="am_on_surface_variant">#44474E</color>
+    <color name="am_outline">#74777F</color>
+    <color name="am_outline_variant">#C4C6D0</color>
+    <color name="am_inverse_surface">#2E3036</color>
+    <color name="am_inverse_on_surface">#F0F0F7</color>
+    <color name="am_inverse_primary">#AAC7FF</color>
+    <color name="am_surface_container_lowest">#FFFFFF</color>
+    <color name="am_surface_container_low">#F3F3FA</color>
+    <color name="am_surface_container">#EDEDF4</color>
+    <color name="am_surface_container_high">#E7E8EE</color>
+    <color name="am_surface_container_highest">#E2E2E9</color>
+</resources>

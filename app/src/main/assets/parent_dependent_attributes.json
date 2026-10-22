@@ -1,0 +1,724 @@
+{
+  "android.widget.LinearLayout": [
+    {
+      "member_type": "field",
+      "name": "Weight",
+      "attribute_name": "android:layout_weight",
+      "layout_params": true,
+      "member_name": "weight",
+      "argument_type": "int"
+    },
+    {
+      "member_type": "field",
+      "name": "Layout Gravity",
+      "attribute_name": "android:layout_gravity",
+      "argument_class": "android.view.Gravity",
+      "layout_params": true,
+      "member_name": "gravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    }
+  ],
+  "android.widget.FrameLayout": [
+    {
+      "member_type": "field",
+      "name": "Layout Gravity",
+      "attribute_name": "android:layout_gravity",
+      "argument_class": "android.view.Gravity",
+      "layout_params": true,
+      "member_name": "gravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    }
+  ],
+   "com.google.android.material.appbar.AppBarLayout": [
+    {
+      "member_type": "method",
+      "name": "Scroll Flags",
+      "attribute_name": "app:layout_scrollFlags",
+      "layout_params": true,
+      "member_name": "setScrollFlags",
+      "argument_type": "flag",
+      "java_arguments": [
+        "com.google.android.material.appbar.AppBarLayout$LayoutParams$SCROLL_FLAG_SCROLL",
+        "com.google.android.material.appbar.AppBarLayout$LayoutParams$SCROLL_FLAG_ENTER_ALWAYS",
+        "com.google.android.material.appbar.AppBarLayout$LayoutParams$SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED",
+        "com.google.android.material.appbar.AppBarLayout$LayoutParams$SCROLL_FLAG_SNAP",
+        "com.google.android.material.appbar.AppBarLayout$LayoutParams$SCROLL_FLAG_SNAP_MARGINS"   
+        ],
+      "xml_arguments": [
+        "scroll",
+        "enterAlways",
+        "enterAlwaysCollapsed",
+        "snap",
+        "snapMargins" 
+      ]
+    }
+  ],
+   "androidx.coordinatorlayout.widget.CoordinatorLayout": [
+    {
+      "member_type": "method",
+      "name": "Layout Behavior",
+      "attribute_name": "android:layout_behavior",
+      "layout_params": true,
+      "member_name": "setBehavior",
+      "argument_type": "enum",
+      "java_arguments": [
+        "com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        ],
+      "xml_arguments": [
+        "@string/appbar_scrolling_view_behavior"
+      ]
+    }
+  ],
+  "com.google.android.material.appbar.CollapsingToolbarLayout": [
+    {
+      "member_type": "method",
+      "name": "Collapse Mode",
+      "attribute_name": "app:layout_collapseMode",
+      "layout_params": true,
+      "member_name": "setCollapseMode",
+      "argument_type": "flag",
+      "java_arguments": [
+        "com.google.android.material.appbar.CollapsingToolbarLayout$LayoutParams$COLLAPSE_MODE_PIN",
+        "com.google.android.material.appbar.CollapsingToolbarLayout$LayoutParams$COLLAPSE_MODE_PARALLAX"
+        ],
+      "xml_arguments": [
+        "pin",
+        "parallax"
+      ]
+    },
+     {
+      "member_type": "method",
+      "name": "Parallax Multiplier",
+      "attribute_name": "app:layout_collapseParallaxMultiplier",
+      "layout_params": true,
+      "member_name": "setParallaxMultiplier",
+      "argument_type": "float"
+    }
+  ],
+  "android.widget.RelativeLayout": [
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_LEFT",
+      "name": "Parent Left",
+      "attribute_name": "android:layout_alignParentLeft",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_TOP",
+      "name": "Parent Top",
+      "attribute_name": "android:layout_alignParentTop",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+        "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_RIGHT",
+      "name": "Parent Right",
+      "attribute_name": "android:layout_alignParentRight",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_BOTTOM",
+      "name": "Parent Bottom",
+      "attribute_name": "android:layout_alignParentBottom",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$CENTER_IN_PARENT",
+      "name": "Center In Parent ",
+      "attribute_name": "android:layout_centerInParent",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$CENTER_HORIZONTAL",
+      "name": "Center Horizontal",
+      "attribute_name": "android:layout_centerHorizontal",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$CENTER_VERTICAL",
+      "name": "Center Vertical",
+      "attribute_name": "android:layout_centerVertical",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_START",
+      "name": "Align Parent Start",
+      "attribute_name": "android:layout_alignParentStart",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_PARENT_END",
+      "name": "Align Parent End",
+      "attribute_name": "android:layout_alignParentEnd",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.RelativeLayout$TRUE",
+        "com.shapun.layouteditor.values$ZERO" // No_Gravity temporary value for 0 need to change it later
+        ],
+      "xml_arguments": [
+        "true",
+        "false"
+        ]
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$LEFT_OF",
+      "name": "Left Of",
+      "attribute_name": "android:layout_leftOf",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$RIGHT_OF",
+      "name": "Right Of",
+      "attribute_name": "android:layout_rightOf",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ABOVE",
+      "name": "Above",
+      "attribute_name": "android:layout_above",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$BELOW",
+      "name": "Below",
+      "attribute_name": "android:layout_below",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_BASELINE",
+      "name": "Align Baseline",
+      "attribute_name": "android:layout_alignBaseline",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_LEFT",
+      "name": "Align Left",
+      "attribute_name": "android:layout_alignLeft",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_TOP",
+      "name": "Align Top",
+      "attribute_name": "android:layout_alignTop",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_RIGHT",
+      "name": "Align Right",
+      "attribute_name": "android:layout_alignRight",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_BOTTOM",
+      "name": "Align Bottom",
+      "attribute_name": "android:layout_alignBottom",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$START_OF",
+      "name": "Start Of",
+      "attribute_name": "android:layout_startOf",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$END_OF",
+      "name": "End Of",
+      "attribute_name": "android:layout_endOf",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_START",
+      "name": "Align Start",
+      "attribute_name": "android:layout_alignStart",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    },
+    {
+      "member_type": "method",
+      "constant": "android.widget.RelativeLayout$ALIGN_END",
+      "name": "Align End",
+      "attribute_name": "android:layout_alignEnd",
+      "layout_params": true,
+      "member_name": "addRule",
+      "argument_type": "View"
+    }
+  ],
+ "androidx.constraintlayout.widget.ConstraintLayout": [
+    {
+      "member_type": "field",
+      "name": "layout_constraintLeft_toLeftOf",
+      "attribute_name": "app:layout_constraintLeft_toLeftOf",
+      "layout_params": true,
+      "member_name": "leftToLeft",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintLeft_toRightOf",
+      "attribute_name": "app:layout_constraintLeft_toRightOf",
+      "layout_params": true,
+      "member_name": "leftToRight",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintRight_toRightOf",
+      "attribute_name": "app:layout_constraintRight_toLefttOf",
+      "layout_params": true,
+      "member_name": "rightToLeft",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+    
+      {
+      "member_type": "field",
+      "name": "layout_constraintRight_toRightOf",
+      "attribute_name": "app:layout_constraintRight_toRightOf",
+      "layout_params": true,
+      "member_name": "rightToRight",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintTop_toTopOf",
+      "attribute_name": "app:layout_constraintTop_toTopOf",
+      "layout_params": true,
+      "member_name": "topToTop",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintTop_toBottomOf",
+      "attribute_name": "app:layout_constraintTop_toBottomOf",
+      "layout_params": true,
+      "member_name": "topToBottom",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintBottom_toTopOf",
+      "attribute_name": "app:layout_constraintBottom_toTopOf",
+      "layout_params": true,
+      "member_name": "bottomToTop",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintBottom_toBottomOf",
+      "attribute_name": "app:layout_constraintBottom_toBottomOf",
+      "layout_params": true,
+      "member_name": "bottomToBottom",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintBaseline_toBaselineOf",
+      "attribute_name": "app:layout_constraintBaseline_toBaselineOf",
+      "layout_params": true,
+      "member_name": "baselineToBaseline",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintBottom_toBottomOf",
+      "attribute_name": "app:layout_constraintBottom_toBottomOf",
+      "layout_params": true,
+      "member_name": "bottomToBottom",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintStart_toEndOf",
+      "attribute_name": "app:layout_constraintStart_toEndOf",
+      "layout_params": true,
+      "member_name": "startToEnd",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintStart_toStartOf",
+      "attribute_name": "app:layout_constraintStart_toStartOf",
+      "layout_params": true,
+      "member_name": "startToStart",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintEnd_toStartOf",
+      "attribute_name": "app:layout_constraintEnd_toStartOf",
+      "layout_params": true,
+      "member_name": "endToStart",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_constraintEnd_toEndOf",
+      "attribute_name": "app:layout_constraintEnd_toEndOf",
+      "layout_params": true,
+      "member_name": "endToEnd",
+      "argument_type": "View",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$PARENT_ID"
+        ],
+      "xml_arguments": [
+        "parent"
+        ]
+    },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginLeft",
+      "attribute_name": "app:layout_goneMarginLeft",
+      "layout_params": true,
+      "member_name": "goneLeftMargin",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginTop",
+      "attribute_name": "app:layout_goneMarginTop",
+      "layout_params": true,
+      "member_name": "goneLeftTop",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginRight",
+      "attribute_name": "app:layout_goneMarginRight",
+      "layout_params": true,
+      "member_name": "goneLeftRight",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginBottom",
+      "attribute_name": "app:layout_goneMarginBottom",
+      "layout_params": true,
+      "member_name": "goneBottomMargin",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginStart",
+      "attribute_name": "app:layout_goneMarginStart",
+      "layout_params": true,
+      "member_name": "goneStartMargin",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_goneMarginEnd",
+      "attribute_name": "app:layout_goneMarginEnd",
+      "layout_params": true,
+      "member_name": "goneEndMargin",
+      "argument_type": "int"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_constraintHorizontal_bias",
+      "attribute_name": "app:layout_constraintHorizontal_bias",
+      "layout_params": true,
+      "member_name": "horizontalBias",
+      "argument_type": "float"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_constraintVertical_bias",
+      "attribute_name": "app:layout_constraintVertical_bias",
+      "layout_params": true,
+      "member_name": "verticalBias",
+      "argument_type": "float"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_constraintHorizontal_weight",
+      "attribute_name": "app:layout_constraintHorizontal_weight",
+      "layout_params": true,
+      "member_name": "horizontalWeight",
+      "argument_type": "float"
+	  },
+      {
+      "member_type": "field",
+      "name": "layout_constraintVertical_weight",
+      "attribute_name": "app:layout_constraintVertical_weight",
+      "layout_params": true,
+      "member_name": "verticalWeight",
+      "argument_type": "float"
+	  },
+    {
+      "member_type": "field",
+      "name": "layout_constraintHorizontal_chainStyle",
+      "attribute_name": "app:layout_constraintHorizontal_chainStyle",
+      "layout_params": true,
+      "member_name": "horizontalChainStyle",
+      "argument_type": "enum",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_SPREAD",
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_SPREAD_INSIDE",
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_PACKED"
+        ],
+      "xml_arguments": [
+        "spread",
+        "spread_inside",
+        "packed"
+        ]
+    },
+    {
+      "member_type": "field",
+      "name": "layout_constraintHorizontal_chainStyle",
+      "attribute_name": "app:layout_constraintVertical_chainStyle",
+      "layout_params": true,
+      "member_name": "verticalChainStyle",
+      "argument_type": "enum",
+      "java_arguments": [
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_SPREAD",
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_SPREAD_INSIDE",
+        "androidx.constraintlayout.widget.ConstraintLayout$LayoutParams$CHAIN_PACKED"
+        ],
+      "xml_arguments": [
+        "spread",
+        "spread_inside",
+        "packed"
+        ]
+    }
+	
+	]
+  
+}
+

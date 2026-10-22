@@ -1,0 +1,99 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface"
+	android:gravity="center"
+	android:paddingStart="24dp"
+	android:paddingEnd="24dp">
+	<LinearLayout
+		android:id="@+id/baseLayout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="?attr/colorSurface"
+		android:gravity="center_horizontal|center_vertical"
+		android:orientation="vertical">
+		<View
+			android:id="@+id/baseSpace1"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1" />
+		<FrameLayout
+			android:id="@+id/frame_layout2"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_gravity="center_horizontal|center_vertical">
+			<View
+				android:id="@+id/circleEffect"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@drawable/circle_pulse"
+				android:visibility="invisible" />
+			<ImageView
+				android:id="@+id/baseIcon"
+				android:layout_width="match_parent"
+				android:layout_height="72dp"
+				android:src="@drawable/ic_blacklogic"
+				android:scaleType="centerInside"
+				android:layout_gravity="center_horizontal|center_vertical"
+				android:contentDescription="@null"
+				app:tint="?attr/colorPrimary" />
+		</FrameLayout>
+		<FrameLayout
+			android:id="@+id/linear1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:layout_gravity="center_horizontal|center_vertical">
+			<com.airbnb.lottie.LottieAnimationView
+				android:id="@+id/boot"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				app:lottie_fileName="nexusteam_blacklogics.json"
+				app:lottie_loop="true"
+				app:lottie_autoPlay="true" />
+		</FrameLayout>
+		<TextView
+			android:id="@+id/baseTag"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="8dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="@string/splash_tag"
+			android:textSize="12sp"
+			android:paddingStart="12dp"
+			android:paddingEnd="12dp"
+			android:textAppearance="?attr/textAppearanceBodyMedium"
+			android:maxLines="2"
+			android:ellipsize="end"
+			android:focusable="false" />
+		<View
+			android:id="@+id/baseSpace2"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:layout_weight="1" />
+		<TextView
+			android:id="@+id/baseGodTag"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="16dp"
+			android:paddingTop="8dp"
+			android:paddingBottom="8dp"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="@string/pray_god"
+			android:textSize="12sp"
+			android:paddingStart="12dp"
+			android:paddingEnd="12dp"
+			android:textAppearance="?attr/textAppearanceLabelMedium"
+			android:maxLines="1"
+			android:ellipsize="end"
+			android:focusable="false" />
+	</LinearLayout>
+</LinearLayout>

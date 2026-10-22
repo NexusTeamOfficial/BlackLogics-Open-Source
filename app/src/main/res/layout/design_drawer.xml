@@ -1,0 +1,86 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:id="@+id/layout_drawer"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="?attr/colorSurfaceContainerLow">
+	<ScrollView
+		android:id="@+id/vscroll2"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:fillViewport="true"
+		android:scrollbars="none"
+		android:clipToPadding="false">
+		<LinearLayout
+			android:id="@+id/linear5"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<TextView
+				android:id="@+id/tv_title_configuration"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="20dp"
+				android:layout_marginBottom="8dp"
+				android:textSize="12sp"
+				android:gravity="start"
+				android:layout_marginStart="20dp"
+				android:layout_marginEnd="20dp"
+				android:textAppearance="?attr/textAppearanceTitleSmall"
+				android:letterSpacing="0.1"
+				android:focusable="false" />
+			<View
+				android:id="@+id/view6"
+				android:layout_width="match_parent"
+				android:layout_height="1dp"
+				android:background="?attr/colorOutlineVariant"
+				android:layout_marginStart="20dp"
+				android:layout_marginEnd="20dp" />
+			<LinearLayout
+				android:id="@+id/layout_menus"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingTop="8dp"
+				android:paddingBottom="8dp"
+				android:orientation="vertical" />
+		</LinearLayout>
+	</ScrollView>
+	<LinearLayout
+		android:id="@+id/linear7"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		<TextView
+			android:id="@+id/tv_title_global"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="12dp"
+			android:layout_marginBottom="4dp"
+			android:textSize="12sp"
+			android:gravity="start"
+			android:layout_marginStart="20dp"
+			android:layout_marginEnd="20dp"
+			android:textAppearance="?attr/textAppearanceTitleSmall"
+			android:letterSpacing="0.1"
+			android:focusable="false" />
+		<View
+			android:id="@+id/view8"
+			android:layout_width="match_parent"
+			android:layout_height="1dp"
+			android:background="?attr/colorOutlineVariant"
+			android:layout_marginStart="20dp"
+			android:layout_marginEnd="20dp" />
+	</LinearLayout>
+	<LinearLayout
+		android:id="@+id/layout_bottom_menus"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="8dp"
+		android:paddingBottom="16dp"
+		android:orientation="vertical" />
+</LinearLayout>

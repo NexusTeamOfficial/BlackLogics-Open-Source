@@ -1,0 +1,144 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/linear3"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:background="?attr/colorSurfaceContainer"
+	android:fitsSystemWindows="true"
+	android:paddingBottom="16dp">
+	<View
+		android:id="@+id/view2"
+		android:layout_width="36dp"
+		android:layout_height="4dp"
+		android:layout_marginTop="12dp"
+		android:layout_marginBottom="8dp"
+		android:background="?attr/colorOutline"
+		android:layout_gravity="center_horizontal"
+		android:alpha="0.6" />
+	<LinearLayout
+		android:id="@+id/lin_header"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:paddingStart="8dp"
+		android:paddingEnd="8dp">
+		<ImageView
+			android:id="@+id/img_edit_id"
+			android:layout_width="44dp"
+			android:layout_height="44dp"
+			android:padding="10dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:src="@drawable/ic_edit_black"
+			android:scaleType="fitCenter"
+			android:contentDescription="EditID"
+			android:focusable="true"
+			app:tint="?attr/colorOnSurfaceVariant" />
+		<ImageView
+			android:id="@+id/img_common_attributes"
+			android:layout_width="44dp"
+			android:layout_height="44dp"
+			android:padding="10dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:src="@drawable/dimention"
+			android:scaleType="fitCenter"
+			android:contentDescription="See All properties"
+			android:focusable="true"
+			app:tint="?attr/colorPrimary" />
+		<com.nexusteam.blacklogics.custom.ViewItems
+			android:id="@+id/viewItems"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:orientation="horizontal"
+			android:layout_weight="1"
+			android:layout_marginStart="4dp"
+			android:layout_marginEnd="4dp" />
+		<ImageView
+			android:id="@+id/collection"
+			android:layout_width="44dp"
+			android:layout_height="44dp"
+			android:padding="10dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:src="@drawable/icon_bookmark_baseline"
+			android:scaleType="fitCenter"
+			android:contentDescription="Savetocollection"
+			android:focusable="true"
+			app:tint="?attr/colorPrimary" />
+		<ImageView
+			android:id="@+id/img_custom"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:src="@drawable/ic_add_black"
+			android:scaleType="center"
+			android:focusable="false"
+			android:visibility="gone" />
+	</LinearLayout>
+	<View
+		android:id="@+id/lin_divider"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="?attr/colorOutlineVariant"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp" />
+	<com.google.android.material.tabs.TabLayout
+		android:id="@+id/attributesOrListener"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@android:color/transparent"
+		app:tabGravity="fill"
+		app:tabIndicatorColor="?attr/colorPrimary"
+		app:tabIndicatorFullWidth="false"
+		app:tabIndicatorHeight="3dp"
+		app:tabMode="fixed"
+		app:tabRippleColor="?attr/colorPrimaryContainer"
+		app:tabSelectedTextColor="?attr/colorPrimary"
+		app:tabTextAppearance="@style/TextAppearance.Material3.TitleSmall"
+		app:tabTextColor="?attr/colorOnSurfaceVariant" />
+	<LinearLayout
+		android:id="@+id/linear1"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingTop="12dp"
+		android:orientation="vertical">
+		<LinearLayout
+			android:id="@+id/attributesTab"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/rv_attributes"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingBottom="8dp"
+				android:clipToPadding="false"
+				android:overScrollMode="never"
+				android:paddingStart="12dp"
+				android:paddingEnd="12dp"
+				android:scrollbars="none" />
+		</LinearLayout>
+		<LinearLayout
+			android:id="@+id/eventTab"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:visibility="gone"
+			tools:visibility="visible">
+			<androidx.recyclerview.widget.RecyclerView
+				android:id="@+id/listeners"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:paddingBottom="8dp"
+				android:clipToPadding="false"
+				android:overScrollMode="never"
+				android:paddingStart="12dp"
+				android:paddingEnd="12dp"
+				android:scrollbars="none" />
+		</LinearLayout>
+	</LinearLayout>
+</LinearLayout>

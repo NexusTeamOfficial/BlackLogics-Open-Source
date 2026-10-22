@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Collapsible section header in the palette (Layouts, Widgets, ...). Colors are set in WidgetPaletteAdapter. -->
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:minHeight="36dp"
+	android:paddingStart="6dp"
+	android:paddingEnd="2dp"
+	android:paddingTop="10dp"
+	android:paddingBottom="2dp"
+	android:gravity="center_vertical"
+	android:orientation="horizontal"
+	android:clickable="true"
+	android:focusable="true"
+	android:background="?attr/selectableItemBackground">
+
+	<TextView
+		android:id="@+id/palette_header_title"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:textSize="11sp"
+		android:textStyle="bold"
+		android:maxLines="2"
+		android:ellipsize="end" />
+
+	<!-- Item count, only visible while the section is collapsed -->
+	<TextView
+		android:id="@+id/palette_header_count"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="2dp"
+		android:textSize="10sp"
+		android:visibility="gone" />
+
+	<ImageView
+		android:id="@+id/palette_header_chevron"
+		android:layout_width="18dp"
+		android:layout_height="18dp"
+		android:src="@drawable/ic_palette_chevron"
+		android:importantForAccessibility="no" />
+</LinearLayout>

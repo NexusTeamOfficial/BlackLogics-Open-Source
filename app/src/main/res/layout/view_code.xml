@@ -1,0 +1,72 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="?attr/colorSurface">
+	<LinearLayout
+		android:id="@+id/linear3"
+		android:layout_width="match_parent"
+		android:layout_height="56dp"
+		android:background="?attr/colorSurfaceContainerHigh"
+		android:gravity="center_vertical"
+		android:orientation="horizontal"
+		android:minHeight="56dp"
+		android:paddingStart="16dp"
+		android:paddingEnd="8dp">
+		<TextView
+			android:id="@+id/text_title"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:text="TestClass.java"
+			android:textSize="12sp"
+			android:layout_weight="1"
+			android:textAppearance="?attr/textAppearanceTitleMedium"
+			android:maxLines="1"
+			android:ellipsize="middle"
+			android:fontFamily="monospace"
+			android:focusable="false" />
+		<TextView
+			android:id="@+id/code_editor_zoomin"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="+"
+			android:textSize="18sp"
+			android:textAppearance="?attr/textAppearanceHeadlineSmall"
+			android:contentDescription="Zoomin"
+			android:focusable="true" />
+		<TextView
+			android:id="@+id/code_editor_zoomout"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="−"
+			android:textSize="18sp"
+			android:textAppearance="?attr/textAppearanceHeadlineSmall"
+			android:contentDescription="Zoomout"
+			android:focusable="true" />
+		<ImageView
+			android:id="@+id/codeeditor_more_options"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:padding="12dp"
+			android:background="?attr/selectableItemBackgroundBorderless"
+			android:src="@drawable/ic_more_vert_white_24dp"
+			android:scaleType="fitCenter"
+			app:tint="?attr/colorOnSurface"
+			android:contentDescription="Moreoptions"
+			android:focusable="true" />
+	</LinearLayout>
+	<com.nexusteam.sdk.lib.code_editor.CodeEditorLayout
+		android:id="@+id/text_content"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:background="?attr/colorSurface"
+		android:layout_weight="1" />
+</LinearLayout>

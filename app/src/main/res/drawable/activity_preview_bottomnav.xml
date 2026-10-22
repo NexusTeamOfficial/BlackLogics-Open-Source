@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="200dp"
+    android:viewportWidth="120"
+    android:viewportHeight="200">
+    <path
+        android:fillColor="#FF1A1A1A"
+        android:pathData="M16,4 C12,4 8,8 8,12 L8,188 C8,192 12,196 16,196 L104,196 C108,196 112,192 112,188 L112,12 C112,8 108,4 104,4 Z"/>
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M14,14 C14,12 15,11 17,11 L103,11 C105,11 106,12 106,14 L106,186 C106,188 105,189 103,189 L17,189 C15,189 14,188 14,186 Z"/>
+    <!-- Status + toolbar -->
+    <path android:fillColor="#FF00796B" android:pathData="M14,11 L106,11 L106,20 L14,20 Z"/>
+    <path android:fillColor="#FF009688" android:pathData="M14,20 L106,20 L106,42 L14,42 Z"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M22,28 L40,28 L40,34 L22,34 Z"/>
+    <!-- Content -->
+    <path android:fillColor="#FFE0E0E0" android:pathData="M28,60 L92,60 L92,66 L28,66 Z"/>
+    <path android:fillColor="#FFEEEEEE" android:pathData="M28,76 L80,76 L80,82 L28,82 Z"/>
+    <path android:fillColor="#FFEEEEEE" android:pathData="M28,92 L88,92 L88,98 L28,98 Z"/>
+    <!-- Bottom nav bar -->
+    <path android:fillColor="#FFF5F5F5" android:pathData="M14,168 L106,168 L106,186 L14,186 Z"/>
+    <!-- Nav icons (circles) -->
+    <path android:fillColor="#FF009688" android:pathData="M30,174 A6,6 0 1,1 30,175 Z"/>
+    <path android:fillColor="#FFBDBDBD" android:pathData="M52,174 A6,6 0 1,1 52,175 Z"/>
+    <path android:fillColor="#FFBDBDBD" android:pathData="M74,174 A6,6 0 1,1 74,175 Z"/>
+    <path android:fillColor="#FFBDBDBD" android:pathData="M96,174 A6,6 0 1,1 96,175 Z"/>
+</vector>

@@ -1,0 +1,61 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical"
+	android:padding="4dp">
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/cardview4"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+		style="@style/Widget.Material3.CardView.Filled"
+		app:cardCornerRadius="16dp"
+		app:cardElevation="0dp"
+		app:strokeWidth="0dp">
+		<LinearLayout
+			android:id="@+id/linear8"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_vertical"
+			android:orientation="horizontal"
+			android:paddingVertical="10dp"
+			android:paddingStart="12dp"
+			android:paddingEnd="4dp">
+			<ImageView
+				android:id="@+id/icon"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:padding="6dp"
+				android:src="@drawable/default_image"
+				android:scaleType="fitCenter"
+				android:focusable="false" />
+			<TextView
+				android:id="@+id/title"
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:text="MainActivity.java"
+				android:textSize="12sp"
+				android:layout_weight="1"
+				android:layout_marginStart="8dp"
+				android:textAppearance="?attr/textAppearanceBodyLarge"
+				android:maxLines="1"
+				android:ellipsize="middle"
+				android:focusable="false" />
+			<ImageView
+				android:id="@+id/more"
+				android:layout_width="40dp"
+				android:layout_height="40dp"
+				android:padding="8dp"
+				android:background="?attr/selectableItemBackgroundBorderless"
+				android:src="@drawable/ic_more_vert_grey600_24dp"
+				android:scaleType="fitCenter"
+				android:contentDescription="More"
+				android:focusable="false"
+				app:tint="?attr/colorOnSurfaceVariant" />
+		</LinearLayout>
+	</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

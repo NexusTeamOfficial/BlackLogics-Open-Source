@@ -1,0 +1,122 @@
+
+package mod.agus.jcoderz.dx.command.annotool;
+
+import java.lang.annotation.ElementType;
+import java.util.EnumSet;
+import java.util.Locale;
+
+public class Main {
+
+    private static class InvalidArgumentException extends Exception {
+        InvalidArgumentException() {
+            super();
+        }
+
+        InvalidArgumentException(String s) {
+            super(s);
+        }
+    }
+
+    enum PrintType {
+        CLASS,
+        INNERCLASS,
+        METHOD,
+        PACKAGE
+    }
+
+
+    static class Arguments {
+        String aclass;
+
+        EnumSet<ElementType> eTypes = EnumSet.noneOf(ElementType.class);
+
+        EnumSet<PrintType> printTypes = EnumSet.noneOf(PrintType.class);
+
+        String[] files;
+
+        Arguments() {
+        }
+
+        void parse (String[] argArray) throws InvalidArgumentException {
+            for (int i = 0; i < argArray.length; i++) {
+                String arg = argArray[i];
+
+                if (arg.startsWith("--annotation=")) {
+                    String argParam = arg.substring(arg.indexOf('=') + 1);
+                    if (aclass != null) {
+                        throw new InvalidArgumentException(
+                                "--annotation can only be specified once.");
+                    }
+                    aclass = argParam.replace('.','/');
+                } else if (arg.startsWith("--element=")) {
+                    String argParam = arg.substring(arg.indexOf('=') + 1);
+
+                    try {
+                        for (String p : argParam.split(",")) {
+                            eTypes.add(ElementType.valueOf(p.toUpperCase(Locale.ROOT)));
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        throw new InvalidArgumentException(
+                                "invalid --element");
+                    }
+                } else if (arg.startsWith("--print=")) {
+                    String argParam = arg.substring(arg.indexOf('=') + 1);
+
+                    try {
+                        for (String p : argParam.split(",")) {
+                            printTypes.add(PrintType.valueOf(p.toUpperCase(Locale.ROOT)));
+                        }
+                    } catch (IllegalArgumentException ex) {
+                        throw new InvalidArgumentException("invalid --print");
+                    }
+                } else {
+                    files = new String[argArray.length - i];
+                    System.arraycopy(argArray, i, files, 0, files.length);
+                    break;
+                }
+            }
+
+            if (aclass == null) {
+                throw new InvalidArgumentException(
+                        "--annotation must be specified");
+            }
+
+            if (printTypes.isEmpty()) {
+                printTypes.add(PrintType.CLASS);
+            }
+
+            if (eTypes.isEmpty()) {
+                eTypes.add(ElementType.TYPE);
+            }
+
+            EnumSet<ElementType> set = eTypes.clone();
+
+            set.remove(ElementType.TYPE);
+            set.remove(ElementType.PACKAGE);
+            if (!set.isEmpty()) {
+                throw new InvalidArgumentException(
+                        "only --element parameters 'type' and 'package' "
+                                + "supported");
+            }
+        }
+    }
+
+    private Main() {
+
+    }
+
+    public static void main(String[] argArray) {
+
+        final Arguments args = new Arguments();
+
+        try {
+            args.parse(argArray);
+        } catch (InvalidArgumentException ex) {
+            System.err.println(ex.getMessage());
+
+            throw new RuntimeException("usage");
+        }
+
+        new AnnotationLister(args).process();
+    }
+}

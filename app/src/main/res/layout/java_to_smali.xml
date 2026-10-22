@@ -1,0 +1,46 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+	<include layout="@layout/toolbar_improved" />
+	<LinearLayout
+		android:id="@+id/linear_main"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:padding="5dp"
+		android:orientation="vertical">
+		<io.github.rosemoe.sora.widget.CodeEditor
+			android:id="@+id/editor"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="8dp"
+			android:orientation="vertical"
+			android:layout_weight="1" />
+		<LinearLayout
+			android:id="@+id/linear3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="5dp"
+			android:orientation="horizontal">
+			<com.google.android.material.button.MaterialButton
+				android:id="@+id/button_convert"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:text="JavatoSmali"
+				android:textSize="12sp" />
+		</LinearLayout>
+	</LinearLayout>
+	<Button
+		android:id="@+id/button1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:text="Don't use this and don't remove this button"
+		android:textSize="12sp"
+		android:textColor="#000000" />
+</LinearLayout>

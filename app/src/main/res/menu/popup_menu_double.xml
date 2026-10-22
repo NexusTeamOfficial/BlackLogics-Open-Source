@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_add_activity_manifest"
+        android:title="@string/manage_java_add_activity_manifest"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_remove_activity_manifest"
+        android:title="@string/manage_java_remove_activity_manifest"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_add_service_manifest"
+        android:title="@string/manage_java_add_service_manifest"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_remove_service_manifest"
+        android:title="@string/manage_java_remove_service_manifest"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/action_edit"
+        android:title="@string/manage_resource_edit" />
+
+    <item
+        android:id="@+id/action_edit_with"
+        android:title="@string/manage_resource_edit_with" />
+
+    <item
+        android:id="@+id/action_rename"
+        android:title="@string/manage_resource_rename" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/manage_resource_delete" />
+
+</menu>

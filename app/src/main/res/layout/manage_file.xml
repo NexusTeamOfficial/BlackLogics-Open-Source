@@ -1,0 +1,50 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fitsSystemWindows="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="?attr/colorSurface">
+	<include layout="@layout/toolbar_improved" />
+	<RelativeLayout
+		android:id="@+id/relativelayout3"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<GridView
+			android:id="@+id/list_file"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:paddingTop="12dp"
+			android:paddingBottom="96dp"
+			android:clipToPadding="false"
+			android:horizontalSpacing="12dp"
+			android:verticalSpacing="12dp"
+			android:numColumns="3"
+			android:stretchMode="columnWidth"
+			android:paddingHorizontal="12dp"
+			android:scrollbars="none" />
+		<TextView
+			android:id="@+id/text_info"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal|center_vertical"
+			android:text="Add java files to your project."
+			android:textSize="12sp"
+			android:layout_marginHorizontal="24dp"
+			android:textAppearance="?attr/textAppearanceBodyMedium"
+			android:focusable="false"
+			android:layout_centerInParent="true" />
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/fab_plus"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="16dp"
+			style="@style/Widget.Material3.FloatingActionButton.Primary"
+			android:contentDescription="Addfile"
+			android:focusable="true"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentEnd="true" />
+	</RelativeLayout>
+</LinearLayout>

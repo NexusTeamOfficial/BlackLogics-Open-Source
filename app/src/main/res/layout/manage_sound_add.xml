@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/backgroundColor"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <RelativeLayout
+        android:layout_gravity="center"
+        android:id="@+id/select_file"
+        android:background="@drawable/bg_outline"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_width="200dp"
+        android:layout_height="200dp">
+        
+        <ImageView
+            android:id="@+id/img_album"
+            android:padding="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+            
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="vertical"
+            android:id="@+id/layout_guide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true">
+            
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_music_primary_24dp"
+                app:tint="@color/colorPrimary"/>
+                
+            <TextView
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:id="@+id/tv_add_sound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Add Sound"/>
+        </LinearLayout>
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/layout_control"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+        
+        <RelativeLayout
+            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp">
+            
+            <TextView
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/textColor"
+                android:id="@+id/file_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_alignParentStart="true"/>
+                
+            <SeekBar
+                android:id="@+id/seek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/file_name"
+                android:progressTint="@color/colorPrimary"
+                android:thumbTint="@color/colorPrimary"/>
+                
+            <TextView
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:id="@+id/current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_below="@+id/seek"
+                android:layout_alignParentStart="true"/>
+                
+            <TextView
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:id="@+id/file_length"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_below="@+id/seek"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+        
+        <ImageView
+            android:layout_gravity="center"
+            android:id="@+id/play"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_play_circle_outline_black_36dp"
+            android:scaleType="fitCenter"
+            app:tint="@color/colorPrimary"/>
+    </LinearLayout>
+    
+    <com.nexusteam.internal.lib.ui.EasyDeleteEditText
+        android:id="@+id/ed_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
+        
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:id="@+id/layout_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+        
+        <TextView
+            android:textSize="14sp"
+            android:textColor="@color/textColor"
+            android:id="@+id/tv_collection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+            
+        <CheckBox
+            android:id="@+id/chk_collection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@color/colorPrimary"/>
+    </LinearLayout>
+</LinearLayout>

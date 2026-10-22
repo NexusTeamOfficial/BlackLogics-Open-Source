@@ -1,0 +1,474 @@
+{
+  "android.widget.LinearLayout": [
+    {
+      "member_type": "method",
+      "name": "Gravity",
+      "attribute_name": "android:gravity",
+      "member_name": "setGravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Orientation",
+      "attribute_name": "android:orientation",
+      "member_name": "setOrientation",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.widget.LinearLayout$HORIZONTAL",
+        "android.widget.LinearLayout$VERTICAL"
+      ],
+      "xml_arguments": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Weight Sum",
+      "attribute_name": "android:weightSum",
+      "member_name": "setWeightSum",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Baseline Aligned",
+      "attribute_name": "android:baselineAligned",
+      "member_name": "setBaselineAligned",
+      "argument_type": "boolean"
+    }
+  ],
+  "android.widget.TextView": [
+    {
+      "member_type": "method",
+      "name": "Text",
+      "attribute_name": "android:text",
+      "member_name": "setText",
+      "argument_type": "String"
+    },
+    {
+      "member_type": "method",
+      "name": "Text Size",
+      "attribute_name": "android:textSize",
+      "member_name": "setTextSize",
+      "argument_type": "float",
+      "dimension": "sp"
+    },
+    {
+      "member_type": "method",
+      "name": "Text Color",
+      "attribute_name": "android:textColor",
+      "member_name": "setTextColor",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "name": "Gravity",
+      "attribute_name": "android:gravity",
+      "member_name": "setGravity",
+      "argument_type": "flag",
+      "java_arguments": [
+        "android.view.Gravity$LEFT",
+        "android.view.Gravity$RIGHT",
+        "android.view.Gravity$BOTTOM",
+        "android.view.Gravity$TOP",
+        "android.view.Gravity$CENTER",
+        "android.view.Gravity$CENTER_HORIZONTAL",
+        "android.view.Gravity$CENTER_VERTICAL"
+      ],
+      "xml_arguments": [
+        "left",
+        "right",
+        "bottom",
+        "top",
+        "center",
+        "center_horizontal",
+        "center_vertical"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Max Lines",
+      "attribute_name": "android:maxLines",
+      "member_name": "setMaxLines",
+      "argument_type": "int"
+    },
+    {
+      "member_type": "method",
+      "name": "Min Lines",
+      "attribute_name": "android:minLines",
+      "member_name": "setMinLines",
+      "argument_type": "int"
+    },
+    {
+      "member_type": "method",
+      "name": "Lines",
+      "attribute_name": "android:lines",
+      "member_name": "setLines",
+      "argument_type": "int"
+    },
+    {
+      "member_type": "method",
+      "name": "Single Line",
+      "attribute_name": "android:singleLine",
+      "member_name": "setSingleLine",
+      "argument_type": "boolean"
+    },
+    {
+      "member_type": "method",
+      "name": "All Caps",
+      "attribute_name": "android:textAllCaps",
+      "member_name": "setAllCaps",
+      "argument_type": "boolean"
+    },
+    {
+      "member_type": "method",
+      "name": "Letter Spacing",
+      "attribute_name": "android:letterSpacing",
+      "member_name": "setLetterSpacing",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Hint Color",
+      "attribute_name": "android:textColorHint",
+      "member_name": "setHintTextColor",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "name": "Ellipsize",
+      "attribute_name": "android:ellipsize",
+      "member_name": "setEllipsize",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.text.TextUtils$TruncateAt$START",
+        "android.text.TextUtils$TruncateAt$MIDDLE",
+        "android.text.TextUtils$TruncateAt$END"
+      ],
+      "xml_arguments": [
+        "start",
+        "middle",
+        "end"
+      ]
+    }
+  ],
+  "android.widget.CompoundButton": [
+    {
+      "member_type": "method",
+      "name": "Set Checked",
+      "attribute_name": "android:checked",
+      "member_name": "setChecked",
+      "argument_type": "boolean"
+    }
+  ],
+  "android.widget.ImageView": [
+    {
+      "member_type": "method",
+      "name": "Image",
+      "attribute_name": "android:src",
+      "member_name": "setImageDrawable",
+      "argument_type": "Drawable"
+    },
+    {
+      "member_type": "method",
+      "name": "Set Tint",
+      "attribute_name": "android:tint",
+      "member_name": "setColorFilter",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "java_arguments": [
+        "android.widget.ImageView$ScaleType$MATRIX",
+        "android.widget.ImageView$ScaleType$FIT_XY",
+        "android.widget.ImageView$ScaleType$FIT_START",
+        "android.widget.ImageView$ScaleType$FIT_CENTER",
+        "android.widget.ImageView$ScaleType$FIT_END",
+        "android.widget.ImageView$ScaleType$CENTER",
+        "android.widget.ImageView$ScaleType$CENTER_CROP",
+        "android.widget.ImageView$ScaleType$CENTER_INSIDE"
+      ],
+      "xml_arguments": [
+        "matrix",
+        "fitXY",
+        "fitStart",
+        "fitCenter",
+        "fitEnd",
+        "center",
+        "centerCrop",
+        "centerInside"
+      ],
+      "name": "Scale Type",
+      "attribute_name": "android:scaleType",
+      "argument_class": "android.widget.ImageView$ScaleType$",
+      "member_name": "setScaleType",
+      "argument_type": "enum"
+    },
+    {
+      "member_type": "method",
+      "name": "Adjust View Bounds",
+      "attribute_name": "android:adjustViewBounds",
+      "member_name": "setAdjustViewBounds",
+      "argument_type": "boolean"
+    }
+  ],
+  "android.view.View": [
+    {
+      "member_type": "field",
+      "name": "Width",
+      "attribute_name": "android:layout_width",
+      "layout_params": true,
+      "member_name": "width",
+      "argument_type": "Size"
+    },
+    {
+      "member_type": "field",
+      "name": "Height",
+      "attribute_name": "android:layout_height",
+      "layout_params": true,
+      "member_name": "height",
+      "argument_type": "Size"
+    },
+    {
+      "member_type": "method",
+      "name": "Background Color",
+      "attribute_name": "android:background",
+      "member_name": "setBackgroundColor",
+      "argument_type": "Color"
+    },
+    {
+      "member_type": "method",
+      "name": "Elevation",
+      "attribute_name": "android:elevation",
+      "member_name": "setElevation",
+      "argument_type": "float",
+      "dp": true,
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Alpha",
+      "attribute_name": "android:alpha",
+      "member_name": "setAlpha",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Translation Y",
+      "attribute_name": "android:transitionY",
+      "member_name": "setTranslationY",
+      "argument_type": "float",
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Translation X",
+      "attribute_name": "android:transitionX",
+      "member_name": "setTranslationX",
+      "argument_type": "float",
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Scale X",
+      "attribute_name": "android:scaleX",
+      "member_name": "setScaleX",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Scale Y",
+      "attribute_name": "android:scaleY",
+      "member_name": "setScaleY",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Convert Widget",
+      "attribute_name": "app:convertedWidget",
+      "member_name": "setConvertedWidget",
+      "argument_type": "String",
+      "description": "Convert this view to a custom widget class"
+    },
+    {
+      "member_type": "method",
+      "name": "Padding Settings",
+      "attribute_name": "android:padding_all",
+      "member_name": "setPaddingAll",
+      "argument_type": "custom",
+      "description": "Set padding for all sides"
+    },
+    {
+      "member_type": "field",
+      "name": "Margin Settings",
+      "attribute_name": "android:layout_margin_all",
+      "layout_params": true,
+      "member_name": "setMarginAll",
+      "argument_type": "custom",
+      "description": "Set margin for all sides"
+    },
+    {
+      "member_type": "method",
+      "name": "Visibility",
+      "attribute_name": "android:visibility",
+      "member_name": "setVisibility",
+      "argument_type": "enum",
+      "java_arguments": [
+        "android.view.View$VISIBLE",
+        "android.view.View$INVISIBLE",
+        "android.view.View$GONE"
+      ],
+      "xml_arguments": [
+        "visible",
+        "invisible",
+        "gone"
+      ]
+    },
+    {
+      "member_type": "method",
+      "name": "Enabled",
+      "attribute_name": "android:enabled",
+      "member_name": "setEnabled",
+      "argument_type": "boolean"
+    },
+    {
+      "member_type": "method",
+      "name": "Clickable",
+      "attribute_name": "android:clickable",
+      "member_name": "setClickable",
+      "argument_type": "boolean"
+    },
+    {
+      "member_type": "method",
+      "name": "Focusable",
+      "attribute_name": "android:focusable",
+      "member_name": "setFocusable",
+      "argument_type": "boolean"
+    },
+    {
+      "member_type": "method",
+      "name": "Rotation",
+      "attribute_name": "android:rotation",
+      "member_name": "setRotation",
+      "argument_type": "float"
+    },
+    {
+      "member_type": "method",
+      "name": "Min Width",
+      "attribute_name": "android:minWidth",
+      "member_name": "setMinimumWidth",
+      "argument_type": "int",
+      "dimension": "dp"
+    },
+    {
+      "member_type": "method",
+      "name": "Min Height",
+      "attribute_name": "android:minHeight",
+      "member_name": "setMinimumHeight",
+      "argument_type": "int",
+      "dimension": "dp"
+    }
+  ],
+  "android.widget.EditText": [
+    {
+      "member_type": "method",
+      "name": "Hint",
+      "attribute_name": "android:hint",
+      "member_name": "setHint",
+      "argument_type": "String"
+    },
+    {
+      "member_type": "method",
+      "name": "Select All On Focus",
+      "attribute_name": "android:selectAllOnFocus",
+      "member_name": "setSelectAllOnFocus",
+      "argument_type": "boolean"
+    }
+  ],
+  "com.google.android.material.appbar.CollapsingToolbarLayout": [
+    {
+      "member_type": "method",
+      "name": "app:title",
+      "attribute_name": "app:title",
+      "member_name": "setTitle",
+      "argument_type": "String"
+    }
+  ],
+  "android.widget.ScrollView": [
+    {
+      "member_type": "method",
+      "name": "FillViewport",
+      "attribute_name": "android:fillViewport",
+      "member_name": "setFillViewport",
+      "argument_type": "boolean"
+    }
+  ],
+  "android.widget.ListView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this ListView adapter item layout"
+    }
+  ],
+  "android.widget.GridView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this GridView adapter item layout"
+    }
+  ],
+  "android.widget.ExpandableListView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this ExpandableListView item layout"
+    }
+  ],
+  "android.widget.Spinner": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this Spinner item layout"
+    }
+  ],
+  "androidx.recyclerview.widget.RecyclerView": [
+    {
+      "member_type": "method",
+      "name": "Custom View",
+      "attribute_name": "app:customView",
+      "member_name": "setCustomView",
+      "argument_type": "customView",
+      "description": "Select a custom view for this RecyclerView item layout"
+    }
+  ]
+}
