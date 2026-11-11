@@ -4,10 +4,7 @@
 
 SmartIndiaGaming  
 Founder of NexusTeam  
-Creator of BlackLogics
-
-## Core Team
-Gaurav Developer
+Creator of BlackLogics 
 
 ## Contributors
 
