@@ -6,6 +6,7 @@
 ![Platform](https://img.shields.io/badge/platform-Android%205.0%2B-3DDC84)
 ![Language](https://img.shields.io/badge/language-Java-orange)
 ![Build](https://img.shields.io/badge/build-Gradle-02303A)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/NexusTeamOfficial/badge.svg)](https://hub.xerj.org/contributors/NexusTeamOfficial)
 
 [Releases](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source/releases) · [Changelog](CHANGELOG.md) · [Telegram](https://t.me/blacklogics) · [Report a bug](https://github.com/NexusTeamOfficial/BlackLogics-Open-Source/issues)
 
