@@ -131,7 +131,6 @@ Please keep PRs focused, and avoid adding new `.bak` files or committing build o
 ## Credits
 
 - **SmartIndiaGaming** – creator, founder of NexusTeam
-- **Gaurav Developer** – core team
 - **@neplozin** – community contributor
 
 Full list: [ATTRIBUTION.md](ATTRIBUTION.md) and [CONTRIBUTORS.md](CONTRIBUTORS.md).
